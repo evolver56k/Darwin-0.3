@@ -1,0 +1,58 @@
+{
+    FILESTABLE = {
+        Documentation = (COPYING, ChangeLog, INSTALL, NEWS, README); 
+        Headers = (
+            awk.h, 
+            acconfig.h, 
+            patchlevel.h, 
+            protos.h, 
+            custom.h, 
+            dfa.h, 
+            getopt.h, 
+            random.h, 
+            regex.h
+        ); 
+        Makefiles = (
+            Makefile.in, 
+            mkinstalldirs, 
+            "stamp-h.in", 
+            configh.in, 
+            configure, 
+            configure.in, 
+            "install-sh"
+        ); 
+        Resources = (); 
+        SUBPROJECTS = (doc, pc, README_d, atari, awklib, missing, posix, vms, test); 
+        Sources = (
+            alloca.c, 
+            array.c, 
+            msg.c, 
+            aclocal.m4, 
+            version.c, 
+            builtin.c, 
+            awk.y, 
+            awktab.c, 
+            node.c, 
+            gawkmisc.c, 
+            getopt.c, 
+            dfa.c, 
+            eval.c, 
+            field.c, 
+            getopt1.c, 
+            main.c, 
+            missing.c, 
+            random.c, 
+            io.c, 
+            re.c, 
+            regex.c
+        ); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = gawk; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

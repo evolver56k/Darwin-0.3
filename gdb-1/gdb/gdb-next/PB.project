@@ -1,0 +1,104 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = ("nextstep-nat-display.m"); 
+        H_FILES = (
+            "i386-next-tdep.h", 
+            "i386-next-threads.h", 
+            "i386-thread-status.h", 
+            "kdp-protocol.h", 
+            "kdp-transactions.h", 
+            "kdp-udp.h", 
+            "nextstep-nat-display.h", 
+            "nextstep-nat-dyld-info.h", 
+            "nextstep-nat-dyld-io.h", 
+            "nextstep-nat-dyld-path.h", 
+            "nextstep-nat-dyld-process.h", 
+            "nextstep-nat-dyld.h", 
+            "nextstep-nat-inferior-debug.h", 
+            "nextstep-nat-inferior-util.h", 
+            "nextstep-nat-inferior.h", 
+            "nextstep-nat-mutils.h", 
+            "nextstep-nat-sigthread.h", 
+            "nextstep-nat-threads.h", 
+            "nextstep-tdep.h", 
+            "nextstep-xdep.h", 
+            "objc-lang.h", 
+            "ppc-frameinfo.h", 
+            "ppc-frameops.h", 
+            "ppc-next-tdep.h", 
+            "ppc-next-threads.h", 
+            "ppc-tdep.h", 
+            "ppc-thread-status.h", 
+            "tm-ppc-dummy.h", 
+            "tm-ppc.h", 
+            "embedded-symbol.h", 
+            "nextstep-nat-cfm.h", 
+            traceback.h, 
+            "winpdo-sup.h"
+        ); 
+        OTHER_LINKED = (
+            attic.c, 
+            "core-macho.c", 
+            "embedded-symbol.c", 
+            "i386-next-nat-exec.c", 
+            "i386-next-nat-float.c", 
+            "i386-next-tdep.c", 
+            "kdp-protocol.c", 
+            "kdp-transactions.c", 
+            "kdp-udp.c", 
+            machoread.c, 
+            "macosx-metrowerks.c", 
+            "macosx-nat.c", 
+            "nextstep-core.c", 
+            "nextstep-nat-cfm.c", 
+            "nextstep-nat-dyld-info.c", 
+            "nextstep-nat-dyld-io.c", 
+            "nextstep-nat-dyld-path.c", 
+            "nextstep-nat-dyld-process.c", 
+            "nextstep-nat-dyld-section.c", 
+            "nextstep-nat-dyld.c", 
+            "nextstep-nat-inferior-debug.c", 
+            "nextstep-nat-inferior-stubs.c", 
+            "nextstep-nat-inferior-util.c", 
+            "nextstep-nat-inferior.c", 
+            "nextstep-nat-info.c", 
+            "nextstep-nat-mutils.c", 
+            "nextstep-nat-pb.c", 
+            "nextstep-nat-sigthread.c", 
+            "nextstep-nat-threads.c", 
+            "nextstep-nat-watchpoint.c", 
+            "nextstep-tdep.c", 
+            "nextstep-xdep.c", 
+            "objc-lang.c", 
+            "ppc-frameinfo.c", 
+            "ppc-frameops.c", 
+            "ppc-next-nat-exec.c", 
+            "ppc-next-tdep.c", 
+            "ppc-tdep.c", 
+            "ppclinux-nat.c", 
+            "ppclinux-tdep.c", 
+            "remote-kdp.c", 
+            "rhapsody-nat.c", 
+            server.c, 
+            traceback.h, 
+            "winpdo-nat.c", 
+            "winpdo-sup.c"
+        ); 
+        OTHER_SOURCES = ("objc-exp.y"); 
+        SUBPROJECTS = ("display-support"); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = "gdb-next"; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,69 @@
+/* Making sure they really want to do this */
+"REALLY_INSTALL" = "Este programa instala OPENSTEP en un disco duro. \nSi desea instalar OPENSTEP, necesita responder algunas preguntas.\n\nESTO NO ES UNA ACTUALIZACION. SE TRATA DE UNA INSTALACION COMPLETA\nDESDE CERO.\nPulse 1 si desea instalar OPENSTEP. Pulse 2 para salir.";
+
+/* Displayed above the list of disks */
+"AVAILABLE_DISKS" = "Los siguientes discos estan disponibles en este ordenador";
+
+/* Displayed below the list of disks */
+/*
+ 123456789012345678901234567890123456789012345678901234567890123456789012345
+*/
+"WHICH_DISK" = "Escriba 1 para instalar OPENSTEP en este disco. \n\nEscriba 2 para las opciones avanzadas de instalacion";
+
+"ALL_DISKS" = "El primer disco de esta lista es el disco de arranque. Puede instalar los\ncomponentes esenciales de OPENSTEP en otro disco de esta lista,\npero si lo hace, OPENSTEP no arrancara automaticamente al reincializar\nel ordenador y tendra que convertir dicho disco en el disco de arranque\npara poder completar la instalacion de OPENSTEP.\n\nEscriba el numero del disco en el que desea instalar OPENSTEP.";
+
+/* Asked when there is a valid OPENSTEP partition on the disk */
+"OVERWRITE" = "Desea mantener algunos de los ficheros que ha anadido, o borrarlos antes de\ninstalar el software basico de OPENSTEP?\nPulse 1 para mantener los ficheros. Pulse 2 para borrarlos.";
+
+/* Options for partitioning the disk */
+"FDISK_MENU1" = "echo \"Pulse 1 para borrar todo el disco y utilizar los $disksize MB\\npara OPENSTEP.\"";
+"FDISK_MENU2" = "echo \"Pulse 2 para reservar parte del espacio en disco para DOS y utilizar\\nel restopara OPENSTEP.\"";
+"FDISK_MENU3" = "echo \"Pulse $currentnum para borrar la particion OPENSTEP de $currentsize MB y\\nutilizarla para OPENSTEP.\"";
+"FDISK_MENU4" = "echo \"Pulse $freenum para mantener las particiones existentes y utilizar los\\n$freesize MB de espacio libre para OPENSTEP.\"";
+"FDISK_MENU5" = "echo \"Pulse $enum para utilizar los $esize MB de la particion extendida de DOS\\npara OPENSTEP.\"";
+"FDISK_MENU6" = "echo \"Pulse $choices para opciones avanzadas (en ingles solamente).\"";
+
+/* Displayed when they type 2 */
+"HOW_MUCH" = "Escriba el tamano de la particion de DOS que desea (en megabytes): ";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"NO_EXTENDED" = "No hay ninguna particion extendida de DOS en este disco.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"TOO_SMALL" = "No hay suficiente espacio en disco para realizar estas particiones.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"CHOOSE_AGAIN" = "Elija otra opcion.";
+
+/* Last chance to abort */
+"READY" = "Preparado para instalar OPENSTEP.\n\nEscriba 1 para comenzar.\nEscriba 2 para abandonar este programa de instalacion.";
+
+/* Displayed in lieu of cryptic commands passing by... */
+"GOING" = "Preparando el disco para la instalacion de OPENSTEP.\nLa operacion se prolongara durante unos minutos...";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INITFAILED" = "FALLO EN LA INICIALIZACION DEL DISCO.\n\nEl programa de instalacion no ha podido inicializar el disco duro.\nLa instalacion no puede continuar.";
+
+"Installing " = "Instalando ";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INSTALLFAILED" = "No se ha encontrado ningun disco. \nLa instalacion no puede continuar. \n\n";
+
+/* Displayed when the user aborts, or something goes wrong */
+"QUITTING" = "Saliendo del programa de instalacion. Espere unos instantes...";
+
+"Completed." = "Finalizado.";
+
+"DONE" = "El disco duro esta preparado para ser utilizado como disco de arranque\npara finalizar la instalacion de OPENSTEP.";
+
+/* Forces them to eject the floppy right before rebooting */
+"REMOVE_FLOPPY" = "Extraiga el disco de la unidad de disquete y luego pulse Intro.";
+
+/* When we don't have a floppy */
+"RESTART" = "Pulse Intro para arrancar de nuevo el ordenador.";
+
+/* Displayed right before rebooting */
+"RESTARTING" = "Reinicializando el ordenador. Espere unos instantes...";
+
+/* Displayed when selecting the disk for installation */
+"BOOT_DISK" = "El disco de arranque de este ordenador es:";

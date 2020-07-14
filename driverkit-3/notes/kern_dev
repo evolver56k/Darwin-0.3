@@ -1,0 +1,104 @@
+		notes on integrating kern_dev server
+		
+What Jim did:
+
+* option in Makefile.m68k is udma
+
+* changes to kernel:
+
+  * syscall_sw.c:
+  	#if UDMA
+		FN(device_master_self, 0),		/* 69 */
+	#else
+		FN(kern_invalid, 0),			/* 69 */
+	#endif
+
+  * add a call to ipc_dev_init() (one-time only init for kern_dev server,
+    in kern_dev.c) in mach_init.c
+    
+  * disabled the simple lock assertion in simple_lock_try (WHY???)
+  
+  * Add DEVICE_PRIV_TRAP to kern/ipc_ptraps.c
+  
+  * ipc_basic.c:
+  
+  	#if UDMA
+	if (!dev_server_server(&kmsgptr->kmsg_header, &out_msg->kmsg_header))
+	#endif
+
+What I have to do:
+
+* Move everything except for the mig stuff from driverkit/m88k into the 
+  kernel. There's no reason for it to be outside.
+  --DONE
+  
+* one-time only init function in kern_dev_priv. Runs before libIO is init'd.
+
+  -- create device_master_port using port_alloc
+  -- the rest of the stuff in autoconfig_int. This function which does the
+     one-time only init should be in kern_dev_priv so it's not 
+     KERNEL_FEATURES.
+     
+  ...DONE
+  
+* at autoconfig time (autoconf_int())
+    -- IOLibInit()
+    -- object_copyout() device_master_port to device_master_uport. This 
+       should be a static in autoconf!
+    -- in an IOTask thread, do
+	    -- autosize_bus()
+	    -- probe_drivers
+    ...DONE
+      
+* autosize_bus needs to create kern_dev_t's for hard-wired devices (adb
+  and frame buffer). Enumerate these neatly somehow.
+  ...DONE
+  
+* for test, call do_autoconf() from init_main. Maybe later from a loaded
+  server.
+  
+* Initialization sequeuence as of 2 Nov
+  dev_server_init() - end of setup_main() in kern/mach_init.c
+  objcInit() - main() in bsd/kern/init_main
+  do_autoconf() - just after objcInit(), before vfs_mountroot
+  
+  currently, setup_main() calls startup() early on, and this calls 
+  configure()...
+  
+testing libdriver in the 68k kernel
+
+* configuration = LIBDRV, enables:
+	kernobjc
+	objctest
+	driverdbg
+	udma
+	xpr_debug
+	
+  setup_main() in kern/mach_init.c
+	dev_server_init()
+  		xprInit()
+  main() in init_main.c
+  	_objcInit() 
+	autoconf()         (before mounting root)
+	    IOlibIOInit()
+	    fork off iotaskTest() in Kernel/libIO.m
+	    config FAKE_DEVICE (defined in kern_dev_priv.h)
+	  
+Configuring w/FAKE_DEVICE true:
+	kernIOAttachInterrupt: avoids setting up h/w global_intr_map register
+	kernIOMapDevicePage: static fake device page for mapping
+	dev_intr_detach_com: avoid clearing global_intr_map
+	
+testing
+	objtest.m has NXlock test, kernel version. Invoked via loadable
+		server klibtest (in driverkit/tests), which calls
+		doNXLockTest.
+	IOLibIOInit forks off iotaskTest() in Kernel/libIO.m, tests 
+		mach functions.
+	dev_serv_test in driverkit/tests does half of Config's job,
+		doing IOGetDeviceType(), IOCreateDevicePort(), etc. for
+		each device known by kernel, and prints everything it 
+		finds.
+		
+	    
+  

@@ -1,0 +1,30 @@
+POWERMAC platform expert guidelines: (PRELIMINARY)
+Eric Hewitt 10/7/97
+
+
+-> Code that is general to all powermacs:
+	powermac_init.c		powermac.h
+				powermac_exceptions.h
+				powermac_gestalt.h
+				proc_reg.h
+				boot.h
+	powermac_vm_init.c
+	identify_machine.c
+	interrupt.c		interrupts.h
+	machine_clock.c
+	bat_init.c
+	bootargs.c
+	debug_misc.c
+
+-> Code that is specific to a specific powermac motherboard {pdm, powersurge, powerexpress, powerbook}:
+	powersurge.c		powersurge.h
+	powerexpress.c		powerexpress.h
+
+-> Code that is a powermac motherboard driver:
+	interrupt_gc.c		interrupt_gc.h
+	interrupt_pdm.c		interrupt_pdm.h
+	interrupt_mpic.c	interrupt_mpic.h
+	rtclock.c
+
+
+

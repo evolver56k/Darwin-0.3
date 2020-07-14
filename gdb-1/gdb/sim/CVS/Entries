@@ -1,0 +1,26 @@
+/ChangeLog/1.1.1.1/Wed Aug  4 22:27:45 1999//Tgdb-1
+/Makefile.in/1.1.1.1/Wed Aug  4 22:27:45 1999//Tgdb-1
+/README-HACKING/1.1.1.1/Wed Aug  4 22:27:45 1999//Tgdb-1
+/configure/1.1.1.1/Wed Aug  4 22:27:45 1999//Tgdb-1
+/configure.in/1.1.1.1/Wed Aug  4 22:27:45 1999//Tgdb-1
+D/arm////
+D/common////
+D/d10v////
+D/d30v////
+D/erc32////
+D/fr30////
+D/h8300////
+D/h8500////
+D/i960////
+D/igen////
+D/m32r////
+D/mcore////
+D/mips////
+D/mn10200////
+D/mn10300////
+D/ppc////
+D/sh////
+D/testsuite////
+D/v850////
+D/w65////
+D/z8k////

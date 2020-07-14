@@ -1,0 +1,12 @@
+#
+# For targets which Apple's release control folks need, but which
+# are not standard GNU targets, we use our own set of Makefiles
+# for insulation against future changes from FSF.
+#
+
+installhdrs:
+	@echo For libg++, the Apple/NeXT RC command make installhdrs is
+	@echo a no-op, since the gnu stuff does not separate the header
+	@echo installation from the installation of the library itself.
+	@echo They end up being installed under DSTROOT/HDR_REL_DEST,
+	@echo by the top-level Makefile.

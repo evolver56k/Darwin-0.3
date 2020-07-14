@@ -1,0 +1,31 @@
+Cloned from drvEIDE-7
+
+Things to do:
+1. The biggest problem that shows up is in ATA/ATAPI detection. The code needs to be cleaned up and reviewed very carefully. However I think we are much better off than before since we support more than fifteen different makes of CD-ROMs.
+
+Other issues of note:
+
+1. We should verify register values more severely after executing commands as the spec says. Of course the danger here is some firmware that may not do everything according to the spec. Do not read status register after doing a data transfer. Do not read any other register that the data register while doing data transfer.
+2. Do we need one single method that checks for drive non-busy and then writes a command to the drive. This might consolidate some code but it is not super-useful.
+3. Need to understand completely local bus and PCI IDE issues. I must figure out what we can support and what we can not. Controllers with BIOS/RAM on them can never be supported because there is no generic way the driver can utilize the cache on board the controller. However we should be able to use other kinds of local bus and PCI IDE controllers. If a controller emulates WD1003 interface then we can support it. I tested the BusLogic IDE cache card. It emulates WD1003 poorly (does not follow spec). Though it kind of works it does not perform any better.
+4. Need a better strategy for supporting IDE dma. The current scheme is Corsair specific and leaves much to be desired. The IDE DMA channel is always 3 (check this). Strip out support for Corsair IDE DMA after this. Also need to add support for bus master DMA once the spec is complete.
+5. If a read or write commands fails, do we still need to a dummy read/write of data from the drive. The old code does something like this. This behavior needs to be examined. Probably not needed.
+6. Should we have a general power management solution for systems without APM bios?
+7. We have to do some work on the booter side so that we use enhanced INT 13h interface to boot off large IDE disks. The problem is that, there are two competing standards. But we can handle translated geometry now and that works fine. My guess is that any BIOS that supports new INT13h will support CHS translation.
+8. Is it possible to address a drive in both CHS and LBA scheme and maintain data integrity? The Maxtor drives seem to work fine with the mapping scheme that we use now. We need to test with some other drives that support LBA.
+9. We should try something like disksort to see if that would help. My guess is that it should help somewhat.
+10. We need to find out what other kinds of PCI IDE interfaces exist out there and get documentation on them. (I have a list of EIDE vendors)
+11. The IOSleep() durations in AtapiCntCmds seems to be way too long. When reliable production hardware is available we should cut them down substantially and test.
+12. Some more work needed on detection to make it rock solid. ATAPI makes this issue more complicated. We will need *extensive* testing to see how other ATAPI drives behave and whether everything works fine with our current tests.
+13. Back to back soft ATAPI reset is broken in the Sony drive when the drive is put in slave mode. The workaround is to sleep (currently 1000ms but could be less) after the drive is not busy any more after soft reset. This is now fixed in version 1.0u
+14. The Chinon drive first issues an interrupt and then updates status register in response to an inquiry command. This is bogus but that is the way it is. I have left in code there which will take care of it (if interrupt is asserted and the drive is still busy, wait for a while). According to Chinon this problem will exist with all drives that use a certain WD ASIC. So there.
+15. Chinon drives had a problem where the same drive will assert itself as a master and as a slave. This is fixed in W09 (noticed in W07).
+16. We should set the ATAPI CD-ROM speed to the maximum the device will support. See 9.8.24 (page 165) of SFF. I tried this and this doesn't seem to be making any difference.
+17. ATAPI mode sense/select comamnds are not working. Since all SCSI commands are not implemented by ATAPI we will need to map some. Fixed mode sense page code 2. We still need to fix mode select page 0x0e (volume control etc.) I can't get this to work despite spending quite some time today.
+18. We have to support shared interrupt in case where the primary and secondary channels use the same IRQ line. Need hardware to work on this. There are many issues here. Interrupt sharing does not seem to a standard. Also ATA channel 3 and 4 are in dispute.
+19. For bulk data transfers we should be using REP string move command. This will be faster. Need to test.
+20. We need support for BM data transfers.
+21. I looked at CMD PCI IDE stuff, it is pretty much similar to RZ 1000 but the documentation is horrible and is not useful for writing drivers.
+
+Things done in this version:
+1. All allocation of ATA and ATAPI command buffers is done at the init time. The driver could deadlock the system since it was doing this at run time. This improves the throughput by a measly 1.5% indicating this is not a bottleneck.

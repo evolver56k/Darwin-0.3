@@ -1,0 +1,34 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (extern.h); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (kvm_mkdb.c, nlist.c, testdb.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, kvm_mkdb.8); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    NEXTSTEP_COMPILEROPTIONS = ""; 
+    NEXTSTEP_INSTALLDIR = /usr/sbin; 
+    NEXTSTEP_LINKEROPTIONS = ""; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = ""; 
+    PDO_UNIX_INSTALLDIR = /usr/sbin; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = kvm_mkdb; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_COMPILEROPTIONS = ""; 
+    WINDOWS_INSTALLDIR = /usr/sbin; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

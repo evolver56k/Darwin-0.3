@@ -1,0 +1,140 @@
+kernload-15 changes:
+
+General:
+The kern_loader is now fully asynchronous.  It loads servers in parallel and can report on the status of any server at any time.  It is also set up to run from mach_init, rather than from /etc/rc.  Some performance improvements have been made, and more should follow when the kern_loader uses the rld package.
+
+kern_loader/Makefile	Generate kern_server*.defs files from /usr/include.
+kern_loader/obj.c	Remove un-needed external prototypes!
+			Clean up recording of allocated kernel memory.
+			Semaphore access to unix utilities and libraries.
+			Cache previously looked up symbol values.
+			Simplify semantics of object file mapping.
+kern_loader/server.h	Add semaphore and condition variable support.
+kern_loader/kern_loader.c
+			Cause kern_loader to die when second signal received.
+			Add -n option to keep kern_loader in fore-ground.
+			Semaphore access to servers.
+kern_loader/server.c	Remove un-needed external prototypes!
+			Semaphore access to servers.
+			Make server deallocation work from any state.
+			Servers that are deallocated aren't removed from
+			the queue, their state can still be inquired after
+			when they've died.
+kern_loader/misc.c	Removed un-used get_sect_data_from_header definition.
+			Semaphore access to hash lists.
+			add file/symbolname to value hashing.
+kern_loader/log.c	Semaphore access to standard I/O.
+kern_loader/load_cmds.c	Wait around if the executable file can't be opened.
+			This fixes the problem where the MIDI driver doesn't
+			load when booting off the ethernet.
+			Check for deallocation conditions while allocating.
+			Make sure that error messages are generated whenever
+			a server can't be loaded.
+			Use host_kernel_version() to get kernel version string.
+mig/Makefile
+mig/kern_server.defs
+mig/kern_server_reply.defs
+			Removed kern_server*.defs (now in kernel).
+include/kernserv/Makefile
+include/kernserv/kern_server*
+			Removed files installed by kernel.
+include/kernserv/kern_loader_types.h
+			Add server_state enum, and server_state_string
+			inline function definition.
+loaded_server/Makefile
+loaded_server/kern_server*
+			Don't put kern_server in libloadserv.a, it's in the
+			kernel now.
+
+kernload-16 changes:
+
+General:
+The kern_loader uses the rld package now.  This makes startup and linkage of server files considerably faster.  The kern_loader no longer does it's own relocation.
+
+The startup protocol with the loaded server has been changed.  The old way used the bootstrap port to have the kern_loader send a port to the loaded server on which it sent messages back to continue startup.  The new mechanism uses the thread_reply port of the loaded server to have the kern_loader immediately start sending messages to the loaded server rather than waiting for the loaded server to come back.  This also allows loaded servers to run in just a separate thread of the target task, not just a separate task.  This can't be used within the kernel because of other complications.
+
+The kern_loader first tries to check itself in with the bootstrap server, rather than just registering a service.  This removes some startup race conditions, and allows the kern_loader port to be used exclusively by a task launched directly from mach_init (removing a security hole).
+
+Kern_loader status commands have been added.  Kern_loader_server_list() returns a list of all known servers (other than those deallocated).  Kern_loader_server_info() returns interesting information about a server (even for deallocated servers).  It can be used to find the status of a server as it's being allocated/loaded.  To find it's memory locations and the locations of it's  and loadable files.  It can also be used as a name-server to retrieve ports that aren't advertised via the netname server.
+
+Loadable files are only created if requested in the Loadable Name section.
+
+The -n argument was added to kern_loader to prevent it from forking (used by mach_init).
+
+The kern_loader can be used to send port notification messages (in liu of the new MachIPC facility).
+
+The kern_loader_status() routine has gone away.
+
+kernload-17 changes:
+
+Added kl_ld shell-script to simplify the process of creating a kern_loader relocatable.  It is invoked as follows: kl_ld -n <name> -i <instance var> -l <load commands> -u <unload commands> -d <loadable file> -o <output file> <input_files>
+
+Added a versioning mechanism whereby the kern_loader retrieves a version number from the relocatable and sends it to the kern_server as part of startup.
+
+kernload-18 changes:
+
+Fixed kl_ld to always output a version.  The version is derived from greping /usr/include/kernserv/kern_server_types.h
+
+The -l option to kl_ld now distinguish between library requests and load-command specification.
+
+kernload-19 changes:
+
+Removed -c option to kl_util.  Can't automatically convert old script-files anymore.
+
+Made kl_log and kern_server logging work.
+
+Properly reflect errors found at lower levels when trying to load/unload/add/delete servers.
+
+Fixed a few hanging bugs in kern_loader.
+
+Made kern_loader_lookup use bootstrap_look_up instead of bootstrap_lookup.
+
+Install kernload.user_bom file.
+
+kernload-20 changes:
+
+Changed kern_loader_lookup to kern_loader_look_up.
+
+Fixed hanging bug in kern_loader when a loaded server panic's durring server initialization.
+
+Changed the build process for kernel-defined services placed in libloadserv.a to accurately reflect the installed .defs files.
+
+kernload-21 changes:
+
+Make kern_loader take MH_OBJECT or MH_PRELOAD type files.
+
+Have kl_ld produce MH_PRELOAD format files (so segedit will work).
+
+Require that every loadable have a version section.
+
+Figure out version from screwed up version segment (temporary).
+
+kernload-22 changes:
+
+Removed -h and -m options to kl_log
+
+Changed ks_log_data to expect out-of-line data from kernel server.
+
+Use bootstrap_check_in rather than bootstrap_checkin.
+
+Don't spin waiting for an errant server to die, terminate him directly.
+
+kernload-23 changes:
+
+Made it okay to have server-name == relocatable-name (bug 9976)
+
+Removed usage message specifying -c argument to kl_util (bug 10252)
+
+kernload-24 changes:
+
+By using the DETACH keyword in the Load Commands script a server will be marked so that the kern loader won't try to unload it on shutdown.
+
+Export header files into /NextDeveloper/Headers/kernserv instead of /usr/include/kernserv.
+
+Internal changes to reflect new locations of imported header files.
+
+kernload-25 changes:
+
+*_handler.[ch] files are now generated by mig.
+
+kern_loader_reply_handler.h is now generated by mig.  The KERN_LOADER_REPLY_INMSG_SIZE and KERN_LOADER_REPLY_OUTMSG_SIZE macros have been replaced with kern_loader_replyMaxRequestSize and kern_loader_replyMaxReplySize respectively.

@@ -1,0 +1,288 @@
+#!/bin/sh
+
+##
+# Configure network interfaces and host name
+##
+
+. /etc/rc.common
+
+ConsoleMessage "Configuring network"
+
+##
+# Get a list of network interfaces from ifconfig.
+##
+NetworkInterfaces=$(ifconfig -a | awk -F: '/^[a-z]/ {print $1}')
+
+##
+# Make sure that lo0 is included, and is last on the list.
+##
+NetworkInterfaces=$(echo ${NetworkInterfaces} | awk '{
+    for (i = 1; i <= NF; i++)
+	if ($i != "lo0") print $i;
+    print "lo0"; }')
+
+##
+# Configure interfaces
+##
+
+rm -rf "${NetConfigDir}"
+
+##
+# Look for matching config information in /etc/iftab.
+##
+echo "Network interfaces:"
+
+if [ -s /etc/iftab ]; then
+    ##
+    # Gather information about interfaces that are to be configured automatically
+    ##
+    for if in ${NetworkInterfaces}; do
+      cat /etc/iftab | sed -n '/^[^#]/p' | \
+	(
+	  while read name af args; do
+	    case ${if} in
+	      ${name})
+		##
+		# Found a matching interface
+		##
+
+		# Have we done this interface before?
+		eval done=\${${if}}
+		if [ -n "${done}" ]; then continue; fi
+
+		# Skip if configured manually
+		if [ "${args}" != "-AUTOMATIC-" ]; then
+		    eval ${if}=DONE
+		    continue
+		fi
+
+		# Start by getting bootpc data
+		ifconfig "${if}" 0.0.0.0 netmask 255.0.0.0 broadcast 255.255.255.255 > /dev/null
+		route add -net 255.255.255.255 -netmask 255.0.0.0 0.0.0.0 -iface     > /dev/null
+		echo -n "    Trying BOOTP for interface ${if}:"
+		if config=$(bootpc "${if}"); then
+		    SetNetConfig "${if}" ${config}
+		    echo " got response from" $(GetNetConfig "${if}" server_ip_address)
+		else
+		    echo " no response"
+		fi
+		route delete 255.255.255.255 > /dev/null
+		route delete 255.0.0.0       > /dev/null
+		ifconfig "${if}" delete down > /dev/null
+
+		# If not enough data, try icmp
+#		#  We don't currently have a tool for this.
+#		#  Workaround is use -AUTOMATIC- for netmask in config section below.
+#		#  Remove the workaround when we get an icmp-savvy command.
+#		if [ -z "$(GetNetConfig "${if}" ip_address  1)" ] ||
+#		   [ -z "$(GetNetConfig "${if}" subnet_mask 1)" ]; then
+#		    if config=$(icmp "${if}"); then
+#			SetNetConfig any ${config}
+#		    fi
+#		fi
+
+		eval ${if}=DONE
+		;;
+	    esac
+	  done
+	)
+    done
+
+    ##
+    # Bring up the network interfaces
+    ##
+    for if in ${NetworkInterfaces}; do
+      cat /etc/iftab | sed -n '/^[^#]/p' | \
+       (
+	while read name af args; do
+	    case ${if} in
+	      ${name})
+		##
+		# Found a matching interface
+		##
+
+		# Have we done this address family before?
+		eval done=\${${if}\_${af}}
+		if [ -n "${done}" ]; then continue; fi
+
+		##
+		# A "!" escape will allow us to put any configuration
+		# command in iftab.  The config command may make use
+		# of the shell variables $if and $af to get the name
+		# of the current interface and address family.
+		##
+		case "${args}" in
+		  !*)
+		    eval $(echo ${args} | sed 's/^!//')
+		    ;;
+		  *)
+		    ##
+		    # If $args is -AUTOMATIC-, then use the configuration
+		    # computed above.
+		    ##
+		    if [ "${args}" = "-AUTOMATIC-" ]; then
+
+		        if ! ip_address=$(GetNetConfig "${if}" ip_address 1); then
+			    # Not enough data; give up
+			    echo "Unable to configure network interface ${if}"
+			elif ! netmask=$(GetNetConfig "${if}" subnet_mask 1) ; then
+			    # No netmask: try getting netmask via icmp
+			    # (This is a workaround for lack of an icmp tool, see gathering section above)
+			    ifconfig "${if}" "${af}" "${ip_address}" up
+			    if ! ifconfig "${if}" "${af}" "${ip_address}" netmask -AUTOMATIC- up; then
+				# Still no netmask: configure without netmask
+				ifconfig "${if}" "${af}" "${ip_address}" up
+			    fi
+			else
+			    ifconfig "${if}" "${af}" "${ip_address}" netmask "${netmask}" up
+			fi
+		    else
+			ifconfig "${if}" "${af}" ${args}
+		    fi
+		    ;;
+		esac
+
+		# Show progress
+		ifconfig "${if}"
+
+		eval ${if}\_${af}=DONE
+		;;
+	    esac
+	done
+       )
+    done
+    echo ""
+else
+    ##
+    # No /etc/iftab file!
+    ##
+    echo ""
+    echo "Warning: /etc/iftab is missing"
+    echo "No network interfaces were initialized"
+    ifconfig lo0 inet 127.0.0.1 netmask 255.0.0.0 -trailers up
+fi
+
+##
+# Start up nmserver's network handling.
+##
+pid=$(ps cax | sed -n '/nmserver/p' | awk '{print $1;}')
+if [ ${pid} ]; then
+    echo "Reinitializing nmserver's network portion"
+    kill -USR2 ${pid}
+else
+    echo "Warning: couldn't reinitialize nmserver"
+fi
+
+##
+# See if the network is up now
+##
+CheckForNetwork
+
+##
+# Configure global network settings
+# Use the interface name "any" to denote global settings
+##
+
+# Set HOSTNAME if needed
+if [ "${HOSTNAME:=-AUTOMATIC-}" = "-AUTOMATIC-" ]; then
+    for if in $(echo ${NetworkInterfaces}); do
+	if HOSTNAME=$(GetNetConfig ${if} host_name 1); then break; fi
+    done
+fi
+
+# Set ROUTER if needed
+if [ "${ROUTER:=-AUTOMATIC-}" = "-AUTOMATIC-" ]; then
+    for if in $(echo ${NetworkInterfaces}); do
+	if ROUTER=$(GetNetConfig ${if} router 1); then break; fi
+    done
+fi
+
+# If HOSTNAME or ROUTER didn't get set (one or more of the above failed), try bpwhoami
+if [ -z "${HOSTNAME}" ] || [ -z "${ROUTER}" ]; then
+    echo "Hostname or router still unknown"
+    if [ "${NETWORKUP}" = "-YES-" ]; then
+	echo -n "    Trying BPWHOAMI:"
+	if config=$(bpwhoami); then
+	    SetNetConfig any ${config}
+	    echo " got response from" $(GetNetConfig any server_ip_address)
+	else
+	    echo " no response"
+	fi
+    fi
+
+    if ! HOSTNAME=$(GetNetConfig any host_name 1); then HOSTNAME=localhost; fi
+    if !   ROUTER=$(GetNetConfig any router    1); then   ROUTER=-NO-     ; fi
+fi
+
+##
+# Set the hostname.
+##
+ConsoleMessage "Setting hostname"
+
+echo "    ${HOSTNAME}"
+hostname "${HOSTNAME}"
+
+if [ "${NETWORKUP}" = "-YES-" ]; then
+
+    ##
+    # Turn on IP routing.
+    ##
+
+    ConsoleMessage "Configuring network routing"
+
+    case ${ROUTER:=-NO-} in
+
+      -ROUTED-)
+	# Set the 'q' (quiet) flag by default to avoid broadcasting routes.
+	echo "     Using routed"
+	routed -q
+	;;
+
+      -NO-)
+	echo "    No network routing"
+	;;
+
+      *)
+	##
+	# If an explicit route is specified (the '*' clause), either
+	# an IP address must be used or the router's hostname and IP
+	# address must be specified in the /etc/hosts file.  
+	##
+	echo "    Using default router ${ROUTER}"
+	route add default ${ROUTER} > /dev/null
+	;;
+
+    esac
+
+    # Show progress
+    netstat -rn
+
+    ##
+    # Turn on/off IP forwarding
+    ##
+    if [ "${IPFORWARDING:=-NO-}" = "-YES-" ]; then
+	sysctl -w net.inet.ip.forwarding=1 > /dev/null
+    else
+	sysctl -w net.inet.ip.forwarding=0 > /dev/null
+    fi
+
+    ##
+    # Set the host id based on the first broadcast interface's IP address
+    ##
+
+    ConsoleMessage "Setting host identifier"
+
+    # Convert the IP address from dotted decimal to a single unsigned 32-bit
+    # decimal number.  For 17.202.40.191, this would be:
+    #       17 * 16777216 + 202 * 65536 + 40 * 256 + 191
+    #     = 298461375
+    hostid=$(($(ifconfig -a | sed -n '/inet/p' | sed -n '/broadcast/p' | head -1 | \
+	   sed 's|.*inet[ 	]*\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*|16777216 * \1 + 65536 * \2 + 256 * \3 + \4|')))
+
+    if [ -z "${hostid}" ]; then
+	echo "Warning: couldn't determine the host id"
+    else
+	sysctl -w kern.hostid=${hostid}
+    fi
+
+fi

@@ -1,0 +1,7 @@
+Package: groff
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 1.11a
+URL: ftp://prep.ai.mit.edu/pub/gnu/groff-1.11a.tar.gz
+Description: Document formatter
+Build-Depends: build-base, libgpp

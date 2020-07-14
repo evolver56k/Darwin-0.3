@@ -1,0 +1,1125 @@
+##
+# Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+#
+# @APPLE_LICENSE_HEADER_START@
+# 
+# Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+# Reserved.  This file contains Original Code and/or Modifications of
+# Original Code as defined in and that are subject to the Apple Public
+# Source License Version 1.1 (the "License").  You may not use this file
+# except in compliance with the License.  Please obtain a copy of the
+# License at http://www.apple.com/publicsource and read it before using
+# this file.
+# 
+# The Original Code and all software distributed under the License are
+# distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+# INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+# License for the specific language governing rights and limitations
+# under the License.
+# 
+# @APPLE_LICENSE_HEADER_END@
+##
+
+#
+# Mach Operating System
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+######################################################################
+
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+#
+#  This must be here before any rules are possibly defined by the
+#  machine dependent makefile fragment so that a plain "make" command
+#  always works.  The config program will emit an appropriate rule to
+#  cause "all" to depend on every kernel configuration it generates.
+#
+
+default: all
+
+#
+#  In order to move the link commands out of config and back into the
+#  template makefile, config has been changed to emit a dependency rule
+#  of the form *mach.sys: *mach.swap for each configuration so that
+#  the common commands for building each configuration can be placed
+#  directly in the template in the default rule for the .sys.swap
+#  dependency.
+#
+.SUFFIXES: .sys
+
+#
+#  Make sure we don't remove this by accident if interrupted at the wrong
+#  time.
+#
+.PRECIOUS: Makefile
+
+#
+# Make depend hackery 
+#
+MD=	md
+MD_SUFFIX=d
+EXIT_RULE=${MD} -u Makedep -f -d `ls *.${MD_SUFFIX}`
+
+#
+# This defines the kernel used for "target" object modules (ones that
+# will run on the target architecture).
+#
+KCC=	${CC} -static
+KCPP=	${KCC} -E
+
+#
+# Headers files that defines stuff used by both libc and kernel
+#
+EXPORT_LIB= . arpa protocols
+
+#
+#  Pre-processor environment
+#
+INCLUDES = -I. -I$(SOURCE_DIR) -I$(SOURCE_DIR)/bsd \
+	-I$(SOURCE_DIR)/bsd/include -I$(SOURCE_DIR)/machdep \
+	-I$(SOURCE_DIR)/bsd/netat \
+	-I$(SOURCE_DIR)/bsd/netat/h -I$(SOURCE_DIR)/bsd/netat/at \
+	-I$(NEXT_ROOT)/System/Library/Frameworks/System.framework/PrivateHeaders \
+	-I$(NEXT_ROOT)/System/Library/Frameworks/System.framework/Headers \
+	-I$(NEXT_ROOT)/System/Library/Frameworks/System.framework/Headers/bsd
+
+# -- Compatible paths --
+#INCLUDES = -I. -I$(SOURCE_DIR) -I$(SOURCE_DIR)/bsd \
+#	   -I$(SOURCE_DIR)/bsd/include -I$(SOURCE_DIR)/machdep \
+#	   -I$(SOURCE_DIR)/bsd/netat \
+#	   -I$(SOURCE_DIR)/bsd/netat/h -I$(SOURCE_DIR)/bsd/netat/at \
+#	   -I$(NEXT_ROOT)/NextLibrary/Frameworks/System.framework/PrivateHeaders \
+#	   -I$(NEXT_ROOT)/NextLibrary/Frameworks/System.framework/Headers \
+#	   -I$(NEXT_ROOT)/NextLibrary/Frameworks/System.framework/Headers/bsd
+
+DEFINES = $(IDENT) -DARCH_PRIVATE -D_KERNEL -DKERNEL -DKERNEL_PRIVATE \
+		-DDRIVER_PRIVATE  -DKERNEL_BUILD -D__APPLE__ -DNeXT -D_NEXT_SOURCE \
+		$(MACHINE_DEFINES)
+
+CPP_FLAGS = -MD -imacros meta_features.h $(INCLUDES) $(DEFINES)
+
+#
+#  Profiling hackery
+#
+COPTS_P = $(CPP_FLAGS) -pg
+COPTS= $(CPP_FLAGS)
+
+#
+# CFLAGS --
+#	CCONFIGFLAGS -- flags to be set via "makeoptions" in the
+#		appropriate MASTER.* config file
+#	MACHINE_CFLAGS -- flags to be set in the Makefile.* file
+#
+CFLAGS=	 $(CCONFIGFLAGS) $(COPTS) $(MACHINE_CFLAGS)
+
+#
+#  Common assembly flags
+#
+# SFLAGS --
+#	SCONFIGFLAGS -- flags to be set via "makeoptions" in the
+#		appropriate MASTER.* config file
+#	MACHINE_SFLAGS -- flags to be set in the Makefile.* file
+#
+SFLAGS=	$(CPP_FLAGS) -D__ASSEMBLER__ $(SCONFIGFLAGS) $(MACHINE_SFLAGS)
+
+#
+# Macros that control installation of kernel and it's header files
+#
+# install flags for header files
+#
+INSTALL_FLAGS = -c -m 444
+
+#
+# Commands that massage header files to remove KERNEL_PRIVATE and 
+# DRIVER_PRIVATE stuff
+#
+UNIFDEF   = /usr/bin/unifdef
+DECOMMENT = /usr/local/bin/decomment
+
+#
+# Header files that are unifdef'ed and installed in INCDIR
+#
+EXPORT= mach mach/machine kernserv kernserv/machine 	 		\
+	bsd/machine bsd/sys bsd/net bsd/netinet bsd/netiso bsd/netns	\
+	bsd/nfs bsd/dev bsd/dev/machine					\
+	bsd/ufs/ffs bsd/ufs/ufs bsd/miscfs/union bsd/miscfs/specfs	\
+	bsd/vfs bsd/libkern driverkit
+
+#
+# Header files that are installed into LCLDIR
+#
+LCLEXPORT= mach mach_debug kern ipc kernserv vm bsd/sys bsd/dev bsd/net	\
+	bsd/netiso bsd/netccitt bsd/netns bsd/dev/machine mach/machine	\
+	machdep/machine driverkit					\
+	bsd/ufs/mfs bsd/ufs/lfs bsd/isofs/cd9660			\
+	bsd/netat/h bsd/netat/at					\
+	bsd/hfs/hfscommon/headers bsd/hfs/hfscommon/headers/system
+
+#
+# Header file destinations
+#
+INCDIR=	/System/Library/Frameworks/System.framework/Versions/B/Headers
+LCLDIR= /System/Library/Frameworks/System.framework/Versions/B/PrivateHeaders
+
+# -- Compatible paths --
+#INCDIR= /NextLibrary/Frameworks/System.framework/Versions/B/Headers
+#LCLDIR= /NextLibrary/Frameworks/System.framework/Versions/B/PrivateHeaders
+
+
+#
+# Kernel is installed in / and TFTPDIR (actually, hard linked together)
+#
+TFTPDIR= /private/tftpboot
+
+#
+# driverkit library source.
+#
+LIBDRIVER_SOURCE= $(NEXT_ROOT)/usr/local/lib
+
+#
+# ObjC library.
+#
+LIBOBJC_SOURCE= $(NEXT_ROOT)/usr/local/lib
+
+#
+# Platform Expert library.
+#
+LIBPEXPERT_SOURCE= $(NEXT_ROOT)/usr/local/lib
+
+#
+# Directories to be scanned when building tags.
+# Machine-dependent makefile can add directories by defining
+# MACHINE_TAG_DIRS.
+#
+TAGDIRS = 								\
+	bsd/dev bsd/if bsd/include bsd/kern bsd/libkern bsd/net 	\
+	bsd/netinet bsd/vfs bsd/nfs bsd/sys bsd/ufs/ffs bsd/ufs/lfs 	\
+	bsd/ufs/mfs bsd/ufs/ufs ipc kern kernserv	\
+	mach mach_debug vm driverkit uxkern \
+	bsd/miscfs/deadfs bsd/miscfs/fdesc bsd/miscfs/fifofs \
+	bsd/miscfs/kernfs bsd/miscfs/nullfs bsd/miscfs/portal \
+	bsd/miscfs/procfs bsd/miscfs/specfs bsd/miscfs/umapfs \
+	bsd/miscfs/union bsd/hfs bsd/hfs/hfscomman
+
+
+#
+# Path to any internal tools.  Currently, just newvers
+#
+TOOLDIR = ..
+
+#
+#  Path name of the version identification file.
+#
+VERSION_FILES= \
+	$(SOURCE_DIR)/conf/version.major \
+	$(SOURCE_DIR)/conf/version.minor \
+	$(SOURCE_DIR)/conf/version.variant
+
+#
+#  LDOBJS is the set of object files which comprise the kernel.
+#
+#  LDOBJS_PREFIX and LDOBJS_SUFFIX are defined in the machine
+#  dependent Makefile (if necessary).
+#
+LDOBJS=${LDOBJS_PREFIX} ${OBJS} subr_prof.o ioconf.o ${LDOBJS_SUFFIX}
+
+#
+#  LDDEPS is the set of extra dependencies associated building
+#  the kernel.
+#
+#  LDDEPS_PREFIX is defined in the machine dependent Makefile
+#  (if necessary).
+#
+LDDEPS=${LDDEPS_PREFIX} ${VERSION_FILES} $(TOOLDIR)/newvers
+
+#
+#  MACHINEDIR defines the path to the machine-dependent directory
+#  where genassym.c, etc live.
+#
+MACHINEDIR=$(SOURCE_DIR)/machdep/$(MACHINE)
+
+
+#
+#  SYSDEPS is the set of extra dependencies associated with each
+#  *vmunix rule (in addition to *vmunix.sys).
+#
+#  SYSDEPS_PREFIX is defined in the machine dependent Makefile
+#  (if necessary).
+#
+SYSDEPS=${SYSDEPS_PREFIX}
+
+#
+# Name of the features include file and the build directory .h files
+# that are used to build the features.h file.  Machine dependent
+# makefile can add other files to the FEATURES_H list by defining
+# FEATURES_EXTRA.
+#
+FEATURES= features.h
+FEATURES_H= meta_features.h
+
+#
+#  Compilation rules to generate mach_kernel from mach_kernel.sys.
+#
+SYS_RULE_1=@rm -f $@
+SYS_RULE_2=strip -x -o $@ $@.sys
+SYS_RULE_3=@chmod +w $@.sys
+SYS_RULE_4=
+
+#
+# Compilation rules to generate .o from .o
+#
+O_RULE_1A=rm -f $*.o; cp 
+O_RULE_1B=$*.o .
+
+#
+# Compilation rules to generate .o from .s
+#
+S_RULE_1A=${KCC} -c ${SFLAGS} 
+S_RULE_1B=$*.s 
+S_RULE_2=
+S_RULE_3=
+
+#
+# Compilation rules to generate .o from .c for normal files
+#
+C_RULE_1A=${KCC} -c ${CFLAGS} 
+C_RULE_1B=$*.c
+C_RULE_2=
+C_RULE_3=
+C_RULE_4=
+
+#
+# Compilation rules to generate .o from .c for driver files
+#
+C_RULE_1A_D=${C_RULE_1A}
+C_RULE_1B_D=${C_RULE_1B}
+C_RULE_2_D=${C_RULE_2}
+C_RULE_3_D=${C_RULE_3}
+C_RULE_4_D=${C_RULE_4}
+
+#
+# Compilation rules to generate .o from .c for profiling routine files
+#
+C_RULE_1A_P=${KCC} -c -S ${COPTS_P} 
+C_RULE_1B_P=${C_RULE_1B}
+C_RULE_2_P=ex - $*.s < ${GPROF.EX}
+C_RULE_3_P=${AS} -o $*.o $*.s
+C_RULE_4_P=rm -f $*.s
+
+#
+# Compilation rules to generate .o from .m for normal files
+#
+M_RULE_1A=${KCC} -c ${CFLAGS} 
+M_RULE_1B=$*.m
+M_RULE_2=
+M_RULE_3=
+M_RULE_4=
+
+#
+# Compilation rules to generate .o from .m for driver files
+#
+M_RULE_1A_D=${M_RULE_1A}
+M_RULE_1B_D=${M_RULE_1B}
+M_RULE_2_D=${M_RULE_2}
+M_RULE_3_D=${M_RULE_3}
+M_RULE_4_D=${M_RULE_4}
+
+#
+# Compilation rules to generate .o from .m for profiling routine files
+#
+M_RULE_1A_P=${KCC} -c -S ${COPTS_P} 
+M_RULE_1B_P=${M_RULE_1B}
+M_RULE_2_P=ex - $*.s < ${GPROF.EX}
+M_RULE_3_P=${AS} -o $*.o $*.s
+M_RULE_4_P=rm -f $*.s
+
+#
+#  Theses macros are filled in by the config program depending on the
+#  current configuration.  The MACHDEP macro is replaced by the
+#  contents of the machine dependent makefile template and the others
+#  are replaced by the corresponding symbol definitions for the
+#  configuration.
+#
+
+%OBJS
+
+%CFILES
+
+%MFILES
+
+%SFILES
+
+%BFILES
+
+%ORDERED
+%MACHDEP
+
+#
+#  OBJSDEPS is the set of files (defined in the machine dependent
+#  template if necessary) which all objects depend on (such as an
+#  in-line assembler expansion filter
+#
+
+${OBJS}: ${OBJSDEPS}
+
+libmig : $(MACH_OFILES)
+	@make $(MACH_OFILES)
+
+
+#
+#  Build a kernel.
+#
+mach_kernel.sys:${P} ${PRELDDEPS} ${LDOBJS} $(MACH_OFILES) ${LDDEPS} libmig
+	@rm -f vers.c
+	@/bin/sh $(TOOLDIR)/newvers `cat ${VERSION_FILES}`
+	${KCC} ${INCLUDES} ${MACHINE_CFLAGS} -c vers.c
+	@rm -f $* $*.sys
+	@echo loading $*.sys
+	@${LD} -static ${LDFLAGS} ${FVMFILE_LDFLAGS} ${LDOBJS} \
+		$(MACH_OFILES) vers.o ${LDFLAGS2} ${LIBS}
+	@size a.out
+	@chmod 755 a.out
+	@-mv a.out $*.sys
+	@make .EXIT
+
+#
+# Just do a load of the kernel to produce a mach_kernel.sys
+# ... For debugging builds when you want to say:
+#		make foo.o load
+#
+load:
+	@rm -f mach_kernel.sys
+	@echo loading mach_kernel.sys
+	@${LD} -static ${LDFLAGS} ${FVMFILE_LDFLAGS} ${LDOBJS} \
+		$(MACH_OFILES) vers.o  ${LDFLAGS2} ${LIBS}
+	@size a.out
+	@chmod 755 a.out
+	@-mv a.out mach_kernel.sys
+	@make .EXIT
+
+#
+#  This macro is replaced by three rules per configuration, plus a
+#  final definition for the LOAD symbol consisting of all configuration
+#  names and a dependency of "all" on this symbol (so that the
+#  "default" rule above will build everything).  The three rules in
+#  each configuration are:
+#
+#  - a *mach from *mach.sys dependency using the SYS_RULE_* rules,
+#  - a *mach.swap from LDDEPS, swap*.o, and LDDEPS dependency that
+#    simply copies the swap file to the target name, and
+#  - a swap*.o from swap*.c and SWAPDEPS dependency using the C_RULE_* rules.
+#
+# 19-Feb-92 (dmitch) - I don't think this is used anymore...
+#
+
+%LOAD
+
+#
+#  Mach IPC-based interfaces
+#
+
+#  The Mig-generated files go into subdirectories.
+#  These macros create the subdirectories as they are needed.
+
+MAKE_MACH = [ -d mach ] || $(MKDIRS) mach
+MAKE_DEVICE = [ -d device ] || $(MKDIRS) device
+MAKE_KERN = [ -d kern ] || $(MKDIRS) kern
+MAKE_MACH_DEBUG = [ -d mach_debug ] || $(MKDIRS) mach_debug
+MAKE_KERNSERV = [ -d kernserv ] || $(MKDIRS) kernserv
+MAKE_DEVSERV = [ -d driverkit ] || $(MKDIRS) driverkit
+SET_SOURCE_DIR = CWD=`pwd`; cd $(SOURCE_DIR); SOURCE_DIR=`pwd`; cd $$CWD
+SET_REL_SOURCE= REL_SOURCE_DIR=`relpath -d $$CWD/../.. . $$SOURCE_DIR`
+
+#  Rules to create machine-dependent machine and mach/machine symlinks
+
+MIGFLAGS =  -I. -I.. -I$$REL_SOURCE_DIR -DKERNEL
+MIGKSFLAGS = $(MIGFLAGS) -DKERNEL_SERVER
+MIGKUFLAGS = $(MIGFLAGS) -DKERNEL_USER
+
+MIG = mig
+
+MACHDIR = mach
+KERNDIR = kern
+MACHDEBUGDIR = mach_debug
+KERNSERVDIR = kernserv
+DEVSERVDIR = driverkit
+
+
+MIGDIRS = $(MACHDIR) $(KERNSERVDIR) $(MACHDIR)/machine
+
+MACH_FFILES =	$(MACHDIR)/port_allocate.c		\
+		$(MACHDIR)/port_deallocate.c		\
+		$(MACHDIR)/port_set_add.c		\
+		$(MACHDIR)/port_set_remove.c		\
+		$(MACHDIR)/port_set_allocate.c		\
+		$(MACHDIR)/port_set_backlog.c		\
+		$(MACHDIR)/port_status.c		\
+		$(MACHDIR)/vm_allocate.c		\
+		$(MACHDIR)/vm_deallocate.c		\
+		$(MACHDIR)/port_set_deallocate.c	\
+		$(MACHDIR)/task_set_special_port.c	\
+		$(MACHDIR)/task_get_special_port.c	\
+		$(MACHDIR)/thread_abort.c		\
+		$(MACHDIR)/thread_get_special_port.c	\
+		$(MACHDIR)/thread_set_special_port.c	\
+		$(MACHDIR)/thread_suspend.c		\
+		$(MACHDIR)/vm_read.c			\
+		$(MACHDIR)/vm_write.c			\
+		$(MACHDIR)/vm_protect.c
+
+MACH_OFILES =	port_allocate.o			\
+		port_deallocate.o		\
+		port_set_add.o			\
+		port_set_remove.o		\
+		port_set_allocate.o		\
+		port_set_backlog.o		\
+		port_status.o			\
+		vm_allocate.o			\
+		vm_deallocate.o			\
+		port_set_deallocate.o		\
+		task_set_special_port.o		\
+		task_get_special_port.o		\
+		thread_abort.o			\
+		thread_get_special_port.o	\
+		thread_set_special_port.o	\
+		thread_suspend.o		\
+		vm_read.o			\
+		vm_write.o			\
+		vm_protect.o
+
+MACH_HFILE = $(MACHDIR)/mach_interface.h
+MACH_HKLOADERFILE = $(MACHDIR)/mach_kernloader.h
+MACH_INTERNAL = $(MACHDIR)/mach_user_internal.h
+MACH_FILES = $(MACH_HFILE) $(MACH_INTERNAL)				\
+	$(MACHDIR)/mach_server.c $(MACH_FFILES)
+
+$(MACH_FILES): $(SOURCE_DIR)/$(MACHDIR)/mach.defs			\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_MACH)
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -typed -MD $(MIGKSFLAGS)				\
+		-header /dev/null					\
+		-user /dev/null						\
+		-server mach_server.c					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach.defs;			\
+	$(MIG) -typed -MD $(MIGFLAGS)					\
+		-header mach_kernloader.h				\
+		-i							\
+		-server /dev/null					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach.defs
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -typed -MD $(MIGKSFLAGS)				\
+		-header /dev/null					\
+		-user /dev/null						\
+		-server mach_server.c					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach.defs;			\
+	$(MIG) -MD $(MIGFLAGS)						\
+		-header mach_interface.h				\
+		-i							\
+		-server /dev/null					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach.defs
+	-egrep 'Routine ' < $(MACH_HFILE)				\
+	| sed -e 's/.*Routine \([a-z_]*\).*/#define \1 \1_EXTERNAL/'	\
+	> $(MACH_INTERNAL)
+
+MEMORY_OBJECT_HFILE = $(MACHDIR)/memory_object_user.h
+MEMORY_OBJECT_FILES = $(MEMORY_OBJECT_HFILE)				\
+	$(MACHDIR)/memory_object_user.c $(MACHDIR)/memory_object_server.c
+
+$(MEMORY_OBJECT_FILES): $(SOURCE_DIR)/$(MACHDIR)/memory_object.defs
+	-$(MAKE_MACH)
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -typed -MD $(MIGKUFLAGS) -DSEQNOS			\
+		-header memory_object_user.h				\
+		-user memory_object_user.c				\
+		-server /dev/null					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/memory_object.defs
+
+MEMORY_OBJECT_DEFAULT_HFILE = $(MACHDIR)/memory_object_default.h
+MEMORY_OBJECT_DEFAULT_FILES = $(MEMORY_OBJECT_DEFAULT_HFILE)		\
+	$(MACHDIR)/memory_object_default_user.c				\
+	$(MACHDIR)/memory_object_default_server.c
+
+$(MEMORY_OBJECT_DEFAULT_FILES): \
+		$(SOURCE_DIR)/$(MACHDIR)/memory_object_default.defs
+	-$(MAKE_MACH)
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -typed -MD $(MIGKUFLAGS) -DSEQNOS			\
+		-header memory_object_default.h				\
+		-user memory_object_default_user.c			\
+		-server /dev/null					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/memory_object_default.defs
+
+EXC_HFILE = $(MACHDIR)/exc.h
+EXC_FILES = $(EXC_HFILE) $(MACHDIR)/exc_server.c
+
+$(EXC_FILES): $(SOURCE_DIR)/$(MACHDIR)/exc.defs				\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_MACH)
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -MD $(MIGFLAGS) -header exc.h				\
+		-user /dev/null						\
+		-server exc_server.c					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/exc.defs
+
+MACH_HOST_HFILE = $(MACHDIR)/mach_host.h
+MACH_HOST_FILES = $(MACH_HOST_HFILE) $(MACHDIR)/mach_host_server.c
+
+$(MACH_HOST_FILES): $(SOURCE_DIR)/$(MACHDIR)/mach_host.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_MACH)
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -typed -MD $(MIGKSFLAGS)				\
+		-header /dev/null					\
+		-user /dev/null						\
+		-server mach_host_server.c				\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach_host.defs;		\
+	$(MIG) -MD $(MIGFLAGS)						\
+		-header mach_host.h					\
+		-user /dev/null						\
+		-server /dev/null					\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach_host.defs
+
+MACH_PORT_FILES = $(MACHDIR)/mach_port_server.c
+
+$(MACH_PORT_FILES): $(SOURCE_DIR)/$(MACHDIR)/mach_port.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_MACH)
+	$(SET_SOURCE_DIR); cd $(MACHDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -untyped -MD $(MIGKSFLAGS)				\
+		-header /dev/null					\
+		-user /dev/null						\
+		-server mach_port_server.c				\
+		$$REL_SOURCE_DIR/$(MACHDIR)/mach_port.defs
+
+MACH_DEBUG_HFILE = $(MACHDEBUGDIR)/mach_debug.h
+MACH_DEBUG_FILES = $(MACH_DEBUG_HFILE) $(MACHDEBUGDIR)/mach_debug_server.c
+
+$(MACH_DEBUG_FILES): $(SOURCE_DIR)/$(MACHDEBUGDIR)/mach_debug.defs	\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_MACH_DEBUG)
+	$(SET_SOURCE_DIR); cd $(MACHDEBUGDIR); $(SET_REL_SOURCE);	\
+	$(MIG) -untyped -MD $(MIGKSFLAGS)				\
+		-header mach_debug.h					\
+		-user /dev/null						\
+		-server mach_debug_server.c				\
+		$$REL_SOURCE_DIR/$(MACHDEBUGDIR)/mach_debug.defs
+
+KERNSERV_HFILE = $(KERNSERVDIR)/kern_server.h
+KERNSERV_FILES = $(KERNSERV_HFILE) $(KERNSERVDIR)/kern_server_handler.h \
+	$(KERNSERVDIR)/kern_server_handler.c
+
+$(KERNSERV_FILES): $(SOURCE_DIR)/$(KERNSERVDIR)/kern_server.defs	\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_KERNSERV)
+	$(SET_SOURCE_DIR); cd $(KERNSERVDIR); $(SET_REL_SOURCE);	\
+	$(MIG) -MD $(MIGFLAGS)						\
+		-header kern_server.h					\
+		-sheader kern_server_handler.h				\
+		-user /dev/null						\
+		-handler kern_server_handler.c				\
+		$$REL_SOURCE_DIR/$(KERNSERVDIR)/kern_server.defs
+
+KERNSERV_REPLY_HFILE = $(KERNSERVDIR)/kern_server_reply.h
+KERNSERV_REPLY_FILES = $(KERNSERV_REPLY_HFILE)				\
+			$(KERNSERVDIR)/kern_server_reply_user.c
+
+$(KERNSERV_REPLY_FILES):						\
+		$(SOURCE_DIR)/$(KERNSERVDIR)/kern_server_reply.defs	\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_KERNSERV)
+	$(SET_SOURCE_DIR); cd $(KERNSERVDIR); $(SET_REL_SOURCE);	\
+	$(MIG) -MD $(MIGFLAGS)						\
+		-header kern_server_reply.h				\
+		-user kern_server_reply_user.c				\
+		-server /dev/null					\
+		$$REL_SOURCE_DIR/$(KERNSERVDIR)/kern_server_reply.defs
+
+#
+# Driverkit device server.
+#
+DEVSERV_NAME  = driverServer
+DEVSERV_FILES = $(DEVSERVDIR)/$(DEVSERV_NAME)Server.c
+DEVSERV_DEFS = $(DEVSERV_NAME).defs
+DEVSERV_SRC_DIR = $(NEXT_ROOT)/System/Library/Frameworks/System.framework/PrivateHeaders
+
+# -- Compatible path --
+#DEVSERV_SRC_DIR = $(NEXT_ROOT)/NextLibrary/Frameworks/System.framework/PrivateHeaders
+
+$(DEVSERV_FILES): $(DEVSERVDIR)/$(DEVSERV_DEFS)				\
+		$(SOURCE_DIR)/$(MACHDIR)/mach_types.defs		\
+		$(SOURCE_DIR)/$(MACHDIR)/std_types.defs
+	-$(MAKE_DEVSERV)
+	$(SET_SOURCE_DIR); cd $(DEVSERVDIR); $(SET_REL_SOURCE);		\
+	$(MIG) -typed -MD -arch $(MACHINE) $(MIGKSFLAGS)		\
+		-header /dev/null					\
+		-user /dev/null						\
+		-server driverServerServer.c				\
+		$(DEVSERV_DEFS)
+
+#
+# driverServer.defs file imported from the driverkit project...
+#
+DEVSERV_SOURCE_DIR=$(DEVSERV_SRC_DIR)/driverkit
+
+$(DEVSERVDIR)/$(DEVSERV_DEFS): $(DEVSERV_SOURCE_DIR)/$(DEVSERV_DEFS)
+	rm -f $@
+	-$(MAKE_DEVSERV)
+	cp -p $(DEVSERV_SOURCE_DIR)/$(DEVSERV_DEFS) $@
+
+#
+# These files implement the Mach User Level API used by loadable servers
+# and driverkit-based drivers.
+#
+$(MACH_OFILES): $(MACH_FFILES)
+	$(KCC) -c $(CFLAGS) -DMACH_USER_API \
+		-D$*=$*_EXTERNAL $(MACHDIR)/$*.c
+
+MIG_HFILES_EXP=	$(MACH_HFILE)		\
+		$(MACH_HKLOADERFILE)	\
+		$(MACH_HOST_HFILE)	\
+		$(MACH_INTERNAL)	\
+		$(KERNSERV_HFILE)	\
+		$(KERNSERV_REPLY_HFILE)
+
+#  Explicit dependencies on generated files,
+#  to ensure that Mig has been run by the time
+#  these files are compiled.
+
+vm_object.o: $(MACHDIR)/memory_object_user.h				\
+		$(MACHDIR)/memory_object_default.h
+
+exception.o: $(MACHDIR)/exc.h
+
+mig_support.o: $(MACHDIR)/mach_user_internal.h
+
+kern_server.o: $(MACHDIR)/mach_user_internal.h				\
+		$(KERNSERVDIR)/kern_server.h				\
+		$(KERNSERVDIR)/kern_server_reply.h
+
+#
+#  Clean up the current build directory.
+#
+clean: ${MACHINE_CLEAN}
+	@for f in ${LOAD}; 						\
+	do								\
+		echo rm -f $$f $$f.* && rm -f $$f $$f.*;		\
+	done
+	@for f in $(MIGDIRS) $(MACHDEBUGDIR) kern;			\
+	do								\
+		echo rm -f $$f/*.[ch]; rm -f $$f/*.[ch];		\
+	done
+	rm -f eddep tags *.o errs linterrs makelinks *.log *LOG*	\
+		Makedep ${CLEAN_EXTRA}
+
+
+
+#
+# Building the tags files
+#
+tags:	tags_link ALWAYS
+	@cd $(SOURCE_DIR);						\
+	rm -f /tmp/tag$$$$;						\
+	touch /tmp/tag$$$$;						\
+	echo Making file list;						\
+	for i in ${TAGDIRS} ${MACHINE_TAG_DIRS};			\
+	do								\
+		ls $$i/*.[cms] >> /tmp/tag$$$$ 2> /dev/null;		\
+	done;								\
+	for i in ${TAGDIRS} ${MACHINE_TAG_DIRS};			\
+	do								\
+		ls $$i/*.h >> /tmp/tag$$$$ 2> /dev/null;		\
+	done;								\
+	echo Making ctags;						\
+	TAGTYPE=`echo -n $(MACHINE) | tr a-z A-Z`;			\
+	rm -f tags.$$TAGTYPE;						\
+	cat /tmp/tag$$$$ | xargs ctags -w -d -t -T > tags.$$TAGTYPE; \
+	echo Making etags;						\
+	rm -f TAGS.$$TAGTYPE;						\
+	xargs etags -f TAGS.$$TAGTYPE < /tmp/tag$$$$;		\
+	rm -f /tmp/tag$$$$
+
+#
+# Building a mkid database file
+#
+id:	id_link ALWAYS
+	@cd $(SOURCE_DIR);						\
+	rm -f /tmp/id$$$$;						\
+	touch /tmp/id$$$$;						\
+	echo Making file list;						\
+	for i in ${TAGDIRS} ${MACHINE_TAG_DIRS};			\
+	do								\
+		ls $$i/*.[cms] >> /tmp/id$$$$ 2> /dev/null;		\
+	done;								\
+	for i in ${TAGDIRS} ${MACHINE_TAG_DIRS};			\
+	do								\
+		ls $$i/*.h >> /tmp/id$$$$ 2> /dev/null;			\
+	done;								\
+	echo Making id database;					\
+	TAGTYPE=`echo -n $(MACHINE) | tr a-z A-Z`;			\
+	rm -f ID.$$TAGTYPE;						\
+	mkid -a/tmp/id$$$$ -S.m=c -fID.$$TAGTYPE;			\
+	rm -f /tmp/id$$$$
+
+#
+# This little bit of magic sets "tags" to point to the current
+# architecture.  It also gets invoked whenever you build a kernel,
+# so tags will point to the architecture of the last build.
+#
+tags_link:
+	@cd $(SOURCE_DIR);						\
+	TAGTYPE=`echo -n $(MACHINE) | tr a-z A-Z`;			\
+	rm -f tags TAGS;						\
+	echo ln -s tags.$$TAGTYPE tags;					\
+	ln -s tags.$$TAGTYPE tags;					\
+	echo ln -s TAGS.$$TAGTYPE TAGS;					\
+	ln -s TAGS.$$TAGTYPE TAGS
+
+id_link:
+	@cd $(SOURCE_DIR);						\
+	TAGTYPE=`echo -n $(MACHINE) | tr a-z A-Z`;			\
+	rm -f ID;							\
+	echo ln -s ID.$$TAGTYPE ID;					\
+	ln -s ID.$$TAGTYPE ID;
+
+#
+# Move tags link after build
+#
+all:	tags_link
+
+
+#
+# Profiling targets
+#
+gprof: kgmon_on all kgmon_off
+
+kgmon_on:
+	kgmon -r -b
+
+kgmon_off:
+	kgmon -h -p
+	gprof /mach >GPROF
+gprof: kgmon_on all kgmon_off
+
+kgmon_on:
+	kgmon -r -b
+
+kgmon_off:
+	kgmon -h -p
+	gprof /mach >GPROF
+
+#
+# Building the "features" file
+#
+features: ${FEATURES}
+
+${FEATURES}: ${FEATURES_H} ${FEATURES_EXTRA} ALWAYS
+	rm -f features.temp
+	cc -traditional-cpp -E -dD -P -I. ${FEATURES_H} ${FEATURES_EXTRA} | \
+		sort -u  > features.temp
+	@-if [ -f $@ ];							\
+	then								\
+		echo diff $@ features.temp;				\
+		diff $@ features.temp;					\
+	fi
+	rm -f $@
+	mv -f features.temp $@
+
+#
+#  Special rules to install include files in release images
+#
+install: DSTROOT install_kernel installhdrs
+
+install_kernel:	DSTROOT $(KERNEL_NAME) install_md
+	$(MKDIRS) ${DSTROOT}${TFTPDIR}
+	install -c -m 444 $(KERNEL_NAME) ${DSTROOT}/mach_kernel
+	ln ${DSTROOT}/mach_kernel ${DSTROOT}${TFTPDIR}/mach_kernel
+
+install_md: DSTROOT ${MACHINE_INSTALL}
+
+installhdrs: DSTROOT install_mi_hdrs install_md_hdrs
+
+install_mi_hdrs: DSTROOT install_mi_std_hdrs
+
+#
+# Note the outer for loop of this operation has to be tolerant of non-zero
+# returns because unifdef returns 1 if it makes a change. I don't think this
+# is a problem, but we might want to modify unifdef instead of having the
+# following "-for" expression...
+#
+install_mi_std_hdrs: DSTROOT $(MIG_HFILES_EXP) $(MACH_DEBUG_HFILE)
+	@-for i in ${EXPORT}; 						\
+	do								\
+	    EXPDIR=`pwd`/exports;					\
+	    [ -d $$EXPDIR ] || $(MKDIRS) $$EXPDIR;				\
+	    rm -f $$EXPDIR/*;						\
+	    (cd $(SOURCE_DIR)/$$i;					\
+		hdrs=`echo *.h`;					\
+		if [ "$$hdrs" = '*.h' ]; then				\
+		    echo No header files in $$i;			\
+		else							\
+		    for j in $$hdrs; 					\
+		    do							\
+			DSTDIR=$(DSTROOT)$(INCDIR)/$$i;			\
+			[ -d $$DSTDIR ] || $(MKDIRS) $$DSTDIR;		\
+			echo garbage > $$EXPDIR/$$j.strip;		\
+			$(UNIFDEF) -UKERNEL_PRIVATE -UDRIVER_PRIVATE	\
+				$$j > $$EXPDIR/$$j || 			\
+				$(DECOMMENT) $$EXPDIR/$$j  r > 		\
+				$$EXPDIR/$$j.strip; 			\
+			if [ -s $$EXPDIR/$$j.strip ]; 			\
+			then (						\
+			    cd $$EXPDIR;				\
+			    install $(INSTALL_FLAGS) $$j $$DSTDIR;	\
+			);						\
+			else 						\
+			    echo Header file $$i/$$j not exported;	\
+			fi;						\
+			rm -f $$EXPDIR/$$j.strip;			\
+		    done;						\
+		fi;							\
+	    );								\
+	done
+	for i in ${EXPORT_LIB};						\
+	do								\
+		$(MKDIRS) ${DSTROOT}${INCDIR}/bsd/$$i;	\
+		(cd $(SOURCE_DIR)/bsd/include/$$i;					\
+		install $(INSTALL_FLAGS) *.h ${DSTROOT}${INCDIR}/bsd/$$i;);	\
+	done
+	for i in ${MIGDIRS}; 						\
+	do 								\
+		$(MKDIRS) ${DSTROOT}${INCDIR}/$$i;				\
+		(cd $(SOURCE_DIR)/$$i;					\
+		install $(INSTALL_FLAGS) *.defs ${DSTROOT}${INCDIR}/$$i;); \
+	done
+	for i in ${MIG_HFILES_EXP};					\
+	do								\
+	    install $(INSTALL_FLAGS) $$i ${DSTROOT}${INCDIR}/$$i;	\
+	done
+	:
+	: mach_debug is a special case
+	:
+	$(MKDIRS) ${DSTROOT}${LCLDIR}/${MACHDEBUGDIR}
+	install $(INSTALL_FLAGS) ${MACH_DEBUG_HFILE}			\
+				${DSTROOT}${LCLDIR}/${MACHDEBUGDIR}
+	install $(INSTALL_FLAGS)						\
+			$(SOURCE_DIR)/${MACHDEBUGDIR}/mach_debug.defs	\
+				${DSTROOT}${LCLDIR}/${MACHDEBUGDIR}
+	install $(INSTALL_FLAGS)						\
+		$(SOURCE_DIR)/${MACHDEBUGDIR}/mach_debug_types.defs	\
+				${DSTROOT}${LCLDIR}/${MACHDEBUGDIR}
+	:
+	: Install all headers into local include directory.
+	:
+	@cd ${SOURCE_DIR};						\
+	for i in ${LCLEXPORT}; 						\
+	do 								\
+	    (cd $$i;							\
+	    $(MKDIRS) ${DSTROOT}${LCLDIR}/$$i;				\
+	    install $(INSTALL_FLAGS) *.h ${DSTROOT}${LCLDIR}/$$i;);	\
+	done
+
+install_mi_compat_hdrs: DSTROOT ${SOURCE_DIR}/conf/compat_hdrs
+	@rm -rf compat
+	@for i in `cat ${SOURCE_DIR}/conf/compat_hdrs			\
+		   | awk '{print $$2}' | sort | uniq`;			\
+	do								\
+		$(MKDIRS) ${DSTROOT}/${COMPATDIR}/$$i;			\
+		$(MKDIRS) compat/$$i;					\
+	done
+	: creating compatability header files
+	@awk -f ${SOURCE_DIR}/conf/compat_hdrs.awk			\
+		${SOURCE_DIR}/conf/compat_hdrs
+	: installing compatability header files
+	@cd compat; for i in *;						\
+	do								\
+		(cd $$i;install -c -m 444 *			\
+			${DSTROOT}${COMPATDIR}/$$i);			\
+	done
+
+#
+# Install machine-dependent headers only.
+#
+install_md_hdrs: DSTROOT install_md_std_hdrs \
+	$(MACHINE_INSTALLHDRS)
+
+install_md_std_hdrs: DSTROOT
+	@-for i in `echo ${MACHINE_EXPORT}`; 				\
+	do								\
+	    EXPDIR=`pwd`/exports;					\
+	    [ -d $$EXPDIR ] || $(MKDIRS) $$EXPDIR;				\
+	    rm -f $$EXPDIR/*;						\
+	    (cd $(SOURCE_DIR)/$$i;					\
+		hdrs=`echo *.h`;					\
+		if [ "$$hdrs" = '*.h' ]; then				\
+		    echo No header files in $$i;			\
+		else							\
+		    for j in $$hdrs; 					\
+		    do							\
+			DSTDIR=$(DSTROOT)$(INCDIR)/$$i;			\
+			[ -d $$DSTDIR ] || $(MKDIRS) $$DSTDIR;		\
+			echo garbage > $$EXPDIR/$$j.strip;		\
+			$(UNIFDEF) -UKERNEL_PRIVATE -UDRIVER_PRIVATE $$j > $$EXPDIR/$$j || \
+			$(DECOMMENT) $$EXPDIR/$$j  r > $$EXPDIR/$$j.strip; \
+			if [ -s $$EXPDIR/$$j.strip ]; 			\
+			then (						\
+			    cd $$EXPDIR;				\
+			    install $(INSTALL_FLAGS) $$j $$DSTDIR;	\
+			);						\
+			else 						\
+			    echo Header file $$i/$$j not exported;	\
+			fi;						\
+			rm -f $$EXPDIR/$$j.strip;			\
+		    done;						\
+		fi;							\
+	    );								\
+	done
+	for i in ${MACHINE_MIGDIRS};					\
+	do 								\
+		$(MKDIRS) ${DSTROOT}${INCDIR}/$$i;				\
+		(cd $(SOURCE_DIR)/$$i;					\
+		install $(INSTALL_FLAGS) *.defs ${DSTROOT}${INCDIR}/$$i;); \
+	done
+	-cd ${SOURCE_DIR};						\
+	for i in `echo ${MACHINE_LCLEXPORT}`; 				\
+	do 								\
+	    (cd $$i;							\
+	    $(MKDIRS) ${DSTROOT}${LCLDIR}/$$i;				\
+	    install $(INSTALL_FLAGS) *.h ${DSTROOT}${LCLDIR}/$$i;);	\
+	done
+
+install_md_compat_hdrs: DSTROOT ${MACHINE_COMPATHDRS}
+	@if [ "${MACHINE_COMPATHDRS}" ]; 				\
+	then								\
+		rm -rf compat;						\
+		for i in `cat ${MACHINE_COMPATHDRS}			\
+			   | awk '{print $$2}' | sort | uniq`;		\
+		do							\
+			$(MKDIRS) ${DSTROOT}/${COMPATDIR}/$$i;		\
+			$(MKDIRS) compat/$$i;				\
+		done;							\
+		awk -f ${SOURCE_DIR}/conf/compat_hdrs.awk		\
+			${MACHINE_COMPATHDRS};				\
+		(							\
+			cd compat; for i in *;				\
+			do						\
+				(					\
+					cd $$i;				\
+					install -c -m 444 *	\
+					  ${DSTROOT}${COMPATDIR}/$$i;	\
+				);					\
+			done;						\
+		);							\
+	fi
+	: installing "conversion compat" files if they exist
+	@if [ -d ${SOURCE_DIR}/compat/${MACHINE} ];                     \
+	then                                                            \
+		cd ${SOURCE_DIR}/compat/${MACHINE};                     \
+		for i in *;                                             \
+		do                                                      \
+			if [ -d $$i ];    				\
+			then						\
+				(cd $$i; install -c -m 444 *      \
+					${DSTROOT}${COMPATDIR}/$$i);    \
+			fi;						\
+		done;                                                   \
+	fi
+
+
+#
+#  Update the Makefile when any dependency files exist rather than only
+#  when they are newer than the makefile (since it often gets touched
+#  during reconfigurations when dependency files have yet to be
+#  integrated).  The makefile is copied before doing any potential
+#  integration so that the new and old versions can be compared when
+#  done (by the SYS_RULE_* rules) to prevent re-building things when no
+#  dependencies change.
+#
+#  N.B.  There is always an empty artificial dependency file M.d
+#  (created by config) which will never be integrated and simply
+#  prevents the wild-card expansion below from failing.
+#
+#  This seems redundant if we're always going to do it on exit.
+#
+#Makefile: *.${MD_SUFFIX}
+#	${EXIT_RULE}
+#
+.EXIT:
+	${EXIT_RULE}
+
+#
+#  Rules for components which are not part of the kernel proper or that
+#  need to be built in a special manner.
+#  These need to build without profiling, as it confuses awk script.
+#
+genassym.o: $(MACHINEDIR)/genassym.c
+	${KCC} -c $(CCONFIGFLAGS) $(CPP_FLAGS) $(MACHINE_CFLAGS) \
+		${VOLATILE} ${MACHINE_GENASSYM_FLAGS} \
+		$(MACHINEDIR)/genassym.c 
+
+genassym.s: $(MACHINEDIR)/genassym.c
+	${KCC} -S $(CCONFIGFLAGS) $(CPP_FLAGS) $(MACHINE_CFLAGS) \
+		${VOLATILE} ${MACHINE_GENASSYM_FLAGS} -arch ${MACHINE} \
+		$(MACHINEDIR)/genassym.c
+
+assym.h: genassym.s
+	@rm -f assym.h
+	awk -f $(MACHINEDIR)/genassym.awk < genassym.s > assym.h
+
+ioconf.o: ioconf.c
+	${C_RULE_1A}${C_RULE_1B}
+	${C_RULE_2}
+	${C_RULE_3}
+	${C_RULE_4}
+
+#
+# This rule insures that the subr_prof.c does NOT get compiled with 
+# profiling. It implements mcount() and profiling it leads to recursion.
+#
+
+subr_prof.o: $(SOURCE_DIR)/bsd/kern/subr_prof.c
+	$(KCC) -c $(CCONFIGFLAGS) $(CPP_FLAGS) $(MACHINE_CFLAGS) \
+		$(SOURCE_DIR)/bsd/kern/subr_prof.c
+
+
+#
+#  This macro is replaced by the set of rules which build everything in
+#  OBJS.  The extra dependencies for each object file are inserted
+#  following this by md which uses the keys on the sentinel line
+#  below.
+#
+
+%RULES
+
+#
+# Lord only knows what this is for, but config spit's out a reference
+#
+includelinks:
+
+DSTROOT:
+	@if [ -n "${$@}" ]; \
+	then \
+		exit 0; \
+	else \
+		echo Must define $@; \
+		exit 1; \
+	fi
+
+ALWAYS:
+
+-include Makedep

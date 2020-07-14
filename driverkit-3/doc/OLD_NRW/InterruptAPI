@@ -1,0 +1,118 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fswiss Helvetica;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl\red0\green0\blue0;}
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\f0\b0\i0\ul0\fs24 Here's a proposal for an interface between the NRW DMA module (which I'm writing) and the interrupt module. Note that there is no access checking a la dev_port or the device_master port; these functions are only used by the kernel's DMA module. \
+\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\f1 	
+\b kern_return_t
+\b0 \
+	
+\b kern_intr_map(\
+		dev_num_t *
+\b0 global_dev_num,
+\b \
+		kern_port_t 
+\b0 intr_port
+\b );\
+	
+\b0 \
+		
+\b kern_intr_map
+\b0\i  
+\i0 causes interrupts detected for device global_dev_num to be \
+		dispatched to 
+\i intr_port
+\i0 .\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 \
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560 	
+\b kern_return_t
+\b0 \
+	
+\b kern_intr_unmap(\
+
+\b0\i 		
+\b\i0 dev_num_t
+\b0\i  
+\i0 global_dev_num
+\b );\
+	
+\b0 \
+		
+\b kern_intr_unmap
+\b0\i  
+\i0 causes the interrupt-to-port mapping established in \
+		kern_intr_map() to be deleted.\
+		\
+		Returns 
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 KERN_NO_ACCESS
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  if 
+\i global_dev_num
+\i0  currently has no valid mapping,\
+		else returns KERN_SUCCESS. \
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 \
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560 	
+\b kern_return_t
+\b0 \
+	
+\b kern_intr_enable(\
+
+\b0\i 		
+\b\i0 dev_num_t
+\b0\i  
+\i0 global_dev_num
+\b );\
+	
+\b0 \
+		
+\b kern_intr_enable
+\b0\i  
+\i0 causes interrupts from 
+\i global_dev_num
+\i0  to be enabled. To\
+		enable interrupts for a given global_dev_num, the device's bit in IACTIVE must be\
+		cleared. <What about the device's bit in the two IACCEPT registers?>\
+		\
+		Returns 
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 KERN_NO_ACCESS
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  if 
+\i global_dev_num
+\i0  currently has no valid mapping,\
+		else returns KERN_SUCCESS. \
+		\
+	
+\b kern_return_t
+\b0 \
+	
+\b kern_intr_disable(\
+
+\b0\i 		
+\b\i0 dev_num_t
+\b0\i  
+\i0 global_dev_num
+\b );\
+	
+\b0 \
+		
+\b kern_intr_disable
+\b0\i  
+\i0 causes interrupts from 
+\i global_dev_num
+\i0  to be disabled.  \
+		<What happends here - is this device's bit in both IACCEPT registers cleared?>\
+				\
+		Returns 
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 KERN_NO_ACCESS
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  if 
+\i global_dev_num
+\i0  currently has no valid mapping,\
+		else returns KERN_SUCCESS. \
+
+}

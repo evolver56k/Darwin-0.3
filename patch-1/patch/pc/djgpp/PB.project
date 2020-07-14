@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        Documentation = (README); 
+        Headers = (); 
+        Resources = (config.sed, configure.sed); 
+        SUBPROJECTS = (); 
+        Sources = (); 
+    }; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = djgpp; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

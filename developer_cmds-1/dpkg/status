@@ -1,0 +1,5 @@
+<p><code>ctags</code> is disabled here in favor of the one installed by <code>emacs</code>.</p>
+
+<p><code>lint</code> is disabled because it's not building successfully. This should be fixed up.</p>
+
+<p><code>menuc</code> and <code>mesgc</code> are disabled because out curses library stinks. We should revisit these after we get a new curses library.</p>

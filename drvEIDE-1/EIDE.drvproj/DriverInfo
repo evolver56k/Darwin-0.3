@@ -1,0 +1,10 @@
+#
+# used by geninfo: DRIVER_NAME is the names which appears on the
+# installer window
+#
+DRIVER_NAME="EIDE"
+DRIVER_VERSION_330="3.38";
+DRIVER_VERSION_400="4.04";
+DRIVER_VERSION_410="4.04";
+DRIVER_VERSION_420="4.04";
+DEFAULT_DRIVER_VERSION="5.03";

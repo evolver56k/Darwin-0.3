@@ -1,0 +1,50 @@
+Resent: Thu, 18 Dec 1997 22:47:50 -0500
+Resent: "mills@udel.edu "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa27578;
+          18 Dec 1997 21:16 EST
+Received: (from juha@localhost)
+	by samuraj.c3l.tyreso.se (8.8.5/8.8.5) id DAA07144;
+	Fri, 19 Dec 1997 03:16:47 +0100
+Date: Fri, 19 Dec 1997 03:16:47 +0100
+From: Juha Sarlin <juha@c3l.tyreso.se>
+Message-Id: <199712190216.DAA07144@samuraj.c3l.tyreso.se>
+To: stenn@whimsy.udel.edu
+Subject: ntp-4.0.70a fix
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+
+Here is a fix for a typo in ntp-4.0.70a:
+
+*** ntp_loopfilter.c.~1~	Tue Nov 11 18:27:02 1997
+--- ntp_loopfilter.c	Fri Dec 18 21:07:19 1997
+***************
+*** 480,484 ****
+  		 */
+  		if (flladj > plladj)
+- /*
+  			ntv.status |= STA_FLL;
+  */
+--- 480,484 ----
+  		 */
++ /*
+  		if (flladj > plladj)
+  			ntv.status |= STA_FLL;
+  */
+
+Also, I suspect that this bug was "fixed" by calling ntp_adjtime()
+twice:
+
+*** ntp_loopfilter.c.~1~	Tue Nov 11 18:27:02 1997
+--- ntp_loopfilter.c	Fri Dec 18 21:07:19 1997
+***************
+*** 487,495 ****
+  				msyslog(LOG_ERR, "kernel pll status change %x",
+  				    ntv.status);
+- 		/*
+- 		 * Ugly hack here. Sometimes ntp.freq is not written by
+- 		 * the kernel, so we have to do it again.
+- 		 */
+- 		ntp_adjtime(&ntv);
+  		pll_status = ntv.status;
+  		drift_comp = ntv.freq / 65536e6;
+--- 487,490 ----

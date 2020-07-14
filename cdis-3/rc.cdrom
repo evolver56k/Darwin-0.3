@@ -1,0 +1,882 @@
+#!/usr/bin/perl -w
+
+# CD-ROM Software Installation Procedure
+#
+# Copyright (C) 1998-1999 by Apple Computer, Inc.  All rights reserved.
+#
+# This script is invoked automatically when booted from a CD-ROM.
+# Trying to run it directly will probably not do what you expect.
+#
+# pmb 1998
+
+
+use strict;
+use Text::Wrap;
+use Symbol;
+use vars qw (%dir %file %tool %info %string %resultcode %target);
+use vars qw ($bootmode $root $debug);
+
+
+###########################################################################
+# Gloabls
+#
+$bootmode = shift || 'auto';
+$root = shift || '';
+
+$debug = 'true' if ($bootmode eq 'debug');
+
+$| = 1;
+
+
+###########################################################################
+# Includes
+#
+require "$root/etc/rc.cdrom.PPC";
+require "$root/etc/rc.cdrom.x86";
+
+
+
+# =========================================================================
+# *************************************************************************
+# =========================================================================
+
+
+
+
+###########################################################################
+# The actual script
+#
+
+my ($key, $x, $reply);
+
+SetupVars();
+$ENV{'PATH'} = "$dir{'bin'}:$dir{'sbin'}:$dir{'usrbin'}:$dir{'usrsbin'}:$dir{'usrlibexec'}:$dir{'cdis'}";
+
+ClearScreen();
+system($tool{'fbshow'}, '-B', '-I', 'Starting Installation', '-z', '0');
+FindLanguage();
+SetupLocalization();
+SetupEnviornment();
+ConsoleMessage("Darwin OS Release: $info{'releasename'}", 1);
+
+if ($info{'arch'} eq 'ppc') {
+	FindInstallTarget_PPC();
+	FindLanguagePPC();
+	SetupLocalization();
+}
+
+GoInteractive() if ($info{'interactive'});
+system( $tool{'gc'} );
+system( $tool{'stty'}, '-tabs');
+
+
+if (!$info{'language'}) {
+	GoInteractive();
+	AskUserForLanguage();
+}
+$ENV{'LANGUAGE'} = $info{'language'};
+
+if ($info{'arch'} eq 'ppc') {
+
+	if (!$target{'valid'}) {
+		WarnUser_PPC();
+		AskUserForInstallTarget_PPC();
+	}
+	Partition_PPC();
+	
+} else {
+
+	WarnUser_x86();
+	FindInstallTarget_x86();
+	Partition_x86();
+	
+}
+
+if ($debug) {
+	print "\$target{'disknum'}              = $target{'disknum'}\n";
+	print "\$target{'LooksLike sd0a'}       = $target{'LooksLike sd0a'}\n";
+	print "\$target{'LooksLike /dev/rsd0a'} = $target{'LooksLike /dev/rsd0a'}\n";
+	print "\$target{'LooksLike /dev/rsd0h'} = $target{'LooksLike /dev/rsd0h'}\n";
+}
+
+
+InitDisk();
+MountDisk();
+
+CopyBaseImage();
+#CopyRequiredForInstallerPkg();
+#CopyLanguagePkgs();
+
+ConfigureSystem();
+WriteOpenFirmware() if ($info{'arch'} eq 'ppc');
+
+system($tool{'sync'});
+system($tool{'sync'});
+system($tool{'sync'});
+
+BlankLine();
+
+system($tool{'checkflop'});
+system($tool{'disk'}, '-e', '/dev/rfd0a') unless ($?);
+
+ConsoleMessage('DONE') if ($info{'interactive'});
+
+if ($info{'arch'} eq 'i386') {
+	ConsoleMessage('REMOVE_FLOPPY');
+	Ask('--> ');
+} else {
+	if ($info{'interactive'}) {
+		ConsoleMessage('RESTART');
+		Ask('--> ');
+	}
+}
+
+LastChance() if $debug;
+
+ConsoleMessage('Restarting...', 100);
+
+system($tool{'reboot'});
+exit 0;
+
+
+
+# =========================================================================
+# *************************************************************************
+# =========================================================================
+
+###########################################################################
+# LastChance()
+#
+sub LastChance {
+	GoInteractive();
+	BlankLine();
+	Ask('Are we done yet? ');
+	BlankLine();
+	BlankLine();
+}
+
+###########################################################################
+# ConfigureSystem()
+#
+sub ConfigureSystem {
+	my ($custFile, $defaultTable, $autoInstFile);
+	my ($bootDrivers, $defaultInstall, $instHintsDir);
+	my ($driver, @bootDrivers, $x);
+
+    ConsoleMessage('Configuring System', 5);
+	touch( "$dir{'target'}/private/etc/fstab");
+
+	chmod( 0755, $dir{'target'});
+
+	if ($info{'roottype'} eq 'ufs') {	
+		open FSTAB, ">>$dir{'target'}/private/etc/fstab";
+		#print FSTAB "$info{'rootdev'} /RHAPSODY_INSTALL ufs ro 0 2";
+		close FSTAB;
+		#mkdir("$dir{'target'}/RHAPSODY_INSTALL", 0755);
+	}
+
+    ConsoleMessage('Configuring System', 20);
+	mkdirs("$dir{'target'}/$dir{'customdir'}");
+	
+	$custFile = "$dir{'target'}/$dir{'customdir'}/CDIS.custom";
+	unlink $custFile;
+	open CUSTFILE, ">>$custFile";
+	print CUSTFILE "LANGUAGE=$info{'language'}\n";
+
+	print CUSTFILE "ROOT=$root\n";
+	if ($info{'arch'} eq 'i386') {
+		print CUSTFILE "FDISK_FLAGS=$target{'FDISK_FLAGS'}\n";
+	}
+
+	print CUSTFILE "diskie=$target{'LooksLike sd0a'}\n";
+	close CUSTFILE;
+	
+	symlink( "/private/var", "$dir{'target'}/var");
+	
+	if ($info{'arch'} eq 'ppc' && $target{'partition_name'}) {
+		$autoInstFile = "$dir{'target'}/$dir{'customdir'}/auto-install.cfg";
+		unlink $autoInstFile;
+		open FILE, ">$autoInstFile";
+		print FILE "$target{'partition_name'}\n";
+		close FILE;
+	}
+
+    ConsoleMessage('Configuring System', 30);
+
+
+	# Set up /private/Devices symlink
+	symlink( "Drivers/$info{'arch'}", "$dir{'target'}/private/Devices");
+
+    ConsoleMessage('Configuring System', 40);
+	
+	mkdirs("$dir{'target'}/usr/Devices/System.config");
+
+	chomp($bootDrivers = `$tool{'sysconfig'} -c -a $info{'arch'}`);
+
+	$defaultInstall = "$dir{'target'}/usr/Devices/System.config/Default.install";
+	unlink $defaultInstall;
+	system(	"$tool{'cp'} $root/private/Drivers/$info{'arch'}/System.config/Default.table $defaultInstall");
+	open DEF_INST, "<$defaultInstall";
+	
+	$defaultTable = "$dir{'target'}/usr/Devices/System.config/Default.table";
+	unlink $defaultTable;
+	open DEF_TABLE, ">>$defaultTable";
+			
+	print DEF_TABLE grep( !/Boot Drivers/, <DEF_INST>);
+			
+	print DEF_TABLE "\n\"Boot Drivers\" = \"$bootDrivers\";\n";
+	print DEF_TABLE "\n\"Language\" = \"$info{'language'}\";\n";
+	
+	close DEF_TABLE;
+	close DEF_INST;
+
+	ConsoleMessage('Configuring System', 60);
+	$instHintsDir = "$dir{'target'}/usr/Devices/System.config/InstallHints";
+	
+	system($tool{'rm'}, '-rf', $instHintsDir);
+	mkdir($instHintsDir, 0777);
+	
+	@bootDrivers = split /\s/, $bootDrivers;
+	
+	foreach $driver (@bootDrivers) {
+		system("$tool{'sysconfig'} -d $driver > $instHintsDir/${driver}.table 2>> /dev/null");
+	}
+
+	system($tool{'chmod'}, '-R', '777', $instHintsDir);
+
+
+
+    ConsoleMessage('Configuring System', 80);
+    $x = 80;
+
+	# fixup Default.table if we did not boot from it.   
+   
+	foreach $driver (@bootDrivers) {
+		my ($match, $line);
+		my (@output, $destDir, $lang);
+		my (@defTableLines, @locationLines, $location);
+
+		ConsoleMessage('Configuring System', $x++);
+		system("$tool{'sysconfig'} -d $driver > $instHintsDir/${driver}.table 2>> /dev/null");
+
+		$match = 0;
+		@output = `$tool{'sysconfig'} -d $driver`;
+
+		TEST: foreach $line (@output) {
+			$defaultTable = $line;
+			last TEST if ($match = ($line =~ /"Default Table"/));
+		}
+		
+		$destDir = "$dir{'target'}/usr/Devices/$driver.config";
+		
+		if ($match && -d $destDir) {
+			chdir $destDir;
+			system($tool{'cp'}, 'Default.table', 'Install.table');
+
+			# now grok it to get the driver name out
+			
+			$defaultTable =~ /=.*"(.+)".*;/;
+			$defaultTable = $1;
+			
+			if ($defaultTable ne 'Default')
+			{
+				system($tool{'mv'}, '-f', "$defaultTable.table", 'Default.table');
+				foreach $lang (glob("*.lproj")) {
+					system($tool{'mv'}, "$lang/Localizable.strings", "$lang/Install.strings");
+					system($tool{'mv'}, "$lang/$defaultTable.strings", "$lang/Localizable.strings");
+				}
+			}
+			
+			# from Default.table in this directory
+			# strip Location = <null> from file
+			# call sysconfig and insert a "Location" = "foo" if found
+			# don't replace a "Location" = "foo" if it's already there
+
+			open DEF_TABLE, "<Default.table";
+			@defTableLines = <DEF_TABLE>;
+			close DEF_TABLE;
+			
+			@locationLines = grep /"Location"/, @defTableLines;
+			
+			if ($locationLines[0]) {
+				$locationLines[0] =~ /=.*"(.+)".*;/;
+				$location = $1;
+				if (!$location) {
+					# Location key with no value, strip it, append one in RAM if present
+					
+					open TMP, ">Default.table.tmp";
+					print TMP grep( !/"Location"/, @defTableLines);
+					print TMP grep( /"Location"/, `$tool{'sysconfig'} -d $driver 2>>/dev/null`);
+					close TMP;
+					system($tool{'mv'}, '-f', 'Default.table.tmp', 'Default.table')
+				}
+			} else {
+		        # no location key in file, so just append one if there's one in RAM
+				open DEF_TABLE, ">>Default.table";
+				print DEF_TABLE grep( /"Location"/, `$tool{'sysconfig'} -d $driver 2>>/dev/null`);
+				close DEF_TABLE;
+
+			}
+		}
+	}
+    ConsoleMessage('Configuring System', 100);
+}
+
+###########################################################################
+# CopyLanguagePkgs()
+#
+sub CopyLanguagePkgs {
+	my $dittoArgs;
+
+	return if ($info{'language'} eq 'English');
+
+    ConsoleMessage('Localizing System', 1);
+    
+    system($tool{'mkdir'}, '-m', '0755', "$dir{'target'}/.$info{'language'}.root");
+    
+    # pax needs to write to /tmp, it turns out.
+
+    ConsoleMessage('Localizing System', 10);
+ 	system("$tool{'umount'} $dir{'target'}");
+	system("$tool{'mount'} /dev/$target{'LooksLike sd0a'} /private/tmp");
+
+    ConsoleMessage('Localizing System', 20);
+	system(	"( cd /private/tmp/.$info{'language'}.root && " .
+			"$tool{'pax'} -z -r -p p -f " .
+			"$dir{'packages'}/$info{'language'}Essentials.pkg/$info{'language'}Essentials.pax.gz ) " .
+			"2>> /dev/null");
+
+    ConsoleMessage('Localizing System', 30);
+	unlink glob("/private/tmp/pax[0-9]*");
+ 	system("$tool{'umount'} /private/tmp");
+	system("$tool{'mount'} /dev/$target{'LooksLike sd0a'} $dir{'target'}");
+
+    ConsoleMessage('Localizing System', 40);
+    $dittoArgs =	"-arch $info{'arch'} -lang $info{'language'} " .
+					"-bom $dir{'packages'}/$info{'language'}Essentials.pkg/$info{'language'}Essentials.bom " .
+					"-outBom $dir{'target'}/$info{'language'}Essentials.bom " .
+					"$dir{'target'}/.$info{'language'}.root $dir{'target'} 2>> /dev/null";
+    
+	if ($info{'interactive'}) {
+		system("$tool{'ditto'} -T $dittoArgs");
+	} else {
+		system("$tool{'ditto'} -P $dittoArgs");
+	}
+
+    ConsoleMessage('Localizing System', 50);
+	mkdirs("$dir{'target'}/$dir{'receipts'}/$info{'language'}Essentials.pkg");
+	system("$tool{'ditto'} $dir{'packages'}/$info{'language'}Essentials.pkg $dir{'target'}/$dir{'receipts'}/$info{'language'}Essentials.pkg");
+
+    ConsoleMessage('Localizing System', 70);
+	system("$tool{'mv'} $dir{'target'}/$info{'language'}Essentials.bom $dir{'target'}/$dir{'receipts'}/$info{'language'}Essentials.pkg/");
+
+    ConsoleMessage('Localizing System', 80);
+	system("$tool{'rm'} -rf $dir{'target'}/.$info{'language'}.root");
+
+    ConsoleMessage('Localizing System', 90);
+	system("$tool{'rm'} -rf $dir{'target'}/$dir{'receipts'}/$info{'language'}Essentials.pkg/$info{'language'}Essentials.pax.gz");
+
+    ConsoleMessage('Localizing System', 100);
+}
+
+
+
+###########################################################################
+# CopyBaseImage()
+#
+sub CopyBaseImage {
+  
+	my $nfiles = 10559;
+	my $curfile = 0;
+	my $prevpercent = -1;
+
+	ConsoleMessage('COPYING_BASE_SYSTEM', 0);
+
+	open (F, "$tool{'gnutar'} -C $dir{'target'} -xzvf /System/Installation/Data/image.tar.gz |");
+	while (<F>) {
+		$curfile++;
+		my $percent = int ((100 * $curfile) / $nfiles);
+		if ($percent > 100) {
+			$percent = 100;
+		}
+		if ($percent != $prevpercent) {
+			print "$percent percent done\n";
+			$prevpercent = $percent;
+		}
+		ConsoleMessage('COPYING_BASE_SYSTEM', $percent);
+	}
+	close (F);
+	if ($?) {
+		AbortInstall('UNTAR_FAILED');
+	}
+
+	ConsoleMessage('COPYING_BASE_SYSTEM_DONE', 100);
+}
+
+###########################################################################
+# CopyRequiredForInstallerPkg()
+#
+sub CopyRequiredForInstallerPkg {
+
+	ConsoleMessage('COPYING_BASE_SYSTEM', 95);
+
+	if ($info{'interactive'}) {
+		system("$tool{'ditto'} -T -arch $info{'arch'} -bom /System/Library/CoreServices/BaseSystem.bom -outBom $dir{'target'}/MinimalSystem.bom / $dir{'target'} 2>> /dev/null");
+
+		if ($?) {
+			AbortInstall('DITTO_FAILED');
+		}
+
+		mkdirs("$dir{'target'}/usr/local");
+		touch("$dir{'target'}/usr/local/.interactive-install");
+	} else {
+		system("$tool{'ditto'} -P -arch $info{'arch'} -bom /System/Library/CoreServices/BaseSystem.bom -outBom $dir{'target'}/MinimalSystem.bom / $dir{'target'} 2>> /dev/null");
+		if ($?) {
+			AbortInstall('DITTO_FAILED');
+		}
+	}
+
+	mkdirs("$dir{'target'}/$dir{'receipts'}");
+	system("$tool{'mv'} $dir{'target'}/MinimalSystem.bom $dir{'target'}/$dir{'receipts'}/MinimalSystem.bom");
+	ConsoleMessage('COPYING_BASE_SYSTEM_DONE', 100);
+}
+
+###########################################################################
+# MountDisk()
+#
+sub MountDisk {
+
+	ConsoleMessage('Mounting Disk', 90);
+	system("$tool{'mount'} /dev/$target{'LooksLike sd0a'} $dir{'target'}"); # 2>> /dev/null");
+
+	if ($?) {
+		AbortInstall('Mount Failed');
+	}
+}
+
+###########################################################################
+# InitDisk()
+#
+sub InitDisk {
+	my $x=1;
+
+	ConsoleMessage('DOING_INIT', 1);
+#	open DISK, "$tool{'disk'} -i $target{'LooksLike /dev/rsd0h'} 2>> /dev/null |";
+#	open DISK, "-|" or exec("$tool{'disk'} -i $target{'LooksLike /dev/rsd0h'} 2>> /dev/null");
+	system("$tool{'disk'} -i $target{'LooksLike /dev/rsd0h'}");
+	
+#	select((select(DISK), $| = 1)[0]);
+#	while (<DISK>) {
+#		$x += 2;
+#		$x = 98 if ($x > 100);
+#		ConsoleMessage('DOING_INIT', $x);
+#	}
+#	close DISK;
+	
+	if ($?) {
+		AbortInstall('INIT_FAILED');
+	}
+	
+}
+
+
+
+###########################################################################
+# GoInteractive()
+#
+sub GoInteractive {
+	$info{'interactive'} = 'true';
+	system( $tool{'popcon'} );
+}
+
+
+###########################################################################
+# FindLanguagePPC()
+#
+sub FindLanguagePPC() {
+	my ($packages, $languages, $langvalue);
+
+	if ($target{'partition_name'}) {
+		($packages, $languages, $langvalue) = split(/ /, $target{'partition_name'});
+		SWITCH: {
+			if ($langvalue =~ /^0x00/) { $info{'language'} = 'English'; last SWITCH; }
+			if ($langvalue =~ /^0x01/) { $info{'language'} = 'French'; last SWITCH; }
+			if ($langvalue =~ /^0x02/) { $info{'language'} = 'German'; last SWITCH; }
+			if ($langvalue =~ /^0x03/) { $info{'language'} = 'Japanese'; last SWITCH; }
+			$info{'language'} = 'English';
+			AbortInstall('WRONG_INSTALLER');
+		}
+	}
+}
+
+###########################################################################
+# FindLanguage()
+#
+sub FindLanguage() {
+
+	$info{'language'} = `$tool{'sysconfig'} Language 2>> /dev/null`;
+	chomp($info{'language'});
+	if ($info{'language'} eq 'No language selected') {
+		$info{'language'} = 'English';
+	}
+}
+
+
+###########################################################################
+# AskUserForLanguage()
+#
+sub AskUserForLanguage() {
+	my $reply;
+
+	ConsoleMessage('CHOOSE_LANG');
+
+    while (!$info{'language'}) {
+		$reply = Ask('--> ');
+		$reply =~ s/[^0-9]//g;
+		$reply = 0 unless $reply;
+		SWITCH: {
+			if ($reply == 1) { $info{'language'} = 'English'; last SWITCH; }
+			if ($reply == 2) { $info{'language'} = 'French'; last SWITCH; }
+			if ($reply == 3) { $info{'language'} = 'German'; last SWITCH; }
+			if ($reply == 4) { $info{'language'} = 'Japanese'; last SWITCH; }
+		#	if ($reply == 5) { $info{'language'} = 'Italian'; last SWITCH; }
+		#	if ($reply == 6) { $info{'language'} = 'Spanish'; last SWITCH; }
+		#	if ($reply == 7) { $info{'language'} = 'Swedish'; last SWITCH; }
+			BlankLine();
+			ConsoleMessage('CHOOSE_LANG');
+		}
+	}
+	BlankLine();
+}
+
+
+
+###########################################################################
+# BlankLine()  prints a blank line
+#
+sub BlankLine {
+	print "\n";
+}
+
+
+###########################################################################
+# SetupLocalization()  loads hash of keyString to localized string,
+#                      depending on the chosen language
+#                      Can get called twice!
+#
+sub SetupLocalization {
+
+	my $lang = $info{'language'} || 'English';
+	my ($key, $value);
+	my ($failed, $file);
+
+
+	%string = (
+
+					
+		CHOOSE_LANG				=>
+			"\n\nType 1 to use the English language and USA keyboard while installing Darwin OS.\n\n" .
+			"Tapez 2 pour installer Darwin OS avec un clavier et des messages francais.\n\n" .
+			"Eingabe 3 fuer Darwin OS-Installation mit deutscher Sprache und Tastatur.\n\n" .
+			"Type 4 for Japanese.\n",
+			#"Premi 4 per installare Darwin OS usando lingua italiana e tastiera italiana."
+			#"Pulse 5 para usar el idioma y el teclado espanol en la instalacion de Darwin OS."
+			#"Skriv 6 for att anvanda svenska/svenskt tangentbord vid installation av Darwin OS."
+	);
+
+
+	open FOO, "$dir{'cdis'}/$lang.lproj/Localizable.strings" or $failed = 'true';
+	if ($failed) {
+		$failed = 0;
+		print STDERR "Couldn't locate Locaization file for $info{'language'}.\n";
+		open FOO, "$dir{'cdis'}/English.lproj/Localizable.strings" or $failed = 'true';
+	}
+	
+	AbortInstall("Required file ($dir{'cdis'}/English.lproj) not found!") if ($failed);
+	
+	
+	undef($/);
+	$file = <FOO>;
+		
+	while ($file =~ m/"(\w+)"\s+=\s+"(.+)";/g) {
+		$string{$1} = $2;
+	}
+
+	close(FOO);
+	$/ = "\n";
+}
+
+###########################################################################
+# SetupVars()  we do this early for SetupLocalization()
+#
+sub SetupVars {
+
+	%dir = (
+		customdir	=>	"/private/var/log",
+		cdis		=>	"$root/System/Installation/CDIS",
+		receipts	=>	"/Local/Library/Receipts",
+		packages	=>	"$root/System/Installation/Packages",
+		nvram		=>	"$root/usr/share/nvram",
+		target		=>	"$root/private/var/tmp/mnta",
+		floppy		=>	"$root/private/var/tmp/mntb",
+		bin			=>	"$root/bin",
+		sbin		=>	"$root/sbin",
+		usrbin		=>	"$root/usr/bin",
+		usrsbin		=>	"$root/usr/sbin",
+		usrlibexec	=>	"$root/usr/libexec"
+	);
+
+	%file = (
+		secondary_loader	=>	"$root/usr/standalone/ppc/boot0",
+		version				=>	"$root/System/Library/CoreServices/software_version",
+		HFS_Booter			=>	"$root/System/Installation/Data/hfs-booter.img"
+	);
+
+	%tool = (
+		'awk'		=>	"$dir{'usrbin'}/awk",
+		"cut"		=>	"$dir{'usrbin'}/cut",
+		"expr"		=>	"$dir{'bin'}/expr",
+		"grep"		=>	"$dir{'usrbin'}/grep",
+		"halt"		=>	"$dir{'sbin'}/halt",
+		"mkfile"	=>	"$dir{'usrsbin'}/mkfile",
+		"perl"		=>	"$dir{'usrbin'}/perl",
+		"sed"		=>	"$dir{'usrbin'}/sed",
+		"swapon"	=>	"$dir{'sbin'}/mach_swapon",
+		"tar"		=>	"$dir{'usrbin'}/gnutar",
+		"gnutar"	=>	"$dir{'usrbin'}/gnutar",
+		"wc"		=>	"$dir{'usrbin'}/wc",
+
+		"arch"		=> 	"$dir{'usrbin'}/arch",
+		"chmod"		=>	"$dir{'bin'}/chmod",
+		"cp"		=>	"$dir{'bin'}/cp",
+		"dd"		=>	"$dir{'bin'}/dd",
+		"disk"		=>	"$dir{'sbin'}/disk",
+		"fbshow"	=>	"$dir{'sbin'}/fbshow",
+		"fdisk"		=>	"$dir{'usrsbin'}/fdisk",
+		"ln"		=>	"$dir{'bin'}/ln",
+		"mount"		=>	"$dir{'sbin'}/mount",
+		"mkdir"		=>	"$dir{'bin'}/mkdir",
+		"mv"		=>	"$dir{'bin'}/mv",
+		"nvram"		=>	"$dir{'usrsbin'}/nvram",
+		"pax"		=>	"$dir{'bin'}/pax",
+		"pdisk"		=>	"$dir{'usrsbin'}/pdisk",
+		"reboot"	=>	"$dir{'sbin'}/reboot",
+		"rm"		=>	"$dir{'bin'}/rm",
+		"stty"		=>	"$dir{'bin'}/stty",
+		"sync"		=>	"$dir{'bin'}/sync",
+		"sysctl"	=>	"$dir{'usrsbin'}/sysctl",
+		"touch"		=>	"$dir{'usrbin'}/touch",
+		"umount"	=>	"$dir{'sbin'}/umount",
+
+		"checkflop"	=>	"$dir{'cdis'}/checkflop",
+		"ditto"		=>	"$dir{'cdis'}/ditto",
+		"findroot"	=>	"$dir{'cdis'}/findroot",
+		"gc"		=>	"$dir{'cdis'}/gc",
+		"getpath"	=>	"$dir{'cdis'}/getpath",
+		"pickdisk"	=>	"$dir{'cdis'}/pickdisk",
+		"popcon"	=>	"$dir{'cdis'}/popconsole",
+		"slambits"	=>	"$dir{'cdis'}/slamloaderbits",
+		"sgmove"	=>	"$dir{'cdis'}/sgmove",
+		"sysconfig"	=>	"$dir{'cdis'}/sysconfig",
+		"table"		=>	"$dir{'cdis'}/table"
+	);
+
+}
+
+###########################################################################
+# SetupEnviornment()  loads the globals
+#
+sub SetupEnviornment {
+
+	umask 022;
+
+	ValidateTools() if ($debug);
+
+	$info{'minsize'} = 200;
+	$info{'HFS_Booter_Size'} = 16384; # 512b blocks. 8MB.
+
+	chomp ($info{'arch'} = `$tool{'arch'}`);
+	
+	if (!$info{'arch'}) {
+		$info{'arch'} = "ppc";
+		print STDERR "WARNING: guessed arch=ppc\n";
+	}
+
+	$info{'rootdev'} = `$tool{'findroot'}`;
+	if ($?) {
+		$info{'roottype'} = 'nfs';
+	} else {
+		$info{'roottype'} = 'ufs';
+	}
+
+	$info{'interactive'} = "true" unless ($info{'arch'} eq "ppc") ;
+
+	# Get the cpu_model
+	if ($info{'arch'} eq "ppc") {
+		chomp($info{'cpu'} = `$tool{'sysctl'} -n hw.model`);
+
+		$info{'NewWorld'} = 0;
+		$info{'NewWorld'} = "true" if ($info{'cpu'} =~ /^iMac*/);
+		$info{'NewWorld'} = "true" if ($info{'cpu'} =~ /^PowerMac1,*/);
+	}
+
+	if (! -d $dir{'cdis'}) {
+		AbortInstall('REQUIRE_CD');
+	}
+
+	if (! -d $dir{'customdir'}) {
+		mkdirs($dir{'customdir'});
+	}
+
+
+#	open VERS, $file{'version'} or AbortInstall('requiredFileNotFound');
+#	chomp($info{'version'} = <VERS>);
+#	while (<VERS>) {
+#		chomp($info{'releasename'} = $_);
+#	}
+
+	$info{'releasename'} = "Darwin OS";
+
+	($info{'rows'}, $info{'cols'}) = split(/\s/, `$tool{'stty'} size`);
+	
+	if ($info{'cols'} > 10) {
+		$Text::Wrap::columns = $info{'cols'} - 1;
+	}
+}
+
+###########################################################################
+# ValidateTools()  is only used when debugging, checks that all tools
+#                  and files are actually present.
+#
+sub ValidateTools {
+	my ($dir, $tool, $file);
+
+	foreach $dir (values(%dir)) {
+		if (! -d $dir) {
+			AbortInstall("Required directory ($dir) not found.");
+		}
+	}
+
+	foreach $tool (values(%tool)) {
+		if (! -x $tool) {
+			AbortInstall("Required tool ($tool) not found.");
+		}
+	}
+
+	foreach $file (values(%file)) {
+		if (! -r $file) {
+			AbortInstall("Required file ($file) not found.");
+		}
+	}
+
+}
+
+
+
+
+###########################################################################
+# ConsoleMessage()  prints a message to the console
+#                   does localization substitution and word wrap.
+#
+sub ConsoleMessage {
+	my $message = shift;
+	my $percentBoot = shift || 0;
+   
+	if ($string{$message}) {
+		$message = eval "\"" . $string{$message} . "\"";
+	}
+    
+	if ($percentBoot) {
+		print wrap("", "", "$message (${percentBoot}%)\n");
+	} else {
+		print wrap("", "", "$message\n");
+	}
+
+	if (!$info{'interactive'}) {
+		if ($percentBoot) {
+			system("$tool{'fbshow'}", "-B", "-I", "$message", "-z", "$percentBoot");
+		} else {
+			system("$tool{'fbshow'}", "-B", "-I", "$message");
+		}
+	}
+}
+
+
+
+###########################################################################
+# AbortInstall()  prints a message to the console, 
+#                 and terminates the install
+#
+sub AbortInstall {
+	my $arg = shift;
+	
+	WriteOpenFirmwareMacOS() if ($info{'arch'} && $info{'arch'} eq "ppc");
+	GoInteractive();
+	BlankLine();
+	BlankLine();
+	ConsoleMessage($arg);
+
+	print "\n";
+	$arg = Ask("Press Return to shutdown: ");
+	exit 1;
+}
+
+
+###########################################################################
+# ClearScreen()  clears the screen 
+#
+sub ClearScreen {
+	print "\n";
+	#print "\f";
+}
+
+###########################################################################
+# Ask()  get a line 
+#
+sub Ask {
+	my $foo = shift;
+	
+	print "$foo" if $foo;
+	chomp($foo = <STDIN>);
+	
+	exec "$root/bin/tcsh" if ($foo =~/exit/);
+	
+	return $foo;
+}
+
+
+
+###########################################################################
+# mkdirs()  like mkdir, but creates all needed directories for a path 
+#
+sub mkdirs {
+	my $path = shift;
+
+	system("$tool{'mkdir'}", "-p", "$path");
+}
+
+
+###########################################################################
+# dicedrives()
+#
+sub dicedrives {
+	while(<>)
+	{
+		chop;
+		s/(\w+)a:.*/$1h /;
+		print;
+	}
+}
+
+###########################################################################
+# touch()  
+#
+sub touch {
+	my $path = shift;
+
+	system("$tool{'touch'}", "$path");
+}
+
+
+
+

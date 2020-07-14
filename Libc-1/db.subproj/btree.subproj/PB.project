@@ -1,0 +1,41 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (btree.h, bt_extern.h); 
+        OTHER_LINKED = (
+            bt_close.c, 
+            bt_conv.c, 
+            bt_debug.c, 
+            bt_delete.c, 
+            bt_get.c, 
+            bt_open.c, 
+            bt_overflow.c, 
+            bt_page.c, 
+            bt_put.c, 
+            bt_search.c, 
+            bt_seq.c, 
+            bt_split.c, 
+            bt_stack.c, 
+            bt_utils.c
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PROJECT_HEADERS = (btree.h, bt_extern.h); 
+        PUBLIC_HEADERS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /lib; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_INSTALLDIR = /lib; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = btree; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_INSTALLDIR = /lib; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

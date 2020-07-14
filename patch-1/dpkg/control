@@ -1,0 +1,7 @@
+Package: patch-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 2.5
+URL: ftp://prep.ai.mit.edu/pub/gnu/patch-2.5.tar.gz
+Description: Patch file applicator
+Build-Depends: build-base

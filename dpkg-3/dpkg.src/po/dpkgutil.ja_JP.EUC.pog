@@ -1,0 +1,668 @@
+# Dpkg --- the Debian GNU/Linux package maintenance system.
+#
+# Copyright (C) 1994,1995,1996 Ian Jackson <ian@chiark.chu.cam.ac.uk>
+# Copyright (C) 1995,1996 Erick Branderhorst <branderhorst@heel.fgg.eur.nl>
+# Copyright (C) 1996 Miquel van Smoorenburg <miquels@cistron.nl>
+# Copyright (C) 1996 Kim-Minh Kaplan <kkaplan@cdfhp3.in2p3.fr>
+# Copyright (C) 1996 Michael Shields <shields@crosslink.net>
+# Copyright (C) 1995 Bruce Perens <bruce@pixar.com>
+# Copyright (C) 1994 Carl Streeter <streeter@cae.wisc.edu>
+# Copyright (C) 1994 Matt Welsh <mdw@sunsite.unc.edu>
+# Copyright (C) 1994 Ian Murdock <imurdock@debian.org>
+# Parts written by Colin Plumb and Branko Lankester in 1993.
+#
+# Japanese messages for dpkg (Debian GNU/Linux)
+# Copyright (C) 1997 A. Yoshiyam <yosshy@jedi.seg.kobe-u.ac.jp>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dpkg-1.4.0.21\n"
+"POT-Creation-Date: 1998-03-02 16:26-0800\n"
+"PO-Revision-Date: 1997-07-20 20:48 PDT\n"
+"Last-Translator: A. Yoshiyam <yosshy@jedi.seg.kobe-u.ac.jp>\n"
+"Language-Team: Japanese <dpkg@packages.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=x-euc-jp\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#. supermsg: unsignedlong 3
+#: split/info.c:46
+#, c-format
+msgid "file `%.250s' is corrupt - bad digit (code %d) in %s"
+msgstr ""
+
+#. constraints on what are the same than unsignedlong (can call it)
+#. supermsg: unsignedlong 2
+#: split/info.c:57
+#, c-format
+msgid "file `%.250s' is corrupt - %.250s length contains nulls"
+msgstr ""
+
+#. supermsg: nextline 2
+#: split/info.c:70
+#, c-format
+msgid "file `%.250s' is corrupt - %.250s missing"
+msgstr ""
+
+#. supermsg: nextline 2
+#: split/info.c:74
+#, c-format
+msgid "file `%.250s' is corrupt - missing newline after %.250s"
+msgstr ""
+
+#: split/info.c:96
+msgid "unable to seek back"
+msgstr ""
+
+#: split/info.c:100
+#, c-format
+msgid "file `%.250s' is corrupt - bad magic at end of first header"
+msgstr ""
+
+#. submsg: unsignedlong
+#: split/info.c:102
+msgid "info length"
+msgstr ""
+
+#: split/info.c:111
+#, c-format
+msgid "file `%.250s' is corrupt - bad padding character (code %d)"
+msgstr ""
+
+#: split/info.c:115
+#, c-format
+msgid "file `%.250s' is corrupt - nulls in info section"
+msgstr ""
+
+#. submsg: nextline
+#: split/info.c:121
+msgid "format version number"
+msgstr ""
+
+#: split/info.c:123
+#, c-format
+msgid "file `%.250s' is format version `%.250s' - you need a newer dpkg-split"
+msgstr ""
+
+#. submsg: nextline
+#: split/info.c:127
+#, fuzzy
+msgid "package name"
+msgstr "パッケージ"
+
+#. submsg: nextline
+#: split/info.c:129
+msgid "package version number"
+msgstr ""
+
+#. submsg: nextline
+#: split/info.c:131
+msgid "package file MD5 checksum"
+msgstr ""
+
+#: split/info.c:134
+#, c-format
+msgid "file `%.250s' is corrupt - bad MD5 checksum `%.250s'"
+msgstr ""
+
+#. submsg: nextline
+#: split/info.c:137 split/info.c:139
+msgid "total length"
+msgstr ""
+
+#. submsg: nextline
+#: split/info.c:141 split/info.c:143
+msgid "part offset"
+msgstr ""
+
+#. submsg: nextline
+#: split/info.c:146
+msgid "part numbers"
+msgstr ""
+
+#: split/info.c:148
+#, c-format
+msgid "file `%.250s' is corrupt - no slash between part numbers"
+msgstr ""
+
+#. submsg: unsignedlong
+#: split/info.c:152
+msgid "number of parts"
+msgstr ""
+
+#: split/info.c:154
+#, c-format
+msgid "file `%.250s' is corrupt - bad number of parts"
+msgstr ""
+
+#. submsg: unsignedlong
+#: split/info.c:157
+msgid "parts number"
+msgstr ""
+
+#: split/info.c:159
+#, c-format
+msgid "file `%.250s' is corrupt - bad part number"
+msgstr ""
+
+#: split/info.c:164
+#, c-format
+msgid "file `%.250s' is corrupt - bad magic at end of second header"
+msgstr ""
+
+#: split/info.c:166
+#, c-format
+msgid "file `%.250s' is corrupt - second member is not data member"
+msgstr ""
+
+#. submsg: unsignedlong
+#: split/info.c:169
+msgid "data length"
+msgstr ""
+
+#: split/info.c:173
+#, c-format
+msgid "file `%.250s' is corrupt - wrong number of parts for quoted sizes"
+msgstr ""
+
+#: split/info.c:177
+#, c-format
+msgid "file `%.250s' is corrupt - size is wrong for quoted part number"
+msgstr ""
+
+#: split/info.c:183
+#, c-format
+msgid "unable to fstat part file `%.250s'"
+msgstr ""
+
+#: split/info.c:189
+#, c-format
+msgid "file `%.250s' is corrupt - too short"
+msgstr ""
+
+#: split/info.c:201 split/info.c:242
+#, c-format
+msgid "cannot open archive part file `%.250s'"
+msgstr ""
+
+#: split/info.c:203
+#, c-format
+msgid "file `%.250s' is not an archive part"
+msgstr ""
+
+#: split/info.c:208
+#, c-format
+msgid ""
+"%s:\n"
+"    Part format version:            %s\n"
+"    Part of package:                %s\n"
+"        ... version:                %s\n"
+"        ... MD5 checksum:           %s\n"
+"        ... length:                 %lu bytes\n"
+"        ... split every:            %lu bytes\n"
+"    Part number:                    %d/%d\n"
+"    Part length:                    %lu bytes\n"
+"    Part offset:                    %lu bytes\n"
+"    Part file size (used portion):  %lu bytes\n"
+"\n"
+msgstr ""
+
+#: split/info.c:238
+msgid "--info requires one or more part file arguments"
+msgstr ""
+
+#: split/info.c:248
+#, c-format
+msgid "file `%s' is not an archive part\n"
+msgstr ""
+
+#: split/join.c:42
+#, c-format
+msgid "Putting package %s together from %d parts: "
+msgstr ""
+
+#: split/join.c:50
+#, c-format
+msgid "unable to open output file `%.250s'"
+msgstr ""
+
+#: split/join.c:54
+#, c-format
+msgid "unable to (re)open input part file `%.250s'"
+msgstr ""
+
+#: split/join.c:70
+msgid "done\n"
+msgstr ""
+
+#: split/join.c:86
+#, c-format
+msgid "files `%.250s' and `%.250s' are not parts of the same file"
+msgstr ""
+
+#: split/join.c:91
+#, c-format
+msgid "there are several versions of part %d - at least `%.250s' and `%.250s'"
+msgstr ""
+
+#: split/join.c:104
+msgid "--join requires one or more part file arguments"
+msgstr ""
+
+#: split/join.c:125
+#, c-format
+msgid "part %d is missing"
+msgstr ""
+
+#: split/main.c:43
+#, c-format
+msgid ""
+"Debian Linux `%s' package split/join tool; version %s.\n"
+"Copyright (C) 1994-1996 Ian Jackson.  This is free software; see the\n"
+"GNU General Public Licence version 2 or later for copying conditions.\n"
+"There is NO warranty.  See `%s --licence' for details.\n"
+msgstr ""
+"Debian Linux `%s' 分割/結合ツール バージョン %s.\n"
+"Copyright (C) 1994-1996 Ian Jackson.  このプログラムはフリーソフトです。\n"
+"配布条件は GNU General Public Licence バージョン 2 以降を参照して下さい。\n"
+"これらのソフトは無保証です。詳しくは \"%s --licence\" を御覧下さい。\n"
+
+#: split/main.c:56
+#, c-format
+msgid ""
+"Usage: %s -s|--split <file> [<prefix>]     Split an archive.\n"
+"       %s -j|--join <part> <part> ...      Join parts together.\n"
+"       %s -I|--info <part> ...             Display info about a part.\n"
+"       %s -h|--help|--version|--licence    Show help/version/licence.\n"
+"\n"
+"       %s -a|--auto -o <complete> <part>   Auto-accumulate parts.\n"
+"       %s -l|--listq                       List unmatched pieces.\n"
+"       %s -d|--discard [<filename> ...]    Discard unmatched pieces.\n"
+"\n"
+"Options:  --depotdir <directory>  (default is %s/%s)\n"
+"          -S|--partsize <size>    (in Kb, for -s, default is 450)\n"
+"          -o|--output <file>      (for -j, default is "
+"<package>-<version>.deb)\n"
+"          -Q|--npquiet            (be quiet when -a is not a part)\n"
+"          --msdos                 (generate 8.3 filenames)\n"
+"\n"
+"Exit status: 0 = OK; 1 = -a is not a part; 2 = trouble!\n"
+msgstr ""
+"使用法:%s -s|--split <file> [<prefix>]     アーカイブを分割\n"
+"       %s -j|--join <part> <part> ...      部分を一緒に結合\n"
+"       %s -I|--info <part> ...             部分の情報を表示\n"
+"       %s -h|--help|--version|--licence    ヘルプ/バージョン/著作権を表示\n"
+"\n"
+"       %s -a|--auto -o <complete> <part>   部分の自動蓄積\n"
+"       %s -l|--listq                       不一致な部分を列挙\n"
+"       %s -d|--discard [<filename> ...]    不一致な部分を廃棄\n"
+"\n"
+"オプション：\n"
+"        --depotdir <directory>  (デフォルト： %s/%s)\n"
+"        -S|--partsize <size>    (Kb 単位 (-s 用)、デフォルト： 450)\n"
+"        -o|--output <file>      ( -j 用, "
+"デフォルト：<package>-<version>.deb)\n"
+"        -Q|--npquiet            (-a "
+"が単一部分でない場合にエラーを出力しない)\n"
+"        --msdos                 (8.3 形式ファイル名を生成)\n"
+"\n"
+"終了状態: 0 = OK;  1 = -a が単一部分出なかった場合;  2 = 問題発生\n"
+
+#: split/main.c:80
+msgid "Type dpkg-split --help for help."
+msgstr ""
+
+#: split/main.c:91
+#, c-format
+msgid "error reading %s"
+msgstr ""
+
+#: split/main.c:95
+#, c-format
+msgid "error reading %.250s"
+msgstr ""
+
+#: split/main.c:96
+#, c-format
+msgid "unexpected end of file in %.250s"
+msgstr ""
+
+#: split/main.c:114
+msgid "part size is far too large or is not positive"
+msgstr ""
+
+#: split/main.c:118
+#, c-format
+msgid "part size must be at least %dk (to allow for header)"
+msgstr ""
+
+#: split/main.c:155
+#, c-format
+msgid "conflicting actions --%s and --%s"
+msgstr ""
+
+#: split/main.c:181
+msgid "need an action option"
+msgstr ""
+
+#: split/queue.c:69
+#, c-format
+msgid "unable to read depot directory `%.250s'"
+msgstr ""
+
+#: split/queue.c:105
+msgid "--auto requires the use of the --output option"
+msgstr ""
+
+#: split/queue.c:107
+msgid "--auto requires exactly one part file argument"
+msgstr ""
+
+#: split/queue.c:111
+#, c-format
+msgid "unable to read part file `%.250s'"
+msgstr ""
+
+#: split/queue.c:114
+#, c-format
+msgid "File `%.250s' is not part of a multipart archive.\n"
+msgstr ""
+
+#: split/queue.c:141
+#, c-format
+msgid "unable to reopen part file `%.250s'"
+msgstr ""
+
+#: split/queue.c:145
+#, c-format
+msgid "part file `%.250s' has trailing garbage"
+msgstr ""
+
+#: split/queue.c:154
+#, c-format
+msgid "unable to open new depot file `%.250s'"
+msgstr ""
+
+#: split/queue.c:158
+#, c-format
+msgid "unable to rename new depot file `%.250s' to `%.250s'"
+msgstr ""
+
+#: split/queue.c:160
+#, c-format
+msgid "Part %d of package %s filed (still want "
+msgstr ""
+
+#: split/queue.c:164
+msgid " and "
+msgstr ""
+
+#: split/queue.c:177
+#, c-format
+msgid "unable to delete used-up depot file `%.250s'"
+msgstr ""
+
+#: split/queue.c:192
+msgid "--listq does not take any arguments"
+msgstr ""
+
+#: split/queue.c:195
+msgid "Junk files left around in the depot directory:\n"
+msgstr ""
+
+#: split/queue.c:200 split/queue.c:224
+#, c-format
+msgid "unable to stat `%.250s'"
+msgstr ""
+
+#: split/queue.c:203
+#, c-format
+msgid " %s (%lu bytes)\n"
+msgstr ""
+
+#: split/queue.c:205
+#, c-format
+msgid " %s (not a plain file)\n"
+msgstr ""
+
+#: split/queue.c:210
+msgid "Packages not yet reassembled:\n"
+msgstr ""
+
+#: split/queue.c:215
+#, c-format
+msgid " Package %s: part(s) "
+msgstr ""
+
+#: split/queue.c:226
+#, c-format
+msgid "part file `%.250s' is not a plain file"
+msgstr ""
+
+#: split/queue.c:231
+#, c-format
+msgid "(total %lu bytes)\n"
+msgstr ""
+
+#: split/queue.c:254
+#, c-format
+msgid "unable to discard `%.250s'"
+msgstr ""
+
+#: split/queue.c:255
+#, c-format
+msgid "Deleted %s.\n"
+msgstr ""
+
+#: split/split.c:51
+msgid "--split needs a source filename argument"
+msgstr ""
+
+#: split/split.c:54
+msgid "--split takes at most a source filename and destination prefix"
+msgstr ""
+
+#: split/split.c:68
+#, c-format
+msgid "unable to open source file `%.250s'"
+msgstr ""
+
+#: split/split.c:69
+msgid "unable to fstat source file"
+msgstr ""
+
+#: split/split.c:70
+#, c-format
+msgid "source file `%.250s' not a plain file"
+msgstr ""
+
+#: split/split.c:76
+msgid "unable to exec mksplit"
+msgstr ""
+
+#: md5sum/md5sum.c:106
+#, c-format
+msgid "%s: read error on stdin\n"
+msgstr ""
+
+#: md5sum/md5sum.c:124 md5sum/md5sum.c:250
+#, c-format
+msgid "%s: error reading %s\n"
+msgstr ""
+
+#: md5sum/md5sum.c:138
+msgid ""
+"usage: md5sum [-bv] [-c [file]] | [file...]\n"
+"Generates or checks MD5 Message Digests\n"
+"    -c  check message digests (default is generate)\n"
+"    -v  verbose, print file names when checking\n"
+"    -b  read files in binary mode\n"
+"The input for -c should be the list of message digests and file names\n"
+"that is printed on stdout by this program when it generates digests.\n"
+msgstr ""
+
+#: md5sum/md5sum.c:211
+#, c-format
+msgid "%s: unrecognized line: %s"
+msgstr ""
+
+#: md5sum/md5sum.c:245
+#, c-format
+msgid "%s: can't open %s\n"
+msgstr ""
+
+#: md5sum/md5sum.c:258
+msgid "FAILED\n"
+msgstr ""
+
+#: md5sum/md5sum.c:260
+#, c-format
+msgid "%s: MD5 check failed for '%s'\n"
+msgstr ""
+
+#: md5sum/md5sum.c:263
+msgid "OK\n"
+msgstr ""
+
+#: md5sum/md5sum.c:267
+#, c-format
+msgid "%s: %d of %d file(s) failed MD5 check\n"
+msgstr ""
+
+#: md5sum/md5sum.c:269
+#, c-format
+msgid "%s: no files checked\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:117
+#, c-format
+msgid "malloc(%d) failed"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:136
+msgid ""
+"start-stop-daemon for Debian Linux - small and fast C version written by\n"
+"Marek Michalkiewicz <marekm@i17linuxb.ists.pwr.wroc.pl>, public domain.\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:139
+msgid ""
+"Usage:\n"
+"  start-stop-daemon -S|--start options ... -- arguments ...\n"
+"  start-stop-daemon -K|--stop options ...\n"
+"  start-stop-daemon -H|--help\n"
+"  start-stop-daemon -V|--version\n"
+"\n"
+"Options (at least one of --exec|--pidfile|--user is required):\n"
+"  -x|--exec <executable>        program to start/check if it is running\n"
+"  -p|--pidfile <pid-file>       pid file to check\n"
+"  -u|--user <username>|<uid>    stop processes owned by this user\n"
+"  -n|--name <process-name>      stop processes with this name\n"
+"  -s|--signal <signal>          signal to send (default TERM)\n"
+"  -a|--startas <pathname>       program to start (default is <executable>)\n"
+"  -t|--test                     test mode, don't do anything\n"
+"  -o|--oknodo                   exit status 0 (not 1) if nothing done\n"
+"  -q|--quiet                    be more quiet\n"
+"  -v|--verbose                  be more verbose\n"
+"\n"
+"Exit status:  0 = done  1 = nothing done (=> 0 if --oknodo)  2 = trouble\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:166
+#, c-format
+msgid "Try `%s --help' for more information.\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:287
+msgid "--signal takes a numeric argument or name of signal (KILL, INTR, ...)"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:293
+msgid "need one of --start or --stop"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:296
+msgid "need at least one of --exec, --pidfile or --user"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:302
+msgid "--start needs --exec or --startas"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:394
+#, c-format
+msgid "opendir /proc failed: %s"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:405
+msgid "nothing in /proc - not mounted?"
+msgstr ""
+
+#. submsg: do_stop
+#: scripts/start-stop-daemon.c:421
+#, c-format
+msgid "process in pidfile `%s'"
+msgstr ""
+
+#. submsg: do_stop
+#: scripts/start-stop-daemon.c:424
+#, c-format
+msgid "process(es) owned by `%s'"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:426
+msgid "internal error, please report"
+msgstr ""
+
+#. supermsg: do_stop -- can also be a command name
+#: scripts/start-stop-daemon.c:431
+#, c-format
+msgid "No %s found running; none killed.\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:436
+#, c-format
+msgid "Would send signal %d to %d.\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:441
+#, c-format
+msgid "%s: warning: failed to kill %d: %s\n"
+msgstr ""
+
+#. FIXME: should first sprintf pids, and then printf 1 only string
+#: scripts/start-stop-daemon.c:446
+#, c-format
+msgid "Stopped %s (pid"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:468
+#, c-format
+msgid "stat %s: %s"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:475
+#, c-format
+msgid "user `%s' not found\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:492
+#, c-format
+msgid "%s already running.\n"
+msgstr ""
+
+#. should sprintf args first, and then output only 1 string
+#: scripts/start-stop-daemon.c:497
+#, c-format
+msgid "Would start %s "
+msgstr ""
+
+#: scripts/start-stop-daemon.c:504
+#, c-format
+msgid "Starting %s...\n"
+msgstr ""
+
+#: scripts/start-stop-daemon.c:507
+#, c-format
+msgid "Unable to start %s: %s"
+msgstr ""

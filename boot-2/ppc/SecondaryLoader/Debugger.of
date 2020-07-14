@@ -1,0 +1,536 @@
+\ ** DEBUG.of,  Debugger support for Open Firmware on PowerPC.
+decimal
+
+h# 0FE01275	constant kTRAP1275	\ our BreakPoint instruction
+
+h# 006C constant ps>'BP-DONE
+h# 0070 constant ps>'STEP-DONE
+h# 00D0 constant ps>CIregsV
+h# 00DC constant ps>INTvectV
+
+8 constant #BP		\ max number of breakpoints
+0 value BP#			\ current number of them
+
+struct	\ breakpoint formats
+	/N	field	>bp.address			\ program counter (i.e., where it's set)
+	/N	field	>bp.instruction		\ the instruction that should be there
+	/N	field	>bp.isTemporary		\ True if breakpoint should autoclear
+constant bp.size
+bp.size #BP * constant	#bp.size
+
+#bp.size buffer: BP-buffer
+: [BP] bp.size * BP-buffer + ;
+
+: BPOFF	( -- )			\ clear all breakpoints
+	0 to BP#
+	;
+
+: +maybeTempBP ( addr true|false -- )	\ add a breakpoint which may be temporary
+	{ _addr _isTemp ; }
+	BP# 1+ #BP < if
+		_addr BP# [bp] >bp.address !
+		_isTemp BP# [bp] >bp.isTemporary !
+		BP# 1+ to BP#
+	  else
+		." no free breakpoints" abort
+	  then
+	;
+: +BP	( addr -- )		\ add a breakpoint
+	false +maybeTempBP
+	;
+
+: -BP	( addr -- )		\ remove a breakpoint
+	BP# 0 ?do
+		i [bp] >bp.address @ over = if
+			drop
+			BP# i 1+ ?do
+				i [bp] >bp.address @
+				j [bp] >bp.address !
+				loop
+			BP# 1- to BP#
+			exit
+		  then
+		loop
+	drop
+	." [no matching breakpoint]" cr
+	;
+
+: --BP	( -- )		\ remove last entered breakpoint
+	BP# 0= abort" no breakpoints!"
+	BP# 1- to BP#
+	;
+	
+: .BP	( -- )		\ display list of breakpoints
+	base @		hex		cr
+	BP# 0 ?do
+		i [bp] >bp.address @ 8 u.r cr
+		loop
+	base !
+	;
+
+: BP?	( addr -- false | bp-addr )		\ test if this address is a breakpoint
+	BP# 0 ?do
+		i [bp] >bp.address @ over = if
+			drop i [bp] exit
+		then
+		loop
+	drop false
+	;
+
+: set-BPs
+	BP# 0 ?do
+		i [bp] dup >bp.address @ dup @ kTRAP1275 rot code!
+		swap >bp.instruction !
+		loop
+	;
+: clr-BPs
+	BP# 0 ?do
+		i [bp] dup >bp.instruction @ swap >bp.address @ code!
+		loop
+	;
+
+: GO
+	set-BPs
+	go
+	;
+: TIL	( addr -- )		\ set a breakpoint, and GO
+	true +maybeTempBP GO ;
+
+defer .BREAKPOINT	['] NOOP to .breakpoint
+: BP-DONE
+	clr-BPs
+	.breakpoint
+	.registers
+	%SRR0 BP? >bp.isTemporary @ if %SRR0 -BP then
+	." BreakPoint encountered at: " %SRR0 u. cr
+	quit
+	;
+
+['] BP-DONE h# FF80806C !		\  @startVec >'BP-DONE
+
+defer .STEP			['] NOOP to .step
+: STEP-DONE
+	.step
+	quit
+	;
+['] STEP-DONE h# FF808070 !		\ @startVec >'STEP-DONE !
+
+: SkipBP %SRR0 4 + to %SRR0 ;
+
+\ ----------------------------------------------------------------------------------
+( disPowerPC, disassembler for PowerPC [+ old POWER] architecture )
+CR .( loading disPPC) CR
+decimal
+variable disPtr
+
+8 h# 40 *	alloc-mem	value DecodeTable	( the main decoder )
+8 h# 20 *	alloc-mem	value DecodeTable16	( Branch decoder )
+8 h# 400 *	alloc-mem	value DecodeTable19	( I-unit x-forms )
+8 h# 400 *	alloc-mem	value DecodeTable31	( X-form )
+: fillTable	{ _tbl _size _wrd _str _len ; _cstr }
+	here -> _cstr
+	_len c,	_len 0 do _str i + c@ c, loop
+	_size 0 do
+		i 3 << _tbl + _wrd over ! cell+ _cstr swap !
+		loop
+	;
+: nx.	base @ -rot hex <# 0 do u# loop u#> type base ! ;
+: ???	count type drop disPtr @ @ 8 nx. space ;
+
+.( filling tables)
+DecodeTable		h# 40	' ??? " ???" fillTable
+DecodeTable16	h# 20	' ??? " ???" fillTable
+DecodeTable19	h# 400	' ??? " ???" fillTable
+DecodeTable31	h# 400	' ??? " ???" fillTable
+CR
+
+: t,	{ _index _str _len _wrd _tbl ; _cstr }
+	here -> _cstr
+	_len c,	_len 0 do _str i + c@ c, loop
+	_index 3 << _tbl + _wrd over ! cell+ _cstr swap !
+	;
+
+: opname	dup count type 8 swap c@ - spaces ;
+: opname.	dup count type swap 1 and if [char] . emit 7 else 8 then
+	swap c@ - spaces ;
+: opname?	dup count type swap 1 and if [char] ? emit 7 else 8 then
+	swap c@ - spaces ;
+: d. base @ swap decimal dup 10 < if <# u# u#> else <# u# u# u#> then
+	type base ! ;
+: ','-emit [char] , emit ;
+: m3	>> h# 7 and d. ;
+: m3,	m3 ','-emit ;
+: m5	>> h# 1F and d. ;
+: m5,	m5 ','-emit ;
+: reg	[char] r emit m5 ;
+: reg,	reg ','-emit ;
+: reg|0		over over >> h# 1F and if [char] r emit then m5 ;
+: reg|0,	reg|0 ','-emit ;
+: sreg	[char] s emit reg ;
+: sreg,	[char] s emit reg, ;
+: spr	>> dup h# 1F and 5 << swap 5 >> h# 1F and or case
+	h# 000 of	" MQ"		endof
+	h# 001 of	" XER"		endof
+	h# 004 of	" RTCU"		endof
+	h# 005 of	" RTCL"		endof
+	h# 008 of	" LR"		endof
+	h# 009 of	" CTR"		endof
+	h# 012 of	" DSISR"	endof
+	h# 013 of	" DAR"		endof
+	h# 014 of	" RTCU" 	endof
+	h# 015 of	" RTCL" 	endof
+	h# 016 of	" DEC"		endof
+	h# 019 of	" SDR1"		endof
+	h# 01A of	" SRR0"		endof
+	h# 01B of	" SRR1"		endof
+	h# 110 of	" SPRG0" 	endof
+	h# 111 of	" SPRG1" 	endof
+	h# 112 of	" SPRG2" 	endof
+	h# 113 of	" SPRG3" 	endof
+	h# 11C of	" TBL"		endof
+	h# 11D of	" TBU"		endof
+	h# 11F of	" PVR"		endof
+	h# 210 of	" IBAT0U"	endof
+	h# 211 of	" IBAT0L"	endof
+	h# 212 of	" IBAT1U"	endof
+	h# 213 of	" IBAT1L"	endof
+	h# 214 of	" IBAT2U"	endof
+	h# 215 of	" IBAT2L" 	endof
+	h# 216 of	" IBAT3U" 	endof
+	h# 217 of	" IBAT3L" 	endof
+	h# 218 of	" DBAT0U"	endof
+	h# 219 of	" DBAT0L"	endof
+	h# 21A of	" DBAT1U"	endof
+	h# 21B of	" DBAT1L"	endof
+	h# 21C of	" DBAT2U"	endof
+	h# 21D of	" DBAT2L"	endof
+	h# 21E of	" DBAT3U"	endof
+	h# 21F of	" DBAT3L"	endof
+	h# 3F0 of	" HID0"		endof
+	d# 976 of	" DMISS"	endof
+	d# 977 of	" DCMP"		endof
+	d# 978 of	" HASH1"	endof
+	d# 979 of	" HASH2"	endof
+	d# 980 of	" IMISS"	endof
+	d# 981 of	" ICMP"		endof
+	d# 982 of	" RPA"		endof
+	d# 1009 of	" HID1"		endof
+	d# 1010 of	" IABR"		endof
+			" ???"	rot dup . endcase
+	type ;
+: spr,	spr ','-emit ;
+
+: UI16.	[char] $ emit h# FFFF and hex
+	?dup if
+		<# u#s u#>
+		else
+		" 0" then
+	type ;
+: SI16.
+	16 << 16 >>a dup 0< if
+		negate [char] - emit then
+	UI16. ;
+
+: BRoff	{ _d }
+	_d dup 0< if negate [char] - else [char] + then emit
+	[char] $ emit hex . space
+	[char] [ emit _d disPtr @ + 8 nx. [char] ] emit
+	;
+: BRext { _wrd _cstr ; _out }
+	_cstr count dup -> _out type
+	_wrd h# 1 and if [char] l emit _out 1+ -> _out then
+	_wrd h# 2 and if [char] a emit _out 1+ -> _out then
+	8 _out - spaces
+	 ;
+: X18	{ _wrd _cstr }
+	_wrd _cstr BRext
+	_wrd 6 << 6 >>a h# FFFFFFFC and _wrd 2 and if
+		8 nx. else BRoff then
+	;
+18 " b" ' X18 DecodeTable t,
+
+: BBx	{ _wrd _cstr }
+	_wrd _cstr BRext
+	_wrd 16 m5,
+	_wrd h# FFFC and 16 << 16 >>a BRoff
+	;
+: bbx,	['] BBx DecodeTable16 t,	;
+h# 00 " bdnzf" bbx,	h# 01 " bdnzf" bbx,
+h# 02 " bdzf" bbx,	h# 03 " bdzf" bbx,
+h# 04 " bf" bbx,	h# 05 " bf" bbx,	h# 06 " bf" bbx,	h# 07 " bf" bbx,
+h# 08 " bdnzt" bbx,	h# 09 " bdnzt" bbx,
+h# 0A " bdzt" bbx,	h# 0B " bdzt" bbx,
+h# 0C " bt" bbx,	h# 0D " bt" bbx,	h# 0E " bt" bbx,	h# 0F " bt" bbx,
+h# 10 " bdnz" bbx,	h# 11 " bdnz" bbx,	h# 18 " bdnz" bbx,	h# 19 " bdnz" bbx,
+h# 12 " bdz" bbx,	h# 13 " bdz" bbx,	h# 1A " bdz" bbx,	h# 1B " bdz" bbx,
+h# 14 " b" bbx,		h# 15 " b" bbx,		h# 16 " b" bbx,		h# 17 " b" bbx,
+h# 1C " b" bbx,		h# 1D " b" bbx,		h# 1D " b" bbx,		h# 1F " b" bbx,
+
+: X16	{ _wrd _cstr }
+	_wrd dup 21 >> h# 1F and 3 << DecodeTable16 + dup @ swap cell+ @ swap execute
+	;
+16 " X16" ' X16 DecodeTable t,
+
+: BCrc	{ _wrd _cstr }
+	_wrd 21 >> h# 1F and h# 14 xor
+	  if
+		_wrd 21 >> h# 1F and 3 << DecodeTable16 + cell+ @ count type
+		_wrd h# 400 and if " ctr" else " lr" then type
+		_wrd 1 and if [char] l emit then space
+		_wrd 16 m5
+	  else
+		_wrd h# 400 and if " bctr" else " blr" then type
+		_wrd 1 and if [char] l emit then
+	  then
+ ;
+16 " bcr" ' BCrc DecodeTable19 t,	528 " bcc" ' BCrc DecodeTable19 t,
+
+: RFx	opname? ;
+: rf,	['] RFx DecodeTable19 t, ;
+82 " rfsvc" rf,		50 " rfi" rf,	150 " isync" rf,
+
+: CRFx	{ _wrd _cstr }
+	_cstr _wrd opname?
+	_wrd 23 m3,		_wrd 18 m3 ;
+0 " mcrf" ' CRFx DecodeTable19 t,
+
+: CRx	{ _wrd _cstr }
+	_wrd _cstr opname?
+	_wrd 21 m5,		_wrd 16 m5,		_wrd 11 m5 ;
+: crx,	['] CRx DecodeTable19 t, ;
+289 " creqv" crx,	257 " crand" crx,	193 " crxor" crx,	449 " cror" crx,
+129 " crandc" crx,	225 " crnand" crx,	417 " crorc" crx,	33 " crnor" crx,
+
+: X19	{ _wrd _cstr }
+	_wrd dup 1 >> h# 3FF and 3 << DecodeTable19 + dup @ swap cell+ @ swap execute
+	;
+19 " X19" ' X19 DecodeTable t,
+
+: emit( h# 28 emit ;
+: emit) h# 29 emit ;
+
+: DFx { _wrd _cstr }
+	_cstr opname
+	_wrd 21 reg,
+	_wrd SI16. emit( _wrd 16 reg|0 emit) ;
+: df,	['] DFx DecodeTable t,	;
+34 " lbz" df,		40 " lhz" df,		42 " lha" df,		32 " lw" df,
+46 " lmw" df,
+38 " stb" df,		44 " sth" df,		36 " stw" df,		47 " stmw" df,
+35 " lbzu" df,		41 " lfzu" df,		43 " lhau" df,		33 " lwu" df,
+39 " stbu" df,		45 " sthu" df,		37 " stwu" df,
+50 " lfd" df,		51 " lfdu" df,		48 " lfs" df,		49 " lfsu" df,
+54 " stfd" df,		55 " stfdu" df,		52 " stfs" df,		53 " stfsu" df,
+
+: XFx { _wrd _cstr }
+	_wrd _cstr opname?
+	_wrd 21 reg,	_wrd 16 reg|0,	_wrd 11 reg ;
+: xf,	['] XFx DecodeTable31 t,	;
+87 " lbzx" xf,		279 " lhzx" xf,		343 " lhax" xf,		23 " lwx" xf,
+790 " lhbrx" xf,	534 " lwbrx" xf,
+215 " stbx" xf,		407 " sthx" xf,		151 " stwx" xf,
+918 " sthbrx" xf,	662 " stwbrx" xf,
+119 " lbzux" xf,	311 " lhzux" xf,	375 " lhaux" xf,	55 " lwux" xf,
+247 " stbux" xf,	439 " sthux" xf,	183 " stwux" xf,
+533 " lswx" xf,		277 " [lscbx]" xf,	661 " stswx" xf,
+599 " lfdx" xf,		631 " lfdux" xf,	535 " lfsx" xf,		567 " lfsux" xf,
+727 " stfdx" xf,	759 " stfdux" xf,	663 " stfsx" xf,	695 " stfsux" xf,
+
+: XCFx { _wrd _cstr }	\ cache ops
+	_wrd _cstr opname?
+	_wrd 16 reg|0,	_wrd 11 reg ;
+: xcf,	['] XCFx DecodeTable31 t,	;
+982 " icbi" xcf,	278 " dcbt" xcf,	246 " dcbtst" xcf,
+1014 " dcbz" xcf,	54 " dcbst" xcf,	86 " dcbf" xcf,
+470 " dcbi" xcf,
+
+: XFCx { _wrd _cstr } ( for compares )
+	_wrd _cstr opname?
+	_wrd 23 m3,		_wrd 16 reg,	_wrd 11 reg ;
+: xfc,	['] XFCx DecodeTable31 t,	;
+0 " cmp" xfc,		32 " cmpl" xfc,
+
+: XFIx { _wrd _cstr }
+	_wrd _cstr opname.
+	_wrd 21 reg,	_wrd 16 reg,	_wrd 11 m5 ;
+: xfi,	['] XFIx DecodeTable31 t,	;
+597 " lswi" xfi,	725 " stswi" xfi,
+
+: SIx { _wrd _cstr }
+	_cstr opname
+	_wrd 21 reg,
+	_wrd 27 >> 7 = if _wrd 16 reg|0, else _wrd 16 reg, then
+	_wrd SI16. _wrd h# 8000 and if
+		space emit( emit _wrd UI16. emit) emit then
+ ;
+: sif,	['] SIx DecodeTable t,	;
+14 " addi" sif,		15 " addis" sif,
+12 " addic" sif,	13 " addic." sif,		08 " subfic" sif,
+09 " [dozi]" sif,
+07 " mulli" sif,
+: SICx { _wrd _cstr }
+	_cstr opname
+	." CR" _wrd 23 m3, _wrd 16 reg,
+	_wrd SI16. ;
+: sicf,	['] SICx DecodeTable t,	;
+11 " cmpi" sicf,	10 " cmpli" sicf,
+
+: LMMx	{ _wrd _cstr }
+	_cstr opname
+	_wrd 16 reg, _wrd 21 reg,
+	_wrd UI16.
+	;
+: lmm,	['] LMMx DecodeTable t,	;
+28 " andi." lmm,	29 " andis." lmm,		24 " ori" lmm,		25 " oris" lmm,
+26 " xori" lmm,		27 " xoris" lmm,
+
+: XLFx { _wrd _cstr }
+	_wrd _cstr opname.
+	_wrd 16 reg,	_wrd 21 reg,	_wrd 11 reg ;
+: xlf,	['] XLFx DecodeTable31 t,	;
+28 " and" xlf,		444 " or" xlf,		316 " xor" xlf,		60 " andc" xlf,
+284 " eqv" xlf,		412 " orc" xlf,		124 " nor" xlf,		476 " nand" xlf,
+24 " slw" xlf,		536 " srw" xlf,		792 " sra" xlf,
+
+: XLSx { _wrd _cstr }
+	_cstr count type _wrd 1 and if [char] . emit then space
+	_wrd 16 reg,	_wrd 21 reg,	_wrd 11 m5 ;
+: xls,	['] XLSx DecodeTable31 t,	;
+824 " srai" xls,
+
+: XRLx { _wrd _cstr }
+	_wrd _cstr opname.
+	_wrd 16 reg, _wrd 21 reg, _wrd 11 reg, _wrd 6 m5, _wrd 1 m5
+	;
+: xrl,	['] XRLx DecodeTable t,		;
+23 " rlwnm" xrl,
+
+: XRLIx { _wrd _cstr }
+	_wrd _cstr opname.
+	_wrd 16 reg, _wrd 21 reg, _wrd 11 m5, _wrd 6 m5, _wrd 1 m5
+	;
+: xrlI,	['] XRLIx DecodeTable t,		;
+20 " rlwimi" xrli,	21 " rlwinm" xrli,
+
+: ULFx { _wrd _cstr }
+	_wrd _cstr opname.
+	_wrd 16 reg,	_wrd 21 reg ;
+: ulf, ['] ULFx DecodeTable31 t,	;
+922 " extsh" ulf,	26 " cntlzw" ulf,	954 " extsb" ulf,
+
+: XOFx { _wrd _cstr ; _count }
+	_cstr count dup -> _count type
+	_wrd h# 400 and if [char] o emit 1 _count 1 + -> _count then
+	_wrd h# 1 and if [char] . emit 1 _count 1 + -> _count then
+	8 _count - spaces
+	_wrd 21 reg,	_wrd 16 reg,	_wrd 11 reg ;
+: xof,	{ .op _str _len }
+	.op _str _len			['] XOFx DecodeTable31 t,
+	.op h# 200 or _str _len	['] XOFx DecodeTable31 t,	;
+266 " add" xof,		10 " addc" xof,		138 " adde" xof,
+40 " subf" xof,		8 " subfc" xof,		136 " subfe" xof,
+234 " addme" xof,	202 " addze" xof,	232 " subfme" xof,	200 " subfze" xof,
+235 " mullw" xof,	75 " mulhw" xof,	11 " mulhwu" xof,
+491 " divw" xof,	459 " divwu" xof,
+264 " [doz]" xof,	107 " [mul]" xof,	331 " [div]" xof,
+363 " [divs]" xof,
+
+
+: UOFx { _wrd _cstr }
+	_cstr opname
+	_wrd h# 400 and if [char] o emit then
+	_wrd h# 1 and if [char] . emit then space
+	_wrd 21 reg,	_wrd 16 reg ;
+: uof,	{ .op _str _len }
+	.op _str _len			['] UOFx DecodeTable31 t,
+	.op h# 200 or _str _len	['] UOFx DecodeTable31 t,	;
+360 " [abs]" uof,	104 " neg" uof,		488 " [nabs]" uof,
+
+: MTSPRx { _wrd _cstr }	_cstr opname	_wrd 11 spr,	_wrd 21 reg ;
+467 " mtspr" ' MTSPRx DecodeTable31 t,
+: MFSPRx { _wrd _cstr }	_cstr opname	_wrd 21 reg,	_wrd 11 spr ;
+339 " mfspr" ' MFSPRx DecodeTable31 t,
+: MTCRFx { _wrd _cstr }	_cstr opname
+	_wrd 12 >> h# FF and 2 nx. ','-emit _wrd 21 reg ;
+144 " mtcrf" ' MTCRFx DecodeTable31 t,
+: MFCRx { _wrd _cstr }	_cstr opname	_wrd 21 reg ;
+19 " mfcr" ' MFCRx DecodeTable31 t,
+146 " mtmsr" ' MFCRx DecodeTable31 t,
+83 " mfmsr" ' MFCRx DecodeTable31 t,
+: MCRXRx { _wrd _cstr }	_cstr opname	_wrd 23 m3 ;
+512 " mcrxr" ' MCRXRx DecodeTable31 t,
+: MTSRx { _wrd _cstr }	_cstr opname	_wrd 16 sreg,	_wrd 21 reg ;
+210 " mtsr" ' MTSRx DecodeTable31 t,
+: MFSRx { _wrd _cstr }	_cstr opname	_wrd 21 reg,	_wrd 16 sreg ;
+595 " mfsr"	' MFSRx DecodeTable31 t,
+: MTSRINx { _wrd _cstr } _cstr opname	_wrd 11 reg,	_wrd 21 reg ;
+242 " mtsrin" ' MTSRINx DecodeTable31 t,
+: MFSRINx { _wrd _cstr } _cstr opname	_wrd 21 reg,	_wrd 11 reg ;
+659 " mfsrin" ' MFSRINx DecodeTable31 t,
+
+create _temp 8 allot
+: MFTBx { _wrd _cstr }
+	_wrd 11 >> h# 3FF and h# 188 = if " mftb" else " mftbu" then
+	_temp pack opname	_wrd 21 reg ;
+371 " ???" ' MFTBx DecodeTable31 t,
+
+: TLBIEx { _wrd _cstr }
+	_cstr opname	_wrd 11 reg ;
+306 " tblie" ' TLBIEx DecodeTable31 t,
+
+: SYNCx	{ _wrd _cstr }
+	_cstr opname ;
+598 " sync"	' SYNCx DecodeTable31 t,
+854 " eieio"	' SYNCx DecodeTable31 t,
+566 " tlbsync" ' SYNCx DecodeTable31 t,
+
+: X31	{ _wrd _cstr }
+	_wrd dup 1 >> h# 3FF and 3 << DecodeTable31 + dup @ swap cell+ @ swap execute
+	;
+31 " X31" ' X31 DecodeTable t,
+
+( TRAPs )
+: TIx { _wrd _cstr }
+	_cstr opname
+	_wrd 21 m5,		_wrd 16 reg,
+	_wrd SI16. ; 
+3 " twi" ' TIx DecodeTable t,
+: Tx { _wrd _cstr }
+	_cstr count type space _wrd 1 and if [char] ? emit then
+	_wrd 21 m5,		_wrd 16 reg,	_wrd 11 reg ;
+4 " tw" ' Tx DecodeTable31 t,
+
+( SVCs )
+: SVCx { _wrd _cstr }
+	_cstr count type
+	_wrd 2 and
+	  if [char] a emit
+		_wrd 1 and if [char] l emit then space
+		_wrd 2 >> h# 3FFF and hex .
+	  else
+	  	_wrd 1 and if [char] l emit then space
+		_wrd 5 >> h# 3F and hex . ','-emit
+		_wrd 12 >> h# F and . ','-emit
+		_wrd 2 >> h# 7 and .
+	  then
+	;
+17 " svc" ' SVCx DecodeTable t,
+
+: <dis1>	{ _ptr ; _wrd oldbase }
+	base @ -> oldbase
+	_ptr dup disPtr ! hex 8 nx. [char] : emit space
+	_ptr @ -> _wrd
+	_wrd dup 26 >> 3 << DecodeTable + dup @ swap cell+ @ swap execute
+	oldbase base !
+	CR
+	;
+['] <dis1> to dis1
+
+: see-dis1	{ _ptr ; _wrd _oldbase }
+	base @ -> _oldbase
+	_ptr dup disPtr ! @ -> _wrd
+	_wrd dup 26 >> 3 << DecodeTable + dup @ swap cell+ @ swap execute
+	_oldbase base !
+	;
+
+hex

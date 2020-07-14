@@ -1,0 +1,187 @@
+general I/O stats/config mechanism
+
+* new kern_dev rpcs
+
+  to find out what lives:
+  
+  dev_return_t dev_inquire(
+  	port_t device_master,	// same as Config uses? 
+  	int unit,		// global device "unit num space"
+	devname_t *devname,	// IODevice's devname (sd0, etc)
+  );
+  
+  to get general parameter for unit n:
+  
+  dev_return_t dev_param(
+  	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int *parameter,		// returned
+  );
+  
+  to set general parameter in unit n:
+  
+  dev_return_t dev_set_param(
+  	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int parameter		// returned
+  );
+  
+  -- devname should be sufficient key to allow appropriate App to decide
+     whether or not to do dev_params() on that unit.
+  -- DiskObject should override deviceRegister:, only pass up calls for
+     physical devices. (Maybe not...want to register rsd0a...
+     
+* IODevice instance variables
+  char deviceType[]
+  	e.g. "LogicalDisk", "SCSIDisk" (or maybe just "Disk"), "EtherNet"
+  char deviceName[]
+  	e.g. "SCSIDisk0", "BlockSCSIDisk0a", etc.
+  
+* IODevice methods
+  - (dev_return_t)getParam:(const char *)paramName param:(int *)parameter;
+  - (dev_return_t)setParam:(const char *)paramName param:(int)parameter;
+  
+  * Any subclass can override these to handle new parameters; any not
+    known are passed up to [super getParam:]. 
+    
+    e.g. in NetDriver:
+    
+    - (int)getParam:(const char *)paramName
+    {
+    	if(strcmp(paramName, "inPackets"))
+		return (if_ipackets([self getNetif]);
+	else if (...)
+		return whatever;
+	else
+		return [super getParam:paramName];
+    }
+    
+* Dispatching from kern_dev to instance:
+  -- need to map unit to id.
+  -- needs to work the same in user space! shlib version of IODevice needs
+     to provide a "user_device_master" port, advertised in nmserver, 
+     providing these same functions...
+  
+  IODevice's registerDevice:
+  
+  typedef struct {
+  	id		instance;
+	int		unit;
+  	queue_chain_t 	link;
+  } unitToIdMap_t;
+  
+  /*
+   * Both of these should be locked with a spin lock 
+   */
+  static int globalUnitCounter;
+  static queue_head_t unitToIdList;	// queue of unitToIdMap_t's
+  
+  - (int)registerDevice
+  {
+  	globalUnit = globalUnitCounter++;
+	create a unitToIdMap_t for this instance;
+	enqueue it on unitToIdList;
+	return;
+  }
+  
+kernel:
+  dev_return_t dev_param(
+  	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int *parameter) 		// returned
+  {
+	return IODeviceParameter(unit, paramName, parameter);
+  }
+  
+  dev_return_t dev_set_param(
+  	port_t device_master;
+	int unit;
+	char paramName[PARAM_NAME_SIZE];
+	int parameter) 
+  {
+	return IODeviceSetParameter(unit, paramName, parameter);
+  }
+  
+  IODevice.m:
+  
+  dev_return_t IODeviceParameter(unit, paramName, *parameter)
+  {
+  	get unitToIdMap_t for this unit;
+	if NULL
+		return error;
+	else
+		return [unitToIdMap->instance getParam:paramName];
+  }
+  dev_return_t IODeviceSetParameter(unit, paramName, *parameter)
+  {
+  	get unitToIdMap_t for this unit;
+	if NULL
+		return error;
+	else
+		return [unitToIdMap->instance setParam:paramName];
+  }
+
+* Eventually this should work with RO? What's the name space? Maybe make 
+  user-level wrapper around the three Kernel RPCs, do it all with RO with
+  one "master device object". Ideally this should just provide the id of
+  the desired unit, but won't wotk in the kernel...styick with RPCs to 
+  device_master for now.
+  
+....................................
+
+returning arrays
+
+/*
+ * Get one unsigned int
+ */
+dev_return_t dev_param(
+  	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	unsigned int *parameter,		// returned
+);
+  
+/*
+ * Get an array of unsigned ints.
+ */
+dev_return_t  dev_get_param_int(
+	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int maxCount,
+	unsigned *paramArray,			// array RETURNED here
+	unsigned *returnedCount);		// size of returned array
+	
+/*
+ * Get an array of unsigned chars.
+ */
+dev_return_t  dev_get_param_char(
+	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int maxCount,
+	unsigned char *paramArray,		// array RETURNED here
+	unsigned *returnedCount);		// size of returned array
+
+/*
+ * Set an array of unsigned ints.
+ */
+dev_return_t  dev_set_param_int(
+	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int count,
+	unsigned int *paramArray);
+	
+/*
+ * Set an array of unsigned chars.
+ */
+dev_return_t  dev_set_param_char(
+	port_t device_master,
+	int unit,
+	char paramName[PARAM_NAME_SIZE],
+	int count,
+	unsigned char *paramArray);

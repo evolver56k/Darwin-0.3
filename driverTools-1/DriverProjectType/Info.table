@@ -1,0 +1,25 @@
+{
+    ProjectTypeDescription = "A project that provides a framework for a complete driver installation package";
+    AdditionalAttributes = {
+	BundleExtension = {ATTR_CLASS_NAME = "NSString";};
+    };
+    Allowable_SuperprojectTypes = (Aggregate, Application, Framework, Tool);
+    Allowable_SubprojectTypes = (KernelServer, Bundle, Tool, Library);
+    AttributesInspector = SubprojectInspector; 
+    DefaultExtension = drvproj; 
+    Default_Localizable_Keys = (INTERFACES); 
+    GeneratedFiles = (Makefile);
+    INSTALLFLAGS = "-c -s -m 755"; 
+    InfoName = ""; 
+    KeyForType = BUNDLES; 
+    Localizable_Keys = (INTERFACES, IMAGES, OTHER_RESOURCES); 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles";
+    MAKEFILE = driver.make; 
+    Other_Keys = (OTHER_SOURCES, OTHER_LIBS, FRAMEWORKS); 
+    PBProjectTypeSubClass = "DriverProjectType";
+    Resource_Keys = (INTERFACES, IMAGES, OTHER_RESOURCES); 
+    SOURCEMODE = 444; 
+    Source_Keys = (CLASSES, H_FILES, OTHER_LINKED); 
+    Subproj_Keys = (SUBPROJECTS); 
+    Targets = (driver, debug, profile, install); 
+}

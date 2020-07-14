@@ -1,0 +1,49 @@
+{\rtf0\ansi{\fonttbl\f0\fnil TradeGothic;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx6820\f0\b\i0\ulnone\fs36\fc0\cf0 Bundle Info Files
+\b0\fs28 \
+\
+The 4.0 ProjectBuilder Makefiles will generate an ASCII property-list file and put it in every bundle, app, framework and palette wrapper directory.  It will be used by Foundation's NSBundle to implement the following method:\
+\
+  - (NSDictionary *) infoDictionary;\
+  \
+All users of this information should go through this API and access the information programmatically.  The file currently happens to be called "Info.plist".  Developers may extend the contents of this property list by adding a "CustomInfo.plist" file to the "Supporting Files" suitcase of the project generating the bundle directory.  The contents of CustomInfo.plist, if parsable by Foundation, will be merged into information which is derived directly from project attributes.  The end result will be an "info dictionary" with a set of well-known keys (as described below) and any additional keys and values the developer includes in CustomInfo.plist.\
+\
+The top-level of the info dictionary has the following keys and values.\
+\
+
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx10580\ul\fc0\cf0 Key
+\ulnone      			
+\ul Value
+\ulnone    		 			
+\ul Source
+\ulnone \
+NSExecutable		Name of binary file in wrapper containing executable code.	PB\
+NSIcon			Name of image file in wrapper containing an iconic 	PB\
+			    	   representation for the bundle (e.g. the app's icon).\
+NSMainNibFile		Name of main .nib file in wrapper.	PB\
+NSPrincipalClass	Name of the principal class in the bundle's executable.	PB\
+				   In the case of an app bundle, this must be a sub-class\
+				   of NSApplication.\
+NSExtensions		A dictionary following the conventions described below.	PB\
+NSServices		A dictionary following the conventions defined by 	developer\
+				   Garrick and Nik.\
+
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx6820\fc0\cf0 NSVersion			A string represention of a version which will supplant the         developer\
+				   existing "version" file mechanism that no one uses. \
+
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx10580\fc0\cf0 NSDescription		Just a human-readable string one can display somewhere   	developer \
+\
+\
+The keys in the NSExtensions dictionary are the name of the extension (e.g. tiff) or "*", meaning the bundle claims all extensions not otherwise claimed.  The values in this dictionary are in fact dictionaries containing:\
+\
+NSIcon			Name of image file in wrapper containing an iconic 	PB\
+			    	   representation for the document type.\
+NSIsPrimary		If it exists, denotes that app is the primary "claimer" 	PB\
+				   of documents of this type and not just merely capable \
+				   of opening them\
+				   .
+}

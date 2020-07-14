@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble); 
+        SUBPROJECTS = (tar); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = srccmd; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

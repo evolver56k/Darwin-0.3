@@ -1,0 +1,29 @@
+change kernel's log() to these two:
+
+int log(int level, const char *format, ...)
+{
+	register s = splhigh();
+	va_list ap;
+	extern int log_open;
+
+	va_start(ap, format);
+	vlog(level, format, ap);
+	va_end(ap);
+	return 0;
+}
+
+int vlog(int level, const char *format, va_list ap)
+{
+	register s = splhigh();
+	extern int log_open;
+
+	logpri(level);
+	prf(format, ap, TOLOG, (struct tty *)0);
+	splx(s);
+	if (!log_open)
+		prf(format, ap, TOCONS, (struct tty *)0);
+	logwakeup();
+	return 0;
+}
+
+...and make kernel IOLog like log(), with implied level.

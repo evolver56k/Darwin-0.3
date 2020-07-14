@@ -1,0 +1,17 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/creat.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/gethostid.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/getwd.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/killpg.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/send.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/sethostid.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/setpgrp.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/setregid.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/setreuid.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/setrgid.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/setruid.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+/sigcompat.c/1.1.1.1/Wed Apr 14 23:18:59 1999//TLibc-1
+D

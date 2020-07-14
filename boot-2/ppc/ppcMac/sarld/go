@@ -1,0 +1,11 @@
+#!/bin/sh
+
+INCLUDE="\
+    -I/NextLibrary/Frameworks/System.framework/Versions/B/Headers/bsd \
+    -I/NextLibrary/Frameworks/System.framework/Versions/B/Headers \
+"
+CFLAGS=" \
+     \
+"
+
+   cc -c -g $CFLAGS rldtest.c $INCLUDE

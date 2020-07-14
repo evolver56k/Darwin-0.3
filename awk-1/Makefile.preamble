@@ -1,0 +1,7 @@
+vpath proctab.c $(SFILE_DIR)
+
+OTHER_GENERATED_OFILES = proctab.o
+
+Install_Source = $(NSSOURCEDIR)/Commands/$(NAME)
+
+include $(MAKEFILEPATH)/CoreOS/ProjectBuilder/Makefile.Preamble.Common

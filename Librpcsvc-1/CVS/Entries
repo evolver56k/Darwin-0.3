@@ -1,0 +1,22 @@
+/APPLE_LICENSE/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/Makefile/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/Makefile.dist/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/PB.project/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/bootparam_prot.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/klm_prot.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/mount.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/nfs_prot.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/nlm_prot.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/rex.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/rnusers.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/rquota.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/rstat.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/rusers.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/rwall.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/sm_inter.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/spray.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/yp.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+/yppasswd.x/1.1.1.1/Wed Apr 14 17:54:55 1999//TLibrpcsvc-1
+D/dpkg////

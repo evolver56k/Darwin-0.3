@@ -1,0 +1,69 @@
+/* Making sure they really want to do this */
+"REALLY_INSTALL" = "Questo programma installa OPENSTEP su un disco rigido.\nPer procedere con l'installazione di OPENSTEP, bisogna rispondere ad\nalcune domande.\n\nQUESTO NON E UN AGGIORNAMENTO. E UNA INSTALLAZIONE COMPLETA DA ZERO.\nPremi 1 per proseguire con OPENSTEP.  Premi 2 per uscire.";
+
+/* Displayed above the list of disks */
+"AVAILABLE_DISKS" = "In questo computer sono disponibili dischi dei seguenti tipi:";
+
+/* Displayed below the list of disks */
+/*
+ 123456789012345678901234567890123456789012345678901234567890123456789012345
+*/
+"WHICH_DISK" = "Premi 1 per installare OPENSTEP su questo disco.\n\nPremi 2 per le opzioni di installazione avanzate.";
+
+"ALL_DISKS" = "Il primo disco dell'elence e quello di avviamento. Si puo installare il\nsoftware di base di OPENSTEP su un altro disco ma in tal caso OPENSTEP\nnon potra avviarsi automaticamente quando si riavvia il computer e sara\nnecessario utilizzario come disco di avviamento per completare\nl'installazione di OPENSTEP.\n\nDigitare il numero corrispondente al disco sul quale si desidera\ninstallare OPENSTEP.";
+
+/* Asked when there is a valid OPENSTEP partition on the disk */
+"OVERWRITE" = "Vuoi conservare i file presenti, o cancellarli prima di installare i file\nessenziali OPENSTEP?\nPremi 1 per conservare i file. Premi 2 per cancellarli.";
+
+/* Options for partitioning the disk */
+"FDISK_MENU1" = "echo \"Premi 1 per cancellare completamente il disco ed usare $disksize MB\\nper OPENSTEP.\"";
+"FDISK_MENU2" = "echo \"Premi 2 per lasciare un po di spazio per il DOS ed utilizzare\\nil resto per OPENSTEP.\"";
+"FDISK_MENU3" = "echo \"Premi $currentnum per cancellare la partizione OPENSTEP di $currentsize Mb\\ned usarla per OPENSTEP.\"";
+"FDISK_MENU4" = "echo \"Premi $freenum per mantenere le partizioni gia esistenti ed usare $freesize MB\\ndi spazio libero per OPENSTEP.\"";
+"FDISK_MENU5" = "echo \"Premi $enum per usare $esize MB nella partizione estesa DOS per OPENSTEP.\"";
+"FDISK_MENU6" = "echo \"Premi $choices per le opzioni avanzate (solo in Inglese).\"";
+
+/* Displayed when they type 2 */
+"HOW_MUCH" = "Inserisci la dimensione della partizione DOS desiderata (in megabytes): ";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"NO_EXTENDED" = "Non esiste una partizione DOS estesa in questo disco.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"TOO_SMALL" = "Lo spazio su disco non e sufficiente per partizionare il disco\ncome richiesto.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"CHOOSE_AGAIN" = "Selezionare un'altra opzione.";
+
+/* Last chance to abort */
+"READY" = "Pronto per installare OPENSTEP\n\nPremi 1 per iniziare l'installazione di OPENSTEP.\nPremi 2 per uscire dal programma di installazione.";
+
+/* Displayed in lieu of cryptic commands passing by... */
+"GOING" = "Sto preparando il disco per l'installazione di OPENSTEP.\nQuesto puo richiedere qualche minuto...";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INITFAILED" = "INIZIALIZZAZIONE DISCO FALLITA.\n\nIl programma di installazione non riesce ad inizializzare il disco.\nImpossibile continuare l'installazione.";
+
+"Installing " = "Installazione di ";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INSTALLFAILED" = "Nessun disco trovato.\nImpossibile continuare l'installazione.\n\n";
+
+/* Displayed when the user aborts, or something goes wrong */
+"QUITTING" = "Sto terminando il programma di installazione. Un attimo di pazienza...";
+
+"Completed." = "Installazione completata.";
+
+"DONE" = "Adesso il disco fisso e pronto per essere usato come disco di avviamento\nper completare l'installazione di OPENSTEP.";
+
+/* Forces them to eject the floppy right before rebooting */
+"REMOVE_FLOPPY" = "Estrai il dischetto dall'unita disco flessibile e premi Invio.";
+
+/* When we don't have a floppy */
+"RESTART" = "Premi Invio per riavviare il computer.";
+
+/* Displayed right before rebooting */
+"RESTARTING" = "Riavvio del computer. Un attimo di pazienza...";
+
+/* Displayed when selecting the disk for installation */
+"BOOT_DISK" = "Il disco di avviamento in questo computer e:";

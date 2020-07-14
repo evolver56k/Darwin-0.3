@@ -1,0 +1,30 @@
+/Header/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/LEGAL.NOTICE/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/Localstuff/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/MAINT/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/Makefile/1.1.1.2/Fri Apr 23 02:38:34 1999//Tfile_cmds-1
+/Makefile.postamble/1.1.1.1/Fri Apr 23 02:38:35 1999//Tfile_cmds-1
+/Makefile.preamble/1.1.1.1/Fri Apr 23 02:38:35 1999//Tfile_cmds-1
+/PB.project/1.1.1.1/Fri Apr 23 02:38:35 1999//Tfile_cmds-1
+/PORTING/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/README/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/apprentice.c/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/ascmagic.c/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/compress.c/1.1.1.1/Fri Apr 23 02:37:40 1999//Tfile_cmds-1
+/file.1/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/file.c/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/file.h/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/file2netbsd/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/fsmagic.c/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/internat.c/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/is_tar.c/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/magic.5/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/names.h/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/patchlevel.h/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/print.c/1.1.1.1/Fri Apr 23 02:37:41 1999//Tfile_cmds-1
+/readelf.c/1.1.1.1/Fri Apr 23 02:37:42 1999//Tfile_cmds-1
+/readelf.h/1.1.1.1/Fri Apr 23 02:37:42 1999//Tfile_cmds-1
+/softmagic.c/1.1.1.1/Fri Apr 23 02:37:42 1999//Tfile_cmds-1
+/tar.h/1.1.1.1/Fri Apr 23 02:37:42 1999//Tfile_cmds-1
+D/magdir////
+D/tst////

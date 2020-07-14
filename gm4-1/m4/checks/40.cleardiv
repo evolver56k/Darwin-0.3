@@ -1,0 +1,4 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:2374: Origin of test
+define(`cleardivert',
+`pushdef(`_num', divnum)divert(-1)undivert($@)divert(_num)popdef(`_num')')
+dnl @result{}

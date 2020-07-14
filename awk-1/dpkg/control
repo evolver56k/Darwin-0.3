@@ -1,0 +1,7 @@
+Package: awk
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Brian Kernighan
+Version: 1998.10.20
+URL: http://cm.bell-labs.com/who/bwk/awktar.gz
+Description: AWK programming language interpreter
+Build-Depends: build-base, yacc

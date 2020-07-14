@@ -1,0 +1,1256 @@
+(TEXINFO
+(SETFILENAME
+-internals.info
+)SETFILENAME
+(TITLEPAGE
+(TITLE
+-dpkg Internals Manual
+)TITLE
+(AUTHOR
+-Klee Dienes
+)AUTHOR
+(DATE
+-Version 1.4.1.4 (dpkg 1.4.1.4)
+)DATE
+(ABSTRACT
+-This manual describes the internal structure of the 
+(CODE
+-dpkg
+)CODE
+- package\nmanagement system.
+)ABSTRACT
+)TITLEPAGE
+(CHAPTER
+(HEADING
+-Copyright\n
+)HEADING
+(P
+(BODY
+-Copyright \|@copyright{}\|1997 Klee Dienes 
+(SAMP
+-\|<\|klee@@mit.edu\|>\|
+)SAMP
+-.\n
+)BODY
+)P
+(P
+(BODY
+-This manual is free software; you may redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation; either version 2, or (at your option) any\nlater version.\n
+)BODY
+)P
+(P
+(BODY
+-This is distributed in the hope that it will be useful, but\n
+(EM
+-without any warranty
+)EM
+-; without even the implied warranty of\nmerchantability or fitness for a particular purpose.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License with\nyour Debian GNU/Linux system, in 
+(FILE
+-/usr/doc/copyright/GPL
+)FILE
+-, or\nwith the 
+(CODE
+-dpkg
+)CODE
+- source package as the file 
+(FILE
+-COPYING
+)FILE
+-.  If\nnot, write to the Free Software Foundation, Inc., 675 Mass Ave,\nCambridge, MA 02139, USA.\n
+)BODY
+)P
+)CHAPTER
+(CHAPTER
+(HEADING
+-Build Notes\n
+)HEADING
+(SECTION
+(HEADING
+-Required Packages\n\nTo compile this package you need to have some less-then-standard\npackages installed. Here's a list:\n
+)HEADING
+(P
+(BODY
+(ITEMIZE
+(ITEM
+(BODY
+-automake
+)BODY
+)ITEM
+(ITEM
+(BODY
+-autoconf
+)BODY
+)ITEM
+(ITEM
+(BODY
+-debiandoc-sgml
+)BODY
+)ITEM
+(ITEM
+(BODY
+-dpkg-perl
+)BODY
+)ITEM
+(ITEM
+(BODY
+-gawk
+)BODY
+)ITEM
+(ITEM
+(BODY
+-gettext (from the "experimental" branch - not yet in "main" !)
+)BODY
+)ITEM
+(ITEM
+(BODY
+-libtool
+)BODY
+)ITEM
+(ITEM
+(BODY
+-lout
+)BODY
+)ITEM
+(ITEM
+(BODY
+-psutils
+)BODY
+)ITEM
+(ITEM
+(BODY
+-sgml-base
+)BODY
+)ITEM
+(ITEM
+(BODY
+-sgml-data
+)BODY
+)ITEM
+(ITEM
+(BODY
+-sgml-tools
+)BODY
+)ITEM
+(ITEM
+(BODY
+-sgmlspm
+)BODY
+)ITEM
+(ITEM
+(BODY
+-sp
+)BODY
+)ITEM
+(ITEM
+(BODY
+-tetex-base
+)BODY
+)ITEM
+(ITEM
+(BODY
+-tetex-bin
+)BODY
+)ITEM
+)ITEMIZE
+-\n
+)BODY
+)P
+)SECTION
+(SECTION
+(HEADING
+-Automake\n
+)HEADING
+(P
+(BODY
+-This chapter by Tom Lees \|<\|tom\|@@\|lpsg.demon.co.uk\|>\| on Tue, 4 Mar 1997\n21:34:57 +0000, with subsequent modifications by Klee Dienes \|<\|klee\|@@\|debian.org\|>\|\n
+)BODY
+)P
+(P
+(BODY
+-This chapter contains general notes about the conversion to\n
+(CODE
+-automake
+)CODE
+-.  If you plan on doing anything with 
+(CODE
+-dpkg
+)CODE
+-, you\nshould probably read all of this file first.  You have been warned.\n
+)BODY
+)P
+(P
+(BODY
+-The current version of automake used is version 
+(CODE
+-automake-1.1n
+)CODE
+-,\nwhich is currently a beta version.  It has several significant\nadvantages over the released version, including:\n\n
+(ITEMIZE
+(ITEM
+(BODY
+-it supports emacs lisp properly
+)BODY
+)ITEM
+(ITEM
+(BODY
+-It supports libtool properly
+)BODY
+)ITEM
+(ITEM
+(BODY
+-it includes the aclocal utility
+)BODY
+)ITEM
+)ITEMIZE
+-\n
+)BODY
+)P
+(P
+(BODY
+-The 
+(CODE
+-aclocal
+)CODE
+- utility is a very useful program which will automatically\nbuild an 
+(FILE
+-aclocal.m4
+)FILE
+- file from the 
+(FILE
+-configure.in
+)FILE
+- file to include the\nappropriate macros.\n
+)BODY
+)P
+(P
+(BODY
+(CODE
+-automake-1.1n
+)CODE
+- can be retreived from\n
+(FILE
+-ftp://ftp.cygnus.com/pub/tromey
+)FILE
+-\n
+)BODY
+)P
+(P
+(BODY
+-This doesn't affect anything other than rebuilding the 
+(FILE
+-Makefile.in
+)FILE
+- files\nfrom the sources.\n
+)BODY
+)P
+(P
+(BODY
+-Probably the main difference which is noticable is that instead of\nusing proprietary directory names, it now supports 
+(CODE
+-configure\n--sharedstatedir
+)CODE
+-, and 
+(CODE
+-configure --localstatedir
+)CODE
+-. To set these\nto the Debian defaults, you should use 
+(CODE
+-./configure\n--localstatedir=/etc --sharedstatedir=/var/lib
+)CODE
+-.\n
+)BODY
+)P
+(P
+(BODY
+-I have also customized the canonicalizing macros found in\n
+(CODE
+-autoconf-2.12
+)CODE
+- to include the old way of finding the 
+(CODE
+-dpkg
+)CODE
+-\n``architecture'', i.e. to be a bit more smart. Instead of it trying to\ndetermine the architecture only, I changed it to use the `host',\n`build', and `target' system types. The target CPU type is checked\nagainst the archtable to find the architecture on which dpkg will run.\n
+)BODY
+)P
+(P
+(BODY
+-It uses 
+(CODE
+-gcc --print-libgcc-file-name
+)CODE
+- to find out the build\narchitecture if possible (used later to determine ELF or 
+(CODE
+-a.out
+)CODE
+-\nformat), and also uses 
+(CODE
+-dpkg --print-architecture
+)CODE
+- if possible to\nmodify the 
+(SAMP
+-cpu
+)SAMP
+- field before it passes on the target alias to\nconfig.sub. If you want to specify the architecture, you should now\nuse "--target=", rather than 
+(CODE
+---with-arch
+)CODE
+-, which was essentially\na hack anyway.  The old 
+(CODE
+---with-arch
+)CODE
+- is still there, but it is\nsomewhat less functional. I have also moved the 
+(CODE
+-DPKG_CACHED_
+)CODE
+-\nmacros into dpkg.m4 to make configure.in a bit more readable.\n
+)BODY
+)P
+(P
+(BODY
+-I also converted to libtool 0.7 (which can be found in the Debian\ndistribution now). Essentially, this means that all the dpkg tools can\nbe compiled against a shared 
+(SAMP
+-libdpkg
+)SAMP
+- without much hassle (in\nfact, it is the default). You do not need to install libtool to use\nthis feature (it works like autoconf), and generally, it should not be\nneeded much at all.\n
+)BODY
+)P
+(P
+(BODY
+-The new 
+(SAMP
+-dist
+)SAMP
+- targets will build a distribution including all\nfiles built by the 
+(CODE
+-debiandoc2html
+)CODE
+-, 
+(CODE
+-debiandoc2ps
+)CODE
+-, etc.,\nwhich are included in the distribution so that people may build 
+(CODE
+-dpkg
+)CODE
+-\nwithout these (especially useful to porters).\n
+)BODY
+)P
+(P
+(BODY
+-A target 
+(SAMP
+-make debian
+)SAMP
+- has been added, which will build the\nDebian files from a working directory (does a 
+(SAMP
+-make dist
+)SAMP
+-\nfirst). Now all we need is a modified dpkg-source so that the\n
+(FILE
+-dpkg-1.4.0.8.tar.gz
+)FILE
+- GNU-distribution file can be used as part\nof the Debian dsitribution.  I'm working on this, but it doesn't work\ntoo well at the moment (find it in examples).\n
+)BODY
+)P
+(P
+(BODY
+-I removed the 
+(SAMP
+-make portable
+)SAMP
+- target - it doesn't do anything useful.\n
+)BODY
+)P
+(P
+(BODY
+-I have added 
+(SAMP
+-make uninstall
+)SAMP
+- targets to aid non-Debian users who simply\nwant to try out certain Debian packages, and the "dist" targets are also\nuseful to build a "distribution" of the dpkg tool. Note that since automake\nautomatically includes dependencies into the Makefiles in a distribution,\nif you want to modify the C files, it would be advisable to get and install\nautomake, and then re-run it in the base dpkg distribution directory, so that\nautomatic dependency generation will be switched back on, and any\ndependencies which change will be taken account of. The "make maintainer-clean"\ntargets will remove all files which any of the following utilities create:\n\n
+(ITEMIZE
+(ITEM
+(BODY
+-automake
+)BODY
+)ITEM
+(ITEM
+(BODY
+-autoconf
+)BODY
+)ITEM
+(ITEM
+(BODY
+-aclocal
+)BODY
+)ITEM
+(ITEM
+(BODY
+-autoheader
+)BODY
+)ITEM
+(ITEM
+(BODY
+-gettextize
+)BODY
+)ITEM
+(ITEM
+(BODY
+-libtoolize
+)BODY
+)ITEM
+)ITEMIZE
+-\n
+)BODY
+)P
+(P
+(BODY
+-If you want to modify any of the sources, I recommend that you do the following\nfirst (after having installed the appropriate utilities, of course):-\n\n
+(ITEMIZE
+(ITEM
+(BODY
+-make maintainer-clean
+)BODY
+)ITEM
+(ITEM
+(BODY
+-aclocal
+)BODY
+)ITEM
+(ITEM
+(BODY
+-autoheader
+)BODY
+)ITEM
+(ITEM
+(BODY
+-autoconf
+)BODY
+)ITEM
+(ITEM
+(BODY
+-gettextize
+)BODY
+)ITEM
+(ITEM
+(BODY
+-libtoolize (do not let automake run this, as it will cause it not to\ninclude the libtool files in the dist targets) 
+)BODY
+)ITEM
+(ITEM
+(BODY
+-for i in COPYING INSTALL; do ln -s /usr/share/automake/$i .; done
+)BODY
+)ITEM
+(ITEM
+(BODY
+-automake
+)BODY
+)ITEM
+)ITEMIZE
+-\n
+)BODY
+)P
+(P
+(BODY
+-I have also incorporated the patches originally made by Galen\nHazelwood to internationalize dpkg using GNU gettext - see the file\n"NOTES.intl" for more information about this.\n
+)BODY
+)P
+(P
+(BODY
+-Other minor changes are:\n\n
+(ITEMIZE
+(ITEM
+(BODY
+-The version number is now determined from debian/changelog, not from\nthe directory name.
+)BODY
+)ITEM
+(ITEM
+(BODY
+-Creation of version.h now handled from configure script, not Makefile.
+)BODY
+)ITEM
+(ITEM
+(BODY
+-include/dpkg.h is now generated from include/dpkg.h.in by a sed\nscript, inserting the appropriate directory definitions - so now it\nsupports changing the dpkg directories (can install in /usr/local)
+)BODY
+)ITEM
+(ITEM
+(BODY
+-Updated the COPYING (1 very minor change) and INSTALL files to those\ndistributed with automake-1.1l
+)BODY
+)ITEM
+(ITEM
+(BODY
+-Since the shared libdpkg is now installed, I also made\ninclude/Makefile install dpkg.h and dpkg-db.h into /usr/include by\ndefault
+)BODY
+)ITEM
+)ITEMIZE
+-\n\nQuestions:\n\n
+(ITEMIZE
+(ITEM
+(BODY
+-Should I use 
+(SAMP
+-localstatedir
+)SAMP
+- and 
+(SAMP
+-sharedstatedir
+)SAMP
+- instead of\n
+(SAMP
+-sysconfdir
+)SAMP
+- and 
+(SAMP
+-datadir
+)SAMP
+-?
+)BODY
+)ITEM
+)ITEMIZE
+-\n
+)BODY
+)P
+)SECTION
+(SECTION
+(HEADING
+-Internationalization\n
+)HEADING
+(P
+(BODY
+-This section by Galen Hazelwood. \n
+)BODY
+)P
+(P
+(BODY
+-Dpkg is, to say the least, generous in its error reporting.  The vast\nmajority of the output strings are error messages of one kind or another.\nAnd if you feel that you've stumbled into the Department of Redundancy\nDepartment, you would be absolutely correct.  Many of the error messages\nin dpkg.pot are duplicates, used at different points in the program.\n
+)BODY
+)P
+(P
+(BODY
+-To avoid swamping the translators completely, I made some executive decisions\non what kinds of strings to translate.  All the strings sent to debug() are\nleft alone, on the grounds that these are for dpkg developers, and not for\nthe general public.  Most interal error messages were very cryptic, and\nwould probably confuse the translators when seen just sitting there in\nthe dpkg.pot file, and are also left alone.  (I did mark some of the more\nverbose ones for translation.)\n
+)BODY
+)P
+(P
+(BODY
+-If others disagree with me about the necessity of translating these strings,\nit's easy enough to just go through and mark them later.\n
+)BODY
+)P
+(P
+(BODY
+-I added the startup gettext code to the main routine in dselect, which was\nnecessary as many of the strings in lib are translated.  Dselect is otherwise\nunchanged.\n
+)BODY
+)P
+(P
+(BODY
+-Changes:\n\n
+(ITEMIZE
+(ITEM
+(BODY
+-The files in intl and po were taken from gettext 0.10.26, by way of\nthe gettextize program.  I altered the makefiles to remove the VERSION\nsymbol, which is only used in targets which dpkg does not support.
+)BODY
+)ITEM
+(ITEM
+(BODY
+-aclocal.m4 was stolen from the textutils package, configure.in was\naltered to use these new tests, symbols were added to acconfig.h, and\nthe two new directories were added to Makefile.in.
+)BODY
+)ITEM
+(ITEM
+(BODY
+-The dpkg, dpkg-deb, md5sum, split, and dselect Makefiles now look for\nheaders in ../intl, and try to link with whatever i18n libraries\nconfigure finds.  They also now define LOCALEDIR in CFLAGS.
+)BODY
+)ITEM
+(ITEM
+(BODY
+-include/dpkg.h has the necessary NLS boilerplate, and the only file\nwhich dosen't include this (md5sum/md5sum.c) had it added directly.
+)BODY
+)ITEM
+(ITEM
+(BODY
+-The most intrusive change is due to a disagreement between xgettext\nand the dpkg coding style.  Although xgettext understands string\nconstant concatenation, it can't handle the case where preprocessor\nsymbols are used as well.  The dpkg code uses this a lot, especially\nin cases like this:\n
+(EXAMPLE
+-ohshite("error reading from " BACKEND " pipe");
+)EXAMPLE
+-\nwhere BACKEND is defined as "dpkg-deb".  Because xgettext can't handle\nthis, I have changed this usage in all cases to something like:\n
+(EXAMPLE
+-ohshite(_("error reading from dpkg-deb pipe");
+)EXAMPLE
+-\nThis isn't very kind to Ian, I know.  But what can I do?
+)BODY
+)ITEM
+)ITEMIZE
+-\n
+)BODY
+)P
+)SECTION
+(SECTION
+(HEADING
+-Note to translators\n
+)HEADING
+(P
+(BODY
+-This section by Yann Dirson \|<\|dirson@@debian.org\|>\|\n
+)BODY
+)P
+(P
+(BODY
+-Some messages in dpkg are not self-contained, and may accept several\nsubstrings. To ease translation, these strings are tagged with "submsg:" and\n"supermsg:" comments, which you will see inside PO files.\n
+)BODY
+)P
+(P
+(BODY
+-For example, as of dpkg-1.4.0.19, lib/dump.c has a writedb function\nwhich contains the following lines:\n\n
+(EXAMPLE
+-const char *which;\n\011\n/* submsg: writedb */\nwhich = available ? _("available") : \n                   /* submsg: writedb */\n                   _("status");\n\011\n/* supermsg: writedb 2 -- the substring can have only 2 values */\nif (!file) ohshite(_("failed to open `%s' for writing %s information"),filename,which);
+)EXAMPLE
+-\n\n
+)BODY
+)P
+(P
+(BODY
+-The comments (propagated into PO files by xgettext) instruct the translator\nthat the first strings will be used as substrings in the last one, as second\nparameter in the string (the second %s in this case).\n
+)BODY
+)P
+(P
+(BODY
+-Note that xgettext associates a comment to only one translatable string.\nThus the following would just tag one string out of 2:\n\n
+(EXAMPLE
+-/* submsg: writedb */\nwhich= available ? _("available") : _("status");
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-As in the example, some (hopefully) useful comments may be inserted at the\nend of such a tagging-comment, by preceding them with 2 dashes.\n\n
+)BODY
+)P
+(P
+(BODY
+-Other comments to go into PO files (provided they are just before an\ni18n-ized string) should be introduced with the "L10n:" keyword; this is just\nto allow stripping all other unrelated comments one day, when xgettext will\nlet us specify multiple --add-comments options.\n
+)BODY
+)P
+)SECTION
+)CHAPTER
+(CHAPTER
+(HEADING
+-Code Internals\n
+)HEADING
+(SECTION
+(HEADING
+-Structure Definitons\n
+)HEADING
+(SUBSECTION
+(HEADING
+-versionrevision
+)HEADING
+(P
+(BODY
+(EXAMPLE
+-struct versionrevision @{\n  unsigned long epoch;\n  char *version;\n  char *revision;\n@};  
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-The 
+(TT
+-versionrevision
+)TT
+- structure is used to store a Debian version specification
+)BODY
+)P
+)SUBSECTION
+)SECTION
+(SECTION
+(HEADING
+-Functions\n
+)HEADING
+(SUBSECTION
+(HEADING
+-Error Handling
+)HEADING
+(P
+(BODY
+-Used to managed \n
+)BODY
+)P
+(SUBSUBSECTION
+(HEADING
+(CODE
+-push_checkpoint
+)CODE
+)HEADING
+(FINDEX
+-push_checkpoint()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-void push_checkpoint (int mask, int value)
+)EXAMPLE
+-\n\nThis will arrange that when 
+(TT
+-error_unwind()
+)TT
+- is called, all previous\ncleanups will be executed with 
+(TT
+-flagset = (original_flagset & mask) |\nvalue
+)TT
+- where 
+(VAR
+-original_flagset
+)VAR
+- is the argument to 
+(TT
+-error_unwind
+)TT
+- (as\nmodified by any checkpoint which was pushed later).\n
+)BODY
+)P
+)SUBSUBSECTION
+)SUBSECTION
+(SUBSECTION
+(HEADING
+-Variable buffer functions
+)HEADING
+(P
+(BODY
+-These functions are used to manipulate variable buffers.\n
+)BODY
+)P
+)SUBSECTION
+(SUBSECTION
+(HEADING
+-Parsing translation tables
+)HEADING
+(P
+(BODY
+-Each of these tables is used to associate a set of strings with a\ncorresponding set of integers.\n\nCurrent tables are:\n
+)BODY
+)P
+(P
+(BODY
+(EXAMPLE
+-const struct namevalue booleaninfos[];
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-Maps boolean strings (
+(CODE
+-"yes"
+)CODE
+-,
+(CODE
+-"no"
+)CODE
+-) to their binary values.\n
+)BODY
+)P
+(SUBSUBSECTION
+(HEADING
+(CODE
+-priorityinfos[]
+)CODE
+-\n
+)HEADING
+(P
+(BODY
+(EXAMPLE
+-const struct namevalue priorityinfos[];
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-Maps priority strings to and from values of\ntype 
+(CODE
+-enum pkgpriority
+)CODE
+-.  \nCurrent priority values are:\n\n
+(TABLE
+(ITEM
+(BODY
+(CODE
+-required
+)CODE
+)BODY
+)ITEM
+(BODY
+-required
+)BODY
+(ITEM
+(BODY
+(CODE
+-important
+)CODE
+)BODY
+)ITEM
+(BODY
+-important
+)BODY
+(ITEM
+(BODY
+(CODE
+-standard
+)CODE
+)BODY
+)ITEM
+(BODY
+-standard
+)BODY
+(ITEM
+(BODY
+(CODE
+-recommended
+)CODE
+)BODY
+)ITEM
+(BODY
+-recommended
+)BODY
+(ITEM
+(BODY
+(CODE
+-optional
+)CODE
+)BODY
+)ITEM
+(BODY
+-optional
+)BODY
+(ITEM
+(BODY
+(CODE
+-extra
+)CODE
+)BODY
+)ITEM
+(BODY
+-extra
+)BODY
+(ITEM
+(BODY
+(CODE
+-contrib
+)CODE
+)BODY
+)ITEM
+(BODY
+-contrib
+)BODY
+(ITEM
+(BODY
+(CODE
+-other
+)CODE
+)BODY
+)ITEM
+(BODY
+-other
+)BODY
+(ITEM
+(BODY
+(CODE
+-unknown
+)CODE
+)BODY
+)ITEM
+(BODY
+-unknown
+)BODY
+(ITEM
+(BODY
+(CODE
+-base
+)CODE
+)BODY
+)ITEM
+(BODY
+-This is obsolete, but is accepted as an alias for 
+(CODE
+-required
+)CODE
+-.
+)BODY
+)TABLE
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-statusinfos[]
+)CODE
+-\n
+)HEADING
+(P
+(BODY
+(EXAMPLE
+-const struct namevalue statusinfos[];
+)EXAMPLE
+-\n\nMaps package status strings to values of type 
+(CODE
+-enum ???
+)CODE
+-.\n\nPackage status strings are:\n\n"not-installed" "unpacked" "half-configured" "installed"\n"half-installed" "config-files" "postinst-failed" "removal-failed"
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-eflaginfos[]
+)CODE
+-\n
+)HEADING
+(P
+(BODY
+(EXAMPLE
+-const struct namevalue eflaginfos[];
+)EXAMPLE
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-wantinfos[]
+)CODE
+-\n
+)HEADING
+(P
+(BODY
+(EXAMPLE
+-const struct namevalue wantinfos[];
+)EXAMPLE
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-nicknames[]
+)CODE
+-\n
+)HEADING
+(P
+(BODY
+(EXAMPLE
+-const struct nickname nicknames[];
+)EXAMPLE
+-\n\nMaps obsolete control fields to their current versions.\n
+)BODY
+)P
+)SUBSUBSECTION
+)SUBSECTION
+(SUBSECTION
+(HEADING
+-Parsing functions\n
+)HEADING
+(SUBSUBSECTION
+(HEADING
+(CODE
+-parseerr
+)CODE
+)HEADING
+(FINDEX
+-parseerr()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-void parseerr\n(FILE *file, const char *filename, int lno,\n FILE *warnto, int *warncount, const struct pkginfo *pigp,\n int warnonly, const char *fmt, ...);
+)EXAMPLE
+-\n\nReport an error parsing a control data stream.  Checks 
+(VAR
+-file
+)VAR
+- for\nerror status on 
+(VAR
+-file
+)VAR
+-, printing an error message to stderr and\nexiting with error status if an error is present on the stream.\nFormats the variable arguments according to the 
+(CODE
+-printf
+)CODE
+--style\nstring in 
+(VAR
+-fmt
+)VAR
+-, preceding the result with 
+(VAR
+-filename
+)VAR
+-,\n
+(VAR
+-lno
+)VAR
+-, and 
+(VAR
+-pigp
+)VAR
+- (if not NULL).  If 
+(VAR
+-warnonly
+)VAR
+- is 0,\nwrites the result to stderr and exits with error status.  Otherwise,\nincrements 
+(VAR
+-warncount
+)VAR
+- and returns normally.
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-illegal_packagename
+)CODE
+)HEADING
+(FINDEX
+-illegal_packagename()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-const char *illegal_packagename\n(const char *p, const char **ep) 
+)EXAMPLE
+-\n\nChecks the package name at 
+(VAR
+-p
+)VAR
+- for proper syntax.  Returns NULL in\ncase of success, setting 
+(VAR
+-*ep
+)VAR
+- to point after the last character\nin the package name, including any trailing whitespace (as defined by\nisspace()).  In case of error, returns the error message as a pointer\nto a static buffer.
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-informativeversion
+)CODE
+)HEADING
+(FINDEX
+-informativeversion()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-int informativeversion(const struct versionrevision *version)
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-Returns true if and only if the 
+(CODE
+-versionrevision
+)CODE
+- is non-empty;\notherwise returns false.
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-varbufversion
+)CODE
+)HEADING
+(FINDEX
+-varbufversion()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-void varbufversion\n(struct varbuf *vb,\n const struct versionrevision *version,\n enum versiondisplayepochwhen vdew);
+)EXAMPLE
+-\n\nWrites a human-readable representation of 
+(VAR
+-version
+)VAR
+- to 
+(VAR
+-vb
+)VAR
+-.\nPossible values of 
+(VAR
+-vdew
+)VAR
+-:\n\n
+(TABLE
+(ITEM
+(BODY
+(TT
+-vdew_never
+)TT
+)BODY
+)ITEM
+(BODY
+-never include epoch
+)BODY
+(ITEM
+(BODY
+(TT
+-vdew_nonambig
+)TT
+)BODY
+)ITEM
+(BODY
+-include epoch string if non-zero
+)BODY
+(ITEM
+(BODY
+(TT
+-vdew_always
+)TT
+)BODY
+)ITEM
+(BODY
+-always include epoch string
+)BODY
+)TABLE
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-versiondescribe
+)CODE
+)HEADING
+(FINDEX
+-versiondescribe()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-const char *versiondescribe\n(const struct versionrevision *version,\n enum versiondisplayepochwhen vdew);
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-Return a human-readable representation of 
+(VAR
+-version
+)VAR
+- as a pointer\nto a static buffer.  If the version structure is empty, return\n
+(CODE
+-"\|<\|none\|>\|"
+)CODE
+-.  Static buffers are allocated from a set of 10\nin round-robin fashion (they will be re-used after 10 successive calls\nto 
+(CODE
+-versiondescribe
+)CODE
+-).
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-parseversion
+)CODE
+)HEADING
+(FINDEX
+-parseversion()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-const char *parseversion\n(struct versionrevision *rversion, const char *string);
+)EXAMPLE
+-\n
+)BODY
+)P
+(P
+(BODY
+-Parse the contents of 
+(VAR
+-string
+)VAR
+- into 
+(VAR
+-rversion
+)VAR
+-.  If\nsuccessful, returns NULL, otherwise returns a pointer to a static\nerror string.
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-parsemustfield
+)CODE
+)HEADING
+(FINDEX
+-parsemustfield()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-void parsemustfield\n(FILE *file, const char *filename, int lno,\n FILE *warnto, int *warncount,\n const struct pkginfo *pigp, int warnonly,\n char **value, const char *what);
+)EXAMPLE
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-skip_slash_dotslash
+)CODE
+)HEADING
+(FINDEX
+-skip_slash_dotslash()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-const char *skip_slash_dotslash (const char *p);
+)EXAMPLE
+)BODY
+)P
+)SUBSUBSECTION
+(SUBSUBSECTION
+(HEADING
+(CODE
+-convert_string
+)CODE
+)HEADING
+(FINDEX
+-convert_string()
+)FINDEX
+(P
+(BODY
+(EXAMPLE
+-static int convert_string\n(const char *filename, int lno, const char *what, int otherwise,\n FILE *warnto, int *warncount, const struct pkginfo *pigp,\n const char *startp, const struct namevalue *nvip,\n const char **endpp) 
+)EXAMPLE
+)BODY
+)P
+)SUBSUBSECTION
+)SUBSECTION
+)SECTION
+)CHAPTER
+(CLOSING
+(CONTENTS
+)CONTENTS
+ANAME TOKEN FN
+(PRINTINDEX
+)PRINTINDEX
+)CLOSING
+)TEXINFO
+C

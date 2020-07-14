@@ -1,0 +1,177 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.12])
+
+AC_INIT(lib/dpkg.h)
+AM_CONFIG_HEADER(config.h)
+
+AC_CHECK_TOOL_PREFIX
+
+AC_PROG_CC
+AC_CANONICAL_SYSTEM
+AC_CHECK_TOOL_PREFIX
+
+AC_CHECK_TOOL(LD, ld, ld)
+
+AM_INIT_AUTOMAKE(dpkg,[`sed -n '1s/dpkg (\([0-9.]\+\)).*/\1/p' ${srcdir}/debian/changelog`])
+ACLOCAL="$ACLOCAL -I automake"
+
+AC_MSG_CHECKING(dpkg version)
+AC_MSG_RESULT($VERSION)
+
+AC_PREFIX_DEFAULT(/usr)
+
+AC_DEFINE_UNQUOTED(ARCHITECTURE, "${host}")
+
+if test "x${host_arch}" = xi386; then
+ AC_MSG_CHECKING(target i386 system/binary format)
+ case "${target_os}" in
+  linuxaout|linux-gnuaout)
+   AC_MSG_RESULT(Linux a.out)
+   dpkg_cc_binfmt=a.out
+   ;;
+  
+  linuxcoff|linux-gnucoff)
+   AC_MSG_RESULT(Linux COFF)
+   dpkg_cc_binfmt=coff
+   ;;
+  
+  linux|linuxelf|linux-gnu*)
+   AC_MSG_RESULT(Linux ELF)
+   dpkg_cc_binfmt=elf
+   ;;
+  
+  *)
+   AC_MSG_RESULT([other (${target_os})])
+   dpkg_cc_binfmt=""
+   ;;
+ esac
+ if test "x$dpkg_cc_binfmt" != "x"; then
+  AC_DEFINE_UNQUOTED(ARCHBINFMT," $dpkg_cc_binfmt")
+ fi
+fi
+
+AC_MSG_CHECKING(dselect support)
+AC_ARG_WITH(dselect,
+[  --with-dselect build the dselect pacakge manager],
+dpkg_build_dselect=$withval,
+dpkg_build_dselect=no)
+AC_MSG_RESULT($dpkg_build_dselect)
+
+if test "$dpkg_build_dselect" = "yes"; then
+	AC_PROG_CXX
+fi
+
+case "$dpkg_build_dselect" in
+    yes)
+	dselect_SUBDIRS="dselect methods"
+	;;
+    no)
+	dselect_SUBDIRS=""
+	;;
+    *)
+	AC_MSG_ERROR("invalid value for \$dpkg_build_dselect")
+	;;
+esac
+
+AC_MSG_CHECKING(value of dselect_SUBDIRS)
+AC_MSG_RESULT($dselect_SUBDIRS)
+AC_SUBST(dselect_SUBDIRS)
+
+AC_ARG_WITH(newdeb,
+[  --with-newdeb           make dpkg-deb default to new archives],
+[AC_DEFINE(BUILDOLDPKGFORMAT, 0)])
+AC_ARG_WITH(olddeb,
+[  --with-olddeb           make dpkg-deb default to old archives],
+[AC_DEFINE(BUILDOLDPKGFORMAT, 1)])
+
+dnl gettext
+
+dnl ALL_LINGUAS="en fr ja_JP.EUC"
+ALL_LINGUAS=""
+
+AM_WITH_NLS
+AM_GNU_GETTEXT
+AC_LINK_FILES($nls_cv_header_libgt, $nls_cv_header_intl)
+
+dnl Other stuff
+
+AC_MSG_CHECKING(for /usr/bin/perl)
+if test -f /usr/bin/perl
+then
+	AC_MSG_RESULT(yes)
+	perlpath=/usr/bin/perl
+	AC_SUBST(perlpath)
+else
+	AC_MSG_RESULT(no)
+	AC_PATH_PROG(perlpath,perl)
+fi
+
+AC_STDC_HEADERS
+AC_PROG_INSTALL
+AM_PROG_LIBTOOL
+
+AM_PATH_LISPDIR
+AC_MODE_T
+AC_PID_T
+AC_SIZE_T
+AC_VPRINTF
+AC_C_CONST
+AC_C_BIGENDIAN
+AC_CHECK_SIZEOF(unsigned long)
+AC_CHECK_SIZEOF(unsigned int)
+AC_CHECK_HEADERS(sys/cdefs.h)
+
+AC_CHECK_FUNC(sysinfo, AC_DEFINE(HAVE_SYSINFO))
+
+AC_SUBST(OPTCFLAGS)
+
+case "$target_os" in
+ rhapsody*)
+  POSIXDEFS=""
+  ;;
+ *)
+  POSIXDEFS="-D_POSIX_SOURCE -D_GNU_SOURCE"
+  ;;
+esac
+
+if test "${GCC-no}" = yes; then
+ CFLAGS="-D_REENTRANT $POSIXDEFS -O2"
+ CXXFLAGS='$(CFLAGS)'
+ OPTCFLAGS="-O3"
+else
+ CFLAGS="-D_REENTRANT $POSIXDEFS -O"
+ CXXFLAGS='$(CFLAGS)'
+fi
+
+DPKG_CACHED_TRY_COMPILE(your C compiler,dpkg_cv_c_works,
+ [#include <string.h>], [strcmp("a","b")],
+ AC_MSG_RESULT(works),
+ AC_MSG_RESULT(broken)
+ AC_MSG_ERROR(C compiler is broken))
+
+DPKG_CACHED_TRY_COMPILE(inlines,dpkg_cv_c_inline,,
+ [} inline int foo (int x) {],
+ AC_MSG_RESULT(yes)
+ AC_DEFINE(HAVE_INLINE),
+ AC_MSG_RESULT(no))
+
+AC_SUBST(CWARNS)
+CWARNS=""
+
+DPKG_C_GCC_TRY_WARNS(-Wall -Wno-implicit, dpkg_cv_c_gcc_warn_all)
+DPKG_C_GCC_TRY_WARNS(-Wwrite-strings, dpkg_cv_c_gcc_warn_writestrings)
+DPKG_C_GCC_TRY_WARNS(-Wpointer-arith, dpkg_cv_c_gcc_warn_pointerarith)
+DPKG_C_GCC_TRY_WARNS(-Wimplicit -Wnested-externs, dpkg_cv_c_gcc_warn_implicit)
+
+if test "x$GCC" = "xyes"; then
+ CWARNS="${CWARNS} -Wmissing-prototypes -Wstrict-prototypes"
+fi
+
+echo "#define DPKG_VERSION \"$VERSION\" /* This line modified by configure */" > version.h.new
+(test -f version.h && cmp -s version.h.new version.h) || mv version.h.new version.h
+
+AC_OUTPUT([Makefile libiberty/Makefile intl/Makefile dpkg-deb/Makefile lib/Makefile
+          dselect/Makefile split/Makefile methods/Makefile
+          md5sum/Makefile dpkg/Makefile doc/Makefile scripts/Makefile tests/Makefile
+          po/Makefile])

@@ -1,0 +1,65 @@
+		SCSI API changes 17 Mar 93
+		
+* SCSIController.h moved from bsd/dev/i386 to driverkit
+  SCSIController.m moved from bsd/dev/i386 to bsd/dev
+  
+* SCSITypes.h ==> scsiTypes.h
+
+* executeCdb ==> executeRequest
+
+* scsiReq_t.dmaDirRead ==> scsiReq_t.read
+
+* scsiReq_t.dmaMax ==> maxTransfer
+
+* ioTimeout ==> timeoutLength
+
+* ioStatus ==> driverStatus
+
+* dmaXfr ==> bytesTransferred
+
+* scsiReq_t ==> IOSCSIRequest
+
+* startAlignRead ==> readStart
+  startAlignWrite ==> writeStart
+  
+* SCSIControllerPublic ==> SCSIControllerExported
+
+* was reserveUnit:lun:owner: 		// not sed-able
+  is  reserverTarget:lun:forOwner
+  
+  was releaseUnit:lun:owner: 		// not sed-able
+  is  releaseTarget:lun:forOwner
+
+* scsiReset ==> resetSCSIBus
+
+* scToIoReturn ==> returnFromScStatus
+
+* maxDmaSize ==> maxTransfer
+
+* sc_statusValues ==> IOScStatusStrings
+  SCSISenseValues ==> IOSCSISenseStrings
+  SCSIOpcodeValues ==> IOSCSIOpcodeStrings
+  
+* SCSI_DMA_ALIGNMENT ==> IO_SCSI_DMA_ALIGNMENT (???)
+
+* SCSIController ==> IOSCSIController (not sed-able)
+
+* reserveArray ==> _reserveArray
+  reserveCount ==> _reserveCount
+  reserveLock ==> _reserveLock
+  
+* SCSIInterrupt ==> interruptOccurred, returns void
+
+* SCSITimeout ==> timeoutOccurred, returns void
+
+* reserveCount method ==> numReserved (not sedable)
+
+* IO_ISA_CONTROLLER ==> IO_IS_A_SCSI_CONTROLLER
+  IO_isa_CONTROLLER ==> IOIsASCSIController
+  IO_CONTROLLER_STATISTICS ==> IO_SCSI_CONTROLLER_STATISTICS
+  IO_Controller_Statistics ==> IOSCSIControllerStatistics
+  CONTROLLER_STATS_SIZE ==> IO_SCSI_CONTROLLER_STAT_ARRAY_SIZE
+  CONTROLLER_MAX_QUEUE_LEN ==> IO_SCSI_CONTROLLER_MAX_QUEUE_LENGTH
+  CONTROLLER_QUEUE_SAMPLES ==> IO_SCSI_CONTROLLER_QUEUE_SAMPLES
+  CONTROLLER_QUEUE_TOTAL ==> IO_SCSI_CONTROLLER_QUEUE_TOTAL
+  

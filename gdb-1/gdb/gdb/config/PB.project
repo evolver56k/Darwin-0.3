@@ -1,0 +1,71 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-empty.h", 
+            "nm-gnu.h", 
+            "nm-lynx.h", 
+            "nm-m3.h", 
+            "nm-nbsd.h", 
+            "nm-nextstep.h", 
+            "nm-sysv4.h", 
+            "tm-lynx.h", 
+            "tm-nbsd.h", 
+            "tm-nextstep.h", 
+            "tm-sunos.h", 
+            "tm-sysv4.h", 
+            "xm-aix4.h", 
+            "xm-lynx.h", 
+            "xm-mpw.h", 
+            "xm-nbsd.h", 
+            "xm-nextstep.h", 
+            "xm-sysv4.h"
+        ); 
+        SUBPROJECTS = (
+            a29k, 
+            alpha, 
+            arc, 
+            arm, 
+            convex, 
+            d10v, 
+            gould, 
+            h8300, 
+            h8500, 
+            i386, 
+            i960, 
+            m32r, 
+            m68k, 
+            m88k, 
+            mips, 
+            mn10200, 
+            mn10300, 
+            none, 
+            ns32k, 
+            pa, 
+            powerpc, 
+            pyr, 
+            romp, 
+            rs6000, 
+            sh, 
+            sparc, 
+            tahoe, 
+            v850, 
+            vax, 
+            w65, 
+            z8k
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = config; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,21 @@
+/APPLE_LICENSE/1.1.1.1/Wed Apr 14 18:06:50 1999//TLibstreams-1
+/Makefile/1.2/Wed May  5 21:04:34 1999//TLibstreams-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/PB.project/1.2/Wed May  5 21:04:34 1999//TLibstreams-1
+/defs.h/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/file_funcs.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/globals.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/h.template/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/indir_ops.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/ipc_funcs.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/m.template/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/memory_funcs.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streams.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streams.h/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streams_doprnt.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streams_doscan.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streams_internal.c/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streamsextra.h/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+/streamsimpl.h/1.1.1.1/Wed Apr 14 18:06:51 1999//TLibstreams-1
+D/dpkg////

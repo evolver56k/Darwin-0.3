@@ -1,0 +1,19 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        CLASSES = (); 
+        H_FILES = (ldef.h); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (yacc.y, lex.l); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Japanese, mklocale.1, POSIX); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = mklocale; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+}

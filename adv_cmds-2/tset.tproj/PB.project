@@ -1,0 +1,20 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        CLASSES = (); 
+        C_FILES = (); 
+        H_FILES = (extern.h); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (map.c, misc.c, set.c, term.c, tset.c, wrterm.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, tset.1, Makefile.dist); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = tset; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+}

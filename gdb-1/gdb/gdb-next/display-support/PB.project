@@ -1,0 +1,45 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = (
+            DebuggerController.m, 
+            DisplayHooks.m, 
+            DisplaySetup.m, 
+            GdbManager.m, 
+            GuiGdbManager.m, 
+            ViewGdbManager.m
+        ); 
+        H_FILES = (
+            DebuggerControllerInternal_Protocol.h, 
+            DebuggerController_Private.h, 
+            DebuggerController_Protocol.h, 
+            DisplayHooks.h, 
+            DisplayMisc.h, 
+            DisplaySetup.h, 
+            DisplayTypes.h, 
+            GdbManager.h, 
+            GuiDisplayProvider.h, 
+            GuiDisplayProvider_Protocol.h, 
+            GuiGdbCmd.h, 
+            GuiGdbManager.h, 
+            GuiGdbManagerExecLock_Protocol.h, 
+            GuiGdbManagerInternal_Protocol.h, 
+            ViewDisplayProvider_Protocol.h, 
+            ViewGdbManager.h, 
+            debug.h
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = "display-support"; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

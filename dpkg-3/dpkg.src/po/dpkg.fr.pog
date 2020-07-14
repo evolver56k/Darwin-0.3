@@ -1,0 +1,2328 @@
+# Dpkg --- the Debian GNU/Linux package maintenance system.
+#
+# Copyright (C) 1994,1995,1996 Ian Jackson <ian@chiark.chu.cam.ac.uk>
+# Copyright (C) 1995,1996 Erick Branderhorst <branderhorst@heel.fgg.eur.nl>
+# Copyright (C) 1996 Miquel van Smoorenburg <miquels@cistron.nl>
+# Copyright (C) 1996 Kim-Minh Kaplan <kkaplan@cdfhp3.in2p3.fr>
+# Copyright (C) 1996 Michael Shields <shields@crosslink.net>
+# Copyright (C) 1995 Bruce Perens <bruce@pixar.com>
+# Copyright (C) 1994 Carl Streeter <streeter@cae.wisc.edu>
+# Copyright (C) 1994 Matt Welsh <mdw@sunsite.unc.edu>
+# Copyright (C) 1994 Ian Murdock <imurdock@debian.org>
+# Parts written by Colin Plumb and Branko Lankester in 1993.
+#
+# Messages français pour dpkg (Linux/GNU Debian) :
+# Copyright (C) 1997 Yann Dirson <dirson@debian.org>.
+# Copyright (C) 1997 Christophe Le Bars <clebars@debian.org>.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dpkg 1.4.0.21\n"
+"POT-Creation-Date: 1998-03-02 16:26-0800\n"
+"PO-Revision-Date: 1997-05-13 22:07 EDT\n"
+"Last-Translator: Yann Dirson <dirson@debian.org>\n"
+"Language-Team: French <dpkg@packages.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: dpkg/archives.c:137
+msgid "error reading from dpkg-deb pipe"
+msgstr "erreur de lecture dans le tube de dpkg-deb"
+
+#: dpkg/archives.c:175
+#, c-format
+msgid "error setting timestamps of `%.255s'"
+msgstr "erreur de modification des \"timestamps\" de '%.255s'"
+
+#: dpkg/archives.c:180 dpkg/archives.c:422
+#, c-format
+msgid "error setting ownership of `%.255s'"
+msgstr "erreur de changement du propriétaire de '%.255s'"
+
+#: dpkg/archives.c:182 dpkg/archives.c:430
+#, c-format
+msgid "error setting permissions of `%.255s'"
+msgstr "erreur de modification des droits d'accès à `%.255s'"
+
+#: dpkg/archives.c:263
+#, c-format
+msgid ""
+"trying to overwrite `%.250s', which is the diverted version of "
+"`%.250s'%.10s%.100s%.10s"
+msgstr ""
+"tentative de remplacement de '%.250s', qui est la version détournée de "
+"'%.250s'%.10s%.100s%.10s"
+
+#: dpkg/archives.c:267
+msgid " (package: "
+msgstr " (packet : "
+
+#: dpkg/archives.c:289
+#, c-format
+msgid "unable to stat `%.255s' (which I was about to install)"
+msgstr ""
+"impossible d'obtenir le statut de '%.255s' (lequel allait être installé)"
+
+#: dpkg/archives.c:297
+#, c-format
+msgid ""
+"unable to clean up mess surrounding `%.255s' before installing another "
+"version"
+msgstr ""
+"impossible de résoudre des embrouilles autour de '%.255s'\n"
+" avant d'en installer une autre version"
+
+# FIXME: sens ?
+#: dpkg/archives.c:303
+#, c-format
+msgid "unable to stat restored `%.255s' before installing another version"
+msgstr ""
+"impossible d'obtenir le statut de '%.255s' restauré\n"
+" avant d'en installer une autre version"
+
+#: dpkg/archives.c:335
+#, c-format
+msgid "archive contained object `%.255s' of unknown type 0x%x"
+msgstr "l'archive contient l'objet '%.255s' de type inconnu (0x%x)"
+
+#: dpkg/archives.c:366
+#, fuzzy, c-format
+msgid "Replacing files in old package `%s' ...\n"
+msgstr "Remplacement des fichiers du vieux paquet '%s' ...\n"
+
+#: dpkg/archives.c:370
+#, c-format
+msgid ""
+"trying to overwrite directory `%.250s' in package %.250s with nondirectory"
+msgstr ""
+"tentative de remplacement du répertoire '%.250s' du paquet '%.250s' avec "
+"autre chose qu'un répertoire"
+
+#: dpkg/archives.c:375
+#, c-format
+msgid "trying to overwrite `%.250s', which is also in package %.250s"
+msgstr ""
+"tentative de remplacement de '%.250s', qui appartient aussi au paquet "
+"'%.250s'"
+
+#: dpkg/archives.c:401
+#, c-format
+msgid "unable to create `%.255s'"
+msgstr "impossible de créer '%.255s'"
+
+#: dpkg/archives.c:403
+#, c-format
+msgid "unable to fdopen for `%.255s'"
+msgstr "impossible de \"fd-ouvrir\" '%.255s'"
+
+# analogue à :123
+#: dpkg/archives.c:412
+#, c-format
+msgid "error reading dpkg-deb during `%.255s'"
+msgstr "erreur de lecture dans le tube de dpkg-deb pendant '%.255s'"
+
+#: dpkg/archives.c:419
+#, c-format
+msgid "error writing to `%.255s'"
+msgstr "erreur d'écriture dans '%.255s'"
+
+#: dpkg/archives.c:428
+#, c-format
+msgid "error flushing `%.255s'"
+msgstr "erreur de \"flush\" de '%.255s'"
+
+#: dpkg/archives.c:433
+#, c-format
+msgid "error closing/writing `%.255s'"
+msgstr "erreur de fermeture '%.255s'"
+
+#: dpkg/archives.c:438
+#, c-format
+msgid "error creating pipe `%.255s'"
+msgstr "erreur de création du tube '%.255s'"
+
+#: dpkg/archives.c:444
+#, c-format
+msgid "error creating device `%.255s'"
+msgstr "erreur de création du fichier spécial '%.255s'"
+
+#: dpkg/archives.c:453
+#, c-format
+msgid "error creating hard link `%.255s'"
+msgstr "erreur de création du lien physique '%.255s'"
+
+#: dpkg/archives.c:460
+#, c-format
+msgid "error creating symbolic link `%.255s'"
+msgstr "erreur de création du lien symbolique '%.255s'"
+
+#: dpkg/archives.c:463
+#, c-format
+msgid "error setting ownership of symlink `%.255s'"
+msgstr "erreur de modification des droits d'accès au lien symbolique '%.255s'"
+
+#: dpkg/archives.c:469
+#, c-format
+msgid "error creating directory `%.255s'"
+msgstr "erreur de création du répertoire '%.255s'"
+
+#: dpkg/archives.c:504
+#, c-format
+msgid "unable to move aside `%.255s' to install new version"
+msgstr "impossible de déplacer '%.255s' pour en installer une nouvelle version"
+
+#: dpkg/archives.c:517
+#, c-format
+msgid "unable to make backup symlink for `%.255s'"
+msgstr "impossible de faire un lien symbolique de secours pour '%.255s'"
+
+#: dpkg/archives.c:519
+#, fuzzy, c-format
+msgid "unable to lchown backup symlink for `%.255s'"
+msgstr ""
+"impossible de modifier les droits d'accès au lien symbolique de secours\n"
+" pour '%.255s'"
+
+#: dpkg/archives.c:523
+#, c-format
+msgid "unable to make backup link of `%.255s' before installing new version"
+msgstr ""
+"impossible de faire un lien symbolique de secours de `%.255s' avant "
+"d'installer une nouvelle version"
+
+#: dpkg/archives.c:529
+#, c-format
+msgid "unable to install new version of `%.255s'"
+msgstr "impossible d'installer une nouvelle version de '%.255s'"
+
+#: dpkg/archives.c:543
+#, c-format
+msgid ""
+"dpkg: warning - ignoring dependency problem with removal of %s:\n"
+"%s"
+msgstr ""
+"dpkg: problème de dépendance ignoré pendant la suppression\n"
+" de '%s' :\n"
+"%s"
+
+#: dpkg/archives.c:550
+#, c-format
+msgid ""
+"dpkg: warning - considering deconfiguration of essential\n"
+" package %s, to enable removal of %s.\n"
+msgstr ""
+"dpkg: j'envisage de déconfigurer le paquet\n"
+" essentiel '%s' pour autoriser la suppression de '%s'.\n"
+
+#: dpkg/archives.c:554
+#, c-format
+msgid ""
+"dpkg: no, %s is essential, will not deconfigure\n"
+" it in order to enable removal of %s.\n"
+msgstr ""
+"dpkg: non, '%s' est essentiel, il ne sera pas déconfiguré\n"
+" pour autoriser la suppression de '%s'.\n"
+
+#: dpkg/archives.c:567
+#, c-format
+msgid ""
+"dpkg: no, cannot remove %s (--auto-deconfigure will help):\n"
+"%s"
+msgstr ""
+"dpkg: non, ne peut supprimer '%s' (--auto-deconfigure peut servir):\n"
+"%s"
+
+#: dpkg/archives.c:601
+#, c-format
+msgid "dpkg: considering removing %s in favour of %s ...\n"
+msgstr "dpkg: j'envisage de supprimer '%s' en faveur de '%s' ...\n"
+
+#: dpkg/archives.c:605
+#, c-format
+msgid "%s is not properly installed - ignoring any dependencies on it.\n"
+msgstr ""
+"'%s' n'est pas correctement installé - ses dépendances sont ignorées.\n"
+
+#: dpkg/archives.c:632
+#, c-format
+msgid "dpkg: may have trouble removing %s, as it provides %s ...\n"
+msgstr ""
+"dpkg: la suppression de '%s' peut être problématique, puisqu'il fournit '%s' "
+"...\n"
+
+#: dpkg/archives.c:647
+#, c-format
+msgid ""
+"dpkg: package %s requires reinstallation, but will remove anyway as you "
+"request.\n"
+msgstr ""
+"dpkg: le paquet '%s' requiert une réinstallation, mais sera supprimé comme "
+"demandé.\n"
+
+#: dpkg/archives.c:650
+#, c-format
+msgid "dpkg: package %s requires reinstallation, will not remove.\n"
+msgstr ""
+"dpkg: le paquet '%s' requiert une réinstallation ; suppression annulée.\n"
+
+#: dpkg/archives.c:659
+#, c-format
+msgid "dpkg: yes, will remove %s in favour of %s.\n"
+msgstr "dpkg: oui, je vais supprimer '%s' en faveur de '%s'.\n"
+
+#: dpkg/archives.c:667
+#, c-format
+msgid ""
+"dpkg: regarding %s containing %s:\n"
+"%s"
+msgstr ""
+"dpkg: à propos de '%s' contenant '%s':\n"
+"%s"
+
+#: dpkg/archives.c:670
+#, c-format
+msgid "conflicting packages - not installing %.250s"
+msgstr "paquets en conflit - je n'installe pas '%.250s'"
+
+#: dpkg/archives.c:671
+msgid "dpkg: warning - ignoring conflict, may proceed anyway !\n"
+msgstr "dpkg: conflit ignoré, je peux quand même continuer !\n"
+
+#: dpkg/archives.c:708
+#, c-format
+msgid "--%s --recursive needs at least one path argument"
+msgstr "--%s --recursive a besoin au moins d'un chemin en paramètre"
+
+#: dpkg/archives.c:737
+msgid "failed to exec find for --recursive"
+msgstr "impossible d'exécuter \"find\" pour --recursive"
+
+#: dpkg/archives.c:741
+msgid "failed to fdopen find's pipe"
+msgstr "échec de \"fd-ouverture\" du tube de 'find'"
+
+#: dpkg/archives.c:748
+msgid "error reading find's pipe"
+msgstr "erreur de lecture dans le tube de 'find'"
+
+#: dpkg/archives.c:749
+msgid "error closing find's pipe"
+msgstr "erreur de fermeture du tube de 'find'"
+
+#: dpkg/archives.c:752
+msgid "searched, but found no packages (files matching *.deb"
+msgstr "j'ai cherché, mais trouvé aucun paquet (fichiers *.deb)"
+
+#: dpkg/archives.c:769
+#, c-format
+msgid "--%s needs at least one package archive file argument"
+msgstr "--%s a besoin au moins d'un fichier de paquet en paramètre"
+
+#: dpkg/archives.c:816
+msgid "unknown action"
+msgstr "action inconnue"
+
+#: dpkg/cleanup.c:86
+#, c-format
+msgid ""
+"unable to remove newly-installed version of `%.250s' to allow reinstallation "
+"of backup copy"
+msgstr ""
+"impossible de supprimer la version nouvellement installée de '%.250s' pour "
+"permettre la réinstallation de la copie de secours"
+
+#: dpkg/cleanup.c:93
+#, c-format
+msgid "unable to restore backup version of `%.250s'"
+msgstr "impossible de restaurer la copie de secours de '%.250s'"
+
+#: dpkg/cleanup.c:99
+#, c-format
+msgid "unable to remove newly-extracted version of `%.250s'"
+msgstr "impossible de supprimer la version nouvellement extraite de '%.250s'"
+
+#. submsg: maintainer_script_installed
+#: dpkg/cleanup.c:109 dpkg/cleanup.c:134 dpkg/cleanup.c:152 dpkg/cleanup.c:231
+#: dpkg/configure.c:412
+#, fuzzy
+msgid "post-installation"
+msgstr "non installé"
+
+#. submsg: maintainer_script_new
+#: dpkg/cleanup.c:170 dpkg/cleanup.c:185 dpkg/cleanup.c:203
+#: dpkg/processarc.c:596 dpkg/remove.c:271 dpkg/remove.c:436
+msgid "post-removal"
+msgstr ""
+
+#. submsg: maintainer_script_installed
+#: dpkg/cleanup.c:219 dpkg/processarc.c:467 dpkg/processarc.c:473
+#: dpkg/processarc.c:481
+msgid "pre-installation"
+msgstr ""
+
+#. y=yes i=install n=no o=??
+#: dpkg/configure.c:97
+msgid "yino"
+msgstr "oina"
+
+#: dpkg/configure.c:105
+#, c-format
+msgid "no package named `%s' is installed, cannot configure"
+msgstr "aucun paquet nommé '%s' n'est installé, configuration impossible"
+
+#: dpkg/configure.c:107
+#, c-format
+msgid ""
+"package %.250s is not ready for configuration\n"
+" cannot configure (current status `%.250s')"
+msgstr ""
+"le paquet '%.250s' n'est pas prêt pour la configuration\n"
+" configuration impossible (état actuel '%.250s')"
+
+#: dpkg/configure.c:124
+#, c-format
+msgid ""
+"dpkg: dependency problems prevent configuration of %s:\n"
+"%s"
+msgstr ""
+"dpkg: des problèmes de dépendance empêchent la configuration de '%s':\n"
+"%s"
+
+#: dpkg/configure.c:127
+msgid "dependency problems - leaving unconfigured"
+msgstr "problèmes de dépendance - laissé non-configuré"
+
+#: dpkg/configure.c:131
+#, c-format
+msgid ""
+"dpkg: %s: dependency problems, but configuring anyway as you request:\n"
+"%s"
+msgstr ""
+"dpkg: %s à un problème de dépendance, mais je le configure comme demandé :\n"
+"%s"
+
+#: dpkg/configure.c:139
+msgid ""
+"Package is in a very bad inconsistent state - you should\n"
+" reinstall it before attempting configuration."
+msgstr ""
+"Le paquet est dans un très mauvais état - vous devriez\n"
+" le réinstaller avant de tenter sa configuration."
+
+#: dpkg/configure.c:142
+#, c-format
+msgid "Setting up %s (%s) ...\n"
+msgstr "Configuration de %s (%s) ...\n"
+
+#: dpkg/configure.c:190
+#, c-format
+msgid "unable to stat new dist conffile `%.250s'"
+msgstr ""
+"impossible d'obtenir le status du nouveau fichier de configuration\n"
+" '%.250s' distribué"
+
+#: dpkg/configure.c:199
+#, c-format
+msgid "unable to change ownership of new dist conffile `%.250s'"
+msgstr ""
+"impossible de changer le propriétaire du nouveau fichier de configuration\n"
+" '%.250s' distribué"
+
+#: dpkg/configure.c:202
+#, c-format
+msgid "unable to set mode of new dist conffile `%.250s'"
+msgstr ""
+"impossible de changer les droits d'accès au nouveau fichier de "
+"configuration\n"
+" '%.250s' distribué"
+
+#: dpkg/configure.c:205
+#, c-format
+msgid "unable to stat current installed conffile `%.250s'"
+msgstr ""
+"impossible d'obtenir le statut du fichier de configuration\n"
+" '%.250s' actuellement installé"
+
+#: dpkg/configure.c:237
+#, c-format
+msgid ""
+"\n"
+"Configuration file `%s'"
+msgstr ""
+"\n"
+"Fichier de configuration '%s'"
+
+#: dpkg/configure.c:239
+#, c-format
+msgid " (actually `%s')"
+msgstr " (en réalité '%s')"
+
+#: dpkg/configure.c:244
+msgid ""
+"\n"
+" ==> File on system created by you or by a script.\n"
+" ==> File also in package provided by package maintainer.\n"
+msgstr ""
+"\n"
+" ==> Fichier existant créé par vous ou par un script.\n"
+" ==> Fichier également dans le paquet, fourni par le responsable du paquet.\n"
+
+#: dpkg/configure.c:251
+msgid ""
+"\n"
+" ==> Modified (by you or by a script) since installation.\n"
+msgstr ""
+"\n"
+" ==> Modifié (par vous ou un script) depuis l'installation.\n"
+
+#: dpkg/configure.c:252
+msgid ""
+"\n"
+"     Not modified since installation.\n"
+msgstr ""
+"\n"
+"     Non modifié depuis l'installation.\n"
+
+#: dpkg/configure.c:255
+msgid " ==> Package distributor has shipped an updated version.\n"
+msgstr " ==> Le responsable du paquet en a fourni une nouvelle version.\n"
+
+#: dpkg/configure.c:256
+msgid "     Version in package is the same as at last installation.\n"
+msgstr ""
+"      La version du paquet est la même que celle que la dernière "
+"installation.\n"
+
+#: dpkg/configure.c:261
+#, c-format
+msgid ""
+"   What would you like to do about it ?  Your options are:\n"
+"    %c or %c  : install the package maintainer's version\n"
+"    %c or %c  : keep your currently-installed version\n"
+"      Z     : background this process to examine the situation\n"
+msgstr ""
+"   Que voulez-vous en faire ? Vos possibilités sont:\n"
+"    %c ou %c  : installer la version du responsable du paquet\n"
+"    %c ou %c  : garder votre version actuellement installée\n"
+"      Z     : suspendre ce processus pour examiner la situation\n"
+
+#: dpkg/configure.c:268
+msgid " The default action is to keep your current version.\n"
+msgstr " L'action par défaut est de garder votre version actuelle.\n"
+
+#: dpkg/configure.c:270
+msgid " The default action is to install the new version.\n"
+msgstr " L'action par défaut est d'installer la nouvelle version.\n"
+
+#. L10n: keep consistent with "yino" msgid
+#: dpkg/configure.c:278
+msgid "[default=N]"
+msgstr "[défaut=N]"
+
+#. L10n: !keep consistent with "yino" msgid
+#: dpkg/configure.c:280
+msgid "[default=Y]"
+msgstr "[défaut=O]"
+
+#: dpkg/configure.c:280
+msgid "[no default]"
+msgstr "[pas de défaut]"
+
+#: dpkg/configure.c:283
+msgid "error writing to stderr, discovered before conffile prompt"
+msgstr ""
+"erreur d'écriture sur 'stderr', constatée avant l'invite de configuration"
+
+#: dpkg/configure.c:290
+msgid "read error on stdin at conffile prompt"
+msgstr "erreur de lecture sur 'stdin' à l'invite de configuration"
+
+#: dpkg/configure.c:291
+msgid "EOF on stdin at conffile prompt"
+msgstr "EOF sur 'stdin' a l'invite de configuration"
+
+#: dpkg/configure.c:306
+#, c-format
+msgid ""
+"Your currently installed version of the file is in:\n"
+" %s\n"
+"The version contained in the new version of the package is in:\n"
+" %s\n"
+"If you decide to take care of the update yourself, perhaps by editing\n"
+" the installed version, you should choose `%c' when you return, so that\n"
+" I do not mess up your careful work.\n"
+msgstr ""
+"Votre version actuellement installée du fichier est dans :\n"
+" %s\n"
+"La version contenue dans le nouveau paquet est dans :\n"
+" %s\n"
+"Si vous décidez de prendre en charge vous-même la mise à jour, par exemple "
+"en éditant\n"
+" la version installée, vous devriez choisir `%c' au retour, afin que\n"
+" votre précieux travail ne soit pas écrasé.\n"
+
+#: dpkg/configure.c:317
+msgid "Type `exit' when you're done.\n"
+msgstr "Tapez 'exit' lorsque vous aurez fini.\n"
+
+#: dpkg/configure.c:322
+#, c-format
+msgid "failed to exec shell (%.250s)"
+msgstr "échec d'exécution du shell (%.250s)"
+
+#: dpkg/configure.c:325
+msgid "wait for shell failed"
+msgstr "échec de l'attente du shell"
+
+#: dpkg/configure.c:327
+msgid "Don't forget to foreground (`fg') this process when you're done !\n"
+msgstr ""
+"N'oubliez pas de mettre à l'avant plan ('fg') ce processus lorsque\n"
+" vous aurez fini !\n"
+
+#: dpkg/configure.c:349
+#, c-format
+msgid "dpkg: %s: warning - failed to remove old backup `%.250s': %s\n"
+msgstr ""
+"dpkg: %s : échec de suppression de l'ancienne copie de secours '%.250s' : "
+"%s\n"
+
+#: dpkg/configure.c:357
+#, c-format
+msgid "dpkg: %s: warning - failed to rename `%.250s' to `%.250s': %s\n"
+msgstr "dpkg: %s : échec de renommage de '%.250s' en '%.250s' : %s\n"
+
+#: dpkg/configure.c:365
+#, c-format
+msgid "dpkg: %s: warning - failed to remove `%.250s': %s\n"
+msgstr "dpkg: %s : échec de suppression de '%.250s' : %s\n"
+
+#: dpkg/configure.c:373
+#, c-format
+msgid "dpkg: %s: warning - failed to remove old distrib version `%.250s': %s\n"
+msgstr ""
+"dpkg: %s : échec de suppression de l'ancienne version distribuée '%.250s': "
+"%s\n"
+
+#: dpkg/configure.c:378
+#, c-format
+msgid "dpkg: %s: warning - failed to remove `%.250s' (before overwrite): %s\n"
+msgstr ""
+"dpkg: %s : échec de suppression de '%.250s' (avant remplacement) : %s\n"
+
+#: dpkg/configure.c:382
+#, c-format
+msgid "dpkg: %s: warning - failed to link `%.250s' to `%.250s': %s\n"
+msgstr "dpkg: %s : échec de liaison de '%.250s' à '%.250s' : %s\n"
+
+#: dpkg/configure.c:386
+#, c-format
+msgid "Installing new version of config file %s ...\n"
+msgstr ""
+"Installation d'une nouvelle version du fichier de configuration '%s' ...\n"
+
+#: dpkg/configure.c:390
+#, c-format
+msgid "unable to install `%.250s' as `%.250s'"
+msgstr "impossible d'installer '%.250s' en tant que '%.250s'"
+
+#: dpkg/configure.c:447
+#, c-format
+msgid ""
+"dpkg: %s: warning - unable to stat config file `%s'\n"
+" (= `%s'): %s\n"
+msgstr ""
+"dpkg: %s : impossible d'obtenir le statut du fichier de configuration '%s'\n"
+" (= '%s') : %s\n"
+
+#: dpkg/configure.c:458
+#, c-format
+msgid ""
+"dpkg: %s: warning - config file `%s' is a circular link\n"
+" (= `%s')\n"
+msgstr ""
+"dpkg: %s : le fichier de configuration '%s' est un lien circulaire\n"
+" (= '%s')\n"
+
+#: dpkg/configure.c:471
+#, c-format
+msgid ""
+"dpkg: %s: warning - unable to readlink conffile `%s'\n"
+" (= `%s'): %s\n"
+msgstr ""
+"dpkg: %s : impossible de déréférencer le lien symbolique '%s' (fichier de "
+"configuration)\n"
+" (= `%s'): %s\n"
+
+#: dpkg/configure.c:490
+#, c-format
+msgid ""
+"dpkg: %s: warning - conffile `%.250s' resolves to degenerate filename\n"
+" (`%s' is a symlink to `%s')\n"
+msgstr ""
+"dpkg: %s : le lien symbolique '%.250s' donne un nom de fichier dégénéré\n"
+" ('%s' est un lien symbolique vers '%s')\n"
+
+#: dpkg/configure.c:503
+#, c-format
+msgid ""
+"dpkg: %s: warning - conffile `%.250s' is not a plain file or symlink (= "
+"`%s')\n"
+msgstr ""
+"dpkg: %s : le fichier de configuration '%.250s' n'est ni un vrai fichier ni "
+"un lien (= '%s')\n"
+
+#: dpkg/configure.c:525
+msgid "failed to exec md5sum"
+msgstr "impossible d'exécuter 'md5sum'"
+
+#: dpkg/configure.c:530
+#, c-format
+msgid "unable to fdopen for md5sum of `%.250s'"
+msgstr "impossible de \"fd-ouvrir\" '%.250s' pour 'md5sum'"
+
+#: dpkg/configure.c:541
+msgid "error reading pipe from md5sum"
+msgstr "erreur de lecture dans le tube de 'md5sum'"
+
+#: dpkg/configure.c:542
+msgid "error closing pipe from md5sum"
+msgstr "erreur de fermeture du tube de 'md5sum'"
+
+#. file= fdopen(p1[0])
+#. m_pipe()
+#. fd= open(cdr.buf)
+#: dpkg/configure.c:546
+#, c-format
+msgid "md5sum gave malformatted output `%.250s'"
+msgstr "'md5sum' génère un \"output\" mal formatée '%.250s'"
+
+#: dpkg/configure.c:550
+#, c-format
+msgid "dpkg: %s: warning - unable to open conffile %s for hash: %s\n"
+msgstr ""
+"dpkg: %s : impossible d'ouvrir le fichier de configuration %s pour hachage : "
+"%s\n"
+
+#: dpkg/depcon.c:75
+#, c-format
+msgid "unable to check for existence of `%.250s'"
+msgstr "impossible de vérifier l'existence de '%.250s'"
+
+#: dpkg/depcon.c:138 dpkg/packages.c:390
+msgid " depends on "
+msgstr " dépend de "
+
+#: dpkg/depcon.c:139
+msgid " pre-depends on "
+msgstr " pré-dépend de "
+
+#: dpkg/depcon.c:140
+msgid " recommends "
+msgstr " recommande "
+
+#: dpkg/depcon.c:141
+msgid " conflicts with "
+msgstr " entre en conflit avec "
+
+#: dpkg/depcon.c:215
+#, c-format
+msgid "  %.250s is to be removed.\n"
+msgstr "  '%.250s' doit être supprimé.\n"
+
+#: dpkg/depcon.c:218
+#, c-format
+msgid "  %.250s is to be deconfigured.\n"
+msgstr "  '%.250s' doit être déconfiguré.\n"
+
+#: dpkg/depcon.c:222
+#, c-format
+msgid "  %.250s is to be installed, but is version %.250s.\n"
+msgstr "  %.250s doit être installé, mais a pour version %.250s.\n"
+
+#: dpkg/depcon.c:230
+#, c-format
+msgid "  %.250s is installed, but is version %.250s.\n"
+msgstr "  %.250s est installé, mais a pour version %.250s.\n"
+
+#: dpkg/depcon.c:245
+#, c-format
+msgid "  %.250s is unpacked, but has never been configured.\n"
+msgstr "  %.250s est déballé, mais n'a jamais été configuré.\n"
+
+#: dpkg/depcon.c:249
+#, c-format
+msgid "  %.250s is unpacked, but is version %.250s.\n"
+msgstr "  %.250s est déballé, mais a pour version %.250s.\n"
+
+#: dpkg/depcon.c:255
+#, c-format
+msgid "  %.250s latest configured version is %.250s.\n"
+msgstr "  la dernière version configurée de '%.250s' est '%.250s'.\n"
+
+#. supermsg: statusstrings 2
+#: dpkg/depcon.c:265
+#, c-format
+msgid "  %.250s is %s.\n"
+msgstr "  %.250s est %s.\n"
+
+#: dpkg/depcon.c:301
+#, c-format
+msgid "  %.250s provides %.250s but is to be removed.\n"
+msgstr "  '%.250s' fournit '%.250s' mais va être supprimé.\n"
+
+#: dpkg/depcon.c:305
+#, c-format
+msgid "  %.250s provides %.250s but is to be deconfigured.\n"
+msgstr "  '%.250s' fournit '%.250s' mais va être déconfiguré.\n"
+
+#. supermsg: statusstrings 3
+#: dpkg/depcon.c:311
+#, c-format
+msgid "  %.250s provides %.250s but is %s.\n"
+msgstr "  '%.250s' fournit '%.250s' mais est %s.\n"
+
+#: dpkg/depcon.c:356
+#, c-format
+msgid "  %.250s (version %.250s) is to be installed.\n"
+msgstr "  '%.250s' (version %.250s) va être installé.\n"
+
+#. supermsg: statusstrings 3
+#: dpkg/depcon.c:371
+#, c-format
+msgid "  %.250s (version %.250s) is %s.\n"
+msgstr "  '%.250s' (version %.250s) est %s.\n"
+
+#. conflicts and provides the same
+#: dpkg/depcon.c:396
+#, c-format
+msgid "  %.250s provides %.250s and is to be installed.\n"
+msgstr "  '%.250s' fournit '%.250s' et va être installé.\n"
+
+#. supermsg: statusstrings 3
+#: dpkg/depcon.c:428
+#, c-format
+msgid "  %.250s provides %.250s and is %s.\n"
+msgstr "  '%.250s' fournit '%.250s' et est %s.\n"
+
+#: dpkg/enquiry.c:53
+msgid "(no description available)"
+msgstr ""
+
+# FIXME: out-of-date
+#: dpkg/enquiry.c:65
+msgid ""
+"Desired=Unknown/Install/Remove/Purge\n"
+"| Status=Not/Installed/Config-files/Unpacked/Failed-config/Half-installed\n"
+"|/ Err?=(none)/Hold/Reinst-required/X=both-problems (Status,Err: "
+"uppercase=bad)\n"
+"||/ Name            Version        Description\n"
+"+++-===============-==============-=========================================="
+"==\n"
+msgstr ""
+"Souhait=inconnU/Installe/Maintient/Supprime/Purge\n"
+"| Etat=Non/Installé/Fichiers-de-conf/Dépaqueté/Échec-config/Moitié-installé\n"
+"|/ Err?=(aucune)/R=à-Réinstaller/?/#          (Etat,Err: majuscule=mauvais)\n"
+"||/ Nom             Version        Description\n"
+"+++-===============-==============-=========================================="
+"==\n"
+
+#: dpkg/enquiry.c:78
+msgid "uihrp"
+msgstr "uimsp"
+
+#: dpkg/enquiry.c:79
+msgid "nUFiHc"
+msgstr "nDÉiMf"
+
+#: dpkg/enquiry.c:80
+msgid " R?#"
+msgstr " R?#"
+
+#: dpkg/enquiry.c:123 dpkg/select.c:81
+#, c-format
+msgid "No packages found matching %s.\n"
+msgstr "Aucun paquet trouvé ne correspond à '%s'.\n"
+
+#: dpkg/enquiry.c:148
+msgid ""
+"The following packages are in a mess due to serious problems during\n"
+"installation.  They must be reinstalled for them (and any packages\n"
+"that depend on them) to function properly:\n"
+msgstr ""
+"Les paquets suivants sont dans un état trouble à cause de sérieux problèmes\n"
+"durant l'installation. Ils doivent être réinstallés pour qu'eux (et tous "
+"les\n"
+"paquets qui en dépendent) puissent fonctionner correctement :\n"
+
+#: dpkg/enquiry.c:153
+msgid ""
+"The following packages have been unpacked but not yet configured.\n"
+"They must be configured using dpkg --configure or the configure\n"
+"menu option in dselect for them to work:\n"
+msgstr ""
+"Les paquets suivants ont été déballés mais ne sont pas configurés.\n"
+"Ils doivent être configurés, en utilisant 'dpkg --configure' ou l'item\n"
+"configure du menu principal de 'dselect', pour pouvoir fonctionner :\n"
+
+#: dpkg/enquiry.c:158
+#, fuzzy
+msgid ""
+"The following packages are only half configured, probably due to problems\n"
+"configuring them the first time.  The configuration should be retried using\n"
+"dpkg --configure <package>:\n"
+msgstr ""
+"Les paquets suivants sont moitié configurés, probablement suite à des\n"
+"problèmes durant leur première configuration. La configuration devrait être\n"
+"retentée en utilisant 'dpkg --configure' ou l'item configure du menu "
+"principal\n"
+"de 'dselect' :"
+
+#: dpkg/enquiry.c:163
+msgid ""
+"The following packages are only half installed, due to problems during\n"
+"installation.  The installation can probably be completed by retrying it;\n"
+"the packages can be removed using dselect or dpkg --remove:\n"
+msgstr ""
+"Les paquets suivants sont moitié installés, à cause de problèmes durant\n"
+"l'installation. L'installation peut certainement être terminée en la\n"
+"retentant ; les paquets peuvent être supprimés en utilisant dselect ou\n"
+"'dpkg --remove' :\n"
+
+#: dpkg/enquiry.c:188
+msgid "--audit does not take any arguments"
+msgstr "--audit ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:239
+msgid "--yet-to-unpack does not take any arguments"
+msgstr "--yet-to-unpack ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:292
+#, c-format
+msgid " %d packages, from the following sections:"
+msgstr " %d paquets, des sections suivantes :"
+
+#: dpkg/enquiry.c:312
+#, c-format
+msgid "diversion by %s"
+msgstr "détournement par %s"
+
+#: dpkg/enquiry.c:313
+msgid "local diversion"
+msgstr "détournement local"
+
+#. next translation just for correct colon layout
+#: dpkg/enquiry.c:315
+#, c-format
+msgid " %s: %s\n"
+msgstr ""
+
+#: dpkg/enquiry.c:315
+msgid "to"
+msgstr "vers"
+
+#: dpkg/enquiry.c:315
+msgid "from"
+msgstr "de"
+
+#: dpkg/enquiry.c:348
+msgid "--search needs at least one file name pattern argument"
+msgstr ""
+"--search a besoin d'au moins un motif de nom de fichier comme paramètre"
+
+#: dpkg/enquiry.c:376
+#, c-format
+msgid "dpkg: %s not found.\n"
+msgstr "dpkg: %s non trouvé.\n"
+
+#: dpkg/enquiry.c:392 dpkg/packages.c:111
+#, c-format
+msgid "--%s needs at least one package name argument"
+msgstr "--%s a besoin d'au moins un nom de paquet comme paramètre"
+
+#: dpkg/enquiry.c:409
+#, c-format
+msgid "Package `%s' is not installed and no info is available.\n"
+msgstr ""
+"Le paquet '%s' n'est pas installé et aucune information n'est disponible\n"
+" à son sujet.\n"
+
+#: dpkg/enquiry.c:418
+#, c-format
+msgid "Package `%s' is not available.\n"
+msgstr "Le paquet '%s' n'est pas disponible.\n"
+
+#: dpkg/enquiry.c:428
+#, c-format
+msgid "Package `%s' is not installed.\n"
+msgstr "Le paquet '%s' n'est pas installé.\n"
+
+#: dpkg/enquiry.c:437
+#, c-format
+msgid "Package `%s' does not contain any files (!)\n"
+msgstr "Le paquet '%s' ne contient aucun fichier (!)\n"
+
+#. submsg: enqperpackage
+#: dpkg/enquiry.c:444
+msgid "locally diverted"
+msgstr "détourné localement"
+
+#. submsg: enqperpackage
+#: dpkg/enquiry.c:446
+msgid "package diverts others"
+msgstr "paquet en détournant d'autres"
+
+#. submsg: enqperpackage
+#: dpkg/enquiry.c:448
+#, c-format
+msgid "diverted by %s"
+msgstr "détourné par '%s'"
+
+#. supermsg: enqperpackage <at-start>
+#: dpkg/enquiry.c:450
+#, c-format
+msgid " to: %s\n"
+msgstr ""
+
+#: dpkg/enquiry.c:468
+msgid ""
+"Use dpkg --info (= dpkg-deb --info) to examine archive files,\n"
+"and dpkg --contents (= dpkg-deb --contents) to list their contents."
+msgstr ""
+"Utilisez dpkg --info (= dpkg-deb --info) pour examiner les fichiers "
+"archives,\n"
+"et dpkg --contents (= dpkg-deb --contents) pour lister leurs contenus."
+
+#: dpkg/enquiry.c:478
+#, fuzzy
+msgid "--assert-working-epoch does not take any arguments"
+msgstr "--assert-support-predepends ne prend aucun argument"
+
+#: dpkg/enquiry.c:493
+#, fuzzy
+msgid ""
+"Version of dpkg with working epoch support not yet configured.\n"
+" Please use `dpkg --configure dpkg', and then try again.\n"
+msgstr ""
+"Version de dpkg avec support des pré-dépendances pas encore configurée.\n"
+" SVP lancez 'dpkg --configure dpkg' et essayez à nouveau.\n"
+
+#: dpkg/enquiry.c:497
+#, fuzzy
+msgid "dpkg not recorded as installed, cannot check for epoch support !\n"
+msgstr ""
+"dpkg n'est pas enregistré comme installé, vérification du support des\n"
+" pré-dépendances impossible !\n"
+
+#: dpkg/enquiry.c:506
+msgid "--assert-support-predepends does not take any arguments"
+msgstr "--assert-support-predepends ne prend aucun argument"
+
+#: dpkg/enquiry.c:521
+msgid ""
+"Version of dpkg with Pre-Depends support not yet configured.\n"
+" Please use `dpkg --configure dpkg', and then try again.\n"
+msgstr ""
+"Version de dpkg avec support des pré-dépendances pas encore configurée.\n"
+" SVP lancez 'dpkg --configure dpkg' et essayez à nouveau.\n"
+
+#: dpkg/enquiry.c:525
+msgid ""
+"dpkg not recorded as installed, cannot check for Pre-Depends support !\n"
+msgstr ""
+"dpkg n'est pas enregistré comme installé, vérification du support des\n"
+" pré-dépendances impossible !\n"
+
+#: dpkg/enquiry.c:548
+msgid "--predep-package does not take any argument"
+msgstr "--predep-package ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:600
+#, c-format
+msgid ""
+"dpkg: cannot see how to satisfy pre-dependency:\n"
+" %s\n"
+msgstr ""
+"dpkg: ne voir pas comment satisfaire les pré-dépendances :\n"
+" %s\n"
+
+#: dpkg/enquiry.c:601
+#, c-format
+msgid "cannot satisfy pre-dependencies for %.250s (wanted due to %.250s)"
+msgstr "ne peut satisfaire les pré-dépendances sur %.250s (réclamé par %.250s)"
+
+#: dpkg/enquiry.c:653
+msgid "--cmpversions takes three arguments: <version> <relation> <version>"
+msgstr "--cmpversions prend trois paramètres : <version> <relation> <version>"
+
+#: dpkg/enquiry.c:658
+msgid "--cmpversions bad relation"
+msgstr "--cmpversions : mauvaise relation"
+
+#: dpkg/enquiry.c:663
+#, c-format
+msgid "version a has bad syntax: %s\n"
+msgstr "la version a possède mauvaise syntaxe:  %s\n"
+
+#: dpkg/enquiry.c:673
+#, c-format
+msgid "version b has bad syntax: %s\n"
+msgstr "la version b possède mauvaise syntaxe:  %s\n"
+
+#: dpkg/enquiry.c:703
+msgid "--print-architecture does not take any argument"
+msgstr "--print-architecture ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:705 dpkg/enquiry.c:741
+#, fuzzy
+msgid "unable to determine target architecture"
+msgstr "impossible d'ouvrir le répertoire de contrôle temporaire"
+
+#: dpkg/enquiry.c:707 dpkg/enquiry.c:743
+msgid "unable to canonicalize target architecture"
+msgstr ""
+
+#: dpkg/enquiry.c:709
+msgid "unable to reduce target architecture"
+msgstr ""
+
+#: dpkg/enquiry.c:713
+msgid "--print-installation-architecture does not take any argument"
+msgstr "--print-installation-architecture ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:715 dpkg/enquiry.c:733 dpkg/processarc.c:202
+#, fuzzy
+msgid "unable to determine installation architecture"
+msgstr "impossible de paramétrer le tampon du fichier d'état"
+
+#: dpkg/enquiry.c:717 dpkg/enquiry.c:735
+msgid "unable to canonicalize installation architecture"
+msgstr ""
+
+#: dpkg/enquiry.c:719
+msgid "unable to reduce installation architecture"
+msgstr ""
+
+#: dpkg/enquiry.c:723
+#, fuzzy
+msgid "--print-gnu-build-architecture does not take any argument"
+msgstr "--print-architecture ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:725
+msgid "unable to determine build architecture"
+msgstr ""
+
+#: dpkg/enquiry.c:727
+msgid "unable to canonicalize build architecture"
+msgstr ""
+
+#: dpkg/enquiry.c:731
+#, fuzzy
+msgid "--print-gnu-installation-architecture does not take any argument"
+msgstr "--print-installation-architecture ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:739
+#, fuzzy
+msgid "--print-gnu-target-architecture does not take any argument"
+msgstr "--print-architecture ne prend aucun paramètre"
+
+#: dpkg/enquiry.c:747
+#, fuzzy
+msgid "unknown action in printarch()"
+msgstr "action inconnue"
+
+#: dpkg/errors.c:58
+#, fuzzy, c-format
+msgid ""
+"%s: error processing %s (--%s):\n"
+" %s\n"
+msgstr "%s: erreur en lisant %s\n"
+
+#: dpkg/errors.c:62
+msgid ""
+"dpkg: failed to allocate memory for new entry in list of failed packages."
+msgstr ""
+"dpkg: impossible d'allouer de la mémoire pour une nouvelle entrée dans la\n"
+" liste des paquets en échec."
+
+#: dpkg/errors.c:72
+msgid "dpkg: too many errors, stopping\n"
+msgstr "dpkg: trop d'erreurs, j'arrête là.\n"
+
+#: dpkg/errors.c:78
+msgid "Errors were encountered while processing:\n"
+msgstr "Des erreurs ont été rencontrées pendant l'exécution :\n"
+
+#: dpkg/errors.c:85
+msgid "Processing was halted because there were too many errors.\n"
+msgstr "L'exécution a été arrêté car il y avait trop d'erreurs.\n"
+
+#: dpkg/errors.c:93
+#, c-format
+msgid "Package %s was on hold, processing it anyway as you request\n"
+msgstr ""
+"Le paquet '%s' était en \"maintient\" ; je le traîte quand même\n"
+"à votre demande\n"
+
+#: dpkg/errors.c:97
+#, c-format
+msgid ""
+"Package %s is on hold, not touching it.  Use --force-hold to override.\n"
+msgstr ""
+
+#: dpkg/errors.c:106
+#, fuzzy
+msgid ""
+"dpkg - warning, overriding problem because --force enabled:\n"
+" "
+msgstr ""
+"dpkg: j'ignore le problème à cause de --force :\n"
+" "
+
+#: dpkg/filesdb.c:122
+#, c-format
+msgid "unable to open files list file for package `%.250s'"
+msgstr ""
+"impossible d'ouvrir le fichier comprenant la liste des fichiers\n"
+" du paquet '%.250s'"
+
+#: dpkg/filesdb.c:127
+#, c-format
+msgid ""
+"dpkg: serious warning: files list file for package `%.250s' missing, "
+"assuming package has no files currently installed.\n"
+msgstr ""
+"dpkg: avertissement important: il manque le fichier comprenant la liste des\n"
+"fichiers du paquet '%.250s', je doit considèrer que ce paquet n'a aucun "
+"fichier actuellement installé.\n"
+
+#. FIXME: is this message's parameter correct ?
+#: dpkg/filesdb.c:139
+#, c-format
+msgid "unable to set buffering on `%.250s'"
+msgstr "impossible de paramétrer le tampon de '%.250s'"
+
+#: dpkg/filesdb.c:149
+#, c-format
+msgid "fgets gave an empty null-terminated string from `%.250s'"
+msgstr "'fgets' a trouvé une chaine vide dans '%.250s'"
+
+#: dpkg/filesdb.c:167
+#, c-format
+msgid "files list file for package `%.250s' contains empty filename"
+msgstr ""
+"la liste des fichiers du paquet '%.250s' contient un nom de fichier vide"
+
+#: dpkg/filesdb.c:175
+#, c-format
+msgid "error reading files list file for package `%.250s'"
+msgstr ""
+"erreur de lecture du fichier contenant la liste des fichiers du paquet "
+"'%.250s'"
+
+#: dpkg/filesdb.c:178
+#, c-format
+msgid "error closing files list file for package `%.250s'"
+msgstr ""
+"erreur de fermeture du fichier contenant la liste des fichiers du paquet "
+"'%.250s'"
+
+#: dpkg/filesdb.c:180
+#, c-format
+msgid "files list file for package `%.250s' is truncated"
+msgstr ""
+"le fichier contenant la liste des fichiers du paquet '%.250s' est tronqué"
+
+#: dpkg/filesdb.c:211
+msgid "(Reading database ... "
+msgstr "(Lecture de la base de données ... "
+
+#: dpkg/filesdb.c:211
+msgid "(Scanning database ... "
+msgstr "(analyse dans la base de données ... "
+
+#: dpkg/filesdb.c:219
+#, c-format
+msgid "%d files and directories currently installed.)\n"
+msgstr "%d fichiers et répertoires déjà installés.)\n"
+
+#: dpkg/filesdb.c:253
+#, c-format
+msgid "unable to create updated files list file for package %s"
+msgstr ""
+"impossible de créer le fichier contenant la nouvelle liste des fichiers du "
+"paquet '%s'"
+
+#: dpkg/filesdb.c:263
+#, c-format
+msgid "failed to write to updated files list file for package %s"
+msgstr ""
+"impossible d'écrire dans le fichier contenant la nouvelle liste des "
+"fichiers\n"
+"du paquet '%s'"
+
+#: dpkg/filesdb.c:265
+#, c-format
+msgid "failed to flush updated files list file for package %s"
+msgstr ""
+"erreur de \"flush\" du fichier contenant la nouvelle liste des fichiers\n"
+"du paquet '%s'"
+
+#: dpkg/filesdb.c:267
+#, c-format
+msgid "failed to sync updated files list file for package %s"
+msgstr ""
+"erreur de \"sync-hronisation\" du fichier contenant la nouvelle liste des\n"
+"fichiers du paquet '%s'"
+
+#: dpkg/filesdb.c:270
+#, c-format
+msgid "failed to close updated files list file for package %s"
+msgstr ""
+"erreur de fermeture le du fichier contenant la nouvelle liste des fichiers\n"
+"du paquet '%s'"
+
+#: dpkg/filesdb.c:272
+#, c-format
+msgid "failed to install updated files list file for package %s"
+msgstr ""
+"erreur d'installation du fichier contenant la nouvelle liste des\n"
+"fichiers du paquet '%s'"
+
+#: dpkg/filesdb.c:337
+msgid "failed to open diversions file"
+msgstr "erreur d'ouverture du fichier des détournements"
+
+#: dpkg/filesdb.c:341
+msgid "failed to fstat previous diversions file"
+msgstr "impossible d'obtenir le statut de l'ancien fichier des détournements"
+
+#: dpkg/filesdb.c:343
+msgid "failed to fstat diversions file"
+msgstr "impossible d'obtenir le statut du fichier des détournements"
+
+#: dpkg/filesdb.c:363
+msgid "fgets gave an empty string from diversions [i]"
+msgstr "'fgets' a trouvé une chaine vide dans les détournements [i]"
+
+#: dpkg/filesdb.c:364
+msgid "diversions file has too-long line or EOF [i]"
+msgstr "le fichier des détournements a une ligne trop longue ou EOF [i]"
+
+#: dpkg/filesdb.c:369
+msgid "read error in diversions [ii]"
+msgstr "erreur de lecture dans les détournements [ii]"
+
+#: dpkg/filesdb.c:370
+msgid "unexpected EOF in diversions [ii]"
+msgstr "EOF inattendu dans les détournements [ii]"
+
+#: dpkg/filesdb.c:372
+msgid "fgets gave an empty string from diversions [ii]"
+msgstr "'fgets' a trouvé une chaine vide dans les détournements [ii]"
+
+#: dpkg/filesdb.c:373
+msgid "diversions file has too-long line or EOF [ii]"
+msgstr "le fichier des détournements a une ligne trop longue ou EOF [ii]"
+
+#: dpkg/filesdb.c:378
+msgid "read error in diversions [iii]"
+msgstr "erreur de lecture dans les détournements [iii]"
+
+#: dpkg/filesdb.c:379
+msgid "unexpected EOF in diversions [iii]"
+msgstr "EOF inattendu dans les détournements [iii]"
+
+#: dpkg/filesdb.c:381
+msgid "fgets gave an empty string from diversions [iii]"
+msgstr "'fgets' a trouvé une chaine vide dans les détournements [iii]"
+
+#: dpkg/filesdb.c:382
+msgid "diversions file has too-long line or EOF [iii]"
+msgstr "le fichier des détournements a une ligne trop longue ou EOF [iii]"
+
+#: dpkg/filesdb.c:389
+#, c-format
+msgid "conflicting diversions involving `%.250s' or `%.250s'"
+msgstr "détournements contradictoires impliquant '%.250s' ou '%.250s'"
+
+#: dpkg/filesdb.c:398
+msgid "read error in diversions [i]"
+msgstr "erreur de lecture dans les détournements [i]"
+
+#. submsg: statusstrings
+#: dpkg/help.c:48
+msgid "not installed"
+msgstr "non installé"
+
+#. submsg: statusstrings
+#: dpkg/help.c:50
+msgid "unpacked but not configured"
+msgstr "déballé mais non configuré"
+
+#. submsg: statusstrings
+#: dpkg/help.c:52
+msgid "broken due to postinst failure"
+msgstr "arrêt causé par échec de 'postinst'"
+
+#. submsg: statusstrings
+#: dpkg/help.c:54
+msgid "installed"
+msgstr "installé"
+
+#. submsg: statusstrings
+#: dpkg/help.c:56
+msgid "broken due to failed removal"
+msgstr "arrêt causé par l'échec d'une suppression"
+
+#. submsg: statusstrings
+#: dpkg/help.c:58
+msgid "not installed but configs remain"
+msgstr "non installé mais la configuration reste"
+
+#: dpkg/help.c:95
+msgid "dpkg - warning: PATH is not set.\n"
+msgstr "dpkg: la variable PATH n'existe pas.\n"
+
+#: dpkg/help.c:110
+#, c-format
+msgid "dpkg: `%s' not found on PATH.\n"
+msgstr "dpkg: '%s' non trouvé dans $PATH.\n"
+
+#: dpkg/help.c:116
+#, c-format
+msgid ""
+"%d expected program(s) not found on PATH.\n"
+"NB: root's PATH should usually contain /usr/local/sbin, /usr/sbin and /sbin."
+msgstr ""
+"%d programme(s) recherché(s) non trouvé(s)s dans le chemin d'accès ($PATH).\n"
+"NB: la variable PATH de root doit normalement contenir /usr/local/sbin,\n"
+" /usr/sbin et /sbin."
+
+#. fixme: won't work right when instdir != admindir
+#: dpkg/help.c:183
+#, c-format
+msgid "failed to chroot to `%.250s'"
+msgstr "impossible d'aller dans le répertoire '%.255s'"
+
+#: dpkg/help.c:230
+#, fuzzy, c-format
+msgid "error un-catching signal %s: %s\n"
+msgstr "erreur en restaurant le gestionnaire du signal %s : %s\n"
+
+#: dpkg/help.c:243
+#, c-format
+msgid "unable to ignore signal %s before running script"
+msgstr "impossible d'ignorer le signal %s avant le lancement du script"
+
+#: dpkg/help.c:254
+#, c-format
+msgid "unable to set execute permissions on `%.250s'"
+msgstr "impossible donner des droits d'exécution sur '%.250s'"
+
+#. supermsg: maintainer_script_installed
+#: dpkg/help.c:272 dpkg/help.c:309
+#, fuzzy, c-format
+msgid "%s script"
+msgstr "ancien script de %s"
+
+#. supermsg: maintainer_script_installed 1
+#: dpkg/help.c:280
+#, c-format
+msgid "unable to stat installed %s script `%.250s'"
+msgstr "impossible d'obtenir le statut du script de %s installé '%.250s'"
+
+#: dpkg/help.c:287 dpkg/help.c:368 dpkg/help.c:408
+#, c-format
+msgid "unable to execute %s"
+msgstr "impossible d'exécuter '%s'"
+
+#. supermsg: maintainer_script_installed 1
+#: dpkg/help.c:318
+#, c-format
+msgid "unable to stat new %s script `%.250s'"
+msgstr "impossible d'obtenir le statut du nouveau script de %s '%.250s'"
+
+#: dpkg/help.c:325
+#, c-format
+msgid "unable to execute new %s"
+msgstr "impossible d'exécuter le nouveau script de %s"
+
+#. supermsg: maintainer_script_alternative
+#: dpkg/help.c:352
+#, c-format
+msgid "old %s script"
+msgstr "ancien script de %s"
+
+#: dpkg/help.c:360
+#, c-format
+msgid "dpkg: warning - unable to stat %s `%.250s': %s\n"
+msgstr ""
+"dpkg: impossible d'obtenir le statut du script de %s '%.250s':\n"
+"%s\n"
+
+#: dpkg/help.c:372
+#, c-format
+msgid "wait for %s failed"
+msgstr "échec de l'attente de «%s»"
+
+#: dpkg/help.c:376
+#, c-format
+msgid "dpkg: warning - %s returned error exit status %d\n"
+msgstr "dpkg: %s s'est terminé avec une valeur d'erreur (%d)\n"
+
+#: dpkg/help.c:379
+#, c-format
+msgid "dpkg: warning - %s killed by signal (%s)%s\n"
+msgstr "dpkg: %s tué par le signal (%s)%s\n"
+
+#: dpkg/help.c:380
+msgid ", core dumped"
+msgstr ", 'core' généré"
+
+#: dpkg/help.c:382
+#, c-format
+msgid "%s failed with unknown wait status code %d"
+msgstr "'%s' a échoué ; 'wait(2)' donne un code d'état de %d"
+
+#: dpkg/help.c:386
+msgid "dpkg - trying script from the new package instead ...\n"
+msgstr "dpkg: j'essaie le script du nouveau paquet à la place ...\n"
+
+#. supermsg: maintainer_script_alternative
+#: dpkg/help.c:394
+#, c-format
+msgid "new %s script"
+msgstr "nouveau script de %s"
+
+#: dpkg/help.c:398
+msgid "there is no script in the new version of the package - giving up"
+msgstr ""
+"il n'y a pas de script dans la nouvelle version du paquet - j'abandonne"
+
+#: dpkg/help.c:400
+#, c-format
+msgid "unable to stat %s `%.250s'"
+msgstr "impossible d'obtenir le statut de '%2$.250s' (%1$s)"
+
+#: dpkg/help.c:413
+msgid "dpkg: ... it looks like that went OK.\n"
+msgstr "dpkg: ... ça a l'air d'avoir fonctionné correctement.\n"
+
+#. Huh ?
+#: dpkg/help.c:492
+#, c-format
+msgid "failed to rmdir/unlink `%.255s'"
+msgstr "échec de suppresion de '%.255s'"
+
+#: dpkg/help.c:496
+msgid "failed to exec rm for cleanup"
+msgstr "échec d'exécution de 'rm' pour nettoyage"
+
+#. submsg: waitsubproc
+#: dpkg/help.c:500
+msgid "rm cleanup"
+msgstr ""
+
+#: dpkg/main.c:50
+#, fuzzy, c-format
+msgid ""
+"Debian GNU/Linux `%s' package management program version %s.\n"
+"Copyright 1994-1996 Ian Jackson, Bruce Perens.  This is free software;\n"
+"see the GNU General Public Licence version 2 or later for copying\n"
+"conditions.  There is NO warranty.  See `%s --licence' for details.\n"
+msgstr ""
+"Copyright 1994-1996 Ian Jackson, Bruce Perens.  Ceci est un logiciel libre;\n"
+"consultez la Licence Publique Générale GNU (GPL) version 2 ou plus pour les\n"
+"conditions de reproduction. Il n'y a AUCUNE garantie.\n"
+"Voir 'dpkg --licence' pour les détails.\n"
+
+#: dpkg/main.c:63
+#, fuzzy, c-format
+msgid ""
+"Usage: \n"
+"  %s -i|--install      <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  %s --unpack          <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  %s -A|--record-avail <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  %s --configure           <package name> ... | -a|--pending\n"
+"  %s -r|--remove | --purge <package name> ... | -a|--pending\n"
+"  %s --get-selections [<pattern> ...]   get list of selections to stdout\n"
+"  %s --set-selections                   set package selections from stdin\n"
+"  %s --update-avail <Packages-file>     replace available packages info\n"
+"  %s --merge-avail <Packages-file>      merge with info from file\n"
+"  %s --clear-avail                      erase existing available info\n"
+"  %s --forget-old-unavail               forget uninstalled unavailable pkgs\n"
+"  %s -s|--status <package-name> ...     display package status details\n"
+"  %s --print-avail <package-name> ...   display available version details\n"
+"  %s -L|--listfiles <package-name> ...  list files `owned' by package(s)\n"
+"  %s -l|--list [<pattern> ...]          list packages concisely\n"
+"  %s -S|--search <pattern> ...          find package(s) owning file(s)\n"
+"  %s -C|--audit                         check for broken package(s)\n"
+"  %s --print-architecture               print target architecture (uses "
+"GCC)\n"
+"  %s --print-gnu-build-architecture     print GNU version of target arch\n"
+"  %s --print-installation-architecture  print host architecture (for "
+"inst'n)\n"
+"  %s --compare-versions <a> <rel> <b>   compare version numbers - see below\n"
+"  %s --help | --version                 show this help / version number\n"
+"  %s --force-help | -Dh|--debug=help    help on forcing resp. debugging\n"
+"  %s --licence                          print copyright licencing terms\n"
+"\n"
+"Use %s -b|--build|-c|--contents|-e|--control|-I|--info|-f|--field|\n"
+" -x|--extract|-X|--vextract|--fsys-tarfile  on archives (type %s --help.)\n"
+"\n"
+"For internal use: %s --assert-support-predepends | --predep-package |\n"
+"  --assert-working-epoch\n"
+"\n"
+"Options:\n"
+"  --admindir=<directory>     Use <directory> instead of %s\n"
+"  --root=<directory>         Install on alternative system rooted elsewhere\n"
+"  --instdir=<directory>      Change inst'n root without changing admin dir\n"
+"  -O|--selected-only         Skip packages not selected for install/upgrade\n"
+"  -E|--skip-same-version     Skip packages whose same version is installed\n"
+"  -G=--refuse-downgrade      Skip packages with earlier version than "
+"installed\n"
+"  -B|--auto-deconfigure      Install even if it would break some other "
+"package\n"
+"  --largemem | --smallmem    Optimise for large (>4Mb) or small (<4Mb) RAM "
+"use\n"
+"  --no-act                   Just say what we would do - don't do it\n"
+"  -D|--debug=<octal>         Enable debugging - see -Dhelp or --debug=help\n"
+"  --ignore-depends=<package>,... Ignore dependencies involving <package>\n"
+"  --force-...                    Override problems - see --force-help\n"
+"  --no-force-...|--refuse-...    Stop when problems encountered\n"
+"\n"
+"Comparison operators for --compare-versions are:\n"
+" lt le eq ne ge gt       (treat no version as earlier than any version);\n"
+" lt-nl le-nl ge-nl gt-nl (treat no version as later than any version);\n"
+" < << <= = >= >> >       (only for compatibility with control file syntax).\n"
+"\n"
+"Use `%s' for user-friendly package management.\n"
+msgstr ""
+"Syntaxe : \n"
+" dpkg -i|--install      <nom-fichier-deb> ... | -R|--recursive <rép> ...\n"
+" dpkg --unpack          <nom-fichier-deb> ... | -R|--recursive <rép> ...\n"
+" dpkg -A|--record-avail <nom-fichier-deb> ... | -R|--recursive <rép> ...\n"
+" dpkg --configure            <nom-paquet> ... | -a|--pending\n"
+" dpkg -r|--remove | --purge  <nom-paquet> ... | -a|--pending\n"
+" dpkg --get-selections [<motif> ...]     affiche la liste des sélections "
+"sur\n"
+"                                          la sortie standard\n"
+" dpkg --set-selections                   fixe la liste des sélections à\n"
+"                                          partir de l'entrée standard\n"
+" dpkg --update-avail <fichier-Packages>  remplace les infos sur les paquets\n"
+"                                          disponibles\n"
+" dpkg --merge-avail <fichier-Packages>   fusionne les infos sur les paquets\n"
+"                                          avec celles du fichier\n"
+" dpkg --clear-avail                      efface les infos sur les paquets\n"
+" dpkg --forget-old-unavail               oublie les paquets non-installés "
+"et\n"
+"                                          non-disponibles\n"
+" dpkg -s|--status <nom-paquet> ...       affiche détails de l'état du "
+"paquet\n"
+" dpkg --print-avail <nom-paquet> ...     affiche détails de la version "
+"dispo.\n"
+" dpkg -L|--listfiles <nom-paquet> ...    liste fichiers appartenant au "
+"paquet.\n"
+" dpkg -l|--list [<motif> ...]            liste concise des paquets\n"
+" dpkg -S|--search <motif> ...            trouve le(s) paquet(s) possédant "
+"le(s)\n"
+"                                          fichier(s)\n"
+" dpkg -C|--audit                         vérifie la présence de paquets "
+"abîmés\n"
+" dpkg --print-architecture               affiche l'architecture cible\n"
+"                                          (utilise GCC)\n"
+" dpkg --print-gnu-build-architecture     affiche l'architecture cible\n"
+"                                          (version GNU)\n"
+" dpkg --print-installation-architecture  affiche l'architecture de la "
+"machine\n"
+"                                          (pour l'installation)\n"
+" dpkg --compare-versions <a> <rel> <b>   compare les numéro de version\n"
+"                                          - voir plus bas\n"
+" dpkg --help                             affiche cette aide\n"
+" dpkg --version                          affiche la version de 'dpkg'\n"
+" dpkg --force-help | -Dh|--debug=help    aide sur le forçage / sur le "
+"débogage\n"
+" dpkg --licence                          affiche les termes du copyright\n"
+"\n"
+"Utiliser «dpkg "
+"-b|--build|-c|--contents|-e|--control|-I|--info|-f|--field|-x|\n"
+" --extract|-X|--vextract|--fsys-tarfile» sur les archives (voir «%s "
+"--help».)\n"
+"\n"
+"Pour utilisation interne : dpkg --assert-support-predepends |\n"
+"  --predep-package | --assert-working-epoch\n"
+"\n"
+"Options :\n"
+" --admindir=<répertoire>  Utilise <répertoire> au lieu de %s\n"
+" --root=<répertoire>      Installe sur un autre système, dont la racine\n"
+"                           est sur <répertoire>\n"
+" --instdir=<répertoire>   Change de racine d'installation sans changer de\n"
+"                           répertoire d'administration\n"
+" -O|--selected-only       Saute paquets non sélectionnés pour "
+"installation/MAJ\n"
+" -E|--skip-same-version   Saute paquets avec version identique déjà "
+"installée\n"
+" -G=--refuse-downgrade    Saute paquets de version plus vieille que "
+"l'actuelle\n"
+" -B|--auto-deconfigure    Installe même si ça abime un autre paquet\n"
+" --largemem | --smallmem  Optimise pour beaucoup (>4Mo) ou peu (<4Mo) de "
+"RAM\n"
+" --no-act                 Affiche seulement ce qui serait fait, ne le fait "
+"pas\n"
+" -D|--debug=<octal>       Active le débogage - voir «-Dhelp» ou "
+"«--debug=help»\n"
+" --ignore-depends=<paquet>,...  Ignore les dépendances concernant <paquet>\n"
+" --force-...                    Ignore certains problèmes - voir "
+"«force-help»\n"
+" --no-force-...|--refuse-...    Stoppe sur certains problèmes\n"
+"\n"
+"Les opérateurs de comparaison pour «--compare-versions» sont :\n"
+" eq ne                    égale (equals), différent (not equals)\n"
+" lt le gt ge              inférieur, (ou égal), supérieur, (ou égal)\n"
+"                           (treat no version as earlier than any version).\n"
+" lt-nl le-nl ge-nl gt-nl  (treat no version as later than any version).\n"
+" << <= = >= >>            (uniquement pour compatibilité avec syntaxe des\n"
+"                           fichiers de contrôle).\n"
+" < >                      (de même, mais obsolètes).\n"
+"\n"
+"Voir 'dselect' pour une gestion des paquets plus conviviale.\n"
+
+#: dpkg/main.c:125
+msgid ""
+"Type dpkg --help for help about installing and deinstalling packages [*];\n"
+"Use dselect for user-friendly package management;\n"
+"Type dpkg -Dhelp for a list of dpkg debug flag values;\n"
+"Type dpkg --force-help for a list of forcing options;\n"
+"Type dpkg-deb --help for help about manipulating *.deb files;\n"
+"Type dpkg --licence for copyright licence and lack of warranty (GNU GPL) "
+"[*].\n"
+"\n"
+"Options marked [*] produce a lot of output - pipe it through `less' or "
+"`more' !"
+msgstr ""
+"Voir «dpkg --help» pour l'aide pour (dés)installer des paquets [*];\n"
+"Voir 'dselect' pour une gestion des paquets conviviale;\n"
+"Voir «dpkg -Dhelp» pour une liste des drapeaux de débogage;\n"
+"Voir «dpkg --force-help» pour une liste des options de forçage;\n"
+"Voir «dpkg-deb --help» pour une aide sur la manipulation des fichiers "
+"*.deb;\n"
+"Voir «dpkg --licence» pour le copyright et le manque de garantie (GNU GPL) "
+"[*].\n"
+"\n"
+"Les options marquées de [*] produisent un affichage important ;\n"
+" tubez-les à travers 'less' ou 'more' !"
+
+#: dpkg/main.c:179
+#, c-format
+msgid "conflicting actions --%s and --%s"
+msgstr "actions conflictuelles (--%s et --%s)"
+
+#: dpkg/main.c:237
+#, c-format
+msgid "null package name in --ignore-depends comma-separated list `%.250s'"
+msgstr "nom de paquet vide dans la liste '%.250s' de --ignore-depends"
+
+#: dpkg/main.c:243
+#, c-format
+msgid "--ignore-depends requires a legal package name. `%.250s' is not; %s"
+msgstr ""
+"--ignore-depends veut un nom de paquet légal. '%.250s' ne l'est pas; %s"
+
+#: dpkg/main.c:259
+msgid ""
+"dpkg forcing options - control behaviour when problems found:\n"
+"  warn but continue:  --force-<thing>,<thing>,...\n"
+"  stop with error:    --refuse-<thing>,<thing>,... | --no-force-<thing>,...\n"
+" Forcing things:\n"
+"  auto-select [*]        (De)select packages to install (remove) them\n"
+"  dowgrade [*]           Replace a package with a lower version\n"
+"  configure-any          Configure any package which may help this one\n"
+"  hold                   Process incidental packages even when on hold\n"
+"  bad-path               PATH is missing important programs, problems "
+"likely\n"
+"  not-root               Try to (de)install things even when not root\n"
+"  overwrite [*]          Overwrite a file from one package with another\n"
+"  overwrite-diverted     Overwrite a diverted file with an undiverted "
+"version\n"
+"  depends-version [!]    Turn dependency version problems into warnings\n"
+"  depends [!]            Turn all dependency problems into warnings\n"
+"  conflicts [!]          Allow installation of conflicting packages\n"
+"  architecture [!]       Process even packages with wrong architecture\n"
+"  overwrite-dir [!]      Overwrite one package's directory with another's "
+"file\n"
+"  remove-reinstreq [!]   Remove packages which require installation\n"
+"  remove-essential [!]   Remove an essential package\n"
+"\n"
+"WARNING - use of options marked [!] can seriously damage your installation.\n"
+"Forcing options marked [*] are enabled by default.\n"
+msgstr ""
+"options de forçage de dpkg - contrôlent le comportement en cas de "
+"problèmes:\n"
+"  avertir mais continuer: --force-<qqch>,<qqch>,...\n"
+"  sortir avec erreur:     --refuse-<qqch>,<qqch>,... | "
+"--no-force-<qqch>,...\n"
+" Forçage de quelque chose :\n"
+"  auto-select [*]        (Dé)sélection des paquets à installer (supprimer)\n"
+"  downgrade [*]          Remplace un paquet avec une version antérieure\n"
+"  configure-any          Configure tous les paquets pouvant aider celui-ci\n"
+"  hold                   Traite même les paquets suspendus\n"
+"  bad-path               $PATH rate des programmes importants, problèmes\n"
+"                          probables\n"
+"  not-root               Tente de (dés)installer qqch sans être root\n"
+"  overwrite [*]          Remplace un fichier d'un paquet par celui d'un "
+"autre\n"
+"  overwrite-diverted     Remplace un fichier détourné avec une version\n"
+"                          non-détournée\n"
+"  depends-version [!]    Change les problèmes de dépendance de version en\n"
+"                          problèmes non critiques (avertissements)\n"
+"  depends [!]            Change tous les problèmes de dépendance en\n"
+"                          problèmes non critiques\n"
+"  conflicts [!]          Autorise l'installation de paquets conflictuels\n"
+"  architecture [!]       Traite même les paquets d'une autre architecture\n"
+"  overwrite-dir [!]      Remplace un répertoire d'un paquet par un fichier\n"
+"                          d'un autre\n"
+"  remove-reinstreq [!]   Supprime les paquets nécéssitant une installation\n"
+"  remove-essential [!]   Supprime un paquet essentiel\n"
+"\n"
+"AVERTISSEMENT - utiliser une option marquée [!] peut sérieusement "
+"endommager\n"
+" votre installation.\n"
+"Les options de forçage marquées [*] sont activées par défaut.\n"
+
+#: dpkg/main.c:291
+#, c-format
+msgid "unknown force/refuse option `%.*s'"
+msgstr "option de forçage '%.*s' inconnue"
+
+#: dpkg/main.c:371
+msgid "failed to exec dpkg-deb"
+msgstr "échec d'exécution de 'dpkg-deb'"
+
+#: dpkg/main.c:410
+msgid "need an action option"
+msgstr "manque une action à exécuter"
+
+#: dpkg/packages.c:81
+#, c-format
+msgid "--%s --pending does not take any non-option arguments"
+msgstr "--%s --pending ne prend pas de paramètres autres qu'options"
+
+#: dpkg/packages.c:118
+msgid ""
+"you must specify packages by their own names, not by quoting the names of "
+"the files they come in"
+msgstr ""
+"vous devez spécifier les paquets par leur nom, et non par le nom des\n"
+" fichiers qui les contiennent"
+
+#: dpkg/packages.c:152
+#, c-format
+msgid "Package %s listed more than once, only processing once.\n"
+msgstr "Paquet %s listé plus d'un fois, traité une seule fois.\n"
+
+#: dpkg/packages.c:156
+#, c-format
+msgid ""
+"More than one copy of package %s has been unpacked\n"
+" in this run !  Only configuring it once.\n"
+msgstr ""
+"J'ai déballé plus d'une copie du paquet '%s'\n"
+" dans ce traitement ! Configuration d'un seul.\n"
+
+#. FIXME: should use sprintf if possible (cf. i18n)
+#: dpkg/packages.c:267 dpkg/packages.c:312 dpkg/packages.c:325
+msgid "  Package "
+msgstr "  Paquet "
+
+#: dpkg/packages.c:270 dpkg/packages.c:315 dpkg/packages.c:328
+msgid " which provides "
+msgstr " fournissant "
+
+#: dpkg/packages.c:273
+msgid " is to be removed.\n"
+msgstr " doit être supprimé.\n"
+
+#. FIXME: should use sprintf if possible (cf. i18n)
+#: dpkg/packages.c:286
+msgid "  Version of "
+msgstr "  La version de "
+
+#: dpkg/packages.c:288
+msgid " on system is "
+msgstr " sur le disque est "
+
+#: dpkg/packages.c:308
+#, c-format
+msgid "dpkg: also configuring `%s' (required by `%s')\n"
+msgstr "dpkg: configuration additionnelle de '%s' (requis par '%s')\n"
+
+#: dpkg/packages.c:318
+msgid " is not configured yet.\n"
+msgstr " n'est pas encore configuré.\n"
+
+#: dpkg/packages.c:331
+msgid " is not installed.\n"
+msgstr " n'est pas installé.\n"
+
+#. Don't print the line about the package to be removed if
+#. * that's the only line.
+#.
+#: dpkg/packages.c:396
+msgid "; however:\n"
+msgstr "; malgré celà :\n"
+
+#: dpkg/processarc.c:113
+msgid "cannot access archive"
+msgstr "impossible d'accéder à l'archive"
+
+#: dpkg/processarc.c:124
+#, c-format
+msgid "error ensuring `%.250s' doesn't exist"
+msgstr "erreur en faisant en sorte que '%.250s' n'existe pas"
+
+#: dpkg/processarc.c:129
+msgid "failed to exec dpkg-split to see if it's part of a multiparter"
+msgstr ""
+"échec de l'exécution de 'dpkg-split' pour vérifier son appartenance à un\n"
+"fichier découpé"
+
+#: dpkg/processarc.c:132
+msgid "wait for dpkg-split failed"
+msgstr "échec de l'attente de dpkg-split"
+
+#. submsg: process_archive-filename -- alternatives are plain filenames
+#: dpkg/processarc.c:139
+msgid "reassembled package file"
+msgstr "archive de paquet réassemblée"
+
+#: dpkg/processarc.c:154
+msgid "unable to get unique filename for control info"
+msgstr ""
+"impossible d'obtenir un nom de fichier unique pour les infos de contrôle"
+
+#: dpkg/processarc.c:177
+msgid "failed to exec dpkg-deb to extract control information"
+msgstr "échec d'exécution de dpkg-deb pour extraction des infos de contrôle"
+
+#. supermsg: process_archive-filename 2
+#: dpkg/processarc.c:192
+#, c-format
+msgid "Recorded info about %s from %s.\n"
+msgstr "Enregistrement des infos sur '%s' à partir de %s.\n"
+
+#: dpkg/processarc.c:205
+#, fuzzy, c-format
+msgid "package architecture (%s) is not compatible with system (%s)"
+msgstr "l'architecture du paquet (%s) ne correspond pas celle du système (%s)"
+
+#: dpkg/processarc.c:224
+#, c-format
+msgid "Selecting previously deselected package %s.\n"
+msgstr "Sélection du paquet '%s', qui était déselectionné.\n"
+
+#: dpkg/processarc.c:227
+#, c-format
+msgid "Skipping deselected package %s.\n"
+msgstr "Paquet déselectionné '%s' ignoré.\n"
+
+#: dpkg/processarc.c:238
+#, fuzzy, c-format
+msgid "dpkg - warning: downgrading %.250s from %.250s to %.250s.\n"
+msgstr "dpkg: recul de version pour '%.250s', de %.250s vers %.250s.\n"
+
+#: dpkg/processarc.c:243
+#, fuzzy, c-format
+msgid "Will not downgrade %.250s from version %.250s to %.250s, skipping.\n"
+msgstr ""
+"Recul de version refusé pour '%.250s' (de %.250s vers %.250s), paquet "
+"ignoré.\n"
+
+#: dpkg/processarc.c:253
+#, c-format
+msgid "Version %.250s of %.250s already installed, skipping.\n"
+msgstr "Version %.250s de '%.250s' déjà installée, paquet ignoré.\n"
+
+#. supermsg: process_archive-filename 1
+#: dpkg/processarc.c:287
+#, c-format
+msgid ""
+"dpkg: regarding %s containing %s, pre-dependency problem:\n"
+"%s"
+msgstr ""
+"dpkg: concernant '%s' contenant '%s', problème de pré-dépendance:\n"
+"%s"
+
+#: dpkg/processarc.c:290
+#, c-format
+msgid "pre-dependency problem - not installing %.250s"
+msgstr "problème de pré-dépendance - je n'installe pas '%.250s'"
+
+#: dpkg/processarc.c:291
+msgid "dpkg: warning - ignoring pre-dependency problem !\n"
+msgstr "dpkg: problème de pré-dépendance ignoré !\n"
+
+#. supermsg: process_archive-filename 3
+#: dpkg/processarc.c:306
+#, c-format
+msgid "Preparing to replace %s %s (using %s) ...\n"
+msgstr "Préparation du remplacement de %s %s (par %s) ...\n"
+
+#. supermsg: process_archive-filename 2
+#: dpkg/processarc.c:312
+#, c-format
+msgid "Unpacking %s (from %s) ...\n"
+msgstr "Déballage de %s (à partir de %s) ...\n"
+
+#: dpkg/processarc.c:332
+#, c-format
+msgid "name of conffile (starting `%.250s') is too long (>%d characters)"
+msgstr ""
+"le nom du fichier de configuration (commençant par '%.250s') est trop long "
+"(>%d caractères)"
+
+#: dpkg/processarc.c:386
+#, c-format
+msgid "read error in %.250s"
+msgstr "erreur de lecture dans %.250s"
+
+#. conff= fopen()
+#: dpkg/processarc.c:388
+#, c-format
+msgid "error closing %.250s"
+msgstr "erreur de fermeture de %.250s"
+
+#: dpkg/processarc.c:390
+#, c-format
+msgid "error trying to open %.250s"
+msgstr "erreur en essayant d'ouvrir %.250s"
+
+#. submsg: maintainer_script_alternative
+#: dpkg/processarc.c:411 dpkg/processarc.c:435 dpkg/processarc.c:449
+#: dpkg/remove.c:164
+msgid "pre-removal"
+msgstr ""
+
+#: dpkg/processarc.c:423
+#, c-format
+msgid "De-configuring %s, so that we can remove %s ...\n"
+msgstr "Dé-configuration de %s, pour pouvoir supprimer %s ...\n"
+
+#: dpkg/processarc.c:485
+#, c-format
+msgid "Unpacking replacement %.250s ...\n"
+msgstr "Déballage de la mise à jour de %.250s ...\n"
+
+#: dpkg/processarc.c:561
+msgid "unable to exec dpkg-deb to get filesystem archive"
+msgstr ""
+"impossible d'exécuter 'dpkg-deb' pour obtenir l'archive du système de "
+"fichiers"
+
+#: dpkg/processarc.c:569
+msgid "unable to fdopen dpkg-deb extract pipe"
+msgstr "impossible de \"fd-ouvrir\" le tube d'extraction de 'dpkg-deb'"
+
+#: dpkg/processarc.c:575
+msgid "error reading dpkg-deb tar output"
+msgstr "erreur de lecture de la sortie 'tar' de 'dpkg-deb'"
+
+#: dpkg/processarc.c:578
+msgid "unexpected EOF in filesystem tarfile - corrupted package archive"
+msgstr "EOF inattendu dans l'archive du système de fichiers - paquet corrompu"
+
+#: dpkg/processarc.c:580
+msgid "corrupted filesystem tarfile - corrupted package archive"
+msgstr "archive du système de fichiers corrompue - paquet corrompu"
+
+#: dpkg/processarc.c:638
+#, c-format
+msgid "dpkg: warning - unable to delete old file `%.250s': %s\n"
+msgstr "dpkg: impossible de supprimer le fichier '%.250s': %s\n"
+
+#: dpkg/processarc.c:662 dpkg/processarc.c:900 dpkg/remove.c:280
+msgid "cannot read info directory"
+msgstr "je ne peut pas lire le répertoire d'info"
+
+#: dpkg/processarc.c:675
+#, c-format
+msgid "old version of package has overly-long info file name starting `%.250s'"
+msgstr ""
+"l'ancienne version du paquet a un nom de fichier d'info trop long, "
+"commençant\n"
+"par '%.250s'"
+
+#: dpkg/processarc.c:687
+#, c-format
+msgid "unable to remove obsolete info file `%.250s'"
+msgstr "impossible de supprimer le fichier d'information obsolète '%.250s'"
+
+#: dpkg/processarc.c:690
+#, c-format
+msgid "unable to install (supposed) new info file `%.250s'"
+msgstr "impossible d'installer le (supposé nouveau) fichier d'info '%.250s'"
+
+#: dpkg/processarc.c:697
+msgid "unable to open temp control directory"
+msgstr "impossible d'ouvrir le répertoire de contrôle temporaire"
+
+#: dpkg/processarc.c:706
+#, c-format
+msgid "package contains overly-long control info file name (starting `%.50s')"
+msgstr ""
+"le paquet contient un nom de fichier de contrôle trop long (commençant par\n"
+"'%.50s')"
+
+#: dpkg/processarc.c:711
+#, c-format
+msgid "package control info contained directory `%.250s'"
+msgstr "les infos de contrôle du paquet contiennent le répertoire '%.250s'"
+
+#: dpkg/processarc.c:713
+#, fuzzy, c-format
+msgid "package control info rmdir of `%.250s' didn't say not a dir"
+msgstr ""
+"le 'rmdir' de l'info de contrôle '%.250s' ne dit pas que ce n'est pas un "
+"répertoire"
+
+#: dpkg/processarc.c:719
+#, fuzzy, c-format
+msgid "dpkg: warning - package %s contained list as info file\n"
+msgstr "dpkg: le paquet %s contient une liste comme fichier d'info\n"
+
+#: dpkg/processarc.c:726
+#, c-format
+msgid "unable to install new info file `%.250s' as `%.250s'"
+msgstr ""
+"impossible d'installer le nouveau fichier d'info '%.250s' en tant que "
+"'%.250s'"
+
+#: dpkg/processarc.c:877
+#, c-format
+msgid "(Noting disappearance of %s, which has been completely replaced.)\n"
+msgstr "(Je remarque la disparition de %s, qui a été complètement remplacé.)\n"
+
+#. submsg: maintainer_script_installed
+#: dpkg/processarc.c:886
+msgid "post-removal script (for disappearance)"
+msgstr ""
+
+#: dpkg/processarc.c:916
+#, c-format
+msgid "unable to delete disappearing control info file `%.250s'"
+msgstr "impossible de supprimer le fichier de contrôle '%.250s' du disparu"
+
+#: dpkg/remove.c:84
+#, c-format
+msgid ""
+"dpkg - warning: ignoring request to remove %.250s which isn't installed.\n"
+msgstr ""
+"dpkg: requête de suppression de %.250s ignorée, il n'est pas installé.\n"
+
+#: dpkg/remove.c:92
+#, c-format
+msgid ""
+"dpkg - warning: ignoring request to remove %.250s, only the config\n"
+" files of which are on the system.  Use --purge to remove them too.\n"
+msgstr ""
+"dpkg: requête de suppression de %.250s ignorée, seuls les fichiers\n"
+"de configuration sont installés. Utilisez --purge pour les supprimer aussi.\n"
+
+#: dpkg/remove.c:101
+msgid "This is an essential package - it should not be removed."
+msgstr "C'est un paquet essentiel - il ne doit pas être supprimé."
+
+#: dpkg/remove.c:127
+#, c-format
+msgid ""
+"dpkg: dependency problems prevent removal of %s:\n"
+"%s"
+msgstr ""
+"dpkg: un problème de dépendance empêche la suppression de %s :\n"
+"%s"
+
+#: dpkg/remove.c:129
+msgid "dependency problems - not removing"
+msgstr "problème de dépendance - suppression annulée"
+
+#: dpkg/remove.c:133
+#, c-format
+msgid ""
+"dpkg: %s: dependency problems, but removing anyway as you request:\n"
+"%s"
+msgstr ""
+"dpkg: %s: problème de dépendance, mais je supprime comme demandé :\n"
+"%s"
+
+#: dpkg/remove.c:141
+msgid ""
+"Package is in a very bad inconsistent state - you should\n"
+" reinstall it before attempting a removal."
+msgstr ""
+"Paquet dans un très mauvais état -\n"
+" vous devriez le réinstaller avant d'essayer de le supprimer."
+
+#: dpkg/remove.c:148
+#, c-format
+msgid "Would remove or purge %s ...\n"
+msgstr "%s serait supprimé ou purgé ...\n"
+
+#: dpkg/remove.c:156
+#, c-format
+msgid "Removing %s ...\n"
+msgstr "Suppression de %s ...\n"
+
+#: dpkg/remove.c:252
+#, c-format
+msgid ""
+"dpkg - warning: while removing %.250s, directory `%.250s' not empty so not "
+"removed.\n"
+msgstr ""
+"dpkg: lors de la suppression de %.250s, le répertoire '%.250s' n'était pas "
+"vide, il n'a donc pas été supprimé.\n"
+
+#: dpkg/remove.c:258
+#, c-format
+msgid ""
+"dpkg - warning: while removing %.250s, unable to remove directory `%.250s': "
+"%s - directory may be a mount point ?\n"
+msgstr ""
+"dpkg: lors de la suppression de %.250s, impossible de supprimer '%.250s': %s "
+"- le répertoire est peut-être un point de montage ?\n"
+
+#: dpkg/remove.c:265
+#, c-format
+msgid "cannot remove `%.250s'"
+msgstr "impossible de supprimer %.250s'"
+
+#: dpkg/remove.c:267
+#, c-format
+msgid "cannot remove file `%.250s'"
+msgstr "impossible de supprimer le fichier '%.250s'"
+
+#: dpkg/remove.c:301
+#, c-format
+msgid "unable to delete control info file `%.250s'"
+msgstr "impossible de supprimer le fichier de contrôle '%.250s'"
+
+#: dpkg/remove.c:316
+#, c-format
+msgid "unable to check existence of `%.250s'"
+msgstr "impossible de vérifier l'existence de '%.250s'"
+
+#: dpkg/remove.c:331
+#, c-format
+msgid "Purging configuration files for %s ...\n"
+msgstr "Purge des fichiers de configuration de %s ...\n"
+
+#: dpkg/remove.c:375
+#, c-format
+msgid "cannot remove old config file `%.250s' (= `%.250s')"
+msgstr ""
+"impossible de supprimer l'ancien fichier de configuration '%.250s' (= "
+"'%.250s')"
+
+#: dpkg/remove.c:390
+#, fuzzy, c-format
+msgid "cannot read config file dir `%.250s' (from `%.250s')"
+msgstr "impossible de lire le répertoire '%.250s' du fichier de conf '%.250s'"
+
+#: dpkg/remove.c:425
+#, c-format
+msgid "cannot remove old backup config file `%.250s' (of `%.250s')"
+msgstr ""
+"impossible de supprimer l'ancienne copie de secours '%.250s' du fichier de "
+"configuration '%.250s'"
+
+#: dpkg/remove.c:458
+msgid "cannot remove old files list"
+msgstr "impossible de supprimer la liste des anciens fichiers"
+
+#: dpkg/remove.c:465
+msgid "can't remove old postrm script"
+msgstr "impossible de supprimer l'ancien script 'postrm'"
+
+#: dpkg/select.c:96
+msgid "--set-selections does not take any argument"
+msgstr "--set-selections ne prend aucun paramètre"
+
+#: dpkg/select.c:115
+#, c-format
+msgid "unexpected eof in package name at line %d"
+msgstr "EOF inattendue dans le nom de paquet en ligne %d"
+
+#: dpkg/select.c:116
+#, c-format
+msgid "unexpected end of line in package name at line %d"
+msgstr "fin de ligne inattendue dans le nom de paquet en ligne %d"
+
+#: dpkg/select.c:120
+#, c-format
+msgid "unexpected eof after package name at line %d"
+msgstr "EOF inattendue après le nom de paquet en ligne %d"
+
+#: dpkg/select.c:121
+#, c-format
+msgid "unexpected end of line after package name at line %d"
+msgstr "fin de ligne inattendue après le nom de paquet en ligne %d"
+
+#: dpkg/select.c:130
+#, c-format
+msgid "unexpected data after package and selection at line %d"
+msgstr "données inattendues après le paquet et la sélection en ligne %d"
+
+#: dpkg/select.c:135
+#, c-format
+msgid "illegal package name at line %d: %.250s"
+msgstr "nom de paquet illégal en ligne %d : %.250s"
+
+#: dpkg/select.c:137
+#, c-format
+msgid "unknown wanted status at line %d: %.250s"
+msgstr "état désiré inconnu à la ligne %d : %.250s"
+
+#: dpkg/select.c:143
+msgid "read error on standard input"
+msgstr "erreur de lecture sur l'entrée standard"
+
+#: dpkg/update.c:46
+#, c-format
+msgid "--%s takes no arguments"
+msgstr "--%s ne prend pas de paramètre"
+
+#: dpkg/update.c:50
+#, c-format
+msgid "--%s needs exactly one Packages file argument"
+msgstr "--%s a besoin d'exactement un fichier 'Packages'"
+
+#: dpkg/update.c:59
+msgid "unable to access dpkg status area for bulk available update"
+msgstr ""
+"impossible d'accéder à la BD d'état de dpkg pour mettre à jour la liste\n"
+" des paquets disponibles"
+
+#: dpkg/update.c:61
+msgid "bulk available update requires write access to dpkg status area"
+msgstr ""
+"la mise à jour des paquets disponibles nécéssite un accès en écriture dans\n"
+" la BD d'état de dpkg"
+
+#: dpkg/update.c:68
+#, c-format
+msgid "Replacing available packages info, using %s.\n"
+msgstr "Remplacement des infos sur les paquets disponibles, en utilisant %s.\n"
+
+#: dpkg/update.c:71
+#, c-format
+msgid "Updating available packages info, using %s.\n"
+msgstr "Mise à jour des infos sur les paquets disponibles, en utilisant %s.\n"
+
+#: dpkg/update.c:96
+#, c-format
+msgid "Information about %d package(s) was updated.\n"
+msgstr "Des infos sur %d paquet(s) ont été mises à jour.\n"
+
+#: dpkg/update.c:104
+msgid "--forget-old-unavail takes no arguments"
+msgstr "--forget-old-unavail ne prend pas de paramètre"

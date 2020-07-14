@@ -1,0 +1,7 @@
+Package: autoconf
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 2.12
+URL: ftp://prep.ai.mit.edu/pub/gnu/autoconf-2.12.tar.gz
+Description: GNU source configuration tool
+Build-Depends: build-base, gm4, perl

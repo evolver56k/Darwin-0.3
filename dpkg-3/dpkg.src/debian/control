@@ -1,0 +1,51 @@
+Source: dpkg
+Section: base
+Priority: required
+Maintainer: Klee Dienes and Ian Jackson <dpkg-maint@chiark.greenend.org.uk>
+Standards-Version: 2.1.0.0
+
+Package: dpkg
+Architecture: any
+Essential: yes
+Pre-Depends: ${shlibs:Pre-Depends}
+Description: Package maintenance system for Debian Linux
+ This package contains the programs which handle the installation and
+ removal of packages on your system.
+ .
+ The primary interface for the dpkg suite is the `dselect' program,
+ available in the 'dselect' package; a more low-level and less
+ user-friendly interface is available in the form of the `dpkg'
+ command.
+ .
+ In order to unpack and build Debian source packages you will need to
+ install the developers' package `dpkg-dev' as well as this one.
+
+Package: dselect
+Section: base
+Priority: important
+Architecture: any
+Depends: dpkg (>> 1.4.1.3), ${shlibs:Pre-Depends}
+Description: Package maintenance system for Debian Linux
+ The primary interface for the dpkg suite is the `dselect' program;
+ a more low-level and less user-friendly interface is available in
+ the form of the `dpkg' command.
+
+Package: dpkg-dev
+Section: devel
+Priority: important
+Architecture: all
+Depends: dpkg (>= 1.4.1.3)
+Recommends: cpio (>= 2.4.2-2), patch (>= 2.2-1), gcc, make
+Conflicts: dpkgname
+Replaces: dpkgname, dpkg (<< 1.4.0)
+Description: Package building tools for Debian Linux
+ This package contains the tools (including dpkg-source) required to
+ unpack, build and upload Debian source packages.  It also contains
+ the programmers' and Debian policy manuals, which are the
+ documentation for package developers.
+ .
+ `cpio' and `patch' are also required to manipulate source packages.
+ Some older cpios are insufficient - use at least 2.4.2-2.
+ .
+ Most Debian source packages will require additional tools to build -
+ for example, most packages need the `make' and the C compiler `gcc'.

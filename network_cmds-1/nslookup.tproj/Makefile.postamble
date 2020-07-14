@@ -1,0 +1,8 @@
+XINSTALL=install
+
+after_install:: $(DSTROOT)$(HELPDIR)
+	-${XINSTALL} -c -o $(INSTALL_AS_USER) -g $(INSTALL_AS_GROUP) -m 444 \
+		nslookup.help $(DSTROOT)$(HELPDIR)/
+
+$(DSTROOT)$(HELPDIR):
+	@${MKDIRS} $@

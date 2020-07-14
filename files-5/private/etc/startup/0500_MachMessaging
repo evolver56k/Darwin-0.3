@@ -1,0 +1,23 @@
+#!/bin/sh
+
+##
+# Start the Mach message server
+##
+
+. /etc/rc.common
+
+ConsoleMessage "Starting mach messaging server"
+
+case "${MACHIPC:=-UNRESTRICTED-}" in
+  -UNRESTRICTED-)
+    nmflags=""
+    ;;
+  -LOCAL-)
+    nmflags="-local"
+    ;;
+  -SECURE-)
+    nmflags="-secure"
+    ;;
+esac
+
+nmserver -nonet ${nmflags}

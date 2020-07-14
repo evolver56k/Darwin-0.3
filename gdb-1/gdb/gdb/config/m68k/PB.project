@@ -1,0 +1,117 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-apollo68b.h", 
+            "nm-apollo68v.h", 
+            "nm-delta68.h", 
+            "nm-dpx2.h", 
+            "nm-hp300bsd.h", 
+            "nm-hp300hpux.h", 
+            "nm-m68klynx.h", 
+            "nm-nbsd.h", 
+            "nm-news.h", 
+            "nm-sun2.h", 
+            "nm-sun3.h", 
+            "nm-sysv4.h", 
+            "tm-3b1.h", 
+            "tm-altos.h", 
+            "tm-apollo68b.h", 
+            "tm-cisco.h", 
+            "tm-delta68.h", 
+            "tm-dpx2.h", 
+            "tm-es1800.h", 
+            "tm-hp300bsd.h", 
+            "tm-hp300hpux.h", 
+            "tm-isi.h", 
+            "tm-m68k.h", 
+            "tm-m68klynx.h", 
+            "tm-m68kv4.h", 
+            "tm-mac.h", 
+            "tm-monitor.h", 
+            "tm-nbsd.h", 
+            "tm-news.h", 
+            "tm-os68k.h", 
+            "tm-st2000.h", 
+            "tm-sun2.h", 
+            "tm-sun2os4.h", 
+            "tm-sun3.h", 
+            "tm-sun3os4.h", 
+            "tm-vx68.h", 
+            "xm-3b1.h", 
+            "xm-altos.h", 
+            "xm-apollo68b.h", 
+            "xm-apollo68v.h", 
+            "xm-delta68.h", 
+            "xm-dpx2.h", 
+            "xm-hp300bsd.h", 
+            "xm-hp300hpux.h", 
+            "xm-isi.h", 
+            "xm-m68k.h", 
+            "xm-m68klynx.h", 
+            "xm-m68kv4.h", 
+            "xm-mpw.h", 
+            "xm-nbsd.h", 
+            "xm-news.h", 
+            "xm-news1000.h", 
+            "xm-sun2.h", 
+            "xm-sun3.h", 
+            "xm-sun3os4.h"
+        ); 
+        OTHER_SOURCES = (
+            3b1.mh, 
+            3b1.mt, 
+            altos.mh, 
+            altos.mt, 
+            apollo68b.mh, 
+            apollo68b.mt, 
+            apollo68v.mh, 
+            cisco.mt, 
+            delta68.mh, 
+            delta68.mt, 
+            dpx2.mh, 
+            dpx2.mt, 
+            es1800.mt, 
+            hp300bsd.mh, 
+            hp300bsd.mt, 
+            hp300hpux.mh, 
+            hp300hpux.mt, 
+            isi.mh, 
+            isi.mt, 
+            m68klynx.mh, 
+            m68klynx.mt, 
+            m68kv4.mh, 
+            m68kv4.mt, 
+            monitor.mt, 
+            nbsd.mh, 
+            nbsd.mt, 
+            news.mh, 
+            news.mt, 
+            news1000.mh, 
+            os68k.mt, 
+            st2000.mt, 
+            sun2os3.mh, 
+            sun2os3.mt, 
+            sun2os4.mh, 
+            sun2os4.mt, 
+            sun3os3.mh, 
+            sun3os3.mt, 
+            sun3os4.mh, 
+            sun3os4.mt, 
+            vxworks68.mt
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = m68k; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

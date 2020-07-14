@@ -1,0 +1,382 @@
+Changes to driverkit API, 21 Jan 93.
+
+Renamed symbols are described in the form
+
+	old_symbol_name ==> new_symbol_name
+	
+* user_driver.h
+changed file name to driverServer.h. No longer public.
+IOGetDeviceType() ==> _IOLookupByDeviceNumber()
+IOGetDeviceTypeFromPort ==> _IOLookupByDevicePort
+IOPhysDevicePage() ==> _IOGetPhysicalAddressOfDevicePage()
+	devicePage arg was vm_offset_t *, is unsigned *
+IOMapSlot ==> _IOMapSlotSpace
+IOUnmapSlot ==> _IOUnmapSlotSpace
+IOMapBoard ==> _IOMapBoardSpace
+IOUnmapBoard ==> _IOUnmapBoardSpace
+all constants moved to driverServerTypes.h
+IO_CC_INTR_ENABLE ==> IO_CC_ENABLE_INTERRUPTS
+IO_CC_INTR_DISABLE ==> IO_CC_DISABLE_INTERRUPTS
+IO_CC_LOOP_FRAME ==> IO_CC_CONNECT_FRAME_LOOP
+IO_CC_UNLOOP_FRAME ==> IO_CC_DISCONNECT_FRAME_LOOP
+IO_CC_DEV_INTR_ENABLE ==> IO_CC_ENABLE_INTERRUPTS_DEVICE
+IO_CC_DEV_INTR_DISABLE ==> IO_CC_DISABLE_INTERRUPTS_DEVICE
+IOEnqueueDma() ==> _IOEnqueueDMA()
+IO_CEO_EOR ==> IO_CEO_END_OF_RECORD
+IO_CEO_DESC_INTR ==> IO_CEO_DESCRIPTOR_INTERRUPT
+IO_CEO_ENABLE_INTR ==> IO_CEO_ENABLE_INTERRUPTS
+IO_CEO_ENABLE_CHAN ==> IO_CEO_ENABLE_CHANNEL
+IO_CEO_DESC_CMD ==> IO_CEO_DESCRIPTOR_COMMAND
+IODequeueDma() ==> _IODequeueDMA()
+IO_CDO_ENABLE_INTR ==> IO_CDO_ENABLE_INTERRUPTS
+IO_CDO_EI_IF_MT ==> IO_CDO_ENABLE_INTERRUPTS_IF_EMPTY
+DMA_ID_NULL ==> IO_NULL_DMA_ID
+IOInquire() ==? _IOLookupByObjectNumber()
+IOLookup() ==> _IOLookupByDeviceName()
+IOGetParameterInt() ==> _IOGetIntValues()
+IOGetParameterChar() ==> _IOGetCharValues()
+IOSetParameterInt() ==> _IOSetIntValues()
+IOSetParameterChar() ==> _IOSetCharValues()
+IO_CHAN_NONE ==> IO_NO_CHANNEL
+IOCreateDevicePort ==> _IOCreateDevicePort
+IODestroyDevicePort ==> _IODestroyDevicePort
+IOAttachInterrupt ==> _IOAttachInterrupt
+IODetachInterrupt ==> _IODetachInterrupt
+IOAttachChannel ==> _IOAttachChannel
+IODetachChannel ==> _IODetachChannel
+IOMapDevicePage ==> _IOMapDevicePage
+IOUnmapDevicePage ==> _IOUnmapDevicePage
+IOSendChannelCommand ==> _IOSendChannelCommand
+
+* user_driver_types.h
+changed file name to driverTypes.h.
+#imported <objc/objc.h>. If used in a .c files, -ObjC must be specified.
+Deleted IODeviceReturn type. These return types have been added to 
+   IOReturn.
+deleted IODevRtn.
+moved IODevicePort to driverTypesPrivate, used only by mig and its spawn.
+IO_DR_SUCCESS ==> IO_R_SUCCESS
+IO_DR_ACCESS ==> IO_R_PRIVILEGE
+IO_DR_NOTATTACHED ==> IO_R_NOTATTACHED
+IO_DR_INVALID ==> IO_R_INVALIDARG
+IO_DR_MEMORY ==> IO_R_PRIVILEGE
+IO_DR_NOCHANNEL ==> IO_R_NO_CHANNELS
+IO_DR_NOSPACE ==> IO_R_NO_SPACE
+IO_DR_NODEVICES ==> IO_R_NODEVICES
+IO_DR_NOPORT ==> IO_R_RESOURCE
+IO_DR_MAXCHANNELS ==> IO_R_INVALIDARG
+IO_DR_EXISTS ==> IO_R_EXISTS
+IO_DR_NOINTR ==> IO_R_RESOURCE
+IO_DR_BUSY ==> IO_R_BUSY
+IO_DR_UNSUPPORTED ==> IO_R_UNSUPPORTED
+IO_DR_ALIGNMENT ==> IO_R_ALIGN
+IO_DR_CANTWIRE ==> IO_R_CANTWIRE
+IO_DR_NOINTERRUPT ==> IO_R_NOINTERRUPT
+IO_DR_RESOURCE ==> IO_R_RESOURCE
+IO_DR_NOFRAMES ==> IO_R_NOFRAMES
+IO_DR_INTERNAL ==> IO_R_INTERNAL
+IOUnitNumber-->IOObjectNumber
+added IO_STRING_LENGTH
+added IOString
+deleted IOUnitName
+deleted IOUnitType
+deleted UNITNAME_LENGTH
+deleted UNITTYPE_LENGTH
+IO_DS_NONE ==> IO_None
+IO_DS_COMPLETE ==> IO_Complete
+IO_DS_RUNNING ==> IO_Running
+IO_DS_UNDERRUN ==> IO_Underrun
+IO_DS_BUSERR ==> IO_BusError
+IO_DS_BUFERR ==> IO_BufferError
+IO_DMA_DIR_READ ==> IO_DMARead
+IO_DMA_DIR_WRITE ==> IO_DMAWrite
+DEV_CACHE_OFF ==> IO_CacheOff
+DEV_CACHE_WRITE_THRU ==> IO_WriteThrough
+DEV_CACHE_COPY_BACK ==> IO_CopyBack
+DEV_TASK_NULL ==> IO_NULL_VM_TASK
+NATIVE_SLOT_ID ==> IO_NATIVE_SLOT_ID
+DEV_TYPE_SLOT ==> IO_SLOT_DEVICE_TYPE
+SLOT_ID_NULL ==> IO_NULL_SLOT_ID
+DEV_TYPE_NULL ==> IO_NULL_DEVICE_TYPE
+DEV_INDEX_NULL ==> IO_NULL_DEVICE_INDEX
+BOARD_SIZE_MAX ==> IO_MAX_BOARD_SIZE
+SLOT_SIZE_NRW_MAX ==> IO_MAX_NRW_SLOT_SIZE
+SLOT_SIZE_MAX ==> IO_MAX_SLOT_SIZE
+IO_PARAMETER_NAME_SIZE ==> IO_MAX_PARAMETER_NAME_LENGTH
+IO_MAX_PARAMETER_ARRAY ==> IO_MAX_PARAMETER_ARRAY_LENGTH
+dmaStatValues ==> IODMAStatusStrings
+rvValue ==> value
+rvName ==> name
+regValues ==> IONamedValue
+added IODeviceStyle
+IOCacheSpec ==> IOCache
+IODmaDirection ==> IODMADirection
+IODmaStatus ==> IODMAStatus
+
+*deviceCommon.h
+renamed file to return.h.
+Moved everything except typedef for IOReturn and IO_R_xxxx to 
+	driverServerTypes.h.
+IO_R_BADMSGID ==> IO_R_BAD_MSG_ID
+IO_R_EXCL_ACCESS ==> IO_R_EXCLUSIVE_ACCESS
+IO_R_INVALIDARG ==> IO_R_INVALID_ARG
+IO_R_IPCFAIL ==> IO_R_IPC_FAILURE
+IO_R_NODEVICE ==> IO_R_NO_DEVICE
+IO_R_NOMEM ==> IO_R_NO_MEMORY
+IO_R_NOTOPEN ==> IO_R_NOT_OPEN
+IO_R_NOTREADABLE ==> IO_R_NOT_READABLE
+IO_R_NOTREADY ==> IO_R_NOT_READY
+IO_R_NOTWRITEABLE ==> IO_R_NOT_WRITABLE
+IO_R_VMEMFAIL ==> IO_R_VM_FAILURE
+
+* uxpr.h
+Renamed file to debugging.h
+XPR_DEBUG ==> DDM_DEBUG
+NUM_XPR_MASKS ==> IO_NUM_DDM_MASKS
+xprMask ==> IODDMMasks
+xprInit() ==> IOInitDDM()
+xprAdd() ==> IOAddDDMEntry()
+xprClear() ==> IOClearDDM()
+xprGetBitmask() ==> IOGetDDMMask()
+xprSetBitmask() ==> IOSetDDMMask()
+xprGetEntry() ==> IOGetDDMEntry()
+xpr_string() ==> IOCopyString()
+uxpr() ==> IODEBUG()
+
+* uxprServer.h
+Renamed file to debuggingMsg.h
+SIZEOF_EXPORTED_STRING ==> IO_DDM_STRING_LENGTH
+arg_type ==> argType
+mask_value ==> maskValue
+timestamp_hi ==> timestampHighInt
+timestamp_low ==> timestampLowInt
+cpu_num ==> cpuNumber
+string_type ==> stringType
+uxprMessage_t ==> IODDMMsg
+UXPR_MSG_BASE ==> IO_DDM_MSG_BASE
+UXPR_MSG_LOCK ==> IO_LOCK_DDM_MSG
+UXPR_MSG_UNLOCK ==> IO_UNLOCK_DDM_MSG
+UXPR_MSG_GETSTRING ==> IO_GET_DDM_ENTRY_MSG
+UXPR_MSG_SETMASK ==> IO_SET_DDM_MASK_MSG
+UXPR_MSG_CLEAR ==> IO_CLEAR_DDM_MSG
+XPR_STATUS_GOOD ==> IO_DDM_SUCCESS
+XPR_STATUS_NOBUF ==> IO_NO_DDM_BUFFER
+XPR_STATUS_BADINDEX ==> IO_BAD_DDM_INDEX
+uxpr_ns_time() ==> IONsTimeFromDDMMsg()
+
+* libIO.h
+Renamed file to generalFuncs.h
+IOThreadFcn ==> IOThreadFunc 
+IOTimeout() ==> IOScheduleFunc()
+IOUntimeout() ==> IOUnscheduleFunc()
+IOTimeStamp() ==> IOGetTimestamp()
+deleted IOTaskSelf()
+IOVmTaskSelf - made #ifdef KERNEL.
+IOIntToString() ==> IOFindNameForValue()
+IOStringToInt() ==> IOFindValueForName()
+IOlibIOInit ==> IOInitGeneralFuncs()
+
+* interrupt_msg.h
+Renamed file to interruptMsg.h
+interruptMsg_t ==> IOInterruptMsg
+INT_MSG_ID_BASE ==> IO_INTERRUPT_MSG_ID_BASE
+INT_MSG_TIMEOUT ==> IO_TIMEOUT_MSG
+INT_MSG_COMMAND ==>  IO_COMMAND_MSG
+INT_MSG_DEVICE ==> IO_DEVICE_INTERRUPT_MSG
+INT_MSG_DMA ==> IO_DMA_INTERRUPT_MSG
+
+* IOAlign.h 
+Renamed file to align.h
+DMA_DO_ALIGN() ==> IOAlign()
+DMA_ISALIGNED() ==> IOIsAligned()
+deleted _is_page_aligned()
+deleted _round_int()
+
+* IODevice.h
+_deviceName, _deviceType, _location now are all type IOString
+added -initFromDeviceDescription:
+changed probe: syntax
+added +deviceStyle
+deleted -registerSelf
+setDeviceName ==> setName
+deviceName ==> name
+_deviceType ==> _deviceKind (not in sed script)
+-deviceType ==> -deviceKind
+-setDeviceType ==> -setDeviceKind
+IO_Class_Name ==> IOClassName
+IO_Device_Name ==> IODeviceName
+IO_Device_Type ==> IODeviceType
+IOReturnToString ==> stringFromReturn
+IOReturnToErrno ==> errnoFromReturn
+all get/set parameter methods com[letely changed syntax.
+
+* IOTsval.h - deleted.
+
+* kern_driver.h
+Renamed file to kernelDriver.h.
+Moved IOEnqueueDmaInt() to driverServer.h (private).
+IOEnqueueDmaInt() ==> _IOEnqueueDMAInt()
+deleted IOKernPhysDevicePage()
+IOKernDeviceLookup() ==> IOGetObjectForDeviceName()
+IO_CC_DISABLE_UXPR ==> IO_CC_DISABLE_DDM, moved to kernelDriverPrivate.h
+IO_CC_ENABLE_UXPR ==> IO_CC_ENABLE_DDM, moved to kernelDriverPrivate.h
+IOTaskGetPort(), IOGetKernPort(), convertPortToIOTask() all replaced by
+	IOConvertPort().
+
+* IODeviceParams.h 
+completely rewrote, replaced with ObjC methods as category GlobalParameter 
+	of IODevice.
+
+* IODiskDevice
+Renamed file to IODisk.h
+IODiskDevice ==> IODisk
+IODevToIdMap ==> IODevAndIdInfo
+IO_RS_READY ==> IO_Ready
+IO_RS_NOTREADY ==> IO_NotReady
+IO_RS_NODISK ==> IO_NoDisk
+IO_RS_EJECTING ==> IO_Ejecting
+_logicalDisk ==> _nextLogicalDisk
+_isPhysDevice ==> _isPhysical
+_removable, _formatted, _isPhysical, _writeProtected are all BOOL
+_deviceSize ==> _diskSize
+setDeviceSize ==> setDiskSize
+deviceSize ==> diskSize
+setIsPhysDevice ==> setIsPhysical
+isPhysFlag ==> isPhysical
+-formatted ==> isFormatted (not in sed)
+-removable ==> -isRemovable (not in sed)
+-isPhysDevice ==> -isPhysical
+-writeProtected ==> -isWriteProtected (not in sed)
+ejectDisk ==> eject
+setFormattedInt ==> setFormattedInternal
+readStats ==> addToBytesRead
+writeStats ==> addToBytesWritten
+didReadRetry ==> incrementReadRetries
+gotReadError ==> incrementReadErrors
+didWriteRetry ==> incrementWriteRetries
+gotWriteError ==> incrementWriteErrors
+didOtherRetry ==> incrementOtherRetries
+gotOtherError ==> incrementOtherErrors
+IO_DISK_STATISTICS ==> IO_DISK_STATS
+IO_ISA_DISK ==> IO_IS_A_DISK
+IO_Disk_Statistics ==> IODiskStats
+IO_isa_Disk ==> IOIsADisk
+IO_IS A_PHYSDEVICE ==> IO_IS_A_PHYSICAL_DISK
+IO_isa_physDevice ==> IOIsAPhysicalDisk
+DISK_STATS_READ_OPS ==> IO_Reads
+DISK_STATS_BYTES_READ ==> IO_BytesRead
+DISK_STATS_READ_TOTAL_TIME ==> IO_TotalReadTime
+DISK_STATS_READ_LATENT_TIME ==> IO_LatentReadTime
+DISK_STATS_READ_RETRIES ==> IO_ReadRetries
+DISK_STATS_READ_ERRORS ==> IO_ReadErrors
+DISK_STATS_WRITE_OPS ==> IO_Writes
+DISK_STATS_BYTES_WRITTEN ==> IO_BytesWritten
+DISK_STATS_WRITE_TOTAL_TIME ==> IO_TotalWriteTime
+DISK_STATS_WRITE_LATENT_TIME ==> IO_LatentWriteTime
+DISK_STATS_WRITE_RETRIES ==> IO_WriteRetries
+DISK_STATS_WRITE_ERRORS ==> IO_WriteErrors
+DISK_STATS_OTHER_RETRIES ==> IO_OtherRetries
+DISK_STATS_OTHER_ERRORS ==> IO_OtherErrors
+deleted -registerDisk
+registerLogicalDisk ==> setLogicalDisk
+lockLogical ==> lockLogicalDisks
+unlockLogical ==> unlockLogicalDisks
+DiskDeviceSubclass ==> IOPhysicalDiskMethods
+getPhysParams ==> updatePhysicalParameters
+-isDiskPresent ==> isDiskReady
+devEjectDisk ==> ejectPhysical
+checkReady ==> updateReadyState
+DiskDeviceRw ==> IODiskReadingAndWriting
+subtle changes to changes DiskDeviceRw protocol, will need hand tweaking.
+	- no 'in' or 'out'
+	- pending is type void *
+-diskPresent ==> -diskBecameReady
+IO_R_NOLABEL ==> IO_R_NO_LABEL
+IO_R_NODISK ==> IO_R_NO_DISK
+IO_R_BLK0 ==> IO_R_NO_BLOCK_ZERO
+DiskReadyState ==> IODiskReadyState
+diskStatsIndices ==> IODiskStatIndices
+DISK_STATS_ARRAY_SIZE ==> IO_DISK_STAT_ARRAY_SIZE
+partId ==> partitionId
+
+* DiskDeviceKern.h
+Renamed file to kernelDiskMethods.h
+Renamed category from Kern to kernelDiskMethods
+DISK_UNIT ==> IO_DISK_UNIT
+DISK_PART ==> IO_DISK_PART
+diskIoComplete: API changed, will need hand tweaking
+	is completeTransfer:withStatus:actualLength
+getIdMap ==> devAndIdInfo
+setIdMap ==> setDevAndIdInfo
+diskBlockDev ==> blockDev
+diskRawDev ==> rawDev
+moved -registerUnixDisk, -unregisterUnixDisk to kernelDiskMethodsPrivate.h
+* IOLogicalDisk
+_physDevice ==> _physicalDisk
+connectToPhysDev ==> connectToPhysicalDisk
+moved _diskParamCommon to IOLogicalDisk.m
+_isDiskOpen is now type BOOL
+isOpen, anyOtherOpen now return BOOL
+anyOtherOpen ==> isAnyOtherOpen
+_physBlockSize ==> _physicalBlockSize
+_physDisk ==> _physicalDisk
+deleted setPhysDevice 
+physDevice ==> physicalDisk
+physBlockSize ==> physicalBlockSize
+setPhysBlockSize ==> setPhysicalBlockSize
+_diskIsOpen ==> _instanceOpen
+-diskIsOpen ==> isInstanceOpen
+-setDiskIsOpen ==> setInstanceOpen
+
+* NXDisk
+Renamed file to IODiskPartition.h
+Renamed class to IODiskPartition
+NXDiskPublic ==> IODiskPartitionExported
+getLabel ==> readLabel
+_blockDevOpen ==> _blockDeviceOpen
+_rawDevOpen ==> _rawDeviceOpen
+_labelValid, _blockDeviceOpen, _rawDeviceOpen all BOOL
+blockDevOpen  ==> isBlockDeviceOpen
+setBlockDevOpen ==> setBlockDeviceOpen
+rawDevOpen ==> isRawDeviceOpen
+setRawDevOpen ==> setRawDeviceOpen
+moved all private method to IODiskPartition.m.
+
+* DeviceUxpr.h
+renamed file to Device_ddm.h
+
+* uxprPrivate.h
+renamed file to ddmPrivate.h
+
+* i386/user_driver.h
+renamed file to i386/driverServer.h. Made private.
+Prepended '_' to all RPC names.
+
+* i386/user_driver_types.h
+renamed file to i386/driverTypes.h.
+EISA_io_mapping_t ==> IOEISAPortRange
+EISA_CONF_NIOMAP ==> IO_NUM_EISA_PORT_RANGES
+EISA_io_conf_t ==> IOEISAPortMap
+EISA_phys_mapping_t ==> IOEISAMemoryRange
+EISA_CONF_NPHYSMAP ==> IO_NUM_EISA_MEMORY_RANGES
+EISA_phys_conf_t ==> IOEISAMemoryMap
+EISA_intr_req_t ==> IOEISAInterrupt
+EISA_CONF_NIRQ ==> IO_NUM_EISA_INTERRUPTS
+EISA_intr_conf_t ==> IOEISAInterruptList
+EISA_dma_req_t ==> IOEISADMAChannel
+IOEISADMAChannel.chan ==> IOEISADMAChannel.channel
+EISA_CONF_NDMA ==> IO_NUM_EISA_DMA_CHANNELS
+EISA_dma_conf_t ==> IOEISADMAChannelList
+
+* configPublic.h
+renamed to userConfigServer.h.
+
+* architecture/i386/io.h
+io_addr_t ==> IOEISAPortAddress
+io_len_t ==> IONumEISAPorts
+
+* nrw/IODeviceNRW.h
+Deleted. Superceded by nrw/directDevice.h.
+
+............
+file: ~dmitch/Projects/DRIVERKIT/driverkit/doc/API_Change_log

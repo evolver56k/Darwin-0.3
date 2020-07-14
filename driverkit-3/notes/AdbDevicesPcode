@@ -1,0 +1,56 @@
+			Adb Device pseudocode
+			
+ADB Keyboard
+
++ probe : directDevice
+{
+	/*
+	 * We want to locate each keyboard, move each one up to a soft
+	 * address, and create an instance for each one.
+	 */
+	create an AdbKeyboard client;
+	for(address=0 to max keyboard address) {
+		attachDevice(address, client);
+		do {
+			error = do a talk register 3;
+			if it works and if it's a keyboard {
+				newAddress = getSoftAddress();
+				attachDevice(newAddress, client);
+				relocate to newAddress;
+				AdbKeyboardInit(address, newAddress);
+				create a new client;
+			}
+		} while(!error);
+		detachDevice(address);
+	}
+}
+
+- AdbKeyboardInit(oldAddress, currentAddress)
+{
+	get handlerId;
+	if we know about it {
+		save ptr to map?
+	}
+	else {
+		log error;
+		what else?
+	}
+	detachDevice(oldAddress, self);
+}
+
+/*
+ * Standard AdbClient methods.
+ */
+- (void)sendAdbData : (adbEvent *)event
+{
+
+}
+
+/*
+ * Called on ADB bus reset.
+ */
+- (void)adbBusWasReset
+{
+
+}
+

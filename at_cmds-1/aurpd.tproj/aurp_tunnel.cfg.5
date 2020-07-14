@@ -1,0 +1,96 @@
+.\" The formatting of the EXAMPLE section is a complete hack,
+.\" and should probably be handled otherwise, but it works for
+.\" now.
+.TH aurp_tunnel.cfg 5
+.SH NAME
+.B aurp_tunnel.cfg 
+- format of the AURP configuration file
+
+.SH DESCRIPTION
+The file 
+.B aurp_tunnel.cfg 
+provides configuration information for the aurpd(8)
+command.  This file sets up the following information:
+.TP 8
+     local IP address for the local tunnel end-point
+.TP 8
+     remote IP addresses for remote tunnel end-points
+.TP 8
+     hidden network numbers
+.TP 8
+     advertised network numbers
+
+.in 7
+The 'local' keyword specifies the IP address for the local end of all
+AURP tunnels on this host.
+
+The 'remote' keyword, which may be repeated, specifies the remote end
+of one AURP tunnel.
+
+The 'port' keyword specifies the UDP port number for local and remote
+endpoints (this is for testing purposes only; the default, 387, should
+normally be used).
+
+The 'hide' keyword, which may be repeated, specifies an AppleTalk
+network number that is not to be advertised in routing information
+exchanges through the tunnel.
+
+The 'export' keyword, which may be repeated, specifies an AppleTalk
+network number that is to be advertised in routing information
+exchanges through the tunnel.
+
+The 'hide' and 'export' keywords are mutually exclusive.  'aurpd' will
+complain and exit if both are specified.  If neither are specified,
+all locally accessible network numbers will be advertised through the
+tunnels.  If 'export' is specified, only those numbers in 'export'
+statements will be advertised.  If 'hide' is specified, all locally
+accessible network numbers *except* for those in 'hide' statements
+will be advertised through the tunnels.
+
+.SH EXAMPLE
+
+.RE
+# CONFIGURATION FILE FOR AURP PROTOCOL
+.RE
+#  Tunneling through IP
+.RE
+#
+.RE
+# @(#) aurp_tunnel.cfg
+.RE
+#
+.RE
+# Keywords:
+.RE
+#  local: IP address for this end of all tunnels
+.RE
+#  remote: IP address for remote end of next tunnel
+.RE
+#  hide: AppleTalk network number to hide from remote internet
+.RE
+#  export: AppleTalk network number to explicitly advertise to
+.RE
+#          remote internet
+.RE
+# Any number of 'remote', 'hide', and 'export' keywords 
+.RE
+# are permitted.
+.RE
+# Only the first 'local' keyword is accepted.
+.RE
+#
+.RE
+# local IP address
+.RE
+local 192.168.24.137
+.RE
+# remote IP address of peer #1
+.RE
+remote 192.168.24.128
+.RE
+# Don't let anyone know about this network number:
+.RE
+hide 35281
+
+.SH SEE ALSO
+aurpd(8), appletalk(8)

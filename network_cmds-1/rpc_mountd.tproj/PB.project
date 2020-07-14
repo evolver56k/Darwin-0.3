@@ -1,0 +1,16 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (rpc.mountd.c); 
+        OTHER_SOURCES = (Makefile.preamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = rpc.mountd; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+}

@@ -1,0 +1,382 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fnil Times-Roman;\f2\fswiss Helvetica;\f3\fmodern Courier;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\f0\b0\i0\ulnone\fs24\fc0\cf0 			driverkit API changes - notes\
+			\
+By rtf files in Kathy's FirstGroup-done folder:\
+\
+CoverLetter.rtf\
+	All looks OK. \
+	msg_send_from_kernel - add to  kernserv/prototypes.h.\
+	devsw documentation - TBD.\
+	The XPR log will NOT be an object due to early use in the kernel.\
+	To answer Kathy's email:\
+	\
+
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\f1\fs28\fc0\cf0 			OK, so any time either the main thread of a loadable kernel server OR any \
+			function entered in an unknown context sends a message that will be received \
+			by an IOTask thread, it needs to use msg_send_from_kernel().  And this \
+			msg_send_from_kernel() isn't necessary for any thread (in whatever context) \
+			that's sending a message to userland?  Or to the main thread?  
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\f0\fs24\fc1\cf1 \
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 \
+	You have to use msg_send_from_kernel() whenever you are \
+	sending a message to a port when the only valid name you have\
+	for the port is a kern_port_t.\
+	\
+
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\f1\fs28\fc0\cf0 			OK, so in which header file will msg_send_from_kernel() be?  I don't see \
+			it in the driverkit directory or anywhere public in 3.0; it's only declared in \
+			/LocalDeveloper/Headers/kern/ipc_basics.h.  (Unless we stick an IO \
+			prefix on it and fix up the name, it should probably go under the mach \
+			header file directory, instead of driverkit.)\
+			\
+
+\f0\fs24\fc1\cf1 		I'll put it kernserv/prototypes.h.\
+		\
+			
+\f1\fs28 Which header file will convertPortToIOTask() be in?  I don't see it in the \
+			driverkit directory.  \
+			\
+
+\f0\fs24 		It's in <driverkit/kern_driver.h>.\
+
+\f1\fs28 			\
+			How's this as a description of how this function would usually be used:  \
+			The main thread of a loadable kernel server (or maybe even a thread in \
+			an unknown context) does a port_allocate().  (Wait -- does port_allocate() \
+			return a port in the kernel's IPC space or the current task's IPC space?  \
+			\
+
+\f0\fs24 		You pass port_allocate a task port (usually task_self()). It \
+		returns a port in that task's IPC space.\
+		\
+
+\f1\fs28 			If the former, then maybe this function is used only on ports passed in messages to \
+			either an IOTask thread or the main thread?)  This function is used to convert \
+			the port to one in IOTask's space.  An IOTask thread later does a msg_receive \
+			on the IOTask version of the port (or on a port set that it's in).  \
+
+\f0\fs24 	\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 	Yes, that sounds good.\
+	\
+
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\f1\fs28\fc1\cf1 			
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 Wait a minute -- I just realized that I don't know how receive rights are treated 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\fc1\cf1 \
+			
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 in the kernel.  Does anything running in the kernel have receive rights to any port
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\fc1\cf1 \
+			
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 that was created in the kernel?  Or just those ports in its IPC space?  What if the 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\fc1\cf1 \
+			
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 creator of the port was running on behalf of a user process (e.g., it has UNIX 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\fc1\cf1 \
+			
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 entry points); where do receive rights for the port go -- to the user process?
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\fc1\cf1 \
+			\
+
+\f0\fs24 		Receive rights in the kernel work the same as anywhere else. \
+		Exactly one task can do a msg_recieve() on any given port. By\
+		default, this task is the one which did the port_allocate() to \
+		create the port. Subsequently, receive rights are only \
+		transferred to another task by passing them in a message.\
+		\
+			
+\f1\fs28 Talking about the "main thread" (the first thread in the driver's task) is also \
+			starting to get confusing for me, since I'm not sure when it executes.  I'd guess \
+			that in a 3.0 loadable kernel server, the main thread executes any initialization \
+			code (functions called as a result of a CALL load command) and any \
+			message-handling code (functions declared with an SMAP or HMAP load \
+			command, and then called to handle a message).  I'm wondering how the \
+			driverkit tie-in is going to affect that.\
+
+\f0\fs24 \
+		I'm going to write an example to show all of this works. The example\
+		is going to be a user-level process which is started up by Config, \
+		loads in an LKS, passes the device port obtained from Config to the\
+		LKS, and then the LKS will pass the device port over to an IOTask \
+		thread after an convertPortToIOTask(). Cool?\
+		............\
+		\
+		devsw - Need to propose functions to add/delete from cdevsw, bdevsw,\
+		vfssw. Should look just like tty_ld_install() in bsd/kern/tty.c.\
+	\
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\fs28\fc0\cf0 ConfigPublic
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\fs24\fc1\cf1 .h\
+		
+\fs28\fc0\cf0 IODeleteDeviceByType
+\fs24\fc1\cf1 () - I think I want to make this standard. Why\
+		does it have to be renamed...?\
+		\
+deviceCommon.h\
+		As requested (except for IO_R_TIMEOUT, which is correct the way\
+		it is).\
+		
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 \
+DeviceUxpr.h\
+	This file should be private to NeXT. Since we don't ship DEBUG\
+	code, users can do whetver they want with all 4 indices.\
+	\
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\fs28\fc0\cf0 interrupt_msg
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fs24\fc1\cf1 .h\
+	OK, as requested.\
+	\
+IOAlign.h\
+	No comments. Make changes as is.\
+	\
+IODevice.h\
+	Negotiate re: _deviceType, _unit, etc.\
+	\
+	This whole thing is confusing:\
+	\
+	
+\f2\b\fs28 	registerDevice --> registerSelf\
+		unregisterDevice --> unregisterSelf\
+		registerSelf --> (goes away)\
+		\
+
+\f0\b0\fs24 	...huh?\
+\
+	I disagreee with the comment about 
+\fs28\fc0\cf0 getParameterInt
+\fs24\fc1\cf1 (), etc. Nobody\
+	who's used them has had any trouble... Oh well.\
+	\
+	
+\fs28\fc0\cf0 IOReturnToString
+\fs24\fc1\cf1  - Kathy suggested this name in the first place (it\
+	was ioReturnText). I'm not changing it again.\
+	\
+	
+\f2\b\fs28 /*** ALSO:  IOParamInit() is in .m file but not declared in any header file.  \
+	IOReturn_values[], unitToIdList are not declared static, but aren't in any \
+	header file.  ARE THEY SUPPOSED TO BE PUBLIC? \
+	\
+
+\f0\b0\fs24 	No, they are not public.\
+
+\f2\b\fs28 	
+\f0\b0\fs24 \
+IONetDeviceKern.h\
+\
+	Why 
+\f2\b\fs28 IOHandleNetOutput
+\f0\b0\fs24  instead of 
+\f2\b\fs28 IONetOutput? \
+	
+\f0\b0\fs24 \
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\fc1\cf1 IONetDevice
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 .
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\fc1\cf1 h\
+\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 	
+\f2\b\fs28  Generally, methods like this are declared in the parent class, instead of in a \
+	 protocol.  This makes it possible to document everything together, for one thing...\
+	 \
+
+\f0\b0\fs24 	 I disagree with this policy. It requires IONetDevice to implement \
+	 these methods, and it shouldn't. Doing it as a protocol also\
+	 forces the subclass to implement them, which it must.\
+	 \
+	 
+\f2\b\fs28 handleNetOutputBuffer
+\f0\b0\fs24  is bogus, should be 
+\f2\b\fs28 netOutputBuffer. \
+	 \
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\f0\b0\fc0\cf0 IOtsval
+\f2\b\fc1\cf1 .
+\f0\b0\fs24 h\
+	I suppose I could move this to kernserv, but it's valid for \
+	user level code too. Any other place for it?\
+	\
+
+\fs28\fc0\cf0 kern_driver.h
+\fs24\fc1\cf1 \
+	What do we say about the arguments which really are only for \
+	m88k/m98k? Can we say "NRW only"?\
+	\
+	
+\f2\b\fs28 I can't tell what the difference is between this and IOEnqueueDma. 
+\f0\b0\fs24 \
+	\
+	Read the comment. The difference is this function has a vm_task_t\
+	to identify the VM space, instead of a task port.\
+	\
+	
+\fs28\fc0\cf0 IOKernPhysDevicePage
+\fs24\fc1\cf1  - this is an optimization. Due to hardware\
+	bugs, some drivers need to look at their physical address in order\
+	to decide whether they want to proceed wirth initialization or to\
+	abort. This function allows them to make this decision without\
+	creating (and then deleting) their device port. \
+	\
+	
+\f2\b\fs28 IOGetPhysicalAddressOfDevicePageForDeviceNumber
+\f0\b0\fs24 \
+	\
+	You're kidding. No way.\
+	\
+	
+\f2\b\fs28 /*** IOKernDeviceLookup --> IOLookUpObjectByDeviceName?  Why is this \
+	necessary only for the kernel?  	\
+	\
+
+\f0\b0\fs24 	Because we don't provide this service for user level drivers.\
+\
+
+\f2\b\fs28 	Does this really have to be public? ***/\
+
+\f0\b0\fs24 	\
+	Yes, it's a great feature. It's the fundamental mechanism used in\
+	the kernel to establish a connection with a driver.\
+	\
+	
+\fs28\fc0\cf0 IO_CC_DISABLE_UXPR
+\fs24\fc1\cf1 , 
+\fs28\fc0\cf0 IO_CC_ENABLE_UXPR are only for my use. I guess\
+	I have to put them in a separate private file.\
+	\
+	
+\f2\b\fc1\cf1 IOConvertPort(IOIPCSpace 
+\i from
+\i0 , IOIPCSpace 
+\i to
+\i0 )\
+	typedef enum \{\
+		IO_Kernel,\
+		IO_KernelIOTask, (I'm thinking of calling IOTask "kernel I/O task" in the 			doc)\
+		IO_CurrentTask\
+	\} IOIPCSpace;\
+
+\f0\b0\fc0\cf0 \
+	Shouldn't that be \
+	\
+
+\fs24\fc1\cf1 		port_t IOConvertPort(IOIPCSpace from, \
+			IOIPCSpace to,\
+			port_t port);\
+		\
+		...If this is what you're suggesting, I like it.\
+		\
+	I think IOTaskSelf() should go away in favor of task_self().\
+	\
+libIO.h\
+	
+\fs28\fc0\cf0 IOIntToString
+\fs24\fc1\cf1  - sorry, this was you suggestion. I'm not changing it\
+	again.\
+	\
+	
+\fs28\fc0\cf0 IOlibIOInit
+\fs24\fc1\cf1 () - yes, ifndef KERNEL. \
+
+\fs28\fc0\cf0 	
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fs24\fc1\cf1 \
+user_driver.h\
+	IOGetDeviceType - yes, it's only executed by Config. Should I take \
+	it out? \
+	\
+	
+\f2\b\fs28 IOGetDeviceType[AndSlotId]FromPort
+\f0\b0\fs24 () - you're kidding, right?\
+	\
+	
+\fs28\fc0\cf0 IOPhysDevicePage
+\fs24\fc1\cf1 () - the ISDN driver uses to distinguish between its\
+	two devicePages. Do you want to change the vm_offset_t, or devicPage,\
+	or both?\
+	\
+	
+\fs28\fc0\cf0 IOAttachInterrupt
+\fs24\fc1\cf1 () - changed at yor request from 
+\f3\fs28 dev_intr_attach
+\f0\fs24 ().\
+	You suggested 
+\f3\b\fs28 IORequestInterrupts
+\f0\b0\fs24 () or 
+\f3\b\fs28 IOAttachDevice
+\f0\b0\fs24 (). Seems like\
+	
+\fs28\fc0\cf0 IOAttachInterrupt is as good as these. Ditto for IODetachInterrupt().\
+	\
+	IO_CC_LOOP_FRAME/ IO_CC_UNLOOP_FRAME - these are connected. \
+	IO_CC_LOOP_FRAME doesn't create anything; it connects the last frame\
+	of a frame list to the first frame of the list. \
+	\
+	How to reference m88k?\
+	\
+	
+\f2\b\fc1\cf1 IO_CEO_ENABLE_DESCRIPTOR_COMMAND -- should not be in this file if it's \
+	m88k only ***/\
+
+\f0\b0\fc0\cf0 \
+	You don't mean to have a separate file for m88k only, do you? What\
+	a pain!\
+	\
+\
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\fc0\cf0 uxprServer
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0\cf0 .h\
+	If you want to to ship the source to XPRViewer, that's OK with \
+	me, but it's a pretty shitty example of appkit programming. I \
+	don't know if I have time (or inclination) to clean it up.\
+	\
+	I already have a command line program to get uxpr stuff. It's in\
+	~osdev/DRIVERKIT/driverkit/tests/ux.c.\
+	\
+	
+\f2\b\fc1\cf1 /*** Why is the "index" field necessary?  Can't we provide a message that's \
+	interpreted as having the correct index, without the programmer specifying it?\
+	\
+
+\f0\b0\fs24 	hmmm...explain this to her...\
+
+\f2\b\fs28 	\
+	 Also, I couldn't find a place where XPR_STATUS_BADINDEX is returned.  Does it \
+	 really mean that the index in the array of masks was bad? ***/\
+	 \
+	 The server returns it. Yes, it means bad index. (not into the mask array, into\
+	 the buffer!)\
+	 \
+
+\f0\b0\fs24 uxpr.h\
+\
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\f2\b\fs28\fc1\cf1 	/*** Does this really need to be public?  If so:\
+	NUM_XPR_MASKS --> IO_NUM_DEBUGGING_MASKS ***/\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc1\cf1 \
+
+\f0\b0\fs24 	Why shouldn't it be public? That's how many masks there are.\
+
+\f2\b\fs28 	\
+	/*** Really public?  (Who calls this?)  If so:\
+	xprInit --> IOInitDebugging ***/\
+\
+
+\pard\tx1340\tx2680\tx4020\tx5360\tx6720\tx8060\tx9400\tx10740\tx12080\tx13440\f0\b0\fs24\fc1\cf1 	Really public, whoever wants to use XPR calls it.\
+
+\f2\b\fs28 \
+	/*** Why does a 3rd party need to specify the index? Won't it always be \
+	XPR_IODEVICE_INDEX?  If this needs to be public:\
+	\
+
+\f0\b0\fs24 	Explain this to her...\
+
+\f2\b\fs28 	\
+	\
+	
+}

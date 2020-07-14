@@ -1,0 +1,10 @@
+OTHER_GENERATED_OFILES = $(VERS_OFILE)
+
+LFS_CFILES = lfs_cksum.c
+OTHER_OFILES = $(LFS_CFILES:.c=.o)
+
+VPATH_PREAMBLE = ../XProj/sys/ufs/lfs:
+# gvdl shouldn't be needed CFLAGS+=-I/sys/ufs/lfs
+
+# ------------------MORE WORK-----------
+-include ../Makefile.include

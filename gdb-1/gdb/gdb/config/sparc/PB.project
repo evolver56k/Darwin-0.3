@@ -1,0 +1,72 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-linux.h", 
+            "nm-nbsd.h", 
+            "nm-pdo.h", 
+            "nm-sparclynx.h", 
+            "nm-sun4os4.h", 
+            "nm-sun4sol2.h", 
+            "tm-linux.h", 
+            "tm-nbsd.h", 
+            "tm-pdo.h", 
+            "tm-sp64.h", 
+            "tm-sp64sim.h", 
+            "tm-sparc.h", 
+            "tm-sparclet.h", 
+            "tm-sparclite.h", 
+            "tm-sparclynx.h", 
+            "tm-spc-em.h", 
+            "tm-sun4os4.h", 
+            "tm-sun4sol2.h", 
+            "tm-vxsparc.h", 
+            "xm-linux.h", 
+            "xm-nbsd.h", 
+            "xm-pa-next.h", 
+            "xm-pdo.h", 
+            "xm-sparc.h", 
+            "xm-sparclynx.h", 
+            "xm-sun4os4.h", 
+            "xm-sun4sol2.h"
+        ); 
+        OTHER_SOURCES = (
+            linux.mh, 
+            linux.mt, 
+            nbsd.mh, 
+            nbsd.mt, 
+            nextstep.mh, 
+            nextstep.mt, 
+            nextstep4.mh, 
+            nextstep4.mt, 
+            pdo.mh, 
+            pdo.mt, 
+            sp64.mt, 
+            sp64sim.mt, 
+            sp64sol2.mt, 
+            "sparc-em.mt", 
+            sparclet.mt, 
+            sparclite.mt, 
+            sparclynx.mh, 
+            sparclynx.mt, 
+            sun4os4.mh, 
+            sun4os4.mt, 
+            sun4sol2.mh, 
+            sun4sol2.mt, 
+            vxsparc.mt
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = sparc; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

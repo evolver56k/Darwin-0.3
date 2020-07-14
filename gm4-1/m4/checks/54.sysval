@@ -1,0 +1,9 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:2955: Origin of test
+syscmd(`false')
+dnl @result{}
+ifelse(sysval, 0, zero, non-zero)
+dnl @result{}non-zero
+syscmd(`true')
+dnl @result{}
+sysval
+dnl @result{}0

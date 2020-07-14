@@ -1,0 +1,6 @@
+Package: at-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 15.1
+Description: AppleTalk commands
+Build-Depends: build-base, libcat, libcurses-hdrs

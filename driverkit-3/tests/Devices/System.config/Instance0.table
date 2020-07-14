@@ -1,0 +1,18 @@
+/* Default System Configuration File */
+"Version" = "1.0";			/* Version of this File */
+"Source" = "NeXT Computer, Inc.";	/* Who created this file */
+"Machine Name" = "Dell 450/DE2";	/* Manufacturer's Name */
+"Bus Type" = "EISA";			/* Bus architecture */
+"Driver Path" = "/usr/Devices";		/* Path to find config bundles */
+"Active Drivers" = "fooDriver barDriver";	/* Bundles to load at boot 
+						 * time */
+/* Boot Flags */
+"Kernel" = "mach_kernel";	/* Which kernel to load */
+"Device" = "sd0";		/* What device to get the kernel from */
+"Memory" = "16384K";		/* System RAM */
+/* Kernel Flags */
+"Root Device" = "sd0a";		/* Which filesystem to use as '/' */
+"Emulate FPU" = "NO";		/* How slow can you go? */
+"Memory Used" = "ALL";		/* How much to really use */
+"User Mode" = "MULTI";		/* Single / Multi user boot */
+"Kernel Flags" = "mem=8192 nbuf=64";	 /* Random kernel flags */

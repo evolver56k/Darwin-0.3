@@ -1,0 +1,6 @@
+Package: coreosmakefiles
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 9.1
+Description: Core OS Makefiles
+Build-Depends: build-base

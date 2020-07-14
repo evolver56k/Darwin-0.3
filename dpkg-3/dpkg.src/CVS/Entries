@@ -1,0 +1,38 @@
+/ABOUT-NLS/1.1.1.1/Mon May 10 02:22:17 1999/-kb/Tdpkg-3
+/COPYING/1.1.1.1/Mon May 10 02:22:17 1999/-kb/Tdpkg-3
+/INSTALL/1.1.1.1/Mon May 10 02:22:17 1999/-kb/Tdpkg-3
+/Makefile.am/1.1.1.1/Mon May 10 02:22:17 1999/-kb/Tdpkg-3
+/Makefile.in/1.1.1.1/Mon May 10 02:22:17 1999/-kb/Tdpkg-3
+/TODO/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/acconfig.h/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/aclocal.m4/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/config.guess/1.2/Fri Jul 30 07:39:38 1999/-kb/Tdpkg-3
+/config.h.bot/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/config.h.in/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/config.sub/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/configure/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/configure.in/1.1.1.1/Mon May 10 02:22:18 1999/-kb/Tdpkg-3
+/install-sh/1.1.1.1/Mon May 10 02:22:19 1999/-kb/Tdpkg-3
+/libtool/1.1.1.1/Mon May 10 02:22:19 1999/-kb/Tdpkg-3
+/ltconfig/1.1.1.1/Mon May 10 02:22:19 1999/-kb/Tdpkg-3
+/ltmain.sh/1.1.1.1/Mon May 10 02:22:19 1999/-kb/Tdpkg-3
+/missing/1.1.1.1/Mon May 10 02:22:19 1999/-kb/Tdpkg-3
+/mkinstalldirs/1.1.1.1/Mon May 10 02:22:22 1999/-kb/Tdpkg-3
+/stamp-h.in/1.1.1.1/Mon May 10 02:22:22 1999/-kb/Tdpkg-3
+D/attic////
+D/automake////
+D/debian////
+D/doc////
+D/dpkg////
+D/dpkg-deb////
+D/dselect////
+D/intl////
+D/lib////
+D/libiberty////
+D/libiberty-include////
+D/md5sum////
+D/methods////
+D/po////
+D/scripts////
+D/split////
+D/tests////

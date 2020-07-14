@@ -1,0 +1,1260 @@
+                      RELEASE NOTES FOR PINE 3.89                        ----
+                        University of Washington
+                              December, 1993
+ 
+I. TABLE OF CONTENTS
+ 
+   -Summary of changes since Pine 3.88
+   -Configuring Pine
+   -Reading News
+   -Changes since Pine 3.07
+   -Rationale for user-interface changes in 3.8x
+   -PC-Pine: Background, Differences/Limitations
+   -Coming attractions
+   -Detailed change history
+ 
+ 
+II. SUMMARY OF CHANGES                                                   ----
+ 
+ 
+- Pine 3.89 is a primarily a maintenance (bug fix) release, correcting
+  several bugs introduced in 3.88 and earlier.
+ 
+- If this is the first version of Pine you've used since Pine 3.0x,
+  you should read the subsequent section on changes since 3.07. 
+ 
+- Fixed: Possibly the last bugs associated with zero length folders
+  causing crash with "Bad msgno in mailfetchstructure" with new mail
+  arrival and "Bad msgno in mailelt" after failed save.
+ 
+- Fixed: Bug in "Goto" command causing attempted open of garbaged 
+  folder names and other odd behavior under certain circumstances.
+ 
+- Fixed: Explicitly set mode of temporary files for sendmail to 0600.    ----
+ 
+ 
+- Fixed: BOOTP gateway, netmask and nameserver recognition (packet-driver
+  version).
+ 
+- Fixed: Display bug showing zero length attachments on re-entering the 
+  composer.
+ 
+- Fixed: Export no longer reports success when write fails.              ----
+ 
+Note to Sequent PTX users:  if you are experiencing performance problems,
+ make sure you get the new patch from Sequent to make "fsync" work like
+ all other Unix "fsync"s instead of just doing a "sync" instead!
+ 
+Note to AIX users: There have been reported problems with pine built
+ in certain AIX 3.2.X environments.  If you experience problems building
+ or running a newly built pine, you might try pine-bin.aix32 available on
+ ftp.cac.washington.edu.  Work to find the source of these problems 
+ continues.
+ 
+Note to NeXT users: We're aware of, but unable to reproduce, a crash
+ in the Folder Index.  If you can reproduce it, please send details to
+ pine-bugs@cac.washington.edu.
+ 
+III. CONFIGURING PINE                                                    ----
+ 
+Pine configuration is accomplished via entries in a personal configuration
+file, and/or --in the case of Unix Pine-- an optional system-wide
+configuration file.  The standard pathnames for these files are as
+follows:
+ 
+ -Unix Pine system-wide configuration file: /usr/local/lib/pine.conf
+ -Unix Pine personal configuration file:  ~/.pinerc
+ -PC-Pine personal configuration file:  \PINE\PINERC
+ 
+Unix Pine can normally be used without any personal configuration, since
+the normal defaults or entries in the system-wide pine configuration file
+should usually be sufficient to get Pine running.  However, PC-Pine needs
+information that you must supply the first time you run Pine.
+ 
+Beyond the basic information necessary to run Pine, there are an         ----
+ever-growing number of features that you can enable via entries in your
+personal config file.  Below is the default pinerc configuration file,
+including comments, that is created if none exists.  Note: comments in
+existing pinerc files are not updated by new versions of Pine, but new
+variables will be added as appropriate. 
+ 
+-----------------------------------------------------------------------------
+# Updated by Pine(tm) 3.89, copyright 1989-1993 University of Washington.
+#
+# Pine configuration file -- customize as needed.
+#
+# This file sets the configuration options used by Pine and PC-Pine.  If you
+# are using Pine on a Unix system, there may be a system-wide configuration
+# file which sets the defaults for these variables.  There are comments in
+# this file to explain each variable, but if you have questions about
+# specific settings see the section on configuration options in the Pine
+# notes.  On Unix, run pine -conf to see how system defaults have been set.
+# For variables that accept multiple values, list elements are separated
+# by commas.  A line beginning with a space or tab is considered to be a
+# continuation of the previous line.
+ 
+#------------------------ Essential Parameters ------------------------------
+ 
+# personal-name specifies your full name as it should appear on outgoing mail.
+# If unset, Unix Pine will obtain your full name from the system passwd file.
+personal-name=
+ 
+# user-domain specifies the domain part of your return address on outgoing
+# email and is also used as the default domain for email composed to a
+# local user.  If unset, Unix Pine will obtain the domain from the system.
+user-domain=
+ 
+# List of SMTP servers for sending mail.  You must have an SMTP server   ----
+# for use with PC-Pine.  Example: smtp-server=mailhost.u.washington.edu
+# If blank on Unix, sendmail will be used.
+smtp-server=
+ 
+# inbox-path specifies the name/path/location of your INBOX.  Example:
+# inbox-path=
+# Normal Unix default is the local INBOX (usually /user/spool/mail/$USER)
+inbox-path=
+ 
+#-------------------- Collections, Folders, and Files -----------------------
+ 
+# incoming-folders are those other than INBOX that receive new messages.
+# Folder syntax: optnl-label 
+# Use only if you filter incoming email into multiple files or receive
+# email on several different machines.
+# Example:
+# incoming-folders=Consulting       
+#                  Widget-Project   
+#                  Old-Student-Acct 
+incoming-folders=
+ 
+# folder-collections specifies a list of folder collections wherein saved
+# messages are stored.  The first collection is the default for saves.
+# Collection syntax: optnl-label 
+# Example:                                                              ----
+# folder-collections=Saved-Email    
+#                    Widget-Project widget/[],  <-- Valid only in Unix Pine
+#                    Local-PC       mail\[]     <-- Valid only in PC-Pine
+folder-collections=mail/[]
+ 
+# news-collections specifies one or more collections of news groups.
+# News collection syntax: optnl-label *
+# Examples:
+# news-collections=News *[]   <-- if your login host carries news
+# news-collections=Subscribed-Groups *
+news-collections=
+ 
+# default-fcc specifies where a copy of outgoing mail is saved.  If this is
+# not a path name, it will be in the default collection for saves.
+# Unix Pine default is normally "sent-mail" in the default folder collection.
+# PC-Pine default is "SENTMAIL" (stored as SENTMAIL.MTX)              ----
+# Example of remote case: 
+# To suppress saving of outgoing mail, set: default-fcc=""
+default-fcc=
+ 
+# mail-directory is where postponed & interrupted msgs are held temporarily.
+mail-directory=
+ 
+# read-message-folder specifies where already-read messages will be stored.
+# If set, you will be asked when you quit Pine if you want read messages
+# to be moved to this folder and deleted from your INBOX.
+read-message-folder=
+ 
+                                                                         ----
+# signature-file specifies the name or path of a file containing text that
+# will automatically be inserted in outgoing mail.
+signature-file=
+ 
+# address-book specifies the filename or path name of Pine's addressbook.
+# Unix Pine default is normally ~/.addressbook
+# PC-Pine default is \PINE\ADDRBOOK
+address-book=
+ 
+#------------------------------ Preferences ---------------------------------
+ 
+# feature-list= comma-separated list of features from the following set:
+# Note: the value "old-growth" is shorthand for the indicated features...
+# enable-full-header-cmd        (included in old-growth set)
+# enable-unix-pipe-cmd          (included in old-growth set)
+# enable-bounce-cmd             (included in old-growth set)
+# enable-alternate-editor-cmd   (included in old-growth set)
+# enable-suspend                (included in old-growth set)
+# enable-tab-completion         (included in old-growth set)
+# enable-jump-shortcut          (included in old-growth set)
+# quit-without-confirm          (included in old-growth set)
+# enable-apply-cmd              (included in old-growth set)
+# enable-flag-cmd               (included in old-growth set)
+# enable-zoom-cmd               (included in old-growth set)
+                                                                         ----
+# expanded-view-of-folders
+# use-function-keys
+# include-header-in-reply
+# signature-at-bottom
+# delete-skips-deleted
+# expunge-without-confirm
+# auto-move-read-msgs
+                                                                         ----
+# e.g.
+# feature-list= old-growth, signature-at-bottom
+# The feature-list that is in effect when you are running Pine is the
+# combination of the feature-list set by the system manager in the pine.conf
+# file plus the feature-list set by you here.  (PC-Pine doesn't have a
+# pine.conf so this doesn't apply in that case.)  The feature-list is additive
+# and the order is significant.  First the system-wide pine.conf values are
+# read, then yours.  Any of the features listed above may also have the
+# characters "no-" prepended to it, to cancel its effect.  So, for example,
+# you could set "feature-list= old-growth, no-quit-without-confirm" if you
+# wanted to have all of the old-growth features except for that one.  Or,
+# if the system manager has set "signature-at-bottom" in the pine.conf file, 
+# you can cancel that with "no-signature-at-bottom".  The default condition 
+# for all of the features is no-, that is, off.
+feature-list=
+                                                                         ----
+ 
+# Pine executes these keys upon startup (e.g. to view msg 13: i,j,1,3,CR,v)
+initial-keystroke-list=
+ 
+# saved-msg-name-rule= determines default folder name for Saves...
+# Choose one: 
+#   default-folder, by-from, by-sender, by-recipient, last-folder-used
+# Normal default is "default-folder", which on Unix means "saved-messages"
+# and in PC-Pine means "SAVEMAIL"
+saved-msg-name-rule=
+ 
+# sort-key= order in which messages will be presented...
+# Choose one: subject, from, arrival, date, size.
+# Normal default is "arrival"
+sort-key=
+                                                                         ----
+ 
+# character-set should reflect the capabilities of the display you have.
+# Normal default is US-ASCII.  Typical alternatives include ISO-8859-x,
+# where x is a number between 1 and 9.
+character-set=
+ 
+# editor specifies the program invoked by ^_ in the Composer.
+# This is normally an alternative to Pine's internal composer (Pico)
+editor=
+ 
+# Program to view images if format such as GIF and TIFF
+image-viewer=
+ 
+# Used if "user-domain" not set.  Strips hostname from user's return address.
+# Not applicable for PC-Pine
+use-only-domain-name=
+ 
+ 
+#--------- Set within or by Pine: No need to edit below this line -----------
+ 
+# Your printer selection
+printer=
+ 
+# Special print command if it isn't one of the standard printers
+personal-print-command=
+ 
+# Date last time you were asked about deleting old sent-mail (automatic)
+last-time-prune-questioned=
+ 
+# Version of Pine used last session (set automatically)
+last-version-used=3.85
+ 
+---------------------------------------------------------------------------
+(End of pinerc file.)
+                                                                         ----
+The "enable-jump-shortcut" option allows you to enter message numbers 
+without typing the "J" command.
+ 
+The "expanded-view-of-folders" will cause all folder collections to be 
+expanded when you look at the FOLDER LIST, rather than the default 
+"abstracted" view.
+ 
+"Delete-skips-deleted" changes the standard behavior of the delete
+command when you are viewing messages.  Normally, pressing "D" marks the
+current message for deletion and moves to the next message.  With
+"delete-skips-deleted" set, Pine will jump to the next undeleted
+message. 
+                                                                         ----
+The "saved-msg-name-rule" replaces the old "elm-style-save" option.  
+ 
+There is a new option to specify a folder to save messages that have 
+been read.  If set, you will be prompted upon quitting Pine to save
+viewed messages to this folder.  If the option is set in the global
+pine.conf file, it can be overridden with an explicit null string ("")
+value.
+ 
+  # The folder where a copy of read mail is saved.
+  read-message-folder=
+ 
+If this variable is set, and you'd like the transfer to occur without 
+prompting you when you quit Pine, add "auto-move-read-msgs" to your
+feature list.
+                                                                         ----
+A note on folder collections: the -f command line option, and .pinerc
+variables specifying the location of "default-fcc" and "mail-directory"
+can be fully-qualified path names, but if they are ambiguous, they will
+be interpreted relative to the primary (first) folder-collection
+specification.  This is in contrast to the signature file, which is
+relative to home directory.  Also, a .newsrc file -- if you are using
+NNTP to access news -- must be in your home directory on Unix or in
+\NEWSRC on DOS.  Note that the "mail-directory" variable is now used 
+only to define a place to put postponed and interrupted messages. 
+ 
+                                                                         ----
+A note on default-fcc: if you are using PC-Pine and wish to have the same 
+sent-mail file as for Unix Pine, you *must* set "default-fcc=sent-mail"
+and make sure that the Unix sent-mail file is in the directory defined as 
+your primary folder-collection; that is, the first one in the 
+folder-collection list.
+ 
+ 
+IV. READING NEWS                                                         ----
+ 
+Background.  
+ 
+Pine can read Internet news (NetNews or Usenet) groups, using the same
+commands as for mail.  This capability is still "work in progress", so
+some obvious capabilities are missing.  For example, Pine does not yet
+know how to post messages to a news group, nor does it have commands to
+subscribe to or unsubscribe newsgroups.  The consequence of this is that,
+for now, you must already have a "newsrc" file in order to permit Pine
+to read news.  Any Unix newsreader (e.g. rn, trn, nn) can be used to
+create a suitable .newsrc file.  Pine will update the .newsrc file in a
+way that is compatible with other news readers, although Pine uses the
+information in the file in a slightly different way than other news readers.
+ 
+Configuring Pine for news access.                                        ----
+ 
+Pine can access news folders in any one of three different ways: 
+ 
+ -Using the Network News Transport Protocol (NNTP) to access news on
+  a remote news server.  In this case the newsrc file is stored on 
+  the machine where Pine is running.  Put a line similar to the following
+  in your .pinerc to use this mode of access:  
+ 
+      news-collections=News *
+ 
+ -Using the Internet Message Access Protocol (IMAP) to access news       ----
+  on a remote news server.  In this case, your newsrc file is stored
+  on the news server, in your home directory, so you must have an
+  account on the news server, but you would be running Pine on a 
+  different machine.  The news server must be running an IMAPd server
+  process.  Put a line similar to the following in your .pinerc
+  to use this mode of access: 
+ 
+      news-collections=News *
+ 
+ -Using local file access to the news database.  In this case, your newsrc
+  file is stored on the news server, in your home directory, so you must
+  have an account on the news server, and you would be running Pine on the
+  same machine.  Put a line similar to the following in your .pinerc to
+  use this mode of access: 
+ 
+      news-collections=News *[]
+ 
+ 
+In the first two examples, the hostname "news.wherever.edu" should be  ----
+replaced with the domain name of your local news server.  For Unix Pine,
+these entries can be placed in either the system-wide or your personal
+configuration file.
+ 
+If you are a PC-Pine user, either option 1 (NNTP) or option 2 (IMAP) is
+possible.  If you don't have an account on the news server, or if the news
+server is not running an IMAP daemon, then you must use NNTP.  In this
+case, a Unix .newsrc file can be transferred to your PC.  It should be
+named \NEWSRC.  A future version of PC-Pine will be able to access and
+update a newsrc file stored on a Unix host, so that it will be possible to
+alternate between PC-Pine and Unix-based news readers. 
+ 
+Using Pine to read news.                                                 ----
+ 
+Once defined in the .pinerc (or the global pine.conf) file, the news
+folder collection can be accessed either via the FOLDER LIST screen,
+of via the GOTO command.
+ 
+Once a news folder has been opened, Pine currently positions you at the
+last message.  (In the future, this is expected to change.)  Pine uses the
+same commands for manipulating news folders as for mail folders.  This
+means, for example, that when you are done with a message, you would use
+"D" to mark it as Deleted (or Dismissed, if you prefer.)
+ 
+This "mail like" behavior differs from that of most newsreaders, wherein
+a message is implicitly dismissed after you have looked at it once. We
+strongly believe that Pine should offer as much consistency as possible
+between mail and news, so the mail paradigm --wherein a message does not
+magically disappear without explicit action by the user-- is used for
+news as well.
+ 
+News folders are actually Read-Only, but the newsrc file allows Pine to  ----
+keep track of which messages you have dismissed (marked as Deleted) just
+as in a regular mail folder. The difference is that, although messages
+marked as Deleted will show up in the Index (just as mail messages do
+until an eXpunge), you cannot expunge news messages.  However, in the
+future there will be a way to "hide" (or "eXclude") messages that are
+so marked from the Folder Index.
+ 
+If you answer a message in a news folder, the index view will show the
+"A" flag as usual; but the newsrc file has no way of storing this flag,
+so it will not be preserved across sessions.  The Deleted flag is the only
+one that is preserved between sessions. 
+ 
+NOTE: full NetNews functionality is not yet available in Pine; there
+is still much to be done in this area.  Stay tuned...
+ 
+ 
+V. CHANGES SINCE PINE 3.07                                               ----
+ 
+Version 3.89 is the fourth maintenance release since 3.85, which was a
+major release with lots of changes and new features since 3.07.  If you
+are upgrading from 3.07 to 3.89, here are some of the changes you may
+notice:
+ 
+- Pine 3.8x has several major new features (compared to Pine 3.07):
+   o Various UI improvements (command consistency, simplification, etc).
+   o Multiple folder collections.
+   o Remote folder create/append (requires new IMAPd).
+   o Composer has Mark command for block cut/paste.
+   o Messages directly to you marked with "+" in Folder Index.
+   o Messages that have been answered marked with "A" in Folder Index.
+   o Improved handling of text and postscript attachments.
+   o Improved mailbox lock handling: latest Pine will now be read-write.
+   o Several new .pinerc options.
+   o Several new command line options.
+   o Easier access to newsgroups (but still not a full newsreader).
+   o TAB command to move to next unseen message.
+ 
+- Several command key changes were needed to allow for new features:     ----
+   o Print is now "Y" instead of "L"
+   o The Folder List is now uniformly accessible via "L"
+   o Viewing/saving attachments is now done via "V" instead of "A"
+   o SortIndex is now "$" instead of "Z"
+ 
+- In addition...
+  - Release includes PC-Pine ports, as well as Unix Pine.
+  - Ability to view plain text attachments.
+  - Correct MIME type assigned for text, postscript and TIFF files.
+  - Configurable by feature (instead of having to choose 1 feature level).
+  - Initial keystroke list in configuration or command line.
+  - Command line -p flag to specify an alternate personal config file.
+  - Command line -P flag to specify an alternate system-wide config file.
+  - Command line -o flag for opening a mailbox Read-Only.
+  - Command line -I flag for initial keystroke list.
+  - More support for USENET news access via both IMAP and NNTP
+    (The NNTP driver reads/updates local newsrc configuration files).
+  - Changed order of reply prompts to reduce mistakes.                   ----
+  - In the Save command, folder name completion using TAB key.
+  - More consistency of commands across screens.
+  - Main menu command selection via Prev/Next/Enter.
+  - An option for automatically saving read-messages upon quitting.
+  - Better INBOX lock handling: latest Pine always gets read-write access.
+  - Improved display defaults for charsets other than us-ascii.
+  - PC-Pine: code-page translation to ISO-8859 charset.
+  - PC-Pine: improvements in how location of config files are specified.
+  - PC-Pine: generate X-Sender line with authenticated address.
+  - PC-Pine: more config flexibility in specifying location of support files.
+  - PC-Pine: prompts before saving user name in pinerc; can disable save.
+  - PC-Pine: NNTP driver changed to warn of missing NEWSRC file.
+  - PC-Pine: if \PINE\PINE.PWD exists, prompts for saving passwd on disk.
+  - Changed Keyboard lock strategy to eliminate use of system passwd file.
+  - Removed disk quota command (hard to make it accurate!)
+  - Reorganized source code to make ports more straight forward.          
+  - Integrated several contributed ports.
+  - Pinerc configuration variable for addressbook location.              ----
+  - SMTP-host config variable now allows a list of host names.
+  - Choice of several rules for generating default folder names in Save.
+  - Several other new .pinerc options.  (See PINERC section, below.)
+  - Globally-set (pine.conf) features can now be negated in pinerc.
+  - Many bug fixes!
+ 
+NOTE: Several commands can be enabled by .pinerc options, but not all of 
+them actually exist yet.  In particular: Flag, Bounce, Pipe, Apply, Zoom.
+Also: news item eXclude/uneXclude and news group subscription/unsubscription
+are not yet available. 
+ 
+Handling Locking with multiple sessions.                                 ----
+ 
+Pine 3.84 introduced a new mechanism to handle competition between
+multiple sessions for a single INBOX.  Previously, the first session would
+have to be stopped before another could get read/write permissions on an
+open inbox.  Now, the newest session forces the older session to surrender
+read/write access to the mailbox.  Note: in the future, Unix Pine will
+also support the MTX mailbox format used by PC-Pine.  This format permits
+multiple sessions to all have read-write access (except that eXpunge can 
+only occur when there is a single session). 
+ 
+Folder Collections.                                                      ----
+ 
+Pine allows you to have full access to sets of folders on you local
+machine plus those on any remote host running an IMAP server.  These sets
+of folders are called "collections" and Pine has some special new
+browsing features to take advantage of them. By default, everyone has one
+folder collection.  Additional collections may be defined by editing your
+.pinec configuration file. 
+ 
+MIME Attachments.                                                        ----
+ 
+Pine now recognizes attachments which are displayable text and marks them
+the appropriate MIME type for text.  Pine has a new system for determining
+which MIME text attachments should be displayed automatically and which
+should be displayable on request.  In addition there is a new text
+attachment viewer module just for browsing these attachments.  Finally,
+Pine will now recognize postscript files and TIFF image files and assign
+the correct MIME type information in the message.
+ 
+Other things you should know.
+ 
+Unfortunately, when you Save a message to a folder, the message state
+flags (e.g. whether it was Deleted, or Answered) are not preserved.  This
+will be fixed in a future release. 
+ 
+Msg sizes are intentionally left blank in the index when using NNTP.
+                                                                         ----
+If a file called ~/mail.txt exists and is either empty or appears to be a
+Tenex-style mailbox, Pine will decide to use its "tenex2" driver which
+will move all pending mail from /usr/spool/mail/$USER to mail.txt, and use
+mail.txt as your INBOX.  This behavior is subject to change; in particular,
+the "tenex2" driver will be deprecated in favor of an MTX driver that
+will provide a common mailbox format between Unix Pine and PC-Pine.
+ 
+ 
+VI. RATIONALE FOR USER-INTERFACE CHANGES IN PINE 3.8x                    ----
+ 
+In Pine 3.85/3.86, there are many feature additions and more consistent
+use of command keys; but a few changes may trip you up the first time. 
+Here are some specific things to watch out for, and an explanation of why
+we changed them: 
+ 
+  o Main menu: "F FOLDERS" is now "L LIST FOLDERS"
+    WHY: In order to implement a pervasive command (L) to get to the Folder
+         List screen, available from all major screens.  The letter "F" 
+         conflicted with "Forward" on the Folder Index and Message Text 
+         screens.
+ 
+  o The "L Print" command is now the "Y Print" command.              ----
+    WHY: We needed to reclaim L so there would be a consistent and 
+         mnemonic command for the important operation of getting to the 
+         Folder List screen ("L ListFldrs").  Since printing is also an
+         important operation, this change was made with great reluctance. 
+         On the other hand, "L Print" wasn't especially mnemonic, and
+         "Y Print" offers a nice environmental message!
+      
+  o The "O OTHER" command on the Main menu and the corresponding 
+    "OTHER" screen has been eliminated.  In its place, there is a Setup
+    command, and a couple of other commands added to the key menu at the
+    bottom of the Main menu. 
+    WHY: Simplification.  Providing more direct access to some of the
+         "miscellaneous" functions allowed elimination of the Other screen.
+         This also allowed us to use "O OTHER CMDS" on the main key menu,
+         for greater consistency with the other screens.
+                                                                         ----
+  o The Main menu now supports selection of the principal commands using 
+    Previous/Next navigation commands, and RETURN to select.
+    WHY: Consistency with the other Pine screens.
+ 
+  o In "Reply" the order of prompts has been reversed.  The prompt          
+    "Include original message in Reply?" is now always the first one.
+    WHY: "Reply to all recipients?" depends on the specific msg header,
+         and therefore is not always present.  Although it may take
+         getting used to, we felt that in the long run it would be better
+         to have the first prompt be the one that is *always* applicable. 
+         Also, with the future ability to post news replies, there will be
+         different prompts following a Reply.  Again it seemed best to
+         start with the invariant prompt.
+                                                                         ----
+  o The ^T sub-command under Save and Goto will behave slightly differently.
+    WHY: We hope the new "select" behavior makes it clearer to the user
+         what is going on.  In other words, a "user interface improvement".
+ 
+  o The "Z Sort Folder" command is now "$ Sort Index"
+    WHY: Two reasons.  The change from Z to $ was because we will need 
+         "Z" for some of the newsreading and aggregate operations
+         that are planned for a future release.  Besides, "$" looks more
+         like an "S" for Sort than "Z" does...  In addition, the word
+         "Folder" was changed to "Index" to emphasize that only the
+         Index is being affected; the folder itself is *not* reordered by
+         the Sort command.
+ 
+  o The disk quota command has been removed.
+    WHY: Because on many systems it caused nothing but trouble, 
+         moreover it was useless for remote folder management. 
+ 
+ 
+VII. PC-PINE: BACKGROUND, DIFFERENCES/LIMITATIONS                         ----
+ 
+Summary: There are several known limitations in the PC version...
+ 
+   o There is no spelling checker.
+   o Sorting the Index (by other than Arrival) is *hopelessly* slow.
+   o The alternate editor function is not available.
+   o Memory: it needs about 500K out of 640K.
+   o Probably can't run image viewer from within Pine, due to memory.
+   o Performance optimization still needs to be done.
+   o Versions: packet driver, Novell LWP, FTP PC-TCP, Sun PC-NFS
+ 
+Most of the work done on Pine from 6/92 to 6/93 focused on changes needed to
+support a truly distributed electronic messaging environment (e.g. remote
+folder manipulation), and getting Pine to run on DOS (which was a *lot* of
+work).  The first version of PC-Pine (3.84) was released in July 1993, and
+included first steps toward integrating news and email access in Pine.
+ 
+Doing the DOS port was very difficult for a variety of reasons, but      ----
+especially because of DOS memory management (or lack thereof).  However,
+simply porting Pine 3.07 to DOS was not sufficient.  For a desktop mailer
+such as PC-Pine to be useful at UW, it was necessary to fully support
+access to existing *remote* saved-message folders, as well as local
+(desktop) folders -- and of course, the remote INBOX.  Accomplishing this
+required extensions to IMAP, a new version of the IMAPd server code, and
+extensive work in Pine to support multiple collections of folders. 
+ 
+The principal reason for porting Unix Pine to DOS was to obviate the need
+for PC users to transfer files between their PC and the Unix system running
+Pine.  Now it is possible to save messages directly to the PC's filesystem,
+and to directly include PC files in outgoing messages.  Binary files (e.g.
+word processing documents, spreadsheets, image files, executables) may be 
+directly attached to your messages. 
+ 
+With the advent of Pine 3.85/3.86, both Unix Pine and PC-Pine have       ----
+essentially similar functionality and user-interface.  But there are
+some differences.  Below is a list of PC-Pine differences and limiations:
+ 
+-Sorting the index is *hopelessly* slow right now... especially for
+ newsgroups accessed via NNTP. 
+ 
+-There is no spelling checker for PC-Pine.
+ 
+-The "alternate editor" function is not available.
+                                                                         ----
+-Composing/Replying/Forwarding: the entire message text must fit in DOS 
+ memory.  However, attachments may be any size.
+ 
+-PC-Pine wants about 500K of DOS memory.
+ 
+-Don't expect to display a picture without exiting PC-Pine, due
+ to DOS memory limitations.  In some configurations, there *may* be enough
+ memory for the viewer and a small image, but don't count on it.
+ 
+-Performance optimization has not been done.  This will be most          ----
+ noticeable when using NNTP to access newsgroups, or when Index screens are
+ redrawn while using PC-Pine over low-speed lines (via SLIP or PPP).
+ Encoding a decoding attachments is also very slow in this version.
+ 
+-While message folders may be either local or remote, several support
+ files must be available on the local disk.  In particular:
+	\pine\pinerc
+	\pine\addrbook (you may specify a different name/location for this)
+	\newsrc
+	\pine\pine.sig (you may specify a different name/location for this)
+ 
+ Other files (postponed and interrupted messages, debug files) are also
+ stored locally.  The same is true for Unix Pine, but only users of both
+ PC-Pine and Unix Pine must worry about keeping their pinerc, address book,
+ and newsrc files in sync.   This may be done using remote file system 
+ protocols or manual copying.  (Remote access to these support files is
+ planned for the future.)
+ 
+-PC-Pine wants to live in a directory called \PINE                      ----
+ 
+-The PC-PINE message folder format, denoted by files with an "MTX" extension,
+ is based on byte-counts for maximum efficiency, so they must not be edited.
+ The format is non-standard, but conversion utilities would not be difficult.
+ In the future, this format may be supported in Unix Pine as well.
+ 
+-PC-Pine does not create debug files
+ 
+-PC-Pine mouse support is not yet available on some screens
+ 
+                                                                         ----
+VIII. COMING ATTRACTIONS
+ 
+  - Shared (plus personal) address books
+  - Improved network news support, including posting and subscribing
+  - Implementation of "missing" commands (Bounce, Pipe, Flag)
+  - Improved MIME support, including "mailcap"
+  - For PC-Pine, beginnings of "offline" support
+  - For PC-Pine, performance improvement
+  - A Windows/Winsock version (though not initially a GUI)
+  - Access to remote support files: address books, newsrc, pinerc
+  - Operations on multiple messages (aggregate operations)
+  - Threaded Index views
+  - Improved Search capability
+  - Access to directory services from Composer
+ 
+ 
+IX. DETAILED CHANGE HISTORY                                              ----
+ 
+               Pine 3.89   December 7, 1993
+ 
+User-visible changes...
+  - ^L side effect is new mail check
+Serious bug fixes...
+  - /tmp file for sendmail has mode based on default umask <Matt Freedman>
+  - Pine loops to make infinitely long .pine-debug <Mike Kuniavsky>
+  - Crash: "Bad msgno in mailfetchstructure" <Ian Lumb> <Mike Kuniavsky>
+  - Crash: "Bad msgno in mailelt" <Ian Lumb> <TJ Olny>
+  - INBOX index appears empty after Send <Mike Kuniavsky> <TJ Olny>
+  - PC-Pine problem with folder name after "Goto" <Landy, Berlinger, Pommert>
+  - Postpone: if canceled, attachment size displayed zero length <Dave King>
+  - PC-Pine: WATTCP BOOTP ignores gateway, nameservers
+  - Export: Reports success even after failed write <David Wall>         ----
+ 
+               Pine 3.88   November 22, 1993
+ 
+User-visible changes...
+ -Use Tab instead of Next/Delete to prompt for next folder (News,IMF)
+ -Revised Goto default: always INBOX if not already in INBOX
+ -Change "(y/n)" prompts to "(y/n/^c)" prompts
+ -Have D,N cmds suggest using Tab when on last (unread) msg.
+ -Add "checking for new mail" indicator ("*") to anchor line
+ -ESC ESC <char> is now an alternative for Control-<char>
+ -New prompt added after KB lock passwd is entered to allow confirm
+ -Changed exit prompt in pico to (hopefully) prevent lost work.
+ -Decreased checkpoint and mailping intervals.
+ -After postpone, cursor is placed in body of text, rather than header
+Serious bug fixes...
+ -Loop: Pine loops on SIGHUP if in composer
+ -Crash: "Bad msgno in mailfetchstructure"
+ -Crash: on Save <Matt Friedman>
+ -Crash: Crash when entering address that just fits screen width         ----
+ -Crash: in folder list <TJ Olny>
+ -Crash: <Grant Weber>
+ -Crash: save msg to mail/postponed... resume causes crash <Barry Landy>
+ -Crash: SIGUSR2 after ckpoint, Panic: Lock when already locked <Karnes>
+MIME changes...
+ -Change trigger algorithm for QP and B64 encoding inline of text
+ -Base64 text attachments were not NL canonicalized
+ -Any IMAGE type, including TIFF, now passed to external viewer
+ -Change back to *not* NL canonicalizing application/postscript
+ -Attachment failure due to protection needs immediate feedback
+Misc bug fixes...
+ -Fix pico to write term init string when using terminfo
+ -Utilize new C-client callback to notify Pine of flag changes
+ -Modify "new version" page to reflect that 3.88 is a mtce release
+ -At low speed pico may leave terminal in funny state.
+ -3.87 SIGWINCH doesn't trigger repaint of some text <Khan Mark Klatt>
+ -Put separator string between consecutive text attachments.
+ -Allow override of global smtp-server variable.  <Barry Bouwsma>        ----
+ -Omit beep from Tab message
+ -When returning to INBOX, return to same message as before. <RonJ>
+ -Don't complain about "unable to create ~/mail" if not used <MRC>
+ -Composer: 3.07 ^J on other than Attchmnt line fails <Robert Lummis>
+ -Composer: for ^R, append trailing NL if missing, and advise user
+ -Off by one after new mail arrives while in compose <John Underwood>
+ -"last-folder" name rule doesn't remember collection. <MRC>
+ -Revise message generated by "D" on last msg in folder <Matthew Barry>
+ 
+ -SIGWINCH causes tcpgetdata() to fail <DLM>
+ -Fix signal handling/cleanup on quit to avoid crash in Sun CmdTool
+ -Fix BASH incompatibility <Gary Anderson>
+ -Fix: BCC lost on sent-mail copy
+ -Fix: columnar (tab) displays in MESSAGE TEXT view
+ -G in "Incoming" collection matches names in default folder coll.
+ -Pinerc: allow $ in initial key list, <Dave King>
+ -Save bug induced by "elm-style-save" in 3.87 <Kent Yates>
+ -Compose: timestamp msg when sent, not at start of compose              ----
+ -Compose: ^J removes second space after ."  <Matthew Barry>
+ -Compose: Suspend broken if invoked from shell (signal process group)
+ -Postpone: Extra blank lines added at the end of msg (down to 1...)
+ 
+ -Messages with only an FCC silently fail <CWheeler>
+ -On AIX, terminfo should be default, not termcap (Pine & Pico)
+ -Problems forwarding/replying with nested MIME attachments
+ -Change pico to NL canonicalize included files
+ -Msg pointer off-by-1 bug (headers don't match msg) <Barry Landy>
+ -Save msg is corrupted in above case <Barry Landy>
+ -No attachment sent if ^X while in header?
+ -Re-fix long BCC exceeding sendmail limits
+ -Bky mailbox From separator sometimes missed by Pine
+ -Checkpointing of flag changes not always happening
+ -Delay in building folder list (sort to put INBOX first)
+ -Timestamp ping and checkpoint debug entries
+ -NNTP driver needs to send "mode reader" to INN <Ken Weaverling>      ----
+ -default-fcc=$VARIABLE becomes "" when variable is unset <Barry Landy>
+ -Suppress "out of context" msg for FCC <Leland Woodbury>
+ -Pine beeps on outgoing/sent-mail (out of context error) <Ken Kutz>
+ -"~user" now expanded in .pinerc
+ -Misc corrections to help text and messages
+ -Bug in IMAPd address search
+ 
+ 
+               Pine 3.87   October 8, 1993                               ----
+ 
+ -crash in bezerkopen caused by out-of-context FCC (Leland Woodbury)
+ -crash on Solaris with missing feature list (Keith Christopher)
+ -crash with [No Message Text Available] message (Grant Weber)
+ -crash on folder Rename (Dan Larsen)
+ -crash with "Bad msgno in mailfetchstructure" (Les Pennington)
+ -need one more NL before included text if NO sig file (Jeannine Senechal)
+ -makefile.sgi repairs (Mike Brudenell)
+ 
+               Pine 3.86   October 5, 1993                               ----
+ 
+ -Revert to having GOTO enabled by default.
+ -Revert to allowing open folders to be deleted.
+ -Revert to former meaning of -i command line flag.
+ -Add command line flag -I for initial keystroke list (replaces -i overload).
+ -Make personal feature list add to global feature list instead of replace.
+ -Allow negation of previously-enabled features by prefixing "no-".
+ -Add "by-from" name rule; change "by-sender" to use Sender: field
+ -Add "expunge-without-confirm" feature.
+ -Add "auto-move-read-msgs" feature.
+                                                                         ----
+ -Change "save-by-X" rules to strip routing data from offered foldername.
+ -Change Pine to use FIND ALL, to avoid conflict with .mailboxlist.
+ -Change IMAPd's FIND ALL behavior to not check file type. 
+ -Change Tenex-format mailbox extensions from .txt to .TxT.
+ -Change composer to only put one blank between .sig and included text.
+ -Change pine to expand tabs on fixed, 8-char boundaries.
+ -Change address book nickname display length to match input limit.
+ -Change inline-text encoding rule to use quoted-printable more often.
+ -Change NewVersion message to indicate it only shows once, etc.
+ -Change wording of monthly pruning message.
+ -Change Ctl-K message to appear less frequently.
+ 
+ -Fix: Delete in/after spell-check may trash msg or crash Pine.          ----
+ -Fix: crash resulting from M->S->? key sequence. 
+ -Fix: crash resulting from null To: field. 
+ -Fix: crash resulting from "::" in From: header.
+ -Fix: crash resulting from replying to above.
+ -Fix: for long headers (address lists longer than a screen). 
+ -Fix: [Mark Set] message should vanish after ^K. 
+ -Fix: "No attachments" msg in Postpone is too long to fit. 
+ -Fix: Ext. help inclusion confusion (insert page breaks as file is read). 
+ -Fix: Low-speed fixes that broke in Pico 2.0.
+ -Fix: Select/Goto should return to previous folder when open fails.
+ -Fix: Spaces at beginning of filenames are now ignored in Save/Export.
+ -Fix: put domain literal brackets around X-Sender when necessary.
+ -Fix: Can't save to INBOX if "inbox" is implicit in inbox-path.
+ -Fix Pico so lines w/tabs display correctly when characters deleted. 
+ -Fix negative network number in bracketed host numbers for DOS SMTP clients.
+ -Fix Tenex driver to never cause a kiss-of-death to be sent or received.
+ -Fix: Some global config options not transferred/displayed correctly?
+                                                                         ----
+ -Fix: Use "default state" when returning to INBOX, instead of wrong msg #.
+ -Make PC-Pine more graceful when out of memory during a Send.
+ -Suppress From: (Sender Unknown) in included headers for -nr mode
+ -Improve performance of TAB and Del-skips-del on large folders.
+ -Improve failure case when .addressbook or .pinerc can't be re-written.
+ -IMAPd ignores kiss-of-death if current mailbox is not bezerk, mmdf, or mbox
+ -Use XHDR in NNTP client drivers to work around a missing LISTGROUP command.
+ -Internal FIND/FIND ALL redesign (no user or Pine-visible changes)
+ -Create separate VAX ULtrix (VUL) port.
+ -Rsh program name and pathname now set in c-client makefile for each port.
+ -Modify some ports to be only makefiles (and perhaps os???.h files).
+ -Suppress Tenex driver new-mail snarf if it can't get RW access to spool.
+                                                                         ----
+               Pine 3.85   September 21, 1993
+ 
+ - Integrated Unix/DOS release.
+ - First Unix release with PC-Pine (3.84) features.
+ - Recognition and proper MIME typing of postscript and TIFF files.
+ - Improved display defaults for charsets other than us-ascii.
+ - PC-Pine: code-page translation to ISO charset
+ - PC-Pine: improvements in how location of config files are specified.
+ - PC-Pine: generate X-Sender line with authenticated address.
+ - PC-Pine: more config flexibility in specifying location of support files.
+ - PC-Pine: prompts for personal data in pinerc: more flexibility for labs. 
+ - PC-Pine: NNTP driver changed to warn of missing NEWSRC file.
+ - PC-Pine: if \PINE\PINE.PWD exists, prompt for saving passwd on disk.
+ - Changed Keyboard lock strategy to eliminate use of system passwd file.
+ - Reorganized source code to make ports more straight forward.          ----
+ - Integrated several contributed ports.
+ - New technical notes.
+ - Fixed bug with packet driver PC-Pine and IMAP connections breaking.
+ - Pinerc configuration variable for addressbook location.
+ - Command line flag for specifying a system-wide configuration file.
+ - Command line flag for opening a mailbox Read-Only.
+ - SMTP-host config variable now allows a list of host names.
+ - Removed disk quota command (hard to make it accurate!)
+ - Many bug fixes!
+ 
+               Pine 3.84   July 12, 1993                                 ----
+ 
+ - Fixed NNTP driver bugs
+ - Fixed scroll state problem which caused crashes
+ - Changed internal handling of mailbox extensions (now driver dependent)
+ - Cleanup context prompts which were too wide
+ - PC-Pine configuration is written to a pinerc if it is new
+ - Smarter rebuilding of the index cache
+ - Fixed Ultrix quota bug
+ - Fixed more DOS memory management problems
+ - Reworked installation and configuration instructions
+ 
+               Pine 3.83   June 17, 1993                                 ----
+ 
+ - Support for multiple folder collections
+ - Support for new remote create/append functions in latest IMAPd
+ - Internal changes for DOS
+ - New configuration settings in .pinerc
+ - Command line and pinerc setting for initial keystrokes
+ - Can create and append to remote folders via IMAP
+ - Viewer module for plain text attachments
+ - Better MIME typing of attachments
+ - Modifications to several variables in pinerc
+ - Changed the keymenu layout
+ - Changed names of many commands (e.g. "F" Folders to "L" List folders)
+ - Allow for horizontal scrolling of 1-line input questions
+ 
+               Pine 3.81                                                 ----
+ 
+ - Portability to AIX 3.2 on RS/6000's
+ - Portability to SVR4 
+ - Fixed bug with exporting on NeXTs (broke in 3.52)
+ - Fixed bug in sending attachments (broke in 3.73)
+ - Changed elm-style-save to save-by-sender
+ - Quotes are retained for all setting when .pinerc is rewritten
+ - Fixed bug causing core dump with .pinerc unterminated by newline
+ 
+ 
+               Pine 3.80  Oct 4, 1992
+ 
+ - Merge of changes in Pine 3.05, Pine 3.73 and Pine 3.52
+ - RETURN works in the address book to select an address
+ - ^L documented in help text on main screen
+ 
+               Pine 3.73                                                 ----
+ - Changed label "Open" to "Open Fldr" in folders screen
+ - Changed search prompt for where is command
+ - Fixed sorting of folder name
+ - Improved formatting for the folders screen
+ - Internal improvements in the way the folder list is created
+ - Updated comments in imap.c
+ - Killed some dead code in init.c
+ - Fix not to attempt to output messages when tty is uninitialized
+ - Fixed image viewer race causing xv to fail for viewing images
+ - Can play sounds on SPARC stations
+ - Better fix for nasty date / Berkeley mail file separator bug.
+						                         ----
+ - Recognize more variants of GIF files, GIF* instead of GIF87
+ - Zero length attachments are now not considered images
+ - Bug fixes to date parsing, parsedate(), handles a few more dates
+ - Bug fix to error messages for unknown commands. 
+ - Bug fix for displaying 8 bit characters on some systems
+ - More bug fixes to swallow function keys better
+ - Added handling of richtext \paragraph 
+ 
+               Pine 3.06                                                 ----
+ 
+ - Added -a flag for anonymous mode as distinct from -nr mode
+ - Added simple forwarding for -nr mode
+ 
+ 
+               Pine 3.05
+ 
+ - Displays only last component of file path in nr mode
+ - When expunging gets the "s" after message in the delete count right
+ - Got "screen" spelled right, was "screeen"
+ - Bug fixes to strindex and strrindex (not sure what was broken)
+ - Bug fixes to swallow function keys better
+ 
+ 
+                Pine 3.04   Sept 8, 1992                                 ----
+ 
+ - Fixed memory allocation problem in sending
+ - Fixed bad folder delimiter writing when pine used with recent imapd's
+ - Bug fix to updatemessageid for potential buffer reuse bug
+ - Fixed bug that caused occasional hanging on input
+ - '-n X' option added to start pine on item X in index (for use with '-i')
+ 
+ 
+               Pine 3.03           July  20 1992                       
+  - Printing of MIME messages now works
+  - Exporting of MIME messages now works
+  - Parity problem fixed (again), PASS8 not set when character-set unset
+  - Compiles properly on VAX/Ultrix
+  - Compiles properly on SGI box 
+  - Recognizes TIFF and PostScript when attaching, can't display then (yet)
+  - Fixed bug in Pico on SGI's causing CR to be interpreted as LF, ^J 
+ 
+ 
+               Pine 3.02           July  15 1992                         ----
+ 
+  - Alternate editor command takes arguments properly now
+  - "M" from the News screen goes back to main menu
+  - ^C while in alternate editor doesn't kill Pine
+  - Added FAQ about alternate editor
+  - New variable to suppress messages about new versions of pine
+  - Title bar "DEL" now shown correctly in View when folder is sorted
+ 
+ 
+               Pine 3.01           July  13 1992
+ 
+  - Fixed sorting on From: field so it sorts on user id
+  - Fixed reversing of sort
+  - F6 for the address book now works again on the main menu
+  - More fixes for q-p encoding and end of line conventions
+  - Fixed so Pine will operated on RS232 parity other than 8N1
+  - Only puts tty into PASS8 mode when character-set is 8 bits
+ 
+ 
+               Pine 3.00           July  6 1992                          ----
+ 
+  - Partially updated help text
+  - Confirms with user when sending to "mailer-daemon"
+  - MIME part count and size encoded in message id to gather MIME use stats
+  - Fixed bug caused by deleting first or preceding attachments
+  - Gives warning about being unable to postpone messages with attachments
+ 
+BUG FIXES AND IMPROVEMENTS (2.x to 3.0x)
+  - Bcc saved in sent-mail folder, and shown
+  - Fixed bugs causing core dumps and errors on with very long addresses
+  - Sorting by subject, date, sender and other fields
+  - Fixes for screen painting problems with Procomm and VT102's at low speeds
+  - "Old-growth" mode for power users; this enables viewing of full header
+  - Can view messages with ISO-2022 character set shifts (supports Japanese)
+  - No limit on the number of messages in a folder                       ----
+  - More command line options: specify sort, go directly to index
+  - More .pinerc configuration: mail-directory, feature-level, signature-file.
+  - Alternate editor for message composition -- set "editor" in .pinerc
+  - Pays attention to umask when exporting files
+  - Option in .pinerc (old-style-reply) to have signature at bottom of reply
+  - More efficient screen painting for low speed dialup support
+  - Upon opening a folder the current message is the first unread message
+  - Carries along  date properly when saving messages to Berkeley mail folders
+  - Ports to Dynix/PTX and HP/UX
+  - Removal of "View" from main menu
+  - Many more small fixes, improvements and documentation updates
+ 
+               Pine 2.33           July  4 1992                          ----
+ 
+  - Lock keyboard disabled for PTX port since it didn't work
+  - Saving attachments and custom printer config disable in restricted mode
+  - Signature is now included when forwarding MIME style
+  - Added line separating attachments from body when viewing MIME messages
+  - Title bar shows "Folder:inbox" or "News: .."instead of ""inbox""
+ 
+                                                                         ----
+               Pine 2.32           July  2 1992           
+ 
+  - Release Notes reformatted to fit in 80x24
+  - Display's MIME MESSAGE/external-body types nicely
+  - Can reply to MIME message
+  - Fixed some nasty bugs related to quoted-printable encoding
+ 
+ 
+               Pine 2.31           Jun 30 1992       
+  - Fixed bug causing core dumps when attaching files
+  - Updated on-line release notes for Pine 3.0
+  - Shifted main menu to the right, so it looks better
+  - Added "Forward" to View menu for -nr mode
+  - Fix default screen size in Pico (off by one when screen size was unset)
+  - Forwarded attachments display nicely in the composer
+ 
+ 
+               Pine 2.30           June 29 1992                          ----
+ 
+  - Saves and displays Bcc: line in sent-mail folder
+  - Fixed horrible bug introduced in 2.29 causing dates in saved messages
+     to be incorrect that would make folder unreadable
+  - Shows "opening...." message immediately with "-i and -f options"
+  - Fixed disk quotas for Dynix/ptx (and hopefully all of System v)
+  - Simplified Pine main menu, News moved to "Other"
+  - Moved site specific help text off of "Who.." to main menu help
+  - Can forward MIME message (messages with attachments)!
+  - Fixed bug causing "Bogus sequence in FETCH" on empty IMAP folders
+  - Fixes for restricted mode
+  - Function key support for file browser
+  - Fixed vt102 low speed subject painting bug in composer
+  - Removed "V" command from main menu (experiment)
+  - Switch back to repainting instead of scrolling in the composer
+  - Anonymous message forwarding (forwarding with -nr option) works
+ 
+ 
+               Pine 2.29           June 12 1992                          ----
+ 
+  - .Pinerc variables may refer to environment variables (thanks to Pekka)
+  - Minimal MIME conformance for international character sets
+  - Passes ISO-2022 escape sequences
+  - Fixed line wrapping so it works properly with tabs and breaks at a space
+  - Fixed bug in composer causing ^M's to appear when send failed and other
+  - Fixed ptx bug causing prompting for passwd when rimaping to remote
+  - More efficient screen painting when composing message header 
+  - Checkpoints a little less frequently and just as a message is
+         displayed for viewing
+  - Carries received date when copying message for Berkeley compatibility
+  - Saves blank outgoing messages in sent-mail properly (adds blank line)
+  
+ 
+               Pine 2.28            June 2 1992                          ----
+ 
+  - Fixed bug causing screen to be left in reverse occasionally when exiting
+  - Fixed occasional lack of repaint after message composition
+  - Message number painted correctly in title bar when stream is READONLY
+  - Postponing messages with attachments now works
+  - Port to HP/UX by Dave Miller at WSU
+  - Bug fix for ports with no resizing from Dave Miller
+  - Bug fix for folder opening from Dave Miller
+  - Go to first unread msg when folder is opened, rather than recent message
+  - Fixed recently reintroduced bug causing sent-mail to have status "N".
+  - Will prompt before overwriting existing file when saving attachments
+  - Almost fixed bug with junk at end of text attachments (most junk gone)
+  - Fixed bug causing core dump when sorting on From line
+  - Fixed bug so pine doesn't do end of month renaming in News Reader mode
+  - Fixed bug causing prompting for creation of folder when empty one exists
+  - Fixed bug causing loss of composition when declining postpone overwrite
+  - Renamed "seasoned" mode to "old-growth" mode
+  
+ 
+               Pine 2.27            May 22 1992                          ----
+ 
+  - Fixed bug causing command line sort option to be ignored
+  - Sort now returns to command line specification when opening new folder
+  - Fixed another bug causing <CR> defaults to y/n prompts to be ignored
+  - Fixed bug expanding file names, causing problems saving messages & other
+  - More fixes for the misplaced index pointer bug
+  - Fix for index screen occasionally not repainting after msg composition
+  - Fixed bug causing text attachments to be detached incorrectly
+  - Fixed rare bug causing crashes when opening certain mail folders
+ 
+ 
+               Pine 2.26            May 15 1992
+ 
+  - Fixed bug causing core dump when new mail arrived on PTX 
+  - Note: Pine2.24 and up have new more memory efficient Berkeley mail driver
+  - Fixed bug causing title bar not updating when going from 0 messages to more
+  - Disabled ^Z during keyboard lock
+ 
+ 
+               Pine 2.25            May 12 1992                          ----
+ 
+  - Fixed bug in <CR> defaults to y/n prompts (bug introduced in 2.24)
+  - Fixed sorting stability bug when sorting by subject
+  - Fix for misplaced index pointer (think it's really fixed this time)
+  - Fix for potential nasty bug writing mail files
+  - Partial portability to PTX for Pine and Pico
+  - Doesn't show "READONLY" in folder name in nr mode
+  - Fixed bug where "D" would not show when deleting with folder sorted
+ 
+ 
+               Pine 2.24            May 1 1992                          
+ 
+  - Basic port to DOS - compiles and sort of runs
+  - Fixed index painting bug occurring with new mail and cursor movement
+  - Shows mail stream status, "CLOSED" or "READONLY" in title bar
+  - Fixed bug with formatting and order in header included in reply
+  - Beginning of seedling, sapling and seasoned mode        
+  - Full display of message header and MIME message                      ----
+  - Fixed bug in index painting/sorting (could be misplaced cursor bug)
+  - nrmode now doesn't display the From field
+  - nrmode now doesn't ask "really quit" question
+  - Fixed bug causing binary files not to be attached properly
+  - Picked up latest c-client patch for coping with bogus MIME 
+  - "Fixed up unaligned...." error no longer occurs
+  - Fixed printing bug -- correct header, but wrong text was printed
+  - Reversed secondary sort on arrival with primary sort on subject
+  - Shows cursor as -> in index when speed is less than 4800 baud
+  - Only last part of path included with attached files
+  - Fixed "fetch for non-existent msgno no" abort when changing folders
+  - Change print and export to use parsed envelopes for 10K savings in code
+  - qstatusmessages printfs share buffer for 10K savings in data
+  - Probably fixed problem with Procomm in the addrbook (painting was weird)
+  - Configuration variable to set mail directory
+  - Configuration variable to select signature file                      ----
+  - Configuration variable to have signature put at bottom of reply
+  - Sent-mail always renamed to last month (killed fancy rename calculations)
+  - Sent-mail deleting is now in date order from oldest to newest
+  - Fixed bug causing core dump when default-fcc is set to "" on Suns
+  - Pine pays attention to umask when creating all files but mail folders
+  - Better detection and error messages when mail stream/imap connection dies
+  - Tightened up code for yes/no prompting for 1.5K mem savings
+ 
+ 
+               Pine 2.21            Mar 25 1992                          
+ 
+  - For UWIN/clarinet (nrmode): eliminate host name in {} in folder names
+  - In nrmode don't display sizes of the articles
+  - Changes labels on commands from "Messages" to "Articles" for nrmode
+  - Plugged up help text for view mode when in nrmode
+  - Fixed bug that would generate bogus mime when composing mail
+ 
+ 
+               Pine 2.20            Mar 25 1992                          ----
+ 
+  - Portability to Ultrix 3.X
+  - Portability to MIPS in BSD mode
+  - Fixed bug with From: line in including full header in reply
+  - Block delete added to FAQ
+  - Basic support for MIME and attachments
+  - File browser in composer for selecting attachment and file to read in
+  - Fixed day of week bug when replying to message (core dump on Sunday)
+  - Presentation of message header in uniform order
+  - Shows parsed message header rather than original header
+ 
+ 
+               Pine 2.15            Mar 17, 1992                         ----
+ 
+  - Command line switch, "-i", to go straight into index
+  - Accepts more non-standard dates; won't show "xxx xx" so often
+  - Can sort index by Subject,Date,Arrival,From, Size and reverse
+  - Doesn't repaint whole screen when new mail arrives
+  - Command line option to specify sort
+  - Message numbers are internally long instead of int (getting ready for DOS)
+  - End of folder name is shown rather start in status line
+  - Command line switch, "-nr", for news/read-only mode
+ 
+                                                                         ----
+               Pine 2.10            Feb 25, 1992      
+ 
+  - Fixed bug causing core dumps when errors occurred in very large headers
+  - Fixed bug sending mail to very long distribution lists
+  - Long message header lines are broken up in saved messages
+  - No limit on the number of messages in a mail folder
+  - Better memory performance on mailstreams (for overall performance increase)
+  - Will send via SMTP if smtp-server variable is set
+  - Better timing on display of error messages when sending mail
+  - Error checking when opening .signature file
+ 
+ 
+               Pine 2.4            Feb 28, 1992        
+ 
+  - Minor fixes to signature inclusion
+ 
+ 
+               Pine 2.3            Feb 18, 1992                          ----
+ 
+  - Fixed bug in status message timing, particularly when opening folders
+  - More complete technical documentation (tech-notes.me)
+  - Changed menu label "OTHER" to "OTHER CMDS".
+  - Warning given when suspending Pine with imap connection
+  - Report error if suspended too long and IMAP connection is broken
+  - Better error reporting when folders directory can't be opened
+  - Added Frequently Asked questions section to main menu help text
+  - Improved "-f" option.  When given the inbox is no longer opened
+  - Default folder for "g" command included folders opened with "o"
+  - Reads .signature file when sending mail
+  - Help text corrections for folders screens
+  - Pine supported for AIX (fixed nasty command argument parsing bug)
+  - Unsupported port of Pine to 4.3BSD on a VAX, (port named "bsd")
+  - Fixed bug causing core dump when doing ^X in composer and declining send
+  - Fixed lack of repainting composer key menu when returning from help
+  - Newline inserts a comma when appropriate when editing mail headers
+                                                                         ----
+  - Optimization turned on for Dynix version
+  - Fixed bug occurring when default-fcc is set to ""
+ 
+ 
+               Pine 2.2            Jan 31, 1992
+ 
+  - Fixed bug causing core dump with new and empty address lists on close
+  - Fixed cursor positioning bug after deleting all items out of addrToFldrs list
+  - Fixed bug causing core dump with T command on empty address book
+  - Fixed bug causing "Re: Re: Re: ...." in subject lines on some platforms
+  - Moved <time.h> include to os-xxx.h because it varies on some platforms
+  - Rearranged #ifdefs for <stdlib.h> so it isn't included by default
+  - Rearranged #ifdefs for gcosname so Bezerkly format is the default
+  - Includes unofficial Sunos 4.0 port
+  - Fix to signals.c so it can be compiled with debugging off
+  - Fix bug causing repeated querying for monthly sent-mail querying
+ 
+                                                  
+               Pine 2.1            Jan 21 1992                           ----
+ 
+  - Fixed address book bug causing core dumps with empty address books
+ 
+ 
+               Pine 2.0            Jan 15 1992
+ 
+  - New version numbering.  Dropped one digit so it's major.minor.compile
+  - Fixed bug causing occasional abort if the user's .pinerc was absent
+  - Fixed bug causing the composer not go into function key mode when it should
+  - Complete documentation for Other screen
+  - Fixed off by one error with pruning dates in .pinerc
+  - Fixed bug causing core dump when scrolling with large header
+ 
+ 

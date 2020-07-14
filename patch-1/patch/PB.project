@@ -1,0 +1,47 @@
+{
+    FILESTABLE = {
+        Documentation = (COPYING, ChangeLog, NEWS, README, INSTALL, patch.man); 
+        Headers = (
+            backupfile.h, 
+            acconfig.h, 
+            argmatch.h, 
+            common.h, 
+            getopt.h, 
+            inp.h, 
+            maketime.h, 
+            partime.h, 
+            pch.h, 
+            quotearg.h, 
+            util.h, 
+            version.h
+        ); 
+        Makefiles = (Makefile.in, configure.in, configure, mkinstalldirs, "install-sh"); 
+        Resources = (); 
+        SUBPROJECTS = (pc); 
+        Sources = (
+            backupfile.c, 
+            addext.c, 
+            argmatch.c, 
+            getopt.c, 
+            basename.c, 
+            partime.c, 
+            getopt1.c, 
+            inp.c, 
+            maketime.c, 
+            memchr.c, 
+            patch.c, 
+            pch.c, 
+            quotearg.c, 
+            rename.c, 
+            util.c, 
+            version.c
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = patch; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

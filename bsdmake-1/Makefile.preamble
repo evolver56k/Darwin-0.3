@@ -1,0 +1,35 @@
+vpath %.h lst.lib
+vpath %.c lst.lib
+
+HFILES += lstInt.h
+
+CFILES += lstAppend.c		\
+	  lstAtEnd.c		\
+	  lstAtFront.c		\
+	  lstClose.c		\
+	  lstConcat.c		\
+	  lstDatum.c		\
+	  lstDeQueue.c		\
+	  lstDestroy.c		\
+	  lstDupl.c		\
+	  lstEnQueue.c		\
+	  lstFind.c		\
+	  lstFindFrom.c		\
+	  lstFirst.c		\
+	  lstForEach.c		\
+	  lstForEachFrom.c	\
+	  lstInit.c		\
+	  lstInsert.c		\
+	  lstIsAtEnd.c		\
+	  lstIsEmpty.c		\
+	  lstLast.c		\
+	  lstMember.c		\
+	  lstNext.c		\
+	  lstOpen.c		\
+	  lstRemove.c		\
+	  lstReplace.c		\
+	  lstSucc.c
+
+Install_Source = $(NSSOURCEDIR)/Commands/bsdmake
+
+include /System/Developer/Makefiles/CoreOS/ProjectBuilder/Makefile.Preamble.Common

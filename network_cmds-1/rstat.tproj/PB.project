@@ -1,0 +1,34 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        FRAMEWORKS = (); 
+        LIBRARYSEARCH = (); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (rstat.c, rstat_proc.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, m.template, h.template); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    NEXTSTEP_COMPILEROPTIONS = ""; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    NEXTSTEP_LINKEROPTIONS = ""; 
+    NEXTSTEP_MAINNIB = rstat; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = ""; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PDO_UNIX_MAINNIB = rstat; 
+    PROJECTNAME = rstat; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_COMPILEROPTIONS = ""; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+    WINDOWS_LINKEROPTIONS = ""; 
+    WINDOWS_MAINNIB = rstat; 
+}

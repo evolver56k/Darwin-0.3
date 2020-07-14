@@ -1,0 +1,124 @@
+<html><head>
+<title>Debian packaging manual - Version numbering</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 5<br>
+Version numbering
+</h1>
+
+Every package has a version number, in its <code>Version</code> control file
+field.<P>
+
+<kbd>dpkg</kbd> imposes an ordering on version numbers, so that it can tell
+whether packages are being up- or downgraded and so that <kbd>dselect</kbd>
+can tell whether a package it finds available is newer than the one
+installed on the system.  The version number format has the most
+significant parts (as far as comparison is concerned) at the
+beginning.<P>
+
+The version number format is:
+[<var>epoch</var><code>:</code>]<var>upstream-version</var>[<code>-</code><var>debian-revision</var>].<P>
+
+The three components here are:
+
+<dl>
+<dt><var>epoch</var><dd>This is a single unsigned integer, which should usually be small.  It
+may be omitted, in which case zero is assumed.  If it is omitted then
+the <var>upstream-version</var> may not contain any colons.<P>
+
+It is provided to allow mistakes in the version numbers of older
+versions of a package, and also a package's previous version numbering
+schemes, to be left behind.<P>
+
+<kbd>dpkg</kbd> will not usually display the epoch unless it is essential
+(non-zero, or if the <var>upstream-version</var> contains a colon);
+<kbd>dselect</kbd> does not display epochs at all in the main part of the
+package selection display.
+<p><dt><var>upstream-version</var><dd>This is the main part of the version.  It is usually version number of
+the original (`upstream') package of which the <code>.deb</code> file has been
+made, if this is applicable.  Usually this will be in the same format
+as that specified by the upstream author(s); however, it may need to
+be reformatted to fit into <kbd>dpkg</kbd>'s format and comparison scheme.<P>
+
+The comparison behaviour of <kbd>dpkg</kbd> with respect to the
+<var>upstream-version</var> is described below.  The <var>upstream-version</var>
+portion of the version number is mandatory.<P>
+
+The <var>upstream-version</var> may contain only alphanumerics and the
+characters <code>+</code> <code>.</code> <code>-</code> <code>:</code> (full stop, plus, hyphen,
+colon) and should start with a digit.  If there is no
+<var>debian-revision</var> then hyphens are not allowed; if there is no
+<var>epoch</var> then colons are not allowed.
+<p><dt><var>debian-revision</var><dd>This part of the version represents the version of the modifications
+that were made to the package to make it a Debian binary package.  It
+is in the same format as the <var>upstream-version</var> and <kbd>dpkg</kbd>
+compares it in the same way.<P>
+
+It is optional; if it isn't present then the <var>upstream-version</var>
+may not contain a hyphen.  This format represents the case where a
+piece of software was written specifically to be turned into a Debian
+binary package, and so there is only one `debianization' of it and
+therefore no revision indication is required.<P>
+
+It is conventional to restart the <var>debian-revision</var> at <code>1</code> each
+time the <var>upstream-version</var> is increased.<P>
+
+<kbd>dpkg</kbd> will break the <var>upstream-version</var> and
+<var>debian-revision</var> apart at the last hyphen in the string.  The
+absence of a <var>debian-revision</var> compares earlier than the presence
+of one (but note that the <var>debian-revision</var> is the least
+significant part of the version number).<P>
+
+The <var>debian-revision</var> may contain only alphanumerics and the
+characters <code>+</code> and <code>.</code> (plus and full stop).
+<p></dl>
+
+
+The <var>upstream-version</var> and <var>debian-revision</var> parts are
+compared by <kbd>dpkg</kbd> using the same algorithm:<P>
+
+The strings are compared from left to right.<P>
+
+First the initial part of each string consisting entirely of non-digit
+characters is determined.  These two parts (one of which may be empty)
+are compared lexically.  If a difference is found it is returned.  The
+lexical comparison is a comparison of ASCII values modified so that
+all the letters sort earlier than all the non-letters.<P>
+
+Then the initial part of the remainder of each string which consists
+entirely of digit characters is determined.  The numerical values of
+these two parts are compared, and any difference found is returned as
+the result of the comparison.  For these purposes an empty string
+(which can only occur at the end of one or both version strings being
+compared) counts as zero.<P>
+
+These two steps are repeated (chopping initial non-digit strings and
+initial digit strings off from the start) until a difference is found
+or both strings are exhausted.<P>
+
+Note that the purpose of epochs is to allow us to leave behind
+mistakes in version numbering, and to cope with situations where the
+version numbering changes.  It is <em>not</em> there to cope with version
+numbers containing strings of letters which <kbd>dpkg</kbd> cannot interpret
+(such as <code>ALPHA</code> or <code>pre-</code>), or with silly orderings (the author
+of this manual has heard of a package whose versions went <code>1.1</code>,
+<code>1.2</code>, <code>1.3</code>, <code>1</code>, <code>2.1</code>, <code>2.2</code>, <code>2</code> and so forth).<P>
+
+If an upstream package has problematic version numbers they should be
+converted to a sane form for use in the <code>Version</code> field.<P>
+
+If you need to compare version numbers ina script, you may use
+<code>dpkg --compare-versions ...</code>. Type <code>dpkg --help</code> --&gt;
+--for details on arguments.
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-maintainerscripts.html">next</A>; <A href="ch-controlfields.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

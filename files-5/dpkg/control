@@ -1,0 +1,6 @@
+Package: files
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 282.0
+Description: Miscellaneous system files
+Build-Depends: build-base, adv-cmds

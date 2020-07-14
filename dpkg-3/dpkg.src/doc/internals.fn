@@ -1,0 +1,10 @@
+\entry{push{\_}checkpoint()}{7}{\code {push_checkpoint()}}
+\entry{parseerr()}{8}{\code {parseerr()}}
+\entry{illegal{\_}packagename()}{9}{\code {illegal_packagename()}}
+\entry{informativeversion()}{9}{\code {informativeversion()}}
+\entry{varbufversion()}{9}{\code {varbufversion()}}
+\entry{versiondescribe()}{9}{\code {versiondescribe()}}
+\entry{parseversion()}{9}{\code {parseversion()}}
+\entry{parsemustfield()}{10}{\code {parsemustfield()}}
+\entry{skip{\_}slash{\_}dotslash()}{10}{\code {skip_slash_dotslash()}}
+\entry{convert{\_}string()}{10}{\code {convert_string()}}

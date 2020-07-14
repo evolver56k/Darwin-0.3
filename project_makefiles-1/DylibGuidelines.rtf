@@ -1,0 +1,104 @@
+{\rtf0\ansi{\fonttbl\f0\fnil Helvetica;}
+\paperw11280\paperh8400
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\qc
+
+\b\fs28 Guidelines for Dynamic Shared Libraries in NEXTSTEP 4.0\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600
+
+\b0\fs24 \
+The following rules and guidelines will soon apply to all projects shipping a dynamic shared library (or a framework containing one) through Release Control.  Note that a verification mechanism has already been put in place to warn the owners of violating projects.  Soon these warnings will be upgraded to errors and your projects will not build.  \
+\
+
+\b Major Versioning\
+
+\b0 \
+Major versions of a dylib are created to denote major, incompatible changes that have been made in its API (e.g. removing a public class or renaming a public method).  This versioning is done in the file system and is done by adding a level of indirection via a symlink.  Dynamic shared libraries must be installed, for example, as:\
+	/lib/libsys_s.A.dylib\
+and have a symbolic link in /lib such as:\
+	libsys_s.dylib -> libsys_s.A.dylib\
+Linking applications against libsys will record the actual "install name" they found at link time and always run against that path.  However, a newer libsys:\
+	/lib/libsys_s.B.dylib\
+can be created and the symlink changed to point to it, allowing newly-linked apps to use the "current" libsys.  If you use ProjectBuilder to build this library, it will do all this automatically for you (starting in the Lantern1Y update)\
+\
+If the project is a Framework its dynmic library willl be installed in:\
+	/NextLibrary/Frameworks/AppKit.framework/Versions/A/Appkit\
+and a symbolic link:\
+               /NextLibrary/Frameworks/AppKit.framework/AppKit\
+to point to it.  Again, the PB Makefiles take care of this for you.       \
+\
+When using ProjectBuilder, you need only maintain two new variables in your Makefile.postamble:\
+    CURRENTLY_ACTIVE_VERSION = YES\
+    DEPLOY_WITH_VERSION_NAME = A\
+Set CURRENTLY_ACTIVE_VERSION to NO if you no longer export the "current" development verssion of a framework. \
+\
+
+\b Minor versioning\
+
+\b0     \
+Within a major version, a series of compatible versions are created over time and replace the "current" dynamic shared library.    The 
+\i Current Version
+\i0  is incremented each time a change is made.  Thus, we tie the current version of the dylib to the version of the source used to produce it.  Since the current version is set with the -current_version flag to libtool(1), the following must be done:\
+	    % libtool -current_version `vers_sting -n` ...\
+Using PB Makefiles, this is accomplished by:\
+	    OTHER_LIBTOOL_FLAGS = -current_version 666\
+or, if you're using the standard NeXT conventions for directory names, vers_string will be used to compute the current vers_string and nothing is required.\
+\
+The 
+\i Compatibility Version
+\i0  of a dylib is set using the -compatibility_version flag to libtool(1).  It must be set the the oldest current version this version is compatible with, such as:\
+. 	    % libtool -compatibility_version 5 ...\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+Using PB Makefiles, this is accomplished by:\
+	     COMPATIBILITY_PROJECT_VERSION = 5\
+The program cmpdylib(1) can check two dylibs to verify compatiblity.  If it turns out that a compatible change is made to the library (e.g. the addition of a new class or category), the compatibility version must get reset to the value of the current version.  In other words, you should "bump" COMPATIBILITY_PROJECT_VERSION to the current source version anytime you would not want a newly-linked app to run against a previous (but compatible) version of your library.\
+\
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\ql\qnatural
+
+\b Building Two or More Versions of a Project\
+\
+
+\b0 Because two or more versions of a project must be used to generate the set of incompatible binaries necessary for all apps to run, you may be forced to branch your sources.  However, Release Control will only build one version of a particular project.  For example, Lantern 2C can not contain Foundation-116 and Foundation-200.  However, Release Control can easily allocate you a new name for the older, compatibility project version (just fill out the form in ~rc/Procedures).  Thus, Lantern2C could contain FoundationA-1 and Foundation-200.\
+\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\b Stripping
+\b0  \
+\
+By default, all dynamic shared libraries should be stripped with -S.  This is done automatically for you by PB's Makefiles.  However there is an issue requiring your attention regarding the saving of debug symbols for data defined in libraries.\
+\
+Because of the way gdb works, any data defined in a library should not have its debug symbols stripped.  This is so that printing things like NSApp, errno, etc can be done by users of our libraries.  If you have global, public data in your library, you can save the appropriate symbols in the same way as you did with the old style shlibs using the strip(1) -d option.  To do this, it is best to put the global data symbols in file separate from the code. The file passed to the -d option to strip(1) lists the names of these files.  For example, the AppKit framework's -d file might contain:\
+	globals.o\
+	NSTracer.o\
+	NSInputServer.o\
+	NSServiceMaster.o\
+	NSWorkspaceInterface.o\
+	AppKit_globals.o\
+	NSLayoutManager.o\
+	NSRTFReaderGuts.o\
+The strip(1) -S and -d options can also be used with install(1), such as:\
+	% install -sSd debug_objects_list Appkit\
+In a PB-based project, do something like:\
+	DYNAMIC_STRIP_OPTS = -S -d debug_objects_list\
+Also be sure to tell RC to add your library to the exception list of files that are allowed not to be stripped completely of debugging symbols.\
+\
+
+\b Undefined symbols and dependent libraries\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\b0     \
+All NeXT dynamic libraries should no longer have any undefined symbols and\
+should be built with the default "-undefined error".  Please remove "-undefined warning" or "-undefined suppress" from your OTHER_LIBTOOL_FLAGS.  As of the Lantern1X release, libsys no longer has any undefineds and can be safely listed as a dependent library of your library without introducing any undefined symbols.\
+\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\b Read-only relocs\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\b0 \
+With the possible exception of libsys, all NeXT dynamic libraries should be built with "-read_only_relocs error".  Since the default is "-read_only_relocs warning", put this directive on your libtool line:\
+	OTHER_LIBTOOL_FLAGS = ... -read_only_relocs error ...\
+ If this is not possible or you can't figure out how to get rid of these warning messages, see Kevin Enderby.\
+}

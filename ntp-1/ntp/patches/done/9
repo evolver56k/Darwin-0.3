@@ -1,0 +1,79 @@
+Replied: Mon, 05 Jan 1998 16:33:37 -0500
+Replied: "Poul-Henning Kamp <phk@critter.freebsd.dk> Dave Mills <mills@huey.udel.edu>, mills@udel.edu"
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa26800;
+          5 Jan 1998 12:46 EST
+Received: from critter.freebsd.dk by huey.udel.edu id aa17104;
+          5 Jan 1998 12:45 EST
+Received: from critter.freebsd.dk (localhost.cybercity.dk [127.0.0.1])
+	by critter.freebsd.dk (8.8.7/8.8.7) with ESMTP id SAA00396;
+	Mon, 5 Jan 1998 18:42:38 +0100 (CET)
+	(envelope-from phk@critter.freebsd.dk)
+To: Dave Mills <mills@huey.udel.edu>
+cc: mills@udel.edu
+Subject: Re: probably a bug... 
+In-reply-to: Your message of "Mon, 05 Jan 1998 09:03:55 EST."
+             <199801050903.aa16175@huey.udel.edu> 
+Date: Mon, 05 Jan 1998 18:42:38 +0100
+Message-ID: <394.884022158@critter.freebsd.dk>
+From: Poul-Henning Kamp <phk@critter.freebsd.dk>
+
+In message <199801050903.aa16175@huey.udel.edu>, Dave Mills writes:
+>P-H,
+>
+>This could be fixed by toodling the code where it is noticed the file
+>does not exist;
+
+This is what it does now.  Unfortunately that also only gets executed
+after the "driftfile" instrux has been found...  No it would need to
+be fixed so that if at the end of reading the config file we havn't
+done a loop_config(), then we do one there.
+
+>I would be happy to see this
+>fixed; however, operating without a drift file would be pretty gruesome,
+>since it takes up to a day to refine the loop frequency after every
+>restart.
+
+Ohh sure, I only did it because I wanted it to start from scratch since
+this exposed some instability in my end.  I may look at a fix, I just
+wanted to be sure this was not some hideous secret way to blow up the
+world by accident.
+
+Status btw is that I have rewritten the entire time-keeping mechanics
+of the FreeBSD kernel (just to see if it is better this way) and am
+testing it right now.  So far it looks about the same, but more modular,
+and it gives us more knobs to twist so I think I like it.
+
+Another couple of things I noticed:
+
+  * If you have a prefer peer, and pps_sync, the maxpoll of that peer
+    should be 2^6.  If goes higher you will loose pps_sync (after 120s)
+    (I have no fix for this yet)
+
+  * there is a mistake in the ntpdc code, in doconfig() which prevents
+    you from adding a "prefer" peer:
+
+diff -u -r ntp-4.0.70a-export/ntpdc/ntpdc_ops.c copy/ntpdc/ntpdc_ops.c
+--- ntp-4.0.70a-export/ntpdc/ntpdc_ops.c	Thu Oct 30 19:13:49 1997
++++ copy/ntpdc/ntpdc_ops.c	Sun Jan  4 23:44:44 1998
+@@ -1124,7 +1124,7 @@
+ 	while (pcmd->nargs > items) {
+ 		if (STREQ(pcmd->argval[items].string, "prefer"))
+ 		    flags |= CONF_FLAG_PREFER;
+-		if (STREQ(pcmd->argval[items].string, "burst"))
++		else if (STREQ(pcmd->argval[items].string, "burst"))
+ 		    flags |= CONF_FLAG_BURST;
+ 		else {
+ 		        long val;
+
+Give me a trigger a little before you roll the next set of tar-balls
+of xntp so I can send you the refclock_oncore diff for inclusion.
+
+Poul-Henning
+
+PS: if your 97-98 year change problems were anything like mine, I'm
+sure you're wondering how to get to be on desert island a little
+less than two years from now :-/
+
+--
+Poul-Henning Kamp             FreeBSD coreteam member
+phk@FreeBSD.ORG               "Real hackers run -current on their laptop."

@@ -1,0 +1,26 @@
+/CHANGES/1.1.1.1/Sun May  2 04:21:24 1999/-kb/Tsystem_cmds-2
+/CONVERSION/1.1.1.1/Sun May  2 04:21:24 1999/-kb/Tsystem_cmds-2
+/FEATURES/1.1.1.1/Sun May  2 04:21:24 1999/-kb/Tsystem_cmds-2
+/INSTALL/1.1.1.1/Sun May  2 04:21:24 1999/-kb/Tsystem_cmds-2
+/MAIL/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/MANIFEST/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/Makefile/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/Makefile.dist/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/Makefile.preamble/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/PB.project/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/Part01/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/Part02/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/Patch01/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/README/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/THANKS/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/compat.c/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/compat.h/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/config.h/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/cron.h/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/entry.c/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/env.c/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/externs.h/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/misc.c/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+/pathnames.h/1.1.1.1/Sun May  2 04:21:25 1999/-kb/Tsystem_cmds-2
+D/cron////
+D/crontab////

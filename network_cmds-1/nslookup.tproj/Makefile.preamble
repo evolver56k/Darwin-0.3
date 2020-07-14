@@ -1,0 +1,6 @@
+HELPDIR=/usr/share/misc
+
+OTHER_CFLAGS=-D_PATH_HELPFILE=\"$(DESTHELP)/nslookup.help\"
+OTHER_GENERATED_OFILES = $(VERS_OFILE)
+
+-include ../Makefile.include

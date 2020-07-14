@@ -1,0 +1,6 @@
+Package: libgpp
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 100.1
+Description: GNU standard C++ library
+Build-depends: build-base

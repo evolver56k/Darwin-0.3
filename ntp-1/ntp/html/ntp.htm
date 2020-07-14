@@ -1,0 +1,294 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.01 [en] (Win95; I) [Netscape]">
+   <META NAME="Author" CONTENT="David L. Mills">
+   <TITLE>NTP Reference Library</TITLE>
+</HEAD>
+<BODY>
+
+<H3>
+NTP Reference Library</H3>
+
+<HR>
+
+<P><IMG SRC="alautun4a.gif" HEIGHT=135 WIDTH=114 ALIGN=CENTER> <FONT SIZE=-1>Maya
+glyph <I>alautun</I></FONT>
+
+<P>Note: Source documents are not included in this distribution due to
+their large size. PostScript and PowerPoint documents will be retrieved
+automatically upon request from archive server <TT>ftp.udel.edu</TT>.
+<H4>
+Briefing Slides</H4>
+
+<UL>
+<LI>
+Network Time Protocol (NTP) General Overview <A HREF="http://www.eecis.udel.edu/~mills/database/brief/perf/index.htm">(HTML)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/perf.ps">(PostScript)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/perf.ppt">PowerPoint)</A></LI>
+
+<LI>
+NTP Achitecture, Protocol and Algorithms <A HREF="http://www.eecis.udel.edu/~mills/database/brief/allan/index.htm">(HTML)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/allan.ps">(PostScript)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/allan.ppt">PowerPoint)</A></LI>
+
+<LI>
+Autonomous Configuration (<I>autoconfigure</I>) <A HREF="http://www.eecis.udel.edu/~mills/database/brief/quad/index.htm">(HTML)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/quad.ps">(PostScript)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/quad.ppt">PowerPoint)</A></LI>
+
+<LI>
+Authentication Model (<I>autokey</I>) <A HREF="http://www.eecis.udel.edu/~mills/database/brief/army/index.htm">(HTML)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/army.ps">(PostScript)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/army.ppt">(PowerPoint)</A></LI>
+
+<LI>
+Precision Time Synchronization <A HREF="http://www.eecis.udel.edu/~mills/database/brief/speedo/index.htm">(HTML)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/speedo.ps">(PostScript)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/speedo.ppt">(PowerPoint)</A></LI>
+</UL>
+
+<H4>
+Background Description</H4>
+The Network Time Protocol (NTP) is widely used in the Internet to synchronize
+computer clocks to national standard time. The NTP architecture, protocol
+and algorithms have evolved over almost two decades to the present NTP
+Version 3 specification and implementations for Unix and Windows. The architecture
+and security models provide for operation in point-to-point (unicast) and
+point-to-multipoint (multicast), and include provisions for cryptographic
+authentication. Previous funded research has resulted in a continuous series
+of improvements in accuracy and reliability of the protocol and supporting
+algorithms. Used in the Internet of today with computers ranging from personal
+workstations to supercomputers, NTP provides accuracies generally in the
+range of a millisecond or two in LANs and up to a few tens of milliseconds
+in global WANs.
+
+<P>The current research effort represents a significant enhancement to
+the existing protocol, architecture and algorithms of NTP Version 3 and
+an evolutionary step to NTP Version 4. Specifically, these involve provisions
+for an autonomous configuration capability and a revised security model
+based on public key cryptography. Both of these enhancements are necessary
+in order for large, diversified synchronization subnets to survive electronic
+warfare attacks on the network routing functions or source selection and
+clock discipline algorithms used by the time server and client population.
+The design of robust protocols and algorithms which survive such attacks
+presents a significant challenge, especially in networks with well over
+100,000 servers, such as the existing Internet and fully operational DSI.
+
+<P>In order to provide specific accuracy and reliability requirements,
+NTP presently requires configuration engineering specific to each time
+server and client site. However, in a tactical network subject to damage
+and repair, as well as a widely deployed real-time simulation network such
+as the Defense Simulation Internet (DSI), manual configuration engineering
+is not acceptable. Our research effort is designed to develop an autonomous
+configuration capability using multicast methods to achieve diversity and
+redundancy, as well as directory services and service location protocols
+as available.
+
+<P>Our approach uses a set of distributed algorithms to provide a completely
+automatic, dynamic server discovery and configuration capability as a generic
+feature of the NTP architecture and protocol. The algorithms automatically
+organize the synchronization subnets in response to server and network
+outages or attacks on the security infrastructure. A distributed algorithm
+under development operates on a ftp://ftp.udel.edu/pub/people/mills distributed
+by the enhanced NTP protocol to select the best subnet topology, subject
+to specified accuracy and reliability constraints. Another algorithm calculates
+clock offsets between each pair of servers in the local neighborhood, then
+distributes the data to all other servers. Other algorithms already implemented
+filter and combine the data from all subnet members in the local neighborhood
+to provide the best accuracy and reliability. None of these algorithms
+require advance information of any kind, other than that collected in real
+time by the enhanced NTP protocol.
+
+<P>A robust security model has long been an intrinsic feature in the current
+and previous NTP versions. However, this model does not scale well to very
+large networks which may fragment and reform frequently due to attack and
+repair. The current model, which is based on private key cryptography with
+predistributed keys, does not work well in multicasting modes and imposes
+an excessive burden on the key management and distribution system in cases
+where keys can be compromised and countermeasures are required. These problems
+are exacerbated by the need to coordinate key management and time synchronization,
+since each of these services depends on the other.
+
+<P>Our approach involves the use of public key cryptography and crafted
+algorithms which provide reliable key distribution and management, while
+avoiding excessive processing and memory resources. The algorithms use
+shared keys for mutually redundant symmetric server modes ("creche" servers),
+dynamically computed keys for traditional client/server modes, and backwards
+computable hash functions for multicast modes. When necessary, private
+data are exchanged using RSA encryption with certificates, but this is
+done infrequently in a manner that does not affect the quality of synchronization.
+We expect to make use of secure RPC services and secure DNS services as
+they become available.
+
+<P>We expect to combine the algorithmic mechanisms for autonomous configuration
+with traditional means involving multicast and directory services, as well
+as service location protocols now under development by IETF task forces.
+We expect also to incorporate the ongoing work of the IETF IPSEC community
+as appropriate to the specific NTP protocol and security models. The combined
+mechanisms are to be implemented as extensions to the existing NTP Version
+3 protocol and implementation for Unix and Windows and made available to
+the research community at large. We expect to deploy the new implementation
+in the DARTnet research community for distributed testing with other DARTnet
+applications, such as multimedia conferencing. Finally, we expect to develop
+and publish a definitive protocol specification and vulnerability analysis.
+<H4>
+Selected Publications</H4>
+
+<OL>
+<LI>
+Mills, D.L., A. Thyagarajan and B.C. Huffman. Internet timekeeping around
+the globe. <I>Proc. Precision Time and Time Interval (PTTI) Applications
+and Planning Meeting</I> (Long Beach CA, December 1997). <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/survey5.ps">(PostScript)</A>,
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/survey.ps">(Slides:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. A precision radio clock for WWV transmissions. Electrical Engineering
+Report 97-8-1, University of Delaware, August 1997, 25 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/wwv/wwva.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/wwv/wwvb.ps">(Body:
+PostScript)</A></LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Clock discipline algorithms for the Network Time Protocol Version
+4. Electrical Engineering Report 97-3-3, University of Delaware, March
+1997, 35 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/allan/securea.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/allan/secureb.ps">(Body:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Authentication scheme for distributed, ubiquitous, real-time
+protocols. <I>Proc. Advanced Telecommunications/Information Distribution
+Research Program (ATIRP) Conference</I> (College Park MD, January 1997),
+293-298. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/atirp.ps">(PostScript)</A>
+<A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/atirp.ps">(Slides: PostScript)</A></LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. The network computer as precision timekeeper. <I>Proc. Precision
+Time and Time Interval (PTTI) Applications and Planning Meeting</I> (Reston
+VA, December 1996), 96-108. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/ptti.ps">(Body:
+PostScript)</A> <A HREF="ftp://ftp.udel.edu/pub/people/mills/brief/ptti.ps">(Slides:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Proposed authentication enhancements for the Network Time Protocol
+version 4. Electrical Engineering Report 96-10-3, University of Delaware,
+October 1996, 36 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/secure/securea.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/secure/secureb.ps">(Body:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Simple network time protocol (SNTP) version 4 for IPv4, IPv6
+and OSI. Network Working Group Report RFC-2030, University of Delaware,
+October 1996, 18 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc2030.txt">(ASCII)
+</A>. Major revision and update of: <I>Ibid</I>. Network Working Group
+Report RFC-1769, University of Delaware, March 1995, 14 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1769.txt">(ASCII)</A>.
+Also published (with figures) as <I>Ibid</I> Electrical Engineering Department
+Report 96-10-2, University of Delaware, October 1996, 14 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/sntp4/sntp4a.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/sntp4/sntp4b.ps">(Body:
+PostScript)</A></LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Improved algorithms for synchronizing computer network clocks.
+<I>IEEE/ACM Trans. Networks</I> (June 1995), 245-254. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/tune2.ps">(PostScript)</A>.
+Revised from: <I>ibid</I>. <I>Proc. ACM SIGCOMM 94 Symposium</I> (London
+UK, September 1994), 317-327. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/tune.ps">(PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L, and A. Thyagarajan. Network time protocol version 4 proposed
+changes. Electrical Engineering Department Report 94-10-2, University of
+Delaware, October 1994, 32 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/acts/actsa.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/acts/actsb.ps">(Body:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Unix kernel modifications for precision time synchronization.
+Electrical Engineering Department Report 94-10-1, University of Delaware,
+October 1994, 24 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/kern/kerna.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/kern/kernb.ps">(Body:
+PostScript)</A>. Major revision and update of: Network Working Group Report
+RFC-1589, University of Delaware, March 1994. 31 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1589.txt">(ASCII)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Precision synchronization of computer network clocks. <I>ACM
+Computer Communication Review 24, 2</I> (April 1994). 28-43. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/fine.ps">(PostScript)</A>.
+Condensed from: <I>Ibid</I>. Electrical Engineering Department Report 93-11-1,
+University of Delaware, November 1993, 66 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/fine/finea.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/fine/fineb.ps">(Body:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Modelling and analysis of computer network clocks. Electrical
+Engineering Department Report 92-5-2, University of Delaware, May 1992,
+29 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/time/timea.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/time/timeb.ps">(Body:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Network Time Protocol (Version 3) specification, implementation
+and analysis. Network Working Group Report RFC-1305, University of Delaware,
+March 1992, 113 pp. <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1305/rfc1305a.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1305/rfc1305b.ps">(Body:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1305/rfc1305c.ps">(Appendices:
+PostScript)</A>. Revised from: Electrical Engineering Department Report
+90-6-1, University of Delaware, June 1990. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/ntpv3/ntpv3a.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/ntpv3/ntpv3b.ps">(Body:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/ntpv3/ntpv3c.ps">(Appendices:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. On the chronology and metrology of computer network timescales
+and their application to the Network Time Protocol. <I>ACM Computer Communications
+Review 21, 5</I> (October 1991), 8-17. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/time.ps">(PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Internet time synchronization: the Network Time Protocol. <I>IEEE
+Trans. Communications COM-39, 10</I> (October 1991), 1482-1493. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/trans.ps">(PostScript)</A>.
+Also in: Yang, Z., and T.A. Marsland (Eds.). <I>Global States and Time
+in Distributed Systems</I>. IEEE Computer Society Press, Los Alamitos,
+CA, 1994, 91-102. Condensed from: <I>Ibid</I>. Network Working Group Report
+RFC-1129, University of Delaware, October 1989. <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1129/rfc1129a.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1129/rfc1129b.ps">(Body:
+PostScript)</A>. Also published as: Electrical Engineering Department Report
+89-9-1, University of Delaware, September 1989. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/nts/ntsa.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/nts/ntsb.ps">(Body:
+PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. On the accuracy and stability of clocks synchronized by the
+Network Time Protocol in the Internet system. <I>ACM Computer Communication
+Review 20, 1</I> (January 1990), 65-75. <A HREF="ftp://ftp.udel.edu/pub/people/mills/papers/ccr.ps">(PostScript)</A>.</LI>
+
+<BR>&nbsp;
+<LI>
+Mills, D.L. Measured performance of the Network Time Protocol in the Internet
+system. Network Working Group Report RFC-1128. University of Delaware,
+October 1989. <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1128/rfc1128a.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/rfc/rfc1128/rfc1128b.ps">(Body:
+PostScript)</A>. Also published as: Electrical Engineering Department Report
+89-9-3, University of Delaware, September 1989. <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/glory/glorya.ps">(Abstract:
+PostScript)</A>, <A HREF="ftp://ftp.udel.edu/pub/people/mills/reports/glory/gloryb.ps">(Body:
+PostScript)</A>.</LI>
+</OL>
+
+<HR>
+<ADDRESS>
+David L. Mills (mills@udel.edu)</ADDRESS>
+
+</BODY>
+</HTML>

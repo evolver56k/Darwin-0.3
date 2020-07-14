@@ -1,0 +1,6 @@
+# We don't really want to install these
+
+after_install::
+	-for f in $(TOOLS); do \
+		rm $(DSTROOT)$(INSTALLDIR)/$f; \
+	done

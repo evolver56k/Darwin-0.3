@@ -1,0 +1,89 @@
+OPTIONS/show_space		optional show_space
+OPTIONS/eventmeter		optional eventmeter
+OPTIONS/gdb			optional gdb
+OPTIONS/iplmeas			optional iplmeas
+OPTIONS/fp_emul			optional fp_emul
+OPTIONS/pc_support		optional pc_support
+
+bsd/dev/vol.c			optional vol
+
+machdep/i386/kdp_machdep.c	standard
+
+machdep/i386/miniMonMachdep.c	standard
+
+machdep/i386/start.s		standard
+machdep/i386/locore.s		standard
+machdep/i386/catch.c		standard
+machdep/i386/bios_asm.s		standard
+machdep/i386/bios.c		standard
+
+machdep/i386/APM_i386.c		standard
+machdep/i386/checksum_16.c	standard
+machdep/i386/dma.c		standard
+machdep/i386/dma_buf.c		standard
+machdep/i386/dbl_fault.c	standard
+machdep/i386/fault_copy.c	standard
+machdep/i386/fp_support.c	standard
+machdep/i386/gdt.c		standard
+machdep/i386/i386_init.c	standard
+machdep/i386/idt.c		standard
+machdep/i386/in_cksum.c		standard
+machdep/i386/intr.c		standard
+machdep/i386/io_prim.c		standard
+machdep/i386/kern_machdep.c	standard
+machdep/i386/ldt.c		standard
+machdep/i386/machdep.c		standard
+machdep/i386/machdep_call.c	standard
+machdep/i386/machine_clock.c	standard
+machdep/i386/pcb.c		standard
+machdep/i386/pmap.c		standard
+machdep/i386/swapgeneric.m	standard
+machdep/i386/sys_machdep.c	standard
+machdep/i386/trap.c		standard
+machdep/i386/unix_signal.c	standard
+machdep/i386/unix_startup.c	standard
+machdep/i386/vm_machdep.c	standard
+
+driverkit/i386/autoconf_i386.m	optional driverkit
+
+bsd/dev/i386/conf.c		standard
+bsd/dev/i386/cons.c		standard
+bsd/dev/i386/mem.c		standard
+bsd/dev/i386/kdasm.s		standard
+bsd/dev/i386/rtc.c		standard
+
+# New files for km system
+bsd/dev/i386/kmDevice.m		standard
+bsd/dev/i386/km.m		standard
+bsd/dev/i386/kmGraphics.m	standard
+bsd/dev/i386/kmLocalized.m	standard
+bsd/dev/i386/BasicConsole.c	standard
+bsd/dev/i386/VGAConsole.c	standard
+bsd/dev/i386/FBConsole.c	standard
+
+# New files for Event subsystem:
+bsd/dev/i386/EventSrcPCKeyboard.m	optional event
+bsd/dev/i386/EventSrcPCPointer.m	optional event
+bsd/dev/i386/PCKeymap.c			optional event
+bsd/dev/i386/PCPointer.m		optional event
+bsd/dev/i386/EventShmemLock.s		optional event
+bsd/dev/i386/kbd_entries.m		optional event
+
+machdep/i386/pc_support/PCinit.c	optional pc_support
+machdep/i386/pc_support/PCexception.c	optional pc_support
+machdep/i386/pc_support/PCresume.c	optional pc_support
+machdep/i386/pc_support/PCtimers.c	optional pc_support
+machdep/i386/pc_support/PCemulateREAL.c	optional pc_support
+machdep/i386/pc_support/PCemulatePROT.c	optional pc_support
+
+machdep/i386/fp_emul/fp_arith.s		optional fp_emul
+machdep/i386/fp_emul/fp_dcode.s		optional fp_emul
+machdep/i386/fp_emul/fp_divmul.s	optional fp_emul
+machdep/i386/fp_emul/fp_lipsq.s		optional fp_emul
+machdep/i386/fp_emul/fp_reg.s		optional fp_emul
+machdep/i386/fp_emul/fp_remsc.s		optional fp_emul
+machdep/i386/fp_emul/fp_round.s		optional fp_emul
+machdep/i386/fp_emul/fp_status.s	optional fp_emul
+machdep/i386/fp_emul/fp_store.s		optional fp_emul
+machdep/i386/fp_emul/fp_subadd.s	optional fp_emul
+machdep/i386/fp_emul/fp_trans.s		optional fp_emul

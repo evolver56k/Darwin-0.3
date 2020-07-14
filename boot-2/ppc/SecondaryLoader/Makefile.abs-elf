@@ -1,0 +1,37 @@
+NeXTLIBS = ../sym/ppc
+
+DEFINES = -DGENERATINGPOWERPC -DDEBUG \
+			-D__ARCHITECTURE__=\"ppc\" -D_NEXT_SOURCE \
+			-D__BIG_ENDIAN__ -D__LITTLE_ENDIAN__=0 -DNeXT
+INCLUDES = -I../include/mac -I. -I../ppcMac/libsaio -I../ppcMac/libsa -I../ppcMac/util \
+			-I../include/ansi -I../include/bsd -I../include
+DEBUG = -O
+CFLAGS = $(DEFINES) $(INCLUDES) $(DEBUG) -x objective-c -Wno-import -static
+
+CFILES = SecondaryInC.c printf.c
+SFILES = setjmp.s
+OFILES = $(CFILES:.c=.o) $(SFILES:.s=.o)
+
+LIBS = $(NeXTLIBS)/libsaio.a $(NeXTLIBS)/libsa.a $(NeXTLIBS)/librcz.a
+
+all:	SecondaryLoader
+
+SecondaryLoader.elf:	$(OFILES) $(LIBS) SecondaryLoader.ld
+	$(CC) -o $@ $(OFILES) $(LIBS) \
+			-Wl,-Map,SecondaryLoader.map \
+			 -nostdlib -static -lgcc \
+			-Wl,-e,SecondaryLoaderMain,--script=SecondaryLoader.ld
+#			-Wl,-Ttext,0x700000,-Tdata,0x710000,-e,SecondaryLoaderMain
+#			-Wl,--script=SecondaryLoader.ld
+
+SecondaryLoader:	SecondaryLoader.elf
+		objcopy --output-target binary --strip-all -v \
+			--remove-section=.stab \
+			--remove-section=.stabstr \
+			--remove-section=.comment \
+			$^ $@
+
+esl:	$(OFILES) $(LIBS) ElfSecondaryLoader.ld
+	$(CC) -static -o $@ $(OFILES) $(LIBS) -nostartfiles \
+			-Wl,-Map,esl.map \
+			-Wl,--script=ElfSecondaryLoader.ld

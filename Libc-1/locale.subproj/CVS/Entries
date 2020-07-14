@@ -1,0 +1,18 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/ansi.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/ctype.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/euc.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/frune.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/isctype.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/lconv.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/localeconv.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/mbrune.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/none.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/rune.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/runetable.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/setlocale.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/utf2.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+D

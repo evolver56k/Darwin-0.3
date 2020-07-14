@@ -1,0 +1,4 @@
+			kmf driver questions
+			
+* existing km - there's a cdevsw for km (w/kmopen, kmputc, etc.) but no
+  /dev/km. What's the cdevsw for?

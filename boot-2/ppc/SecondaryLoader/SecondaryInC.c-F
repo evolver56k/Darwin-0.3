@@ -1,0 +1,2332 @@
+/* -*- mode:C++; tab-width: 4 -*- */
+/*
+	One thing about Open Firmware.  If you get to this Secondary
+	Loader, you had better find something useful to boot.  There's no
+	way to exit from an Open Firmware client program (like this one)
+	to continue the Open Firmware code that started you where it left
+	off with a LOAD/GO or BOOT command.  (Of course I know about CHAIN
+	and stuff like that.  But that doesn't CONTINUE Open Firmware's
+	execution, it just starts something new.)  Therefore, all search
+	path logic to provide the nice Macintosh style user experience to
+	"find something to boot from" must be handled HERE.  But it must
+	ALSO be done in the thing that finds and loads the Secondary
+	Loader.
+	
+	Some days it just doesn't pay to get out of bed.  */
+
+/*
+	TO DO:
+
+	* Add restart and poweroff buttons to DeathScreen somehow
+
+*/
+
+#ifndef HFS_SUPPORT
+#define HFS_SUPPORT	0
+#endif
+
+#include <Types.h>
+#include <BootBlocksPriv.h>
+#include "/usr/include/setjmp.h"
+#include <stdio.h>
+#include <saio_types.h>
+#include <memory.h>
+
+#include "SecondaryLoader.h"
+
+
+// Make nonzero for trendy serialport style progress bar...
+#define kShowProgress 1
+
+// For those with lots of time (or bugs) on their hands
+#define kDebugLots 0
+
+// Define nonzero to ignore all secondary loader extensions
+#define defeatExtensions 1
+
+enum {
+	kMaxLoadSize = 4 * 1024 * 1024,			// Maximum size of a kernel load image
+
+	// Largest 2ldr image we will ever build (hopefully)
+	kMaximumSecondaryLoaderImageSize = 65536,
+	kCacheLineSize = 32					/* PowerPC's favorite cache line size */
+};
+
+ClientInterfacePtr gCIPointer;
+int gBootPartition;
+
+static UInt32 blessedDirID;
+static char loadFileName[256] = "mach_kernel"; // Can be overridden by boot-file value
+static UInt32 firstAllocationBlockNumber;
+static UInt32 allocationBlockSizeInBlocks;
+static int partitionNumber;
+static UInt32 tVector[2];		// MrC thinks this is not a live var unless it's static!?
+static UInt32 lowestExtensionBase;		// Base of area to allocate extension memory
+static UInt32 extensionBase;			// Alloc pointer (grows upward) for extensions
+static UInt32 cachePartitionOffset;		// Offset last part # in ReadPartitionBlocks
+static int cachePartitionNumber;		// Part# of cache for ReadPartitionBlocks
+static CICell bootIH;					// Last AccessDevice device (0 if none)
+static CICell displayIHandle;
+static int displayWidth;
+static int displayHeight;
+
+// Struct we use to keep track of extensions' memory span so we can
+// free them on DeaccessDevice calls
+typedef struct ExtensionDescriptor {
+	UInt32 base;						// Virtual (and physical) base of region
+	UInt32 size;						// Size of region in bytes
+} ExtensionDescriptor;
+
+enum {
+	kMaximumExtensions = 10				// Largest # extensions on a single disk device
+};
+static ExtensionDescriptor extensions[kMaximumExtensions];
+
+enum {
+	kNeXTIconWidth = 96,
+	kNeXTIconHeight = 96,
+	kNeXTIconRowBytes8 = kNeXTIconWidth
+};
+
+// Indexed by dibit values as brokenSystemFolderIcon is being
+// expanded to yield the byte value to store in the output icon
+// pixel map
+static const UInt8 twoBitPixelValues[] = {kWhitePixel, kLtGrayPixel,
+										  kDkGrayPixel, kBlackPixel};
+
+void SecondaryLoaderMain (void *junk1, void *junk2, ClientInterfacePtr ciPointer);
+
+static void InstallDebuggerAndDisassembler ();
+
+// PowerMac ABI style Transition Vector to enter our main entry point
+const UInt32 SecondaryLoaderMainTVector [2] = {(UInt32) SecondaryLoaderMain, 0};
+
+void Interpret (char *forth);
+static void TryPartition (int partitionNumber);
+static void TryAllPartitionsOnDisk (int nPartitions, int partitionNumberToSkip);
+static int AccessDevice (CICell devIH,
+						 SecondaryLoaderVector *secondaryLoaderVectorsP);
+static void DeaccessDevice (CICell devIH,
+							SecondaryLoaderVector *secondaryLoaderVectorsP);
+static void TryThisDevice (CICell phandle);
+static void TryThisUnit (CICell phandle, UInt32 unit);
+static void SearchDeviceTree (CICell root);
+static UInt32 ClaimMemory (CICell virtual, CICell size, CICell alignment);
+static void ReleaseMemory (CICell virtual, CICell size);
+static void ReadPartitionBlocks (UInt32 partitionNumber, void *buffer,
+								 UInt32 blockNumber, UInt32 nBlocks);
+static void GetFileExtents (ExtentsArray *extentsTreeExtentsP, UInt32 fileID,
+							ExtentsArray *extentsBufferP);
+static int ReadHFSNode (UInt32 nodeNumber, ExtentsArray *extentsBufferP,
+						BTreeNode *nodeBufferP);
+static int StringsAreEqualCaseInsensitive (char *s1, char *s2);
+static int PStringsArePreciselyEqual (StringPtr string1, StringPtr string2);
+static UInt32 FindLeafNode (ExtentsArray *extentsBufferP, CatalogKey *keyToFindP,
+							int (*compareFunction) (CatalogKey *key1, CatalogKey *key2),
+							BTreeNode *nodeBufferP, int *nRecordsP);
+static int FileIDCompare (CatalogKey *key1, CatalogKey *key2);
+static int ExtentsIDCompare (CatalogKey *key1, CatalogKey *key2);
+static int FileNameCompare (CatalogKey *key1, CatalogKey *key2);
+static void *FindBTreeRecord (BTreeNode *nodeBufferP, int recordNumber);
+static void BailToOpenFirmware ();
+static void StartSystem7 ();
+static FileRecord *FindFileRecord (UInt32 node, BTreeNode *nodeBufferP,
+								   ExtentsArray *catalogExtentsP, CatalogKey *leafKeyP);
+static void ExpandTo8WithMask (UInt8 *expandedP, int expandedRowBytes,
+							   const UInt32 *sourceP, const UInt32 *maskP,
+							   const int srcDepth, const int width, const int height,
+							   const UInt8 *pixelValuesP, const UInt8 backgroundPixel);
+static char *GetPackagePropertyString (CICell phandle, char *propertyName);
+static CICell GetParentPHandle (CICell phandle);
+static CICell GetPeerPHandle (CICell phandle);
+static CICell GetChildPHandle (CICell phandle);
+static CICell FindAndOpenDisplay (int *widthP, int *heightP);
+static void ShowWelcomeIcon ();
+static void FillRectangle (UInt8 pixel, int x, int y, int width, int height);
+static void DrawRectangle (UInt8 *pixels, int x, int y, int width, int height);
+static void ReadRectangle (UInt8 *pixels, int x, int y, int width, int height);
+static void ShowMessage (char *msg);
+static void FatalError (char *msg);
+static void DeathScreen (char *msg);
+static int LoaderSetjmp (jmp_buf env);
+static void LoaderLongjmp (jmp_buf env, int value);
+static void SpinActivity ();
+
+extern const UInt32 NeXTIcon[];
+
+
+static SecondaryLoaderVector patchVectors = {
+	kSecondaryLoaderVectorVersion,
+	ReadPartitionBlocks,
+	TryPartition,
+	TryAllPartitionsOnDisk,
+	AccessDevice,
+	DeaccessDevice,
+	TryThisDevice,
+	TryThisUnit,
+	SearchDeviceTree,
+	ClaimMemory,
+	ReleaseMemory,
+	GetPackagePropertyString,
+	GetParentPHandle,
+	GetPeerPHandle,
+	GetChildPHandle,
+	GetFileExtents,
+	ReadHFSNode,
+	StringsAreEqualCaseInsensitive,
+	PStringsArePreciselyEqual,
+	FindLeafNode,
+	FileIDCompare,
+	ExtentsIDCompare,
+	FileNameCompare,
+	FindBTreeRecord,
+	FindFileRecord,
+	DataToCode,
+	BailToOpenFirmware,
+	StartSystem7,
+	ExpandTo8WithMask,
+	FindAndOpenDisplay,
+	ShowWelcomeIcon,
+	FillRectangle,
+	DrawRectangle,
+	ReadRectangle,
+	SpinActivity,
+	LoaderSetjmp,
+	LoaderLongjmp,
+	ShowMessage,
+	FatalError,
+	DeathScreen,
+	MoveBytes
+};
+
+SecondaryLoaderVector *gSecondaryLoaderVectors = &patchVectors;
+
+
+static LoaderJumpBuffer failureJumpBuffer;
+
+
+#ifdef __GNUC__
+int CallCI (CIArgs *argsP)
+{
+    return (*gCIPointer) (argsP);
+}
+
+
+void DataToCode (void *base, UInt32 length)
+{
+    UInt32 newBase = (UInt32) base & -kCacheLineSize;
+    UInt32 newLength = (((UInt32) base + length + kCacheLineSize - 1)
+						& -kCacheLineSize) - newBase;
+    UInt32 newEnd = newBase + newLength;
+    register UInt32 a asm ("7");		// R7 is my lucky register
+
+    for (a = newBase; a < newEnd; a += kCacheLineSize) {
+		asm ("dcbf 0,%0" : /* no outputs */ : "g" (a));
+		asm ("icbi 0,%0" : /* no outputs */ : "g" (a));
+	}
+}
+
+
+void bcopy (void *srcP, void *dstP, UInt32 length)
+{
+	memcpy (dstP, srcP, length);
+}
+
+
+void bzero (void *dstP, UInt32 length)
+{
+	memset (dstP, 0, length);
+}
+
+void MoveBytes (void *dstP, void *srcP, UInt32 length)
+{
+#if 1
+	memcpy (dstP, srcP, length);
+#else
+	register char *dstCP = dstP;
+	register char *srcCP = srcP;
+
+	while (length-- != 0) *dstCP++ = *srcCP++;
+#endif
+}
+#endif
+
+
+static int LoaderSetjmp (jmp_buf env)
+{
+	setjmp (env);
+}
+
+
+static void LoaderLongjmp (jmp_buf env, int value)
+{
+	longjmp (env, value);
+}
+
+
+void BailToOpenFirmware ()
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "exit";
+	ciArgs.nArgs = 0;
+	ciArgs.nReturns = 0;
+	CallCI (&ciArgs);				// Never to return from this call
+}
+
+
+void StartSystem7 ()
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "boot";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 0;
+	ciArgs.args.boot.bootspec = "/AAPL,ROM";
+	CallCI (&ciArgs);				// Never to return from this call
+}
+
+
+void ShowMessage (char *message)
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 1;
+	// Display a NUL terminated string followed by a CRLF
+	ciArgs.args.interpret_1_0.forth = "9999 decode-string type cr 2drop";
+	ciArgs.args.interpret_1_0.arg1 = (CICell) message;
+	CallCI (&ciArgs);
+}
+
+
+// This gets us out past the most recent setjmp on failureJumpBuffer.
+// Presently, the only setjmp call is at the top of TryPartition, so
+// only in calls nested within that routine can FatalError be used to
+// longjmp out.
+void FatalError (char *message)
+{
+	VCALL(ShowMessage) (message);
+	VCALL(LoaderLongjmp) (failureJumpBuffer, 1);
+}
+
+
+static int cStringLength (char *string)
+{
+	int len = 0;
+	while (*string++) ++len;
+	return len;
+}
+
+
+// Expand a srcDepth bit/pixel packed source (sourceP) into an 8
+// bit/pixel packed destination (expandedP) such that ONE bits in a
+// corresponding 1 bit/pixel mask imply a translated copy via pixel
+// values from pixelValuesP[sourcPixelValue] and ZERO bits in the mask
+// imply backgroundPixel.  The width and height of the pixel maps are
+// as specified by parameters of those names.  A NIL maskP means don't
+// mask.
+void ExpandTo8WithMask (UInt8 *expandedP, int expandedRowBytes,
+						const UInt32 *sourceP, const UInt32 *maskP,
+						const int srcDepth, const int width, const int height,
+						const UInt8 *pixelValuesP, const UInt8 backgroundPixel)
+{
+	int n = 0;
+	int srcShift = 0;
+	int maskShift = 0;
+	UInt32 srcLong = 0;		// Dumb compilers: "used before initialized"
+	UInt32 maskLong = 0;	// Dumb compilers: "used before initialized"
+	int srcMod = 32 / srcDepth - 1;
+	UInt32 srcMask = ((1 << srcDepth) - 1);
+	long totalPixels = width * height;
+	int h;
+	UInt8 *rowStartP = expandedP;
+
+	// For each pixel in the source, create a destination pixel value by masked expansion
+	for (n = 0; n < totalPixels; ++n) {
+		UInt32 srcPixel;
+		int maskBit;
+
+		if ((n & srcMod) == 0) srcLong = *sourceP++;
+
+		// This wiggy shift value is actually pretty simple if you
+		// break it down.  We are using the shift values UNSIGNED
+		// modulo 32 and ignoring the fact that they are going
+		// negative by our repeated subtraction.
+
+		// For example, say srcDepth is 2.  The sequence begins with
+		// srcShift of zero.  Since we presubtract 2, we end up
+		// shifting srcLong right by 30 bits and ANDing with 3 which
+		// yields the leftmost 2 bits in srcLong.  Each successive
+		// iteration shifts two bits fewer down until we underflow --
+		// in which case we end up with 30 as the shift count again
+		// due to the modulo action of ANDing the shift count with 31.
+		srcPixel = (srcLong >> ((srcShift -= srcDepth) & 31)) & srcMask;
+		
+		if (maskP != nil) {
+			int maskBit;
+
+			if ((n & 31) == 0) maskLong = *maskP++;
+			maskBit = (maskLong >> ((maskShift -= 1) & 31)) & 1;
+
+			// Store expanded version of srcPixel or background,
+			// depending on corresponding mask bit.
+			*expandedP++ = maskBit ? pixelValuesP[srcPixel] : backgroundPixel;
+		} else {
+			*expandedP++ = pixelValuesP[srcPixel];
+		}
+
+		if (++h >= width) {		// Time to start a new row of destination pixels
+			rowStartP += expandedRowBytes;
+			expandedP = rowStartP;
+			h = 0;
+		}
+	}
+}
+
+
+static void FillRectangle (UInt8 pixel, int x, int y, int width, int height)
+{
+	CIArgs ciArgs;
+	CICell result;
+	CICell catchResult;
+
+	ciArgs.service = "call-method";
+	ciArgs.nArgs = 7;
+	ciArgs.nReturns = 1;
+	ciArgs.args.callMethod_5_0.method = "fill-rectangle";		// ( index x y w h -- )
+	ciArgs.args.callMethod_5_0.iHandle = displayIHandle;
+	ciArgs.args.callMethod_5_0.arg1 = height;
+	ciArgs.args.callMethod_5_0.arg2 = width;
+	ciArgs.args.callMethod_5_0.arg3 = y;
+	ciArgs.args.callMethod_5_0.arg4 = x;
+	ciArgs.args.callMethod_5_0.arg5 = pixel;
+	result = CallCI (&ciArgs);
+	catchResult = ciArgs.args.callMethod_5_0.catchResult;
+	if (result != 0 && kDebugLots) VCALL(ShowMessage) ("?F-r CallCI");
+	if (catchResult != 0 && kDebugLots) VCALL(ShowMessage) ("?F-r catch");
+}
+
+
+const UInt8 Clut[] = {
+	0xFF,0xFF,0xFF, 0xFF,0xFF,0xCC,	0xFF,0xFF,0x99,	0xFF,0xFF,0x66,
+	0xFF,0xFF,0x33, 0xFF,0xFF,0x00,	0xFF,0xCC,0xFF,	0xFF,0xCC,0xCC,
+	0xFF,0xCC,0x99, 0xFF,0xCC,0x66,	0xFF,0xCC,0x33,	0xFF,0xCC,0x00,
+	0xFF,0x99,0xFF, 0xFF,0x99,0xCC,	0xFF,0x99,0x99,	0xFF,0x99,0x66,
+	0xFF,0x99,0x33, 0xFF,0x99,0x00,	0xFF,0x66,0xFF,	0xFF,0x66,0xCC,
+	0xFF,0x66,0x99, 0xFF,0x66,0x66,	0xFF,0x66,0x33,	0xFF,0x66,0x00,
+	0xFF,0x33,0xFF, 0xFF,0x33,0xCC,	0xFF,0x33,0x99,	0xFF,0x33,0x66,
+	0xFF,0x33,0x33, 0xFF,0x33,0x00,	0xFF,0x00,0xFF,	0xFF,0x00,0xCC,
+	0xFF,0x00,0x99, 0xFF,0x00,0x66,	0xFF,0x00,0x33,	0xFF,0x00,0x00,
+	0xCC,0xFF,0xFF, 0xCC,0xFF,0xCC,	0xCC,0xFF,0x99,	0xCC,0xFF,0x66,
+	0xCC,0xFF,0x33, 0xCC,0xFF,0x00,	0xCC,0xCC,0xFF,	0xCC,0xCC,0xCC,
+	0xCC,0xCC,0x99, 0xCC,0xCC,0x66,	0xCC,0xCC,0x33,	0xCC,0xCC,0x00,
+	0xCC,0x99,0xFF, 0xCC,0x99,0xCC,	0xCC,0x99,0x99,	0xCC,0x99,0x66,
+	0xCC,0x99,0x33, 0xCC,0x99,0x00,	0xCC,0x66,0xFF,	0xCC,0x66,0xCC,
+	0xCC,0x66,0x99, 0xCC,0x66,0x66,	0xCC,0x66,0x33,	0xCC,0x66,0x00,
+	0xCC,0x33,0xFF, 0xCC,0x33,0xCC,	0xCC,0x33,0x99,	0xCC,0x33,0x66,
+	0xCC,0x33,0x33, 0xCC,0x33,0x00,	0xCC,0x00,0xFF,	0xCC,0x00,0xCC,
+	0xCC,0x00,0x99, 0xCC,0x00,0x66,	0xCC,0x00,0x33,	0xCC,0x00,0x00,
+	0x99,0xFF,0xFF, 0x99,0xFF,0xCC,	0x99,0xFF,0x99,	0x99,0xFF,0x66,
+	0x99,0xFF,0x33, 0x99,0xFF,0x00,	0x99,0xCC,0xFF,	0x99,0xCC,0xCC,
+	0x99,0xCC,0x99, 0x99,0xCC,0x66,	0x99,0xCC,0x33,	0x99,0xCC,0x00,
+	0x99,0x99,0xFF, 0x99,0x99,0xCC,	0x99,0x99,0x99,	0x99,0x99,0x66,
+	0x99,0x99,0x33, 0x99,0x99,0x00,	0x99,0x66,0xFF,	0x99,0x66,0xCC,
+	0x99,0x66,0x99, 0x99,0x66,0x66,	0x99,0x66,0x33,	0x99,0x66,0x00,
+	0x99,0x33,0xFF, 0x99,0x33,0xCC,	0x99,0x33,0x99,	0x99,0x33,0x66,
+	0x99,0x33,0x33, 0x99,0x33,0x00,	0x99,0x00,0xFF,	0x99,0x00,0xCC,
+	0x99,0x00,0x99, 0x99,0x00,0x66,	0x99,0x00,0x33,	0x99,0x00,0x00,
+	0x66,0xFF,0xFF, 0x66,0xFF,0xCC,	0x66,0xFF,0x99,	0x66,0xFF,0x66,
+	0x66,0xFF,0x33, 0x66,0xFF,0x00,	0x66,0xCC,0xFF,	0x66,0xCC,0xCC,
+	0x66,0xCC,0x99, 0x66,0xCC,0x66,	0x66,0xCC,0x33,	0x66,0xCC,0x00,
+	0x66,0x99,0xFF, 0x66,0x99,0xCC,	0x66,0x99,0x99,	0x66,0x99,0x66,
+	0x66,0x99,0x33, 0x66,0x99,0x00,	0x66,0x66,0xFF,	0x66,0x66,0xCC,
+	0x66,0x66,0x99, 0x66,0x66,0x66,	0x66,0x66,0x33,	0x66,0x66,0x00,
+	0x66,0x33,0xFF, 0x66,0x33,0xCC,	0x66,0x33,0x99,	0x66,0x33,0x66,
+	0x66,0x33,0x33, 0x66,0x33,0x00,	0x66,0x00,0xFF,	0x66,0x00,0xCC,
+	0x66,0x00,0x99, 0x66,0x00,0x66,	0x66,0x00,0x33,	0x66,0x00,0x00,
+	0x33,0xFF,0xFF, 0x33,0xFF,0xCC,	0x33,0xFF,0x99,	0x33,0xFF,0x66,
+	0x33,0xFF,0x33, 0x33,0xFF,0x00,	0x33,0xCC,0xFF,	0x33,0xCC,0xCC,
+	0x33,0xCC,0x99, 0x33,0xCC,0x66,	0x33,0xCC,0x33,	0x33,0xCC,0x00,
+	0x33,0x99,0xFF, 0x33,0x99,0xCC,	0x33,0x99,0x99,	0x33,0x99,0x66,
+	0x33,0x99,0x33, 0x33,0x99,0x00,	0x33,0x66,0xFF,	0x33,0x66,0xCC,
+	0x33,0x66,0x99, 0x33,0x66,0x66,	0x33,0x66,0x33,	0x33,0x66,0x00,
+	0x33,0x33,0xFF, 0x33,0x33,0xCC,	0x33,0x33,0x99,	0x33,0x33,0x66,
+	0x33,0x33,0x33, 0x33,0x33,0x00,	0x33,0x00,0xFF,	0x33,0x00,0xCC,
+	0x33,0x00,0x99, 0x33,0x00,0x66,	0x33,0x00,0x33,	0x33,0x00,0x00,
+	0x00,0xFF,0xFF, 0x00,0xFF,0xCC,	0x00,0xFF,0x99,	0x00,0xFF,0x66,
+	0x00,0xFF,0x33, 0x00,0xFF,0x00,	0x00,0xCC,0xFF,	0x00,0xCC,0xCC,
+	0x00,0xCC,0x99, 0x00,0xCC,0x66,	0x00,0xCC,0x33,	0x00,0xCC,0x00,
+	0x00,0x99,0xFF, 0x00,0x99,0xCC,	0x00,0x99,0x99,	0x00,0x99,0x66,
+	0x00,0x99,0x33, 0x00,0x99,0x00,	0x00,0x66,0xFF,	0x00,0x66,0xCC,
+	0x00,0x66,0x99, 0x00,0x66,0x66,	0x00,0x66,0x33,	0x00,0x66,0x00,
+	0x00,0x33,0xFF, 0x00,0x33,0xCC,	0x00,0x33,0x99,	0x00,0x33,0x66,
+	0x00,0x33,0x33, 0x00,0x33,0x00,	0x00,0x00,0xFF,	0x00,0x00,0xCC,
+	0x00,0x00,0x99, 0x00,0x00,0x66,	0x00,0x00,0x33,	0xEE,0x00,0x00,
+	0xDD,0x00,0x00, 0xBB,0x00,0x00,	0xAA,0x00,0x00,	0x88,0x00,0x00,
+	0x77,0x00,0x00, 0x55,0x00,0x00,	0x44,0x00,0x00,	0x22,0x00,0x00,
+	0x11,0x00,0x00, 0x00,0xEE,0x00,	0x00,0xDD,0x00,	0x00,0xBB,0x00,
+	0x00,0xAA,0x00, 0x00,0x88,0x00,	0x00,0x77,0x00,	0x00,0x55,0x00,
+	0x00,0x44,0x00, 0x00,0x22,0x00,	0x00,0x11,0x00,	0x00,0x00,0xEE,
+	0x00,0x00,0xDD, 0x00,0x00,0xBB,	0x00,0x00,0xAA,	0x00,0x00,0x88,
+	0x00,0x00,0x77, 0x00,0x00,0x55,	0x00,0x00,0x44,	0x00,0x00,0x22,
+	0x00,0x00,0x11, 0xEE,0xEE,0xEE,	0xDD,0xDD,0xDD,	0xBB,0xBB,0xBB,
+	0xAA,0xAA,0xAA, 0x88,0x88,0x88,	0x77,0x77,0x77,	0x55,0x55,0x55,
+	0x44,0x44,0x44, 0x22,0x22,0x22,	0x11,0x11,0x11,	0x00,0x00,0x00
+};
+
+
+static CICell tryThisDisplay (CICell pHandle)
+{
+	int len;
+	char path[1024];			// Longer than this and we don't cope
+	CIArgs ciArgs;
+
+	ciArgs.service = "package-to-path";
+	ciArgs.nArgs = 3;
+	ciArgs.nReturns = 1;
+	ciArgs.args.packageToPath.phandle = pHandle;
+	ciArgs.args.packageToPath.buf = path;
+	ciArgs.args.packageToPath.buflen = sizeof (path) - 1;
+	ciArgs.args.packageToPath.length = -1;
+	CallCI (&ciArgs);
+
+	if (len > 0 && len < sizeof (path)) {
+		CICell foo;
+
+		path[len] = 0;
+		if (kShowProgress) printf ("Trying display \"%s\"\n", path);
+		ciArgs.service = "open";
+		ciArgs.nArgs = 1;
+		ciArgs.nReturns = 1;
+		ciArgs.args.open.deviceSpecifier = path;
+
+		if (CallCI (&ciArgs) != 0)
+			foo = 0;
+		else
+			foo = ciArgs.args.open.ihandle;
+
+		if (kShowProgress) printf ("   open returned 0x%08X\n", foo);
+		return foo;
+	}
+	
+	if (kShowProgress) printf ("Found a display whose pkgtopath call failed: %d\n", len);
+	return (CICell) 0;
+}
+
+
+static CICell findBestMainDisplayRecursively (CICell root)
+{
+	CICell node;
+	CICell openOne = 0;
+	char devType [256];
+	CICell len;
+
+	if (root == 0) return 0;
+
+	len = GetPackageProperty (root, (CICell) "device_type",
+							  (CICell) devType,
+							  sizeof (devType) - 1);
+
+	if (len != -1) {
+
+		// NUL terminate for strcmp
+		if (len < sizeof (devType))
+			devType[len] = 0;
+		else
+			devType[sizeof (devType) - 1] = 0;
+
+		if (strcmp (devType, "display") == 0) openOne = tryThisDisplay (root);
+	}
+	
+	// Now traverse the first child of this node and its peers, recursing on each one.
+	for (node = GetChildPHandle (root);
+		 node != 0 && openOne == 0;
+		 node = GetPeerPHandle (node))
+	{
+		openOne = findBestMainDisplayRecursively (node);
+	}
+
+	return openOne;
+}
+
+
+CICell FindBestMainDisplay ()
+{
+	CICell node;
+	CIArgs ciArgs;
+
+}
+
+
+CICell FindAndOpenDisplay (int *widthP, int *heightP)
+{
+	CIArgs ciArgs;
+	CICell result;
+	CICell catchResult;
+
+	if (kShowProgress) VCALL(ShowMessage) ("F&Odisp");
+
+	Interpret ("0 value DIH 0 value Dheight 0 value Dwidth");
+	Interpret (": ^dpy DIH $CM ;");
+
+	// Give preference to the System 7.x boot display if we can open it
+	if (kShowProgress) {
+		printf ("Trying to use \"/AAPL,boot-display\" alias for display\n");
+	}
+
+	ciArgs.service = "open";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 1;
+	ciArgs.args.open.deviceSpecifier = "/AAPL,boot-display";
+
+	if (CallCI (&ciArgs) != 0)
+		node = 0;
+	else
+		node = ciArgs.args.open.ihandle;
+
+	if (node != 0) return node;
+
+	// Give preference to the devalias "screen" if we can open it (for PowerBooks)
+	if (kShowProgress) printf ("Trying to use \"screen\" alias for display\n");
+
+	ciArgs.args.open.deviceSpecifier = "screen";
+
+	if (CallCI (&ciArgs) != 0)
+		node = 0;
+	else
+		node = ciArgs.args.open.ihandle;
+
+	if (node != 0) return node;
+
+	if (kShowProgress) printf ("Trying to find a good display by treewalk\n");
+	result = findBestMainDisplayRecursively (GetPeerPHandle (0));
+	Interpret (
+		// Walk the device tree looking for display devices that open successfully.
+		// Leaves open iHandle in DIH and returns nonzero if successful.
+		": OOPSwalk "
+			"dup \" device_type\" rot GPP$ if "
+				"drop \" display\"(00)\" comp 0= if "
+					"dup 0 0 rot open-package ?dup if "
+						"to DIH 1 exit "
+					"then "
+				"then "
+			"then "
+			"child dup if "
+				"begin "
+					"dup recurse if drop 1 exit then peer ?dup 0= "
+				"until 0 "
+			"then "
+		"; "
+
+		// Get property from iHandle as an assumed integer-formatted
+		// property, or zero if none ( propname propnamelen -- propvalue )
+		": GMP get-my-property 0= if D2NIP else 0 then ; "
+   );
+
+	// Find a display device to show our error message on -- one which opens successfully
+	Interpret (
+		"\" /AAPL,boot-display\" open-dev dup to DIH 0= if 0 peer OOPSwalk drop then "
+		"clear "							//  ( Correct for Simon's sinful past )
+	);
+
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 4;
+	ciArgs.args.interpret_1_3.arg1 = (CICell) Clut;
+	ciArgs.args.interpret_1_3.forth = 		// ( clut -- width height display-ihandle )
+		"value &CL "						// Remember address of clut array
+" .\" DIH=\" DIH . cr "
+		"DIH 0= if .\" ?FATAL & no display\" CR CR abort then "
+		"DIH to my-self "
+
+		// Install colormap
+		"&CL 0 100 \" set-colors\" ^dpy "
+
+		"\" width\" GMP ?dup 0= if 280 then "		// ( width )
+		"\" height\" GMP ?dup 0= if 1E0 then "		// ( width height )
+		"2dup to Dheight to Dwidth "
+		"DIH "										// ( width height display-ihandle )
+" .\"F&OD result: \" .s cr "
+	;
+
+	result = CallCI (&ciArgs);
+	if (result != 0) {
+		if (kDebugLots) VCALL(ShowMessage) ("?F&OD CallCI");
+		return 0;
+	}
+
+	catchResult = ciArgs.args.interpret_1_3.catchResult;
+	if (catchResult != 0) {
+		if (kDebugLots) VCALL(ShowMessage) ("?F&OD catch");
+		return 0;
+	}
+	
+	displayIHandle = ciArgs.args.interpret_1_3.return1;
+	displayHeight = ciArgs.args.interpret_1_3.return2;
+	displayWidth  = ciArgs.args.interpret_1_3.return3;
+
+	if (heightP != nil) *heightP = displayHeight;
+	if (widthP != nil) *widthP = displayWidth;
+	
+	// Fill the screen with our 50% gray background
+	VCALL(FillRectangle) (kBackgroundPixel, 0, 0, displayWidth, displayHeight);
+
+	return displayIHandle;
+}
+
+
+static void DrawRectangle (UInt8 *pixels, int x, int y, int width, int height)
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "call-method";
+	ciArgs.nArgs = 7;
+	ciArgs.nReturns = 1;
+	ciArgs.args.callMethod_5_0.method = "draw-rectangle";		// ( adr x y w h -- )
+	ciArgs.args.callMethod_5_0.iHandle = displayIHandle;
+	ciArgs.args.callMethod_5_0.arg1 = height;
+	ciArgs.args.callMethod_5_0.arg2 = width;
+	ciArgs.args.callMethod_5_0.arg3 = y;
+	ciArgs.args.callMethod_5_0.arg4 = x;
+	ciArgs.args.callMethod_5_0.arg5 = (CICell) pixels;
+	(void) CallCI (&ciArgs);
+}
+
+
+static void ReadRectangle (UInt8 *pixels, int x, int y, int width, int height)
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "call-method";
+	ciArgs.nArgs = 7;
+	ciArgs.nReturns = 1;
+	ciArgs.args.callMethod_5_0.method = "read-rectangle";		// ( adr x y w h -- )
+	ciArgs.args.callMethod_5_0.iHandle = displayIHandle;
+	ciArgs.args.callMethod_5_0.arg1 = height;
+	ciArgs.args.callMethod_5_0.arg2 = width;
+	ciArgs.args.callMethod_5_0.arg3 = y;
+	ciArgs.args.callMethod_5_0.arg4 = x;
+	ciArgs.args.callMethod_5_0.arg5 = (CICell) pixels;
+	(void) CallCI (&ciArgs);
+}
+
+
+void DeathScreen (char *message)
+{
+	// This is in two bit/pixel format, which is expanded at runtime
+	// (to save space in image).  The mask is stored separately.  The
+	// colors are: 00->white, 01->lite gray, 10->dark gray, 11->black.
+	static const UInt32 brokenSystemFolderIcon[] = {
+		0x00000000,0x00000000,0x00000000,0x00000000,
+		0x00000000,0x00000000,0x00000000,0x00000000,
+		0x00000000,0x00000000,0x00000000,0x00000000,
+		0x00000000,0x00000000,0x003FFF00,0x00000000,
+		0x00D555C0,0x00000000,0x03555570,0x00000000,
+		0x0D55555C,0x00000000,0x35555570,0x03FFFFFC,
+		0xD555555C,0x00D55557,0xC0000030,0x03000003,
+		0xC4444470,0x03111117,0xD1110FC0,0x0FFC4447,
+		0xC44475C0,0x0D971117,0xD11136C0,0x0F774447,
+		0xC4447630,0x03171117,0xD11136C0,0x0C874447,
+		0xC4447630,0x03171117,0xD11136C0,0x0C874447,
+		0xC4447630,0x03171117,0xD11135C0,0x0C474447,
+		0xC4447570,0x03571117,0xD1113770,0x03574447,
+		0xC4447670,0x03F71117,0xD11135C0,0x0D574447,
+		0xC4445F00,0x3FFC1117,0xD1110F00,0x3FFC4447,
+		0xC4444C00,0xD1111117,0xFFFFFF00,0x3FFFFFFF
+	};
+
+	// In this mask, zero bit=>transparent, one bit=>expanded pixel
+	// from brokenSystemFolderIcon
+	static const UInt32 brokenSystemFolderMask[] = {
+		0x00000000,0x00000000,0x00000000,0x00000000,
+		0x00000000,0x00000000,0x00000000,0x07F00000,
+		0x0FF80000,0x1FFC0000,0x3FFE0000,0x7FFC1FFE,
+		0xFFFE0FFF,0xFFFC1FFF,0xFFFC1FFF,0xFFF83FFF,
+		0xFFF83FFF,0xFFF83FFF,0xFFFC1FFF,0xFFF83FFF,
+		0xFFFC1FFF,0xFFF83FFF,0xFFFC1FFF,0xFFF83FFF,
+		0xFFFC1FFF,0xFFFC1FFF,0xFFFC1FFF,0xFFF83FFF,
+		0xFFF07FFF,0xFFF07FFF,0xFFE0FFFF,0xFFF07FFF
+	};
+
+	// Icon as expanded to 8bits/pixel
+	UInt8 expandedIcon[256 + kIconHeight * kIconWidth];
+
+	// Expand 2 bit/pixel icon to 8 bits/pixel
+	VCALL(ExpandTo8WithMask) (expandedIcon, kIconWidth,
+							  brokenSystemFolderIcon, brokenSystemFolderMask,
+							  2, kIconWidth, kIconHeight,
+							  twoBitPixelValues, kBackgroundPixel);
+
+	VCALL(ShowMessage) (message);
+
+	// Fill the screen with our 50% gray background
+	VCALL(FillRectangle) (kBackgroundPixel, 0, 0, displayWidth, displayHeight);
+
+	// Display broken system folder icon
+	VCALL(DrawRectangle) (expandedIcon,
+						  (displayWidth - kIconWidth) / 2,
+						  (displayHeight - kIconHeight) / 2,
+						  kIconWidth, kIconHeight);
+	
+	// TEMPORARY	-- eventually we need to present a RESTART button onscreen
+	VCALL(BailToOpenFirmware) ();
+}
+
+
+static void ShowWelcomeIcon ()
+{
+	// Fill the screen with our 50% gray background
+	VCALL(FillRectangle) (kBackgroundPixel, 0, 0, displayWidth, displayHeight);
+
+	VCALL(DrawRectangle) ((UInt8 *) NeXTIcon,
+						  (displayWidth - kNeXTIconWidth) / 2,
+						  (displayHeight - kNeXTIconHeight) / 2,
+						  kNeXTIconWidth, kNeXTIconHeight);
+}
+
+
+void Interpret (char *forth)
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_0_0.forth = forth;
+	CallCI (&ciArgs);
+}
+
+
+static void SpinActivity ()
+{
+}
+
+
+static char toUpper (const char c)
+{
+	if (c >= 'a' && c <= 'z')
+		return c - ('a' - 'A');
+	else
+		return c;
+}
+
+
+// Compare two NUL-terminated C strings for equality in a case-insensitive manner.
+// Returns true if the strings ARE equal, false otherwise.
+int StringsAreEqualCaseInsensitive (char *string1, char *string2)
+{
+	// Testing just string1 for NUL is OK since != test below effectively does string2
+	while (*string1) {
+		if (toUpper (*string1++) != toUpper (*string2++)) return false;
+	}
+
+	return (*string2 == 0);			// We can only get here if *string1 is 0
+}
+
+
+FileRecord *FindFileRecord (UInt32 node, BTreeNode *nodeBufferP,
+							ExtentsArray *catalogExtentsP, CatalogKey *leafKeyP)
+{
+#if HFS_SUPPORT
+	for (;;) {
+		int nRecords = VCALL(ReadHFSNode) (node, catalogExtentsP, nodeBufferP);
+		int rec;
+
+		for (rec = 0; rec < nRecords; ++rec) {
+			CatalogKey *keyP = VCALL(FindBTreeRecord) (nodeBufferP, rec);
+			int compareResult = VCALL(FileNameCompare) (keyP, leafKeyP);
+
+			if (kDebugLots) {
+				CIArgs ciArgs;
+		
+				ciArgs.service = "interpret";
+				ciArgs.nArgs = 3;
+				ciArgs.nReturns = 1;
+				ciArgs.args.interpret_2_0.forth =
+					".( FFR cmp=) s. .( key:) dup dup c@ 4+ dumpl cr "
+					"dup 2+ @ . "
+					"7 + dup 1- c@ 22 emit type 22 emit cr cr";
+				ciArgs.args.interpret_2_0.arg1 = compareResult;
+				ciArgs.args.interpret_2_0.arg2 = (CICell) keyP;
+				CallCI (&ciArgs);
+			}
+
+			if (compareResult == 0xDEADBEEF) return nil;		// FILE NOT FOUND!
+
+			if (compareResult == 0)
+				return (FileRecord *) ((char *) keyP + keyP->keyLength + 1);
+		}
+
+		node = nodeBufferP->fLink;			// Move to next leaf node in the sequence
+	}
+#else
+	return nil;
+#endif
+}
+
+
+
+// Return the log base 2 of k.  Deliberately defined such that log2(0) = 0.
+static unsigned long log2 (unsigned long k)
+{
+	unsigned long log2;
+
+	if (k == 0) return 0;			// Useful special case.
+	for (log2 = 0; k; ++log2, k >>= 1) ;
+	return log2 - 1;
+}
+
+
+static int isPowerSurgeOF ()
+{
+	CIArgs ciArgs;
+	
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 2;
+	ciArgs.args.interpret_0_1.forth =
+		"\" /openprom\" find-package if "
+			"\" model\" rot GPP$ if "
+				"drop \" Open Firmware, 1.0.5\"(00)\" comp 0= "
+			"else "
+				"0 "
+			"then "
+		"else "
+			"0 "
+		"then";
+	CallCI (&ciArgs);
+	return ciArgs.args.interpret_0_1.catchResult == 0
+		&& ciArgs.args.interpret_0_1.return1;
+}
+
+
+UInt32 ClaimMemory (CICell virtual, CICell size, CICell alignment)
+{
+	CIArgs ciArgs;
+
+	// Correct for bug in ROM based O/F on PowerSurge machines (version <= 1.0.5)
+	if (alignment != 0 && isPowerSurgeOF ()) alignment = log2 (alignment);
+
+	// All this to get around a completely dysfunctional "claim" client interface
+	// callback in 1.0.5!  Allocations virtual space according to the rules of
+	// MMU's "claim" method and its parameters.  Then maps logical == physical
+	// with mode=10 on the resulting address range.
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 4;
+	ciArgs.nReturns = 2;
+	ciArgs.args.interpret_3_1.arg1 = alignment;
+	ciArgs.args.interpret_3_1.arg2 = size;
+	ciArgs.args.interpret_3_1.arg3 = virtual;
+	ciArgs.args.interpret_3_1.forth =	// ( virt size align -- allocated-virt )
+#if kDebugLots
+		".\" ClaimMem:\" .s cr "
+#endif
+		"$clm"
+		;
+
+	if (CallCI (&ciArgs) != 0 || ciArgs.args.interpret_3_1.catchResult != 0) return 0;
+	return ciArgs.args.interpret_3_1.return1;
+}
+
+
+void ReleaseMemory (CICell virtual, CICell size)
+{
+	CIArgs ciArgs;
+
+	// Release physically contiguous RAM of size bytes claimed and mapped earlier
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 3;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_2_0.arg1 = size;
+	ciArgs.args.interpret_2_0.arg2 = virtual;
+	ciArgs.args.interpret_2_0.forth =				// ( virtual size -- )
+#if kDebugLots
+		".\" RelMem:\" 2dup . . cr "
+#endif
+		"over \" translate\" ^mmu "		// Find out physical base
+		"^on0 "							// Bail if translation failed
+		"drop "							// Leaving phys on top of stack
+		"2dup \" unmap\" ^mmu "			// Unmap the space first
+		"2dup \" release\" ^mmu "		// Then free the virtual pages
+		"\" release\" ^mem "			// Then free the physical pages
+		;
+	CallCI (&ciArgs);
+}
+
+
+void TryPartition (int tryPartitionNumber)
+{
+	MDB mdb;
+	ExtentsArray extentsExtents;
+	ExtentsArray catalogExtents;
+	ExtentsArray loadExtents;
+	BootBlocks bootBlocks;
+	UInt32 node;
+	UInt32 loadBase;
+	UInt32 loadSize;
+	UInt32 remainderToLoad;
+	CatalogKey leafKey;
+	int nRecords;
+	BTreeNode nodeBuffer;
+	FileRecord *loadRecordP;
+	
+	// Catch any errors herein and simply return
+	if (VCALL(LoaderSetjmp) (failureJumpBuffer) != 0) return;
+
+	// Remember partition number we're trying this time
+	gBootPartition = partitionNumber = tryPartitionNumber;
+
+	if (kShowProgress) {
+		CIArgs ciArgs;
+
+		ciArgs.service = "interpret";
+		ciArgs.nArgs = 2;
+		ciArgs.nReturns = 1;
+		ciArgs.args.interpret_1_0.forth = ".( Try ) . cr";
+		ciArgs.args.interpret_1_0.arg1 = tryPartitionNumber;
+		CallCI (&ciArgs);
+	}
+
+	if (kDebugLots) VCALL(ShowMessage) ("MDB");
+
+	{
+		int st;
+		int fd;
+		int kernelSize = 0;
+		UInt32 kernelAddr = 0;
+		struct mach_header header;
+		UInt32 entryPoint = 0;
+
+		// Load the mach_kernel
+		fd = openfile (loadFileName, 0);
+		st = loadprog (DEV_SD, fd, &header, &entryPoint, &kernelAddr, &kernelSize);
+
+		printf ("fd=%d, st=%d, kernel entry=0x%x, base=0x%x, size=0x%x\n",
+				fd, st, entryPoint, kernelAddr, kernelSize);
+
+		// Invalidate the i-cache for the loaded range
+		VCALL(DataToCode) ((void *) kernelAddr, kernelSize);
+
+		// Don't leave our icon partially rotated -- make it pretty
+		VCALL(ShowWelcomeIcon) ();
+
+		// Call it
+		if (kShowProgress) VCALL(ShowMessage) ("Call kernel!");
+		if (st == 0) (*(void (*) ()) entryPoint) ();
+	}
+
+	// If it returns, it didn't succeed, so unmap the space we mapped and
+	// try some other partition
+	if (kShowProgress) VCALL(ShowMessage) ("kernel quit");
+
+	// Release physically contiguous RAM of loadSize bytes claimed for this losing loader
+	VCALL(ReleaseMemory) (loadBase, loadSize);
+}
+
+
+void ReadPartitionBlocks (UInt32 partitionNumber, void *buffer,
+						  UInt32 blockNumber, UInt32 nBlocks)
+{
+	CIArgs ciArgs;
+
+	if (partitionNumber != 0) {
+
+		if (partitionNumber == cachePartitionNumber) {
+			blockNumber += cachePartitionOffset;
+		} else {
+			Partition part;
+
+			if (kDebugLots) VCALL(ShowMessage) ("pmoff");
+			VCALL(ReadPartitionBlocks) (kReadRawDisk, &part, partitionNumber, 1);
+			blockNumber += part.pmPyPartStart;
+			cachePartitionNumber = partitionNumber;
+			cachePartitionOffset = part.pmPyPartStart;
+		}
+	}
+	
+	VCALL(SpinActivity) ();
+
+	// Note that this relies on the previous FORTH definition of word "^bIH"
+	// sticking around so we can use it.
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 4;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_3_0.forth =		// ( buffer block# #blocks -- )
+#if kDebugLots
+			" .( RPB: ) .s 2 pick >r "
+#endif
+			"2 pick 200 erase "			// Clear buf so failures result in "safe junk"
+			"200 * "					// Convert blk-count to a byte count
+			"swap 200 um* "				// ( buf byte-count seek.lo seek.hi )
+			"\" seek\" ^bIH "			// Seek to specified 512-byte block
+			"\" read\" ^bIH"			// This can't fail.  Right.
+#if kDebugLots
+			" .( RPB blk:) r> 200 dumpl cr cr "
+#endif
+			;
+	ciArgs.args.interpret_3_0.arg1 = nBlocks;
+	ciArgs.args.interpret_3_0.arg2 = blockNumber;
+	ciArgs.args.interpret_3_0.arg3 = (CICell) buffer;
+	CallCI (&ciArgs);
+}
+
+
+void *FindBTreeRecord (BTreeNode *nodeBufferP, int recordNumber)
+{
+#if HFS_SUPPORT
+	// recordNumber ^ 0xFF gets us what we want: a mapping starting
+	// with 0->0xFF, 1->0xFE, 2->0xFD, ... 0xFF->0.
+	return (void *) ((char *) nodeBufferP
+					 + ((UInt16 *) nodeBufferP)[recordNumber ^ 0xFF]);
+#else
+	return nil;
+#endif
+}
+
+
+void GetFileExtents (ExtentsArray *extentsTreeExtentsP, UInt32 fileID,
+					 ExtentsArray *extentsBufferP)
+{
+#if HFS_SUPPORT
+	ExtentsKey leafKey;
+	UInt32 node;
+	int nRecords;
+	BTreeNode nodeBuffer;
+
+	// Set up a key to compare against so we find the first leaf node
+	// whose file ID is fileID
+	leafKey.keyLength = sizeof (leafKey);
+	leafKey.fileID = fileID;
+	leafKey.allocationBlockNumber = 0;
+
+	node = VCALL(FindLeafNode) (extentsTreeExtentsP, (CatalogKey *) &leafKey,
+								gSecondaryLoaderVectors->ExtentsIDCompare,
+								&nodeBuffer, &nRecords);
+
+	if (node == 0) {
+
+#if kDebugLots
+		VCALL(ShowMessage) ("GFE no leaf");
+#endif
+
+		return;			// Do nothing if no match
+	}
+
+	for (;;) {
+		int recNum;
+		
+		for (recNum = 0; recNum < nRecords; ++recNum) {
+			ExtentsKey *thisKeyP = VCALL(FindBTreeRecord) (&nodeBuffer, recNum);
+			long delta = thisKeyP->fileID - fileID;
+			
+#if kDebugLots
+			{
+				CIArgs ciArgs;
+		
+				ciArgs.service = "interpret";
+				ciArgs.nArgs = 3;
+				ciArgs.nReturns = 1;
+				ciArgs.args.interpret_2_0.forth = ".( GFE r# n#=) . . cr";
+				ciArgs.args.interpret_2_0.arg1 = recNum;
+				ciArgs.args.interpret_2_0.arg2 = node;
+				CallCI (&ciArgs);
+			}
+#endif
+
+			if (delta == 0) {
+				// Append this extent trio to the end of our array
+				VCALL(MoveBytes) (extentsBufferP->extents + extentsBufferP->nExtents,
+							thisKeyP + 1,
+							3 * sizeof (Extent));
+				extentsBufferP->nExtents += 3; // Remember we added as many as 3 entries
+			} else if (delta > 0) {
+				return;					// We're past the interesting records--just exit
+			}
+		}
+
+		node = nodeBuffer.fLink;			// Get node # of next node in leaf sequence
+		if (node == 0) break;				// NIL forward link means we're done
+		nRecords = VCALL(ReadHFSNode) (node, extentsTreeExtentsP, &nodeBuffer);
+	}
+#endif
+}
+
+
+int ReadHFSNode (UInt32 nodeNumber, ExtentsArray *extentsBufferP, BTreeNode *nodeBufferP)
+{
+#if HFS_SUPPORT
+	SInt32 n = -1;
+	int extent;
+	UInt32 blocksToGo = nodeNumber;
+
+	if (kDebugLots) {
+		CIArgs ciArgs;
+
+		ciArgs.service = "interpret";
+		ciArgs.nArgs = 3;
+		ciArgs.nReturns = 1;
+		ciArgs.args.interpret_2_0.forth = ".( RN extents: [) . .( ]) 20 dumpl cr";
+		ciArgs.args.interpret_2_0.arg1 = extentsBufferP->nExtents;
+		ciArgs.args.interpret_2_0.arg2 = (CICell) extentsBufferP->extents;
+		CallCI (&ciArgs);
+	}
+
+	// Loop through extents in the B*Tree file's extent list until we
+	// find the one containing nodeNumber's node.
+	for (extent = 0; extent < extentsBufferP->nExtents; ++extent) {
+		UInt16 thisLengthInBlocks =
+			extentsBufferP->extents[extent].length * allocationBlockSizeInBlocks;
+
+		if (kDebugLots) {
+			CIArgs ciArgs;
+	
+			ciArgs.service = "interpret";
+			ciArgs.nArgs = 4;
+			ciArgs.nReturns = 1;
+			ciArgs.args.interpret_3_0.forth = ".( RN n# Strt Len=) . . . cr";
+			ciArgs.args.interpret_3_0.arg1 = nodeNumber;
+			ciArgs.args.interpret_3_0.arg2 = extentsBufferP->extents[extent].start;
+			ciArgs.args.interpret_3_0.arg3 = extentsBufferP->extents[extent].length;
+			CallCI (&ciArgs);
+		}
+
+		if (blocksToGo < thisLengthInBlocks) {
+			n = blocksToGo
+				+ extentsBufferP->extents[extent].start * allocationBlockSizeInBlocks;
+			break;
+		}
+		
+		blocksToGo -= thisLengthInBlocks;
+	}
+	
+	if (n < 0) {
+		VCALL(FatalError) ("?node#");
+		return 0;
+	}
+
+	// Read block containing the node we've been asked to retrieve	
+	if (kDebugLots) VCALL(ShowMessage) ("RdN");
+
+	VCALL(ReadPartitionBlocks) (partitionNumber, nodeBufferP,
+								firstAllocationBlockNumber + n, 1);
+	return nodeBufferP->nRecords;
+#else
+	return 0;
+#endif
+}
+
+
+UInt32 FindLeafNode (ExtentsArray *extentsBufferP, CatalogKey *keyToFindP,
+					int (*compareFunction) (CatalogKey *key1, CatalogKey *key2),
+					BTreeNode *nodeBufferP, int *nRecordsP)
+{
+#if HFS_SUPPORT
+	int node;
+
+	// Find the root node number of the B*Tree file our extents list describes
+	(void) VCALL(ReadHFSNode) (0, extentsBufferP, nodeBufferP);
+	node = ((BTreeHeaderNode *) nodeBufferP)->root;
+	if (node == 0) return 0;			// Empty B*Trees are boring
+
+	for (;;) {
+		int nRecords = VCALL(ReadHFSNode) (node, extentsBufferP, nodeBufferP);
+		int recordToFollow = nRecords - 1;
+		int rec;
+		CatalogKey *keyP;
+
+			if (kDebugLots) {
+				CIArgs ciArgs;
+		
+				ciArgs.service = "interpret";
+				ciArgs.nArgs = 3;
+				ciArgs.nReturns = 1;
+				ciArgs.args.interpret_2_0.forth = ".( FLN nt n#=) . . cr";
+				ciArgs.args.interpret_2_0.arg1 = nodeBufferP->nodeType;
+				ciArgs.args.interpret_2_0.arg2 = node;
+				CallCI (&ciArgs);
+			}
+
+		// Bail if we find a leaf node -- we're done!
+		if (nodeBufferP->nodeType == kLeafNodeType) return node;
+		
+		for (rec = 0; rec < nRecords; ++rec) {
+			int compareResult =
+				(*compareFunction) (VCALL(FindBTreeRecord) (nodeBufferP, rec),
+									keyToFindP);
+
+			if (kDebugLots) {
+				CIArgs ciArgs;
+		
+				ciArgs.service = "interpret";
+				ciArgs.nArgs = 4;
+				ciArgs.nReturns = 1;
+				ciArgs.args.interpret_3_0.forth =
+					".( FLN r# rtf#=) . . "
+					".( key:) dup dup c@ 4+ dumpl cr "
+					"dup 2+ @ . "
+					"7 + dup 1- c@ 22 emit type 22 emit cr cr";
+				ciArgs.args.interpret_3_0.arg1 = rec;
+				ciArgs.args.interpret_3_0.arg2 = recordToFollow;
+				ciArgs.args.interpret_3_0.arg3 =
+					(CICell) VCALL(FindBTreeRecord) (nodeBufferP, rec);
+				CallCI (&ciArgs);
+			}
+
+			if (compareResult == 0) {
+				recordToFollow = rec;
+				break;
+			} else if (compareResult > 0) {
+
+				if (rec > 0) {
+					recordToFollow = rec - 1;
+					break;
+				} else {
+					*nRecordsP = 0;
+					return 0;
+				}
+			}
+		}
+		
+		// Find address of record we have chosen to follow
+		keyP = VCALL(FindBTreeRecord) (nodeBufferP, recordToFollow);
+
+		if (kDebugLots) {
+			CIArgs ciArgs;
+	
+			ciArgs.service = "interpret";
+			ciArgs.nArgs = 2;
+			ciArgs.nReturns = 1;
+			ciArgs.args.interpret_1_0.forth =
+				".( FLN follow key:) dup dup c@ 4+ dumpl cr "
+				"dup 2+ @ . "
+				"7 + dup 1- c@ 22 emit type 22 emit cr cr";
+			ciArgs.args.interpret_1_0.arg1 = (CICell) keyP;
+			CallCI (&ciArgs);
+		}
+
+		// Follow pointer just after that record in the node
+		node = *(UInt32 *) ((char *) keyP + keyP->keyLength + 1);
+	}
+	
+#endif
+	return 0;
+}
+
+
+// Compare catalog B*Tree record key1 with key2 looking at the parent
+// ID part of the key.  This is used to follow the index links to find
+// the left-most leaf node containing key2's parent ID.  This is the
+// first record in the sequence of records for the blessed folder
+// directory.  Returns ZERO if key1's parent ID field is equal to
+// key2's parent ID and the length of the following filename string is
+// zero.  Otherwise returns negative if key1's parent ID is less than
+// key2's parent ID, and positive if key1's parent ID is greater than
+// key2's parent ID.
+int FileIDCompare (CatalogKey *key1, CatalogKey *key2)
+{
+#if HFS_SUPPORT
+	long delta = key1->parentID - key2->parentID;
+
+	if (delta != 0) return delta;
+
+	// Directory IDs are equal, so return length byte for name following parent ID field
+	return StrLength (key1->name);
+#else
+	return 0;
+#endif
+}
+
+
+// Compare record keys of Extents B*Tree normally with a static key
+int ExtentsIDCompare (CatalogKey *key1, CatalogKey *key2)
+{
+#if HFS_SUPPORT
+	ExtentsKey *ekey1 = (ExtentsKey *) key1;
+	ExtentsKey *ekey2 = (ExtentsKey *) key2;
+	
+	long delta = ekey1->fileID - ekey2->fileID;
+
+	if (delta != 0) return delta;
+	
+	if (ekey1->resourceForkFlag) return 1;
+
+	// File ID matches, so return negative allocation block number of extent	
+	return -ekey1->allocationBlockNumber;
+#else
+	return 0;
+#endif
+}
+
+
+// Returns nonzero only if the two Pascal strings are identical byte for byte.
+int PStringsArePreciselyEqual (StringPtr string1, StringPtr string2)
+{
+	int n = StrLength (string1);
+	
+	if (n != StrLength (string2)) return false;
+
+	for (; n > 0; --n)
+		if (string1[n] != string2[n]) return false;
+
+	return true;
+}
+
+
+// Compare catalog B*Tree record key1 with key2 looking first the parent ID
+// part of the key and then FOR EQUALITY ONLY the name string part of the key.
+// If the strings are unequal, assume key2 > key1 so we keep looking through
+// all keys with the same parent ID until we find a match are all are exhausted.
+int FileNameCompare (CatalogKey *key1, CatalogKey *key2)
+{
+#if HFS_SUPPORT
+	long delta = key1->parentID - key2->parentID;
+
+	if (delta < 0) return delta;
+	
+	if (delta == 0)
+		return !VCALL(PStringsArePreciselyEqual) (key1->name, key2->name);
+
+	VCALL(FatalError) ("?File");
+	return 0xDEADBEEF;			// Special value to indicate we died
+#else
+	return 0;
+#endif
+}
+
+
+static void InstallDebuggerAndDisassembler ()
+{
+	extern char *DebuggerSource[];
+	int k;
+
+	printf ("\nInstalling the PowerPC Open Firmware client program "
+			"Debugger and Disassembler: 0x%08X\n", DebuggerSource);
+	for (k = 0; DebuggerSource[k]; ++k) Interpret (DebuggerSource[k]);
+}
+
+
+static void patchStupidOF105 ()
+{
+	/*****************************************************************************
+		Since I figured out all this stuff, I thought I would save it:
+		
+		In the CONTROL.of driver (vci0/control) in 1.0.5 Open Firmware in ROM:
+			HEADERLESS name:	Is at EXTERNAL name HEX offset:
+			' PING-CONTROL		' COLOR@ 430 -
+			' MY-CLOSE			' COLOR@ 40 -
+			' REGS				' COLOR@ C90 -
+
+		In the VIA-CUDA.of driver (/bandit/gc/via-cuda) in 1.0.5 Open Firmware in ROM:
+			HEADERLESS name:	Is at EXTERNAL name HEX offset:
+			' setByteACK		' WRITE 548 -
+			' setTIP			' WRITE 4D8 -
+
+	*****************************************************************************/
+
+#if USE_LAME_BUILTIN_ROM_CONTROL_DRIVER
+	Interpret ("dev /bandit/gc/via-cuda");
+
+	Interpret (
+		"hex "
+		
+		// Fix VIA-CUDA's WRITE method to add delay before setting
+		// input mode and to clear byteAck flag at end of WRITE.
+		"' write value &W "
+		": -&We &W swap - execute ; "
+		": P1 4D8 -&We false 548 -&We ; "
+		
+		// Add false setByteAck at end
+		"&W FC + ' P1 BLpatch "
+		
+		// Add 2ms delay before setting input mode
+		": P2 0c 2 ms ; "
+		"&W E0 + ' P2 BLpatch "
+		// device-end
+	);
+		
+		// Fix CONTROL's FILL-RECTANGLE not to pop too many things from the stack
+	Interpret ("dev vci0/control");
+	Interpret (
+		"60000000 ' fill-rectangle AC + code! "		// This is a PowerPC nop instruction
+		
+		// Since we must fix three methods the same way, define a new
+		// function to fix the Xs and Ys which are swapped in
+		// DRAW-RECTANGLE, FILL-RECTANGLE and READ-RECTANGLE.  Then
+		// fix 'em.
+		": z1 10 + dup @ 4+ over code! 10 + dup @ 4- swap code! ; "
+		"' draw-rectangle z1 "
+		"' read-rectangle z1 "
+		"' fill-rectangle z1 "
+	);
+
+	Interpret ("device-end");
+#else
+	{
+		extern char *Control2Source[];
+		int k;
+
+		printf ("\nInstalling bugfix replacement device drivers: 0x%08X\n",
+				Control2Source);
+
+		for (k = 0; Control2Source[k]; ++k) {
+			Interpret (Control2Source[k]);
+		}
+	}
+#endif
+	
+	// Install our sick O/F client program debugger and PowerPC disassembler
+	InstallDebuggerAndDisassembler ();
+}
+
+
+void DefineSpinIndicator ()
+{
+	CIArgs ciArgs;
+
+	// Create a time-based spin indicator for TFTP downloads
+	Interpret ("0 value last-spin 0 value spin-stage");
+
+	// Define a word for our background pixel value since it's only
+	// known to the C world at this point
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_1_0.forth = "value spin-bg";
+	ciArgs.args.interpret_1_0.arg1 = (CICell) kBackgroundPixel;
+	CallCI (&ciArgs);
+
+	// Define a word for our icon address value since it's only
+	// known to the C world at this point
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_1_0.forth = "value spin-icon";
+	ciArgs.args.interpret_1_0.arg1 = (CICell) NeXTIcon;
+	CallCI (&ciArgs);
+
+	// Define words for our icon's dimensions
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_1_0.forth = "value spinW";
+	ciArgs.args.interpret_1_0.arg1 = (CICell) kNeXTIconWidth;
+	CallCI (&ciArgs);
+
+/*
+		#include <stdio.h>
+		#include <math.h>
+
+
+		void main ()
+		{
+			const int N = 16;
+			const double kRadius = 75.0;
+			int n;
+
+			printf ("\" \"(");
+
+			for (n = 0; n < N; ++n) {
+				double theta = 2.0 * M_PI * (double) n / (double) N;
+				int x = (int) (kRadius * sin (theta));
+				int y = (int) (kRadius * cos (theta));
+
+				printf ("%02X%02X ", (unsigned char) x, (unsigned char) y);
+			}
+
+			printf (")\"\n");
+		}
+*/
+
+	Interpret (
+		// Table of circle x,y byte pairs (signed bytes)
+		"create stage-tab"
+		"	004B1C45 , 3535451C , 4B0045E4 , 35CB1CBB , "
+		"	00B5E4BB , CBCBBBE4 , B500BB1C , CB35E445 , "
+		": c-exts 18 << 18 >>a ;"
+	);
+
+	Interpret (
+		// Convert a stage number into a rectangle to fill- or draw-rectangle with
+		": stage>R { ; dx dy }"			// ( stage# -- x y width height )
+		"	2* stage-tab + dup"
+		"		c@ c-exts -> dx"
+		"		1+ c@ c-exts -> dy"
+		"	Dwidth spinW - 2/ dx +"		// ( x )
+		"	Dheight spinW - 2/ dy +"	// ( x y )
+		"	spinW dup"					// ( x y width height )
+		" ;"
+	);
+
+	// Define our spin routine
+	Interpret (
+		": 2ldr-spin"
+		"	get-msecs dup last-spin - d# 250 >= if"	// Do nothing if < 250ms has passed
+		"		to last-spin"
+
+		// Erase previous step
+		"		spin-bg spin-stage stage>R \" fill-rectangle\" ^dpy"
+
+		// Calculate new step #
+		"		spin-stage 1+ 0F and to spin-stage"
+
+		// Draw new step
+		"		spin-icon spin-stage stage>R \" draw-rectangle\" ^dpy"
+
+		"	else"
+		"		drop"
+		"	then"
+		" ;"
+	);
+
+	Interpret ("dev /packages/obp-tftp");
+
+
+	// Surround patch the LOAD method to set OUR spin routine exec
+	// token since the LOAD *command* rudely always sets its lame
+	// one...
+	Interpret (
+		": load"
+		"	['] 2ldr-spin to spin"
+		"	load"
+		" ;"
+	);
+	Interpret ("device-end");
+}
+
+
+void TryAllPartitionsOnDisk (int nPartitions, int partitionNumberToSkip)
+{
+	Partition part;
+	UInt32 requiredStatus;
+	int pass;
+
+	// If we get back after trying the default we need to do the
+	// laborious partition map enumeration looking for bootable
+	// partitions.  We do so carefully avoiding any attempt to retry
+	// the partitionNumberToSkip partition.  The first pass gives
+	// preference for partitions marked with pmPartStatus with the
+	// high order bit (boot priority bit) set.
+	for (requiredStatus = 0x80000037, pass = 0;
+		 pass < 2;
+		 requiredStatus = 0x37, ++pass)
+	{
+		int n;
+
+		for (n = 1; n <= nPartitions; ++n) {
+
+			// Avoid retry of default partition
+			if (n == partitionNumberToSkip) continue;
+			
+			if (kDebugLots) VCALL(ShowMessage) ("get pmE");
+			VCALL(ReadPartitionBlocks) (kReadRawDisk, &part, n, 1);
+
+			// Skip partitions that aren't Rhapsody FFS
+			if (!VCALL(StringsAreEqualCaseInsensitive) (part.pmParType,
+														"Apple_Rhapsody_FFS"))
+				continue;
+
+			// Skip parts that aren't mountable or aren't marked as containing valid data
+			if ((part.pmPartStatus & requiredStatus) != requiredStatus) continue;
+
+			// This looks like a live one -- try it!		
+			VCALL(TryPartition) (n);
+		}
+	}
+	
+	// If we return, we can assume that we have, sadly, failed.
+}
+
+
+int AccessDevice (CICell devIH, SecondaryLoaderVector *secondaryLoaderVectorsP)
+{
+	CIArgs ciArgs;
+	Partition part;
+	int n;
+	int nPartitions;
+	
+	cachePartitionNumber = 0;		// Destroy existing cache of partition information
+
+	// Tell Open Firmware world about our nifty new device ihandle
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_1_0.arg1 = devIH;
+	ciArgs.args.interpret_1_0.forth = "to bIH";
+	CallCI (&ciArgs);
+	
+	if (bootIH != 0) VCALL(DeaccessDevice) (bootIH, secondaryLoaderVectorsP);
+
+	if (kDebugLots) ShowMessage ("Access");
+	bootIH = devIH;
+
+	// Determine the lowest address we can use for extension memory.
+	// This done a bit wastefully and pretty cheesily: we use the
+	// address of a static variable plus our maximum possible size
+	// rounded up to the nearest page boundary to find a chunk of
+	// memory just beyond our own image.  A static variable is OK
+	// since our data is part of our image.
+	lowestExtensionBase = ((UInt32) &lowestExtensionBase
+						   + kMaximumSecondaryLoaderImageSize
+						   + kPageSize - 1)
+		& -kPageSize;
+
+	// Reset our memory allocation pointer
+	extensionBase = lowestExtensionBase;
+
+	// Read first partition map block so we can tell how many
+	// partitions there are on the disk
+	VCALL(ReadPartitionBlocks) (kReadRawDisk, &part, 1, 1);
+	nPartitions = part.pmMapBlkCnt;
+
+	// Now install all Secondary Loader Extensions found among this disk's partitions.
+	for (n = 1; n <= nPartitions; ++n) {
+		VCALL(ReadPartitionBlocks) (kReadRawDisk, &part, n, 1);
+		
+		// If partition type is right, load the extension and call its entry point
+		if (!defeatExtensions
+			&& VCALL(StringsAreEqualCaseInsensitive) (part.pmParType,
+										  kSecondaryLoaderExtensionPartitionType))
+		{
+			int k;
+
+			// Look for an empty extensions descriptor array slot to store
+			// this extension in			
+			for (k = 0; k < kMaximumExtensions; ++k) {
+
+				if (extensions[k].size == 0) {
+					UInt32 nBytes = (part.pmPartBlkCnt * kBlockSize + kPageSize - 1)
+						& -kPageSize;
+
+					extensions[k].base = VCALL(ClaimMemory) (extensionBase, nBytes, 0);
+					if (extensions[k].base == nil) {
+
+						if (kShowProgress) {
+							VCALL(ShowMessage) ("?ext mem");
+//							CIbreakpoint ();
+						}
+						break;
+					}
+
+					// Read the extension into memory and make SURE i-cache entries
+					// for that range are flushed
+					VCALL(ReadPartitionBlocks) (n, (void *) extensionBase, 0,
+												part.pmPartBlkCnt);
+					VCALL(DataToCode) ((void *) extensionBase, nBytes);
+					
+					// Successful load.  We get here when we get a valid extension
+					// loaded.  Call the code we just loaded, passing every useful
+					// parameter we can think of.  Extensions return ZERO if they
+					// are successful, or nonzero to indicate we should ignore them.
+					tVector[0] = extensionBase;	// PC to start next stage
+					tVector[1] = 0;				// Start with NIL rtoc value
+
+					if (kShowProgress) VCALL(ShowMessage) ("Ext");
+					if (((ExtensionEntryPointer) tVector) (devIH,
+														   gSecondaryLoaderVectors,
+														   gCIPointer)
+						== 0)
+					{
+						// Extension is happy, so remember it
+						extensions[k].size = nBytes;	// This marks slot as used too
+						extensionBase += nBytes;		// Keep track of allocated memory
+						if (kShowProgress) VCALL(ShowMessage) ("OK");
+					} else {
+						// Extension says no soap, so just free its memory and get
+						// on with life
+						VCALL(ReleaseMemory) (extensionBase, nBytes);
+						if (kShowProgress) VCALL(ShowMessage) ("~OK");
+					}
+					
+					break;
+				}
+			}
+
+			// If we fall out to here we either DID install the extension or we failed
+			// to do so -- either way, we continue to try to boot from the device.
+		}
+	}
+
+	return nPartitions;	
+}
+
+
+void DeaccessDevice (CICell devIH, SecondaryLoaderVector *secondaryLoaderVectorsP)
+{
+#pragma unused (devIH, secondaryLoaderVectorsP)
+	int k;
+
+	if (kDebugLots) ShowMessage ("Deaccess");
+
+	// Free the extensions' space
+	for (k = 0; k < kMaximumExtensions; ++k) {
+		if (extensions[k].size == 0) continue;			// Skip empty slots
+		ReleaseMemory (extensions[k].base, extensions[k].size);
+		extensions[k].size = 0;							// Mark slot as empty
+	}
+	
+	// We COULD NIL out the FORTH value "bIH" here, but that takes space
+	// and isn't really necessary.  Just zeroing bootIH is enough.
+	bootIH = 0;			// Remember there's no device accessible right now
+}
+
+
+// Retrieve a pointer to the NUL-terminated C string property value of the specified
+// property on the specified device tree node.
+char *GetPackagePropertyString (CICell phandle, char *propertyName)
+{
+	CIArgs ciArgs;
+	
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 4;
+	ciArgs.nReturns = 2;
+	ciArgs.args.interpret_3_1.arg1 = phandle;
+	ciArgs.args.interpret_3_1.arg2 = cStringLength (propertyName);
+	ciArgs.args.interpret_3_1.arg3 = (CICell) propertyName;
+	ciArgs.args.interpret_3_1.forth =	// ( propname propnamelen phandle -- propptr|0 )
+		"GPP$ if drop else 0 then";
+
+	if (CallCI (&ciArgs) != 0 || ciArgs.args.interpret_3_1.catchResult != 0) return 0;
+
+	return (char *) ciArgs.args.interpret_3_1.return1;
+}
+
+
+CICell GetParentPHandle (CICell phandle)
+{
+	CIArgs ciArgs;
+	ciArgs.service = "parent";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 1;
+	ciArgs.args.parent.childPhandle = phandle;
+	if (CallCI (&ciArgs) != 0) return 0;
+	return ciArgs.args.parent.parentPhandle;
+}
+
+
+CICell GetPeerPHandle (CICell phandle)
+{
+	CIArgs ciArgs;
+	ciArgs.service = "peer";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 1;
+	ciArgs.args.peer.phandle = phandle;
+	if (CallCI (&ciArgs) != 0) return 0;
+	return ciArgs.args.peer.peerPhandle;
+}
+
+
+CICell GetChildPHandle (CICell phandle)
+{
+	CIArgs ciArgs;
+	ciArgs.service = "child";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 1;
+	ciArgs.args.child.phandle = phandle;
+	if (CallCI (&ciArgs) != 0) return 0;
+	return ciArgs.args.child.childPhandle;
+}
+
+
+// NOTE that this evalutes "C" a bunch of times -- don't use side-effect parameters
+#define isHexChar(C)	((C) >= '0' && (C) <= '9' \
+						 || (C) >= 'A' && (C) <= 'F' \
+						 || (C) >= 'a' && (C) <= 'f')
+
+
+// Format value as unsigned hex at "p" returning updated "p" pointing after last
+// character written into the buffer.
+static char *formatHex (char *p, UInt32 value)
+{
+	static const char hexDigits[] = "0123456789ABCDEF";
+	int n;
+	int nDigits;
+	UInt32 temp;
+
+	// First count the number of digits we'll store by walking through
+	// value til it's zero
+	for (nDigits = 0, temp = value; temp != 0; temp >>= 4) ++nDigits;
+	if (nDigits == 0) nDigits = 1;		// Always store at least one zero
+
+	// Now format the digits into the buffer
+	for (temp = value, n = nDigits - 1; n >= 0; --n) {
+		p[n] = hexDigits[temp & 15];
+		temp >>= 4;
+	}
+
+	return p + nDigits;
+}
+
+
+// Starting at "p" decode a hex number.  Store the resulting value
+// through *valueP and return the updated "p" to point to the
+// character that terminated the scan.
+static char *eatHex (char *p, UInt32 *valueP)
+{
+	UInt32 value = 0;
+	
+	while (isHexChar (*p)) {
+		int ch = *p++;
+		value <<= 4;
+		value |=	ch >= 'a' ? ch - 'a' + 10 :
+					ch >= 'A' ? ch - 'A' + 10 :
+					ch - '0';
+	}
+	
+	*valueP = value;
+	return p;
+}
+
+
+void TryThisUnit (CICell phandle, UInt32 unit)
+{
+	char path[400];
+	CIArgs ciArgs;
+	int k;
+	char *p;
+	int nPartitions;
+	
+	ciArgs.service = "package-to-path";
+	ciArgs.nArgs = 3;
+	ciArgs.nReturns = 1;
+	ciArgs.args.packageToPath.phandle = phandle;
+	ciArgs.args.packageToPath.buf = path;
+	ciArgs.args.packageToPath.buflen = sizeof (path);
+	
+	if (CallCI (&ciArgs) != 0 || ciArgs.args.packageToPath.length < 0) return;
+	
+	// Find the right-most '@' before any '/' so we can put in our own unit #
+	for (k = ciArgs.args.packageToPath.length - 1; k > 0; --k) {
+		if (path[k] == '@' || path[k] == '/') break;
+	}
+	
+	if (k == 0 || path[k] != '@') {		// No trailing '@' means we have to append one?
+		k = ciArgs.args.packageToPath.length - 1;
+		path[k++] = '@';
+	} else {
+		++k;							// Point past the last '@'
+	}
+
+	p = formatHex (path + k, unit);		// Replace any existing unit # with OURS
+	*p = 0;								// NUL terminate the string
+	
+	if (kDebugLots) {
+		VCALL(ShowMessage) ("Unit");
+		VCALL(ShowMessage) (path);
+	}
+
+	// Now open the resulting device specifier and give it a whirl
+	ciArgs.service = "open";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 1;
+	ciArgs.args.open.deviceSpecifier = path;
+	if (CallCI (&ciArgs) != 0 || ciArgs.args.open.ihandle == 0) return;
+	
+	// Open happened OK, so try booting from it!
+	nPartitions = VCALL(AccessDevice) (ciArgs.args.open.ihandle, gSecondaryLoaderVectors);
+	VCALL(TryAllPartitionsOnDisk) (nPartitions, 0);
+
+	// We do matching DeaccessDevice call lazily on next AccessDevice call (if any)
+}
+
+
+// Device tree looks like: (... (scsi-int:scsi (sd:block))) or
+// (... (ata-int:ata (ad:block))) where the sd node has units 0..7 for
+// a standard SCSI bus and 0..1 for a standard ATA "bus".  If there's
+// a "name goes here" property on the "block" node, the unit# range or
+// enumeration to try comes from that.  This permits things like
+// FireWire which has a very LARGE possible set of unit numbers to
+// describe for us those that are detected by the bus.
+
+// If the parent node is not "scsi" or "ata" and no AAPL,units
+// property exists, we assume the device is something wiggy like a PC
+// Card that has only one unit (#0).
+
+// AAPL,units property values must be a comma separated sequence in the following syntax:
+//		startUnit [ '-' endingUnit ]
+//	where
+//		brackets enclose part of the specification that are optional
+//				(brackets are metasyntax).
+//		startUnit and endingUnit are hex numbers (only 0-9 and A-F or a-f allowed)
+//			specifying the first unit to try and the last unit to try.  If startUnit
+//			is less than lastUnit, the sequence is ascending.  Otherwise descending.
+//			startUnit may equal endUnit, but it's a waste of string space since leaving
+//			the "'-' endUnit" off the specification is equivalent.
+//
+//	Example:
+//		0-F,42,100-F0		means do 0, 1, 2, .. 0E, 0F
+//							then do 42,
+//							then do from 100 down to 0F0.
+
+void TryThisDevice (CICell phandle)
+{
+	char *unitsP;
+	char *deviceTypeP;
+	
+	// Ignore devices that aren't of type "block"
+	deviceTypeP = VCALL(GetPackagePropertyString) (phandle, "device_type");
+
+	if (kDebugLots && deviceTypeP != nil) {
+		VCALL(ShowMessage) ("TryDev");
+		VCALL(ShowMessage) (deviceTypeP);
+	}
+
+	if (deviceTypeP == nil || !VCALL(StringsAreEqualCaseInsensitive) (deviceTypeP,
+																	  "block"))
+		return;
+
+	// Get the "AAPL,units" property if any on the node to find the unit #s to try.
+	unitsP = VCALL(GetPackagePropertyString) (phandle, "AAPL,units");
+	
+	// No AAPL,units means we do the default for the parent device_type
+	if (unitsP == 0) {
+		char *parentDeviceTypeP;
+		CICell parentPH = VCALL(GetParentPHandle) (phandle);
+
+		if (parentPH != 0) {
+	
+			parentDeviceTypeP = VCALL(GetPackagePropertyString) (parentPH,
+																 "device_type");
+	
+			if (parentDeviceTypeP != nil) {
+	
+				if (VCALL(StringsAreEqualCaseInsensitive) (parentDeviceTypeP,
+														   "scsi"))
+					unitsP = "7-0";
+				else if (VCALL(StringsAreEqualCaseInsensitive) (parentDeviceTypeP,
+																"ata"))
+					unitsP = "0-1";
+			}
+		}		
+	}
+
+	// If all else fails, we just use unit #0 on the device and hope for the best.
+	if (unitsP == nil) unitsP = "0";
+	
+	while (*unitsP != 0) {
+		UInt32 unit;
+		UInt32 startUnit, endUnit;
+		int delta;
+		
+		if (kDebugLots) {
+			VCALL(ShowMessage) ("unitsP");
+			VCALL(ShowMessage) (unitsP);
+		}
+
+		unitsP = eatHex (unitsP, &startUnit);
+		
+		if (*unitsP == '-') {
+			unitsP = eatHex (unitsP, &endUnit);
+		} else {
+			endUnit = startUnit;
+		}
+
+		if (startUnit <= endUnit)
+			delta = 1;
+		else
+			delta = -1;
+
+		for (unit = startUnit; ; unit += delta) {
+			VCALL(TryThisUnit) (phandle, unit);
+			if (unit == endUnit) break;
+		}
+		
+		if (*unitsP == ',')
+			++unitsP;		// Skip delimiting comma
+		else
+			break;			// ANY other character means we're done
+	}
+}
+
+
+// Called to search the device tree (possibly recursively) starting at
+// root (a phandle).  Doesn't return if a bootable device is found (it
+// boots instead of returning).  For each device, calls TryThisDevice,
+// which never returns if the device successfully boots.
+void SearchDeviceTree (CICell root)
+{
+	CICell node;
+
+	if (root == 0) return;
+
+	if (kDebugLots) {
+		CIArgs ciArgs;
+
+		ciArgs.service = "interpret";
+		ciArgs.nArgs = 2;
+		ciArgs.nReturns = 1;
+		ciArgs.args.interpret_1_0.arg1 = root;
+		ciArgs.args.interpret_1_0.forth = ".\" Srch:\" . cr";
+		CallCI (&ciArgs);
+	}
+
+	VCALL(TryThisDevice) (root);
+
+	// Now traverse the first child of this node and its peers, recursing on each one.
+	// If we succeed, we don't come back.
+	for (node = VCALL(GetChildPHandle) (root);
+		 node != 0;
+		 node = VCALL(GetPeerPHandle) (node))
+	{
+		VCALL(SearchDeviceTree) (node);
+	}
+}
+
+
+/* STUBS FOR NeXT BOOTER */
+void time18 () {}
+void readKeyboardStatus () {}
+void halt () { for (;;) ; }
+int __environ[4];
+unsigned long kernBootStruct[20];
+/**/
+
+#if 0
+void printf_putchar (int ch)
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "interpret";
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_1_0.arg1 = ch;
+
+	if (ch == 0x0A) {
+		ciArgs.nArgs = 1;
+		ciArgs.args.interpret_1_0.forth = "cr";
+	} else {
+		ciArgs.nArgs = 2;
+		ciArgs.args.interpret_1_0.forth = "emit";
+	}
+
+	CallCI (&ciArgs);
+}
+#endif
+
+
+void sleep (int n)
+{
+	CIArgs ciArgs;
+
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 2;
+	ciArgs.nReturns = 1;
+	ciArgs.args.interpret_1_0.arg1 = n * 1000;
+	ciArgs.args.interpret_1_0.forth = "ms";
+	CallCI (&ciArgs);
+}
+
+
+static void networkLoadKernel ()
+{
+	int st;
+	int fd;
+	int kernelSize = 0;
+	UInt32 kernelAddr = 0;
+	struct mach_header header;
+	UInt32 entryPoint = 0;
+	UInt32 loadBase;
+	CIArgs ciArgs;
+
+	// Generate a LOAD command to evaluate by concatenating "LOAD "
+	// with boot-file's value This loads the actual kernel file into
+	// memory at load-base.
+	Interpret (
+		".( Loading Rhapsody Kernel...) cr "
+		"80 dup allot here 0 "			/* Allocate space for our LOAD command string */
+		" \" LOAD \" $cat "
+		"boot-file $cat "
+		"cr 2dup type cr evaluate drop "
+		"state-valid on "						// For debugging early crashes
+		"cr .\" [done]\" cr "
+	);
+
+	// Determine the value of "load-base" in Open Firmware which is where the
+	// kernel image was just loaded.
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 2;
+	ciArgs.args.interpret_0_1.forth = "load-base";
+	CallCI (&ciArgs);
+	loadBase = ciArgs.args.interpret_0_1.return1;
+
+	printf ("Preparing kernel for execution...\n");
+	fd = openmem (loadBase, kMaxLoadSize);
+	st = loadprog (DEV_SD, fd, &header, &entryPoint, &kernelAddr, &kernelSize);
+
+	printf ("fd=%d, st=%d, kernel entry=0x%x, base=0x%x, size=0x%x\n",
+			fd, st, entryPoint, kernelAddr, kernelSize);
+
+	// Don't leave our icon partially rotated -- make it pretty
+	VCALL(ShowWelcomeIcon) ();
+
+	// Call it
+	if (kShowProgress) VCALL(ShowMessage) ("Call kernel!");
+	asm (".long 0x0FE01234");
+	if (st == 0) (*(void (*) ()) entryPoint) ();
+}
+
+
+void SecondaryLoaderMain (void *junk1, void *junk2, ClientInterfacePtr ciPointer)
+{
+#pragma unused (junk1, junk2)
+	CIArgs ciArgs;
+	int defaultPartNo;
+	int nPartitions;
+	CICell devIH;
+	UInt32 mallocArenaVirt;
+
+	gCIPointer = ciPointer;
+
+   // Initialize our Open Firmware assumptions
+	Interpret (
+#if DEBUG
+		" ' u. to . "				// Temporary for debugging
+		"cr .\" Rhapsody Kernel Loader\" cr "
+#endif
+		// MUCH OF THE FORTH IN THIS LOADER DEPENDS ON THIS SETTING
+		"hex "
+
+		": D2NIP decode-int nip nip ;\r" 	 // A useful function to save space
+		": GPP$ get-package-property 0= ;\r" // Another useful function to save space
+		": ^on0 0= if -1 throw then ;\r"	 // Bail if result zero
+		": $CM $call-method ;\r"
+		
+		"0 value bIH\r"						 // ihandle for dev we're booting from now
+	);
+
+	Interpret (
+		": ^bIH bIH $CM drop ;\r"			 // shortcut word to save space
+
+		" \" /chosen\" find-package if "
+			"dup \" memory\" rot GPP$ if "
+				"D2NIP swap "				 // ( MEMORY-ihandle "/chosen"-phandle )
+				"\" mmu\" rot GPP$ if "
+					"D2NIP "				 // ( MEMORY-ihandle MMU-ihandle )
+				"else "
+					"0 "					 // ( MEMORY-ihandle 0 )
+				"then "
+			"else "
+				"0 0 "						 // ( 0 0 )
+			"then "
+		"else "
+			"0 0 "							 // ( 0 0 )
+		"then\r"
+		"value mmu# "
+		"value mem# "
+	);
+
+	Interpret (
+		": ^mem mem# $CM ;\r"
+		": ^mmu mmu# $CM ;\r"
+	);
+
+	Interpret (
+		// Build a "claim" method replacement ( virt size align -- virt )
+		": $clm { _v _s _a ; _av _p } "
+			"_v _s _a \" claim\" ^mmu -> _av "	// Ask MMU for address space first
+			"_av ^on0 "							// Check for failure
+			"_a 0= if _av then "				// If align==0 we want logical==physical
+			"_s _a \" claim\" ^mem -> _p "		// Alloc physical memory next
+			"_p ^on0 "							// Check for failure
+			"_p _av _s 10 \" map\" ^mmu "		// Map phys mem to _av (mode=10)
+			"_av ; "							// Return allocated virtual base
+	);
+
+	Interpret (
+		": $CAT	"			// ( _max _str1 _len1 _str2 _len2 -- _max _str1 _len1+2 )
+		"{ _m _s _l _s1 _l1 } "
+		"_l _l1 + _m - dup 0> if _l1 swap - -> _l1 else drop then "
+		"_s1 _s _l + _l1 move "
+		"_m _s _l _l1 + ; "
+	);
+
+	// Apply patches for PowerSurge ROMs to fix CONTROL
+	// onboard video frame buffer driver in case we encounter
+	// difficulties and need to display something for the user.
+	if (isPowerSurgeOF ()) patchStupidOF105 ();
+	
+	// Open the display and draw the gray screen
+	(void) VCALL(FindAndOpenDisplay) (nil, nil);
+
+	DefineSpinIndicator ();
+
+#if 1
+	networkLoadKernel ();
+#else
+	// Claim our malloc arena and initialize the zalloc malloc package
+	mallocArenaVirt = VCALL(ClaimMemory) (0, ZALLOC_LEN, kPageSize);
+	malloc_init ((char *) mallocArenaVirt, ZALLOC_LEN, 512);
+
+	// Open the /macosboot pseudo-device and get its "dev" property to
+	// get the path to the disk device we're loading from.  Open that
+	// device and save the resulting instance handle in devIH.
+	ciArgs.service = "interpret";
+	ciArgs.nArgs = 1;
+	ciArgs.nReturns = 2;
+	ciArgs.args.interpret_0_1.forth =		 	// ( -- devIH )
+		"\" /macosboot\" open-dev to my-self "	// Open our special boot 'device'
+		"\" dev\" get-my-property if "
+			"0 "								// FAILURE means return 0
+		"else "
+			"3 - "								// Subtract THREE to remove ":0<NUL>"
+			"open-dev "							// Open the raw dev we were loaded from
+		"then "
+		;
+
+	CallCI (&ciArgs);
+	devIH = ciArgs.args.interpret_0_1.return1;
+
+	if (devIH != 0) {
+		char bootFile[256];
+		char *p;
+
+		// Grab the partition number and kernel filename from the boot-file
+		// environment variable.
+		ciArgs.service = "interpret";
+		ciArgs.nArgs = 1;
+		ciArgs.nReturns = 3;
+		ciArgs.args.interpret_0_2.forth = "boot-file";
+		CallCI (&ciArgs);
+
+		// Copy result so we can NUL terminate it (!)
+		memcpy (bootFile,
+				(void *) ciArgs.args.interpret_0_2.return2,
+				ciArgs.args.interpret_0_2.return1);
+
+		// Gobble the leading hex digits string as a partition number to boot from.
+		p = eatHex (bootFile, (UInt32 *) &defaultPartNo);
+
+		// Gobble the next chunk (skip the separating ",") up to the
+		// second "," as the kernel file name.  (After the second ","
+		// is the device to try first which we already have.)
+		if (*p == ',') {
+			char *kp;
+
+			++p;
+			for (kp = loadFileName; *p && *p != ','; ) *kp++ = *p++;
+			*kp = 0;			// NUL terminate kernel filename
+		}
+
+		defaultPartNo = 0;		// TEMPORARY
+
+		nPartitions = VCALL(AccessDevice) (devIH, gSecondaryLoaderVectors);
+	
+#if 0							// TEMPORARY
+		// Try to boot from the default partition
+		VCALL(TryPartition) (defaultPartNo);
+#endif
+			
+		VCALL(TryAllPartitionsOnDisk) (nPartitions, defaultPartNo);
+	}
+
+	// Search the entire device tree looking desperately for something to boot...
+	if (kDebugLots) VCALL(ShowMessage) ("DevSrch");
+	VCALL(SearchDeviceTree) (VCALL(GetPeerPHandle) (0));
+
+	// Nothing we have tried worked, so just give up and tell the user
+	// "At warp 9.5 she's a-goin' nowhere mighty fast"...
+	VCALL(DeathScreen) ("?no dev");		// This never returns
+#endif
+
+}

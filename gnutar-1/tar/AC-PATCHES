@@ -1,0 +1,30 @@
+--- autoconf-2.12-ref/acgeneral.m4	Tue Nov 26 13:09:42 1996
++++ autoconf-2.12/acgeneral.m4	Wed Apr 16 22:16:40 1997
+@@ -1063,7 +1063,7 @@
+ # and sets the high bit in the cache file unless we assign to the vars.
+ changequote(, )dnl
+ (set) 2>&1 |
+-  case `(ac_space=' '; set) 2>&1` in
++  case `(ac_space=' '; set) 2>&1 | grep ac_space` in
+   *ac_space=\ *)
+     # `set' does not quote correctly, so add quotes (double-quote substitution
+     # turns \\\\ into \\, and sed turns \\ into \).
+--- autoconf-2.12-ref/acspecific.m4	Wed Nov 20 00:10:49 1996
++++ autoconf-2.12/acspecific.m4	Sat Apr 19 15:33:08 1997
+@@ -451,8 +451,14 @@
+ 	    # OSF/1 installbsd also uses dspmsg, but is usable.
+ 	    :
+ 	  else
+-	    ac_cv_path_install="$ac_dir/$ac_prog -c"
+-	    break 2
++	    if test $ac_prog = installbsd &&
++	      grep src/bos $ac_dir/$ac_prog >/dev/null 2>&1; then
++	      # AIX installbsd doesn't work without option "-g".
++	      :
++	    else
++	      ac_cv_path_install="$ac_dir/$ac_prog -c"
++	      break 2
++	    fi
+ 	  fi
+ 	fi
+       done

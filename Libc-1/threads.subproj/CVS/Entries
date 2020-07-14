@@ -1,0 +1,15 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:19:42 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:19:42 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:19:42 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:19:42 1999//TLibc-1
+/cprocs.c/1.1.1.1/Wed Apr 14 23:19:42 1999//TLibc-1
+/cthread_internals.h/1.1.1.1/Wed Apr 14 23:19:42 1999//TLibc-1
+/cthreads.c/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+/cthreads.h/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+/cthreads_sync.c/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+/mig_support.c/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+/sched.c/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+/stack.c/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+/threads_data.c/1.1.1.1/Wed Apr 14 23:19:43 1999//TLibc-1
+D/i386.subproj////
+D/ppc.subproj////

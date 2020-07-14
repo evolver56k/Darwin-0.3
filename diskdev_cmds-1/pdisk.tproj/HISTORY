@@ -1,0 +1,16 @@
+961108	Started work
+961113	Released version 0.1 to MkLinux Team (vlb, lion, brett, gilbert)
+	Reads, initializes maps and add and delete partitions
+
+961127	Started work again
+	Tried to make it easier to use
+	Added reorder and resize commands
+	Little endian machine support
+	Fixed various bugs
+	Wrote man page
+961218	Released version 0.2 to gilbert
+
+961219	Fixed bugs gilbert found
+961220	Released version 0.3 to community
+
+970115	Released version 0.4 (with Macintosh app)

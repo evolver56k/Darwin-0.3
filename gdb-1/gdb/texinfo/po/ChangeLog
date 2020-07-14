@@ -1,0 +1,9 @@
+Wed Nov  4 19:12:30 1998  Dave Brolley  <brolley@cygnus.com>
+	
+	* po/texinfo.pot: Regenerated.
+	
+Thu Sep  4 15:01:33 1997  Jeffrey A Law  (law@cygnus.com)
+
+	* Makefile.in.in (install-info): Add dummy target.
+
+

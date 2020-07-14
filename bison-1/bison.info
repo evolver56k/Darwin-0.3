@@ -1,0 +1,20 @@
+##
+# bison
+##
+
+Title		Bison Parser Generator
+BuildDiskTitle	Bison Parser Generator
+Version		1.25
+Description	This package contains bison, the GNU parser generator.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		bison #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

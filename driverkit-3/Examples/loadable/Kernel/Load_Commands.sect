@@ -1,0 +1,17 @@
+# Initialization
+
+CALL		myHandlerInit		0
+
+# Associate ports with proc/arg
+
+HMAP		myHandler	myHandler_handler	myHandlerStruct
+ADVERTISE	myHandler
+
+# This driver must be wired down.
+
+WIRE
+
+
+
+
+

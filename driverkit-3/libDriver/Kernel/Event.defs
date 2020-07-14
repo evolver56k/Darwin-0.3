@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+/*
+ * File:	bsd/dev/Event_server.defs
+ *
+ */
+subsystem       Event 31000; 
+
+/* Select a userprefix to bring the user side in compliance with the name
+ * format for private API.
+ */
+userprefix	_NX;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+type unsigned			= int;
+type EVString			= array[64] of char;
+type EVObjectNumber		= unsigned;
+type EVParameterName		= array[64] of char;
+type EVIntParameter		= array[*:64] of int;
+type EVCharParameter		= array[*:4096] of char;
+
+import <bsd/dev/evio.h>;
+
+routine EvOpen(
+                device_master          	: port_t;
+        in      event_port          	: port_t );
+
+routine EvClose(
+                device_master          	: port_t;
+        in      event_port          	: port_t );
+
+routine EvMapEventShmem(
+                device_master          	: port_t;
+        in      event_port          	: port_t;
+	in	task			: port_t;
+	in	size			: vm_size_t;
+	out	addr			: vm_offset_t );
+
+routine EvFrameBufferDevicePort(
+                device_master          	: port_t;
+        in      event_port          	: port_t;
+	in	name			: EVString;
+	in	class			: EVString;
+	out	nameDevicePort		: port_t );
+
+routine EvSetSpecialKeyPort(
+                device_master          	: port_t;
+	in	special_key		: int;
+        in      key_port          	: port_t );
+
+
+/*
+ * Get/set parameter RPCs.
+ */
+
+routine EvGetParameterInt(
+                device_master          	: port_t;
+	in	unit			: EVObjectNumber;
+	in	parameterName		: EVParameterName;
+	in	maxCount		: unsigned;
+	out	parameterArray		: EVIntParameter);
+	
+routine EvGetParameterChar(
+                device_master          	: port_t;
+	in	unit			: EVObjectNumber;
+	in	parameterName		: EVParameterName;
+	in	maxCount		: unsigned;
+	out	parameterArray		: EVCharParameter);
+	
+routine EvSetParameterInt(
+                device_master          	: port_t;
+	in	unit			: EVObjectNumber;
+	in	parameterName		: EVParameterName;
+	in	parameterArray		: EVIntParameter);
+	
+routine EvSetParameterChar(
+                device_master          	: port_t;
+	in	unit			: EVObjectNumber;
+	in	parameterName		: EVParameterName;
+	in	parameterArray		: EVCharParameter);
+

@@ -1,0 +1,19 @@
+/dinode.h/1.1.1.2/Thu Jul 22 22:57:28 1999/-kb/Tkernel-7
+/dir.h/1.1.1.2/Thu Jul 22 22:57:28 1999/-kb/Tkernel-7
+/inode.h/1.1.1.2/Thu Jul 22 22:57:28 1999/-kb/Tkernel-7
+/lockf.h/1.1.1.2/Thu Jul 22 22:57:28 1999/-kb/Tkernel-7
+/quota.h/1.1.1.2/Thu Jul 22 22:57:28 1999/-kb/Tkernel-7
+/ufs_bmap.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_byte_order.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_byte_order.h/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_extern.h/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_ihash.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_inode.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_lockf.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_lookup.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_quota.c/1.1.1.2/Thu Jul 22 22:57:29 1999/-kb/Tkernel-7
+/ufs_readwrite.c/1.1.1.2/Thu Jul 22 22:57:30 1999/-kb/Tkernel-7
+/ufs_vfsops.c/1.1.1.2/Thu Jul 22 22:57:30 1999/-kb/Tkernel-7
+/ufs_vnops.c/1.1.1.2/Thu Jul 22 22:57:30 1999/-kb/Tkernel-7
+/ufsmount.h/1.1.1.2/Thu Jul 22 22:57:30 1999/-kb/Tkernel-7
+D

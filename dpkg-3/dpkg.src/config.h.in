@@ -1,0 +1,262 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if using alloca.c.  */
+#undef C_ALLOCA
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define to one of _getb67, GETB67, getb67 for Cray-2 and Cray-YMP systems.
+   This function is required for alloca.c support on those systems.  */
+#undef CRAY_STACKSEG_END
+
+/* Define if you have alloca, as a function or macro.  */
+#undef HAVE_ALLOCA
+
+/* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
+#undef HAVE_ALLOCA_H
+
+/* Define if you don't have vprintf but do have _doprnt.  */
+#undef HAVE_DOPRNT
+
+/* Define if you have a working `mmap' system call.  */
+#undef HAVE_MMAP
+
+/* Define if you have the vprintf function.  */
+#undef HAVE_VPRINTF
+
+/* Define as __inline if that's what the C compiler calls it.  */
+#undef inline
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef mode_t
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define if you need to in order for stat and other things to work.  */
+#undef _POSIX_SOURCE
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* If using the C implementation of alloca, define if you know the
+   direction of stack growth for your system; otherwise it will be
+   automatically deduced at run-time.
+ STACK_DIRECTION > 0 => grows toward higher addresses
+ STACK_DIRECTION < 0 => grows toward lower addresses
+ STACK_DIRECTION = 0 => direction of growth unknown
+ */
+#undef STACK_DIRECTION
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
+/* The name of the package being compiled */
+#define PACKAGE ""
+
+/* The version of the package */
+#define VERSION ""
+
+/* Define if inline functions a la GCC are available.  */
+#undef HAVE_INLINE
+
+/* Define if sysinfo is available.  */
+#undef HAVE_SYSINFO
+
+/* Define if constant functions a la GCC 2.5 and higher are available.  */
+#undef HAVE_GNUC25_CONST
+
+/* Set this to the canonical Debian architecture string for this CPU type. */
+#undef ARCHITECTURE
+
+/* Set this to 1 to build new archives by default. */
+#define BUILDOLDPKGFORMAT 0
+
+/* Set this string to append something to the version number. */
+#define ARCHBINFMT ""
+
+/* Define to 1 if NLS is requested.  */
+#undef ENABLE_NLS
+
+/* Define as 1 if you have catgets and don't want to use GNU gettext.  */
+#undef HAVE_CATGETS
+
+/* Define as 1 if you have gettext and don't want to use GNU gettext.  */
+#undef HAVE_GETTEXT
+
+/* Define if your locale.h file contains LC_MESSAGES.  */
+#undef HAVE_LC_MESSAGES
+
+/* Define as 1 if you have the stpcpy function.  */
+#undef HAVE_STPCPY
+
+/* The number of bytes in a unsigned int.  */
+#undef SIZEOF_UNSIGNED_INT
+
+/* The number of bytes in a unsigned long.  */
+#undef SIZEOF_UNSIGNED_LONG
+
+/* Define if you have the __argz_count function.  */
+#undef HAVE___ARGZ_COUNT
+
+/* Define if you have the __argz_next function.  */
+#undef HAVE___ARGZ_NEXT
+
+/* Define if you have the __argz_stringify function.  */
+#undef HAVE___ARGZ_STRINGIFY
+
+/* Define if you have the dcgettext function.  */
+#undef HAVE_DCGETTEXT
+
+/* Define if you have the getcwd function.  */
+#undef HAVE_GETCWD
+
+/* Define if you have the getpagesize function.  */
+#undef HAVE_GETPAGESIZE
+
+/* Define if you have the munmap function.  */
+#undef HAVE_MUNMAP
+
+/* Define if you have the putenv function.  */
+#undef HAVE_PUTENV
+
+/* Define if you have the setenv function.  */
+#undef HAVE_SETENV
+
+/* Define if you have the setlocale function.  */
+#undef HAVE_SETLOCALE
+
+/* Define if you have the stpcpy function.  */
+#undef HAVE_STPCPY
+
+/* Define if you have the strcasecmp function.  */
+#undef HAVE_STRCASECMP
+
+/* Define if you have the strchr function.  */
+#undef HAVE_STRCHR
+
+/* Define if you have the <argz.h> header file.  */
+#undef HAVE_ARGZ_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <locale.h> header file.  */
+#undef HAVE_LOCALE_H
+
+/* Define if you have the <malloc.h> header file.  */
+#undef HAVE_MALLOC_H
+
+/* Define if you have the <nl_types.h> header file.  */
+#undef HAVE_NL_TYPES_H
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define if you have the <sys/cdefs.h> header file.  */
+#undef HAVE_SYS_CDEFS_H
+
+/* Define if you have the <sys/param.h> header file.  */
+#undef HAVE_SYS_PARAM_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the <values.h> header file.  */
+#undef HAVE_VALUES_H
+
+/* Define if you have the i library (-li).  */
+#undef HAVE_LIBI
+/* These are from config.h.bot, pasted onto the end of config.h.in. */
+
+#ifdef HAVE_SYS_CDEFS_H
+#include <sys/cdefs.h>
+#endif
+
+/* Use the definitions: */
+
+/* Give us an unsigned 32-bit data type. */
+#if SIZEOF_UNSIGNED_LONG==4
+#define UWORD32 unsigned long
+#elif SIZEOF_UNSIGNED_INT==4
+#define UWORD32 unsigned int
+#else
+#error I do not know what to use for a UWORD32.
+#endif
+
+/* The maximum length of a #! interpreter displayed by dpkg-deb. */
+#ifdef PATH_MAX
+#define INTERPRETER_MAX PATH_MAX
+#else
+#define INTERPRETER_MAX 1024
+#endif
+
+/* GNU C attributes. */
+#ifndef FUNCATTR
+#ifdef HAVE_GNUC25_ATTRIB
+#define FUNCATTR(x) __attribute__(x)
+#else
+#define FUNCATTR(x)
+#endif
+#endif
+
+/* GNU C printf formats, or null. */
+#ifndef ATTRPRINTF
+#ifdef HAVE_GNUC25_PRINTFFORMAT
+#define ATTRPRINTF(si,tc) format(printf,si,tc)
+#else
+#define ATTRPRINTF(si,tc)
+#endif
+#endif
+#ifndef PRINTFFORMAT
+#define PRINTFFORMAT(si,tc) FUNCATTR((ATTRPRINTF(si,tc)))
+#endif
+
+/* GNU C nonreturning functions, or null. */
+#ifndef ATTRNORETURN
+#ifdef HAVE_GNUC25_NORETURN
+#define ATTRNORETURN noreturn
+#else /* ! HAVE_GNUC25_NORETURN */
+#define ATTRNORETURN
+#endif /* HAVE_GNUC25_NORETURN */
+#endif /* ATTRNORETURN */
+
+#ifndef NONRETURNING
+#define NONRETURNING FUNCATTR((ATTRNORETURN))
+#endif /* NONRETURNING */
+
+/* Combination of both the above. */
+#ifndef NONRETURNPRINTFFORMAT
+#define NONRETURNPRINTFFORMAT(si,tc) FUNCATTR((ATTRPRINTF(si,tc),ATTRNORETURN))
+#endif
+
+/* GNU C constant functions, or null. */
+#ifndef ATTRCONST
+#ifdef HAVE_GNUC25_CONST
+#define ATTRCONST const
+#else
+#define ATTRCONST
+#endif
+#endif
+#ifndef CONSTANT
+#define CONSTANT FUNCATTR((ATTRCONST))
+#endif
+
+/* Define WCOREDUMP if we don't have it already - coredumps won't be
+   detected, though. */
+#ifndef WCOREDUMP
+#define WCOREDUMP(x) 0
+#endif
+
+/* Set BUILDOLDPKGFORMAT to 1 to build old-format archives by default. */
+#ifndef BUILDOLDPKGFORMAT
+#define BUILDOLDPKGFORMAT 0
+#endif

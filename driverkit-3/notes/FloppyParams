@@ -1,0 +1,94 @@
+			Floppy disk param notes
+			
+Current driver
+
+fd_attach_com {
+
+	recal, abort if error (do some retries);
+	get status (MID, WP, etc.);
+	get struct fd_disk_info (fd_format_info.fd_disk_info) via MID;
+	for(fd_format_info.density_info.density= 4 to 1) {
+		seek to read_id_cyl (should ++);
+		if read_id works
+			goto found_dens;
+	}
+	
+    found_dens:
+	if density = none {
+	    	disk unformatted:
+		
+	    	// get defaults for density, sect_size
+	    	density = fd_format_info.fd_disk_info.max_density; 
+		sect_size = fd_get_sectsize_info(density)[0].sect_size
+		set_density_info(density); 
+		set_sector_size(sect_size);
+		return;
+	}
+	
+	mark disk as formatted to allow reading;
+	for each legal sect_size for the fd_sectsize_info for this density {
+		set_sector_size(sect_size);
+		do a retry loop {
+			read(test_sector++);
+			if good
+				goto found_sect_size;
+		}		
+	}
+	mark disk unformatted;
+	return;
+	
+    found_sect_size:
+    	return good;
+	
+}
+
+set_density_info(int density) 
+{
+	// don't have to save sect_size; sectsize_info won't change by the 
+	// time we need it...
+	
+	save current sect_size from fd_format_info.sectsize_info.sect_size;
+	find fd_density_info for spec'd density, write it to
+		fd_format_info.density_info;
+	set_sect_size(saved_sect_size);
+	if density == none
+		mark disk unformatted;
+}
+
+set_sect_size(sect_size) 
+{
+	validate that this sect_size is legal for current 
+		fd_format_info.density_info;
+	set fd_format_info.sectsize_info;
+	set disk formatted;
+}
+
+.........................
+
+what are all of these weird structs?
+
+fd_disk_info (fd_disk_info_t): fd_extern.h
+	maps media_id to tracks_per_cyl and num_cylinders.
+	One per media_id in fdDiskInfo[].
+
+fd_sectsize_info (fd_sectsize_info_t): fd_extern.h
+	contains ector size, 82077 sector size codem sects_per_track, gap.
+	One of these for each legal density/sectsize combo in ssi_Xmb[].
+
+fd_density_info (fd_density_info_t) : fd_extern.h 
+	Maps density to capacity and mfm.
+	One per density in fdDensityInfo[].
+	
+fd_format_info (fd_format_info_t, fdFormatInfo_t) : fd_extern.h
+	Contains all current info about inserted disk. 
+	fd_disk_info, fd_density_info, fd_sectsize_info, total_sects, flags.
+	Obtained via ioctl(FDIOCGFORM).
+	
+fdDensitySectsize_t : FloppyTypes.h
+	maps density to an array of legal fd_sectsize_info's.
+	One per legal density in fdDensitySectsize[].
+	
+fdDriveInfo_t : FloppyPublic.h
+	drive_info (for ioctl(DKIOCGINFO)), seek, settle, unload time.
+	One per drive type (only one) in fdDriveInfo[].
+	

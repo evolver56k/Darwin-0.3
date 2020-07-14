@@ -1,0 +1,16 @@
+{
+    FILESTABLE = {
+        Documentation = (); 
+        Headers = (); 
+        Makefiles = (log.in, func.in, "exp-eq.in", exp.in, func2.in); 
+        Resources = (); 
+        SUBPROJECTS = (); 
+        Sources = (); 
+    }; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = reg; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

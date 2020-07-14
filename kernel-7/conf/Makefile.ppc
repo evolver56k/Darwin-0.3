@@ -1,0 +1,146 @@
+##
+# Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+#
+# @APPLE_LICENSE_HEADER_START@
+# 
+# Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+# Reserved.  This file contains Original Code and/or Modifications of
+# Original Code as defined in and that are subject to the Apple Public
+# Source License Version 1.1 (the "License").  You may not use this file
+# except in compliance with the License.  Please obtain a copy of the
+# License at http://www.apple.com/publicsource and read it before using
+# this file.
+# 
+# The Original Code and all software distributed under the License are
+# distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+# INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+# License for the specific language governing rights and limitations
+# under the License.
+# 
+# @APPLE_LICENSE_HEADER_END@
+##
+
+#
+# Mach Operating System
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement
+# specifies the terms and conditions for use and redistribution.
+#  
+######################################################################
+
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+######################################################################
+#BEGIN	Machine dependent Makefile fragment for NeXT PPC
+######################################################################
+
+#
+#  Compilation components
+#
+CC=	cc
+LD=	ld
+
+KCC=cc -static -nostdinc -nostdlib -traditional-cpp -fno-builtin
+
+MACHINE_INCLUDES=
+
+MACHINE_GENASSYM_FLAGS= -DKERNEL
+
+MACHINE_CFLAGS= -arch ppc -I$(SOURCE_DIR)/bsd/include \
+	-finline -fno-keep-inline-functions -force_cpusubtype_ALL \
+	-fwritable-strings -fno-common -msoft-float -mcpu=604 \
+	-Dppc -DPPC -Wall -Wno-four-char-constants -fpascal-strings
+
+MACHINE_SFLAGS= -arch ppc -D__ASSEMBLER__ -Dppc -DPPC -force_cpusubtype_ALL
+
+LDFLAGS=-e start -segalign 0x1000		\
+		-segaddr __TEXT 0x05000 	\
+		-segaddr __VECTORS 0x0  	\
+		-noseglinkedit -force_cpusubtype_ALL
+
+
+
+MACHINE=ppc
+
+LIBS_P=-lcc
+LIBS=-lcc
+
+PRELDDEPS=assym.h
+
+LDOBJS_PREFIX= $(LIBC_OBJ) $(LIBC_UNROLL_OBJ)
+LDOBJS_SUFFIX= $(LIBDRIVER_SOURCE)/$(LIBDRIVER) $(LIBOBJC_SOURCE)/$(LIBOBJC) $(LIBPEXPERT_SOURCE)/$(LIBPEXPERT)
+
+LDDEPS_PREFIX=
+SWAPDEPS_PREFIX=
+
+OBJSDEPS=
+
+FEATURES_EXTRA=
+
+LIBC_SRC=	memchr.c memcmp.c memcpy.c memmove.c memset.c
+LIBC_OBJ=	$(LIBC_SRC:.c=.o)
+
+$(LIBC_OBJ):
+	${KCC} $(COPTS) $(MACHINE_CFLAGS) -c -O2 $(MACHINEDIR)/libc/$*.c
+
+LIBC_UNROLL_SRC=	strchr.c strrchr.c strlen.c \
+			strcpy.c strncpy.c strcat.c strncat.c \
+			strcmp.c strncmp.c index.c
+LIBC_UNROLL_OBJ=	$(LIBC_UNROLL_SRC:.c=.o)
+
+$(LIBC_UNROLL_OBJ):
+	${KCC} $(COPTS) $(MACHINE_CFLAGS) -c -O2 -funroll-all-loops \
+							$(MACHINEDIR)/libc/$*.c
+
+
+
+MACHINE_INSTALL=
+
+#
+# Install machine headers.
+#
+MACHINE_COMPATHDRS=
+MACHINE_INSTALLHDRS= ppc_installhdrs
+
+MACHINE_EXPORT=    bsd/ppc bsd/dev/ppc kernserv/ppc mach/ppc
+MACHINE_LCLEXPORT= bsd/ppc bsd/dev/ppc bsd/if/ppc mach/ppc 		\
+			kernserv/ppc machdep/ppc driverkit/ppc
+
+MACHINE_MIGDIRS=   mach/ppc
+
+ppc_installhdrs: features DSTROOT
+	echo features = $(FEATURES)
+	$(MKDIRS) ${DSTROOT}${LCLDIR}/machdep/ppc
+	install -c -m 444 ${FEATURES}				\
+		${DSTROOT}${LCLDIR}/machdep/ppc
+
+MACHINE_TAG_DIRS=							\
+	bsd/ppc bsd/dev/ppc driverkit/ppc machdep/ppc bsd/if/ppc 	\
+	kernserv/ppc mach/ppc
+
+#
+# Local clean rule
+#
+MACHINE_CLEAN=ppc_clean
+
+ppc_clean:
+	rm -rf fpsp
+
+cleanup: ALWAYS
+	for i in ${TAGDIRS}; \
+	do \
+		(cd $(SOURCE_DIR)/$$i; rm -f *.CKP *.OLD *~ *.old core); \
+	done
+
+rebuild: clean cleanup features tags all
+	@echo Don't forget to do a make install
+
+######################################################################
+#END	Machine dependent Makefile fragment for NeXT ppc
+######################################################################

@@ -1,0 +1,6 @@
+Package: volfs
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 0
+Description: volfs commands
+Build-Depends: build-base, drivertools, kernload

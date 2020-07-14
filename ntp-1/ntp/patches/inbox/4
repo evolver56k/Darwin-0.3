@@ -1,0 +1,34 @@
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa13251;
+          12 Dec 1997 02:15 EST
+Received: from rrzs2.rz.uni-regensburg.de by huey.udel.edu id aa25302;
+          12 Dec 1997 02:14 EST
+Received: from ngate.ngate.uni-regensburg.de (ngate.rz.uni-regensburg.de [132.199.3.13])
+	by rrzs2.rz.uni-regensburg.de (8.8.5/8.8.5) with SMTP id IAA19377
+	for <mills@huey.udel.edu>; Fri, 12 Dec 1997 08:14:34 +0100 (MET)
+Received: from rkdvmks1.ngate.uni-regensburg.de by ngate.ngate.uni-regensburg.de; Fri, 12 Dec 97 08:15 MET
+Received: from rkdvmks1.ngate.uni-regensburg.de by kgate.ngate.uni-regensburg.de; Fri, 12 Dec 97 07:14 GMT
+Received: from RKDVMKS1/SpoolDir by rkdvmks1.ngate.uni-regensburg.de (Mercury 1.32);
+    12 Dec 97 08:14:19 +0100
+Received: from SpoolDir by RKDVMKS1 (Mercury 1.32); 12 Dec 97 08:14:18 +0100
+From: Ulrich Windl <ulrich.windl@rz.uni-regensburg.de>
+Organization: Universitaet Regensburg, Klinikum
+To: Dave Mills <mills@huey.udel.edu>
+Date: Fri, 12 Dec 1997 08:14:13 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-transfer-encoding: 7BIT
+Subject: My patches have been resent as context diffs
+Priority: normal
+X-mailer: Pegasus Mail for Windows (v2.53/R1)
+Message-ID: <106255683EDD@rkdvmks1.ngate.uni-regensburg.de>
+
+Dave,
+
+I just sent my patches as context diffs (they best I could do) via
+``mailx -s "Subject" author <file''. I hope that this time you can 
+get them applied.
+
+You can remove asll older versions of the same patch.
+
+Ulrich
+

@@ -1,0 +1,20 @@
+/EXTERN.h/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/INTERN.h/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/Makefile.SH/1.1.1.2/Fri Apr 23 01:34:19 1999//Tperl-1
+/a2p.c/1.1.1.2/Fri Apr 23 01:34:22 1999//Tperl-1
+/a2p.h/1.1.1.2/Fri Apr 23 01:34:22 1999//Tperl-1
+/a2p.pod/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/a2p.y/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/a2py.c/1.1.1.2/Fri Apr 23 01:34:23 1999//Tperl-1
+/cflags.SH/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/find2perl.PL/1.1.1.2/Fri Apr 23 01:34:23 1999//Tperl-1
+/hash.c/1.1.1.2/Fri Apr 23 01:34:24 1999//Tperl-1
+/hash.h/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/proto.h/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/s2p.PL/1.1.1.2/Fri Apr 23 01:34:24 1999//Tperl-1
+/str.c/1.1.1.2/Fri Apr 23 01:34:24 1999//Tperl-1
+/str.h/1.1.1.1/Fri Apr 23 01:28:57 1999//Tperl-1
+/util.c/1.1.1.2/Fri Apr 23 01:34:24 1999//Tperl-1
+/util.h/1.1.1.2/Fri Apr 23 01:34:25 1999//Tperl-1
+/walk.c/1.1.1.2/Fri Apr 23 01:34:25 1999//Tperl-1
+D

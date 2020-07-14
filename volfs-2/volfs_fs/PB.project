@@ -1,0 +1,25 @@
+{
+    DYNAMIC_CODE_GEN = NO; 
+    FILESTABLE = {
+        CLASSES = (); 
+        H_FILES = (volfs.h); 
+        OTHER_LINKED = (volfs_vfsops.c, volfs_vnops.c); 
+        OTHER_SOURCES = (Makefile, Load_Commands.sect, Makefile.preamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-Wno-format"; 
+    NEXTSTEP_INSTALLDIR = /usr/filesystems/vol.fs; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = volfs; 
+    PROJECTTYPE = "Kernel Server"; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

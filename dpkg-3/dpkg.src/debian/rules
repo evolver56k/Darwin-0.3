@@ -1,0 +1,101 @@
+#!/usr/bin/make -f
+
+.PHONY: all debian setup configure force-configure clean build binary binary-arch binary-indep
+
+SRCROOT := $(shell pwd)
+BUILDROOT := $(shell pwd)
+
+DEST := $(BUILDROOT)/..
+DEBIAN := $(BUILDROOT)/debian
+BUILD := $(BUILDROOT)/debian/build
+TMP := $(BUILDROOT)/debian/tmp
+
+EXTRACONFIG :=
+
+all:
+
+$(BUILD)/debian/%: $(SRCROOT)/debian/%
+	install -d $(BUILD)/debian
+	ln -s $< $@	
+debian: $(BUILD)/debian/changelog $(BUILD)/debian/control
+
+setup:
+	cd $(SRCROOT) && $(RM) config.status
+	cd $(SRCROOT) && aclocal -I ./automake
+	cd $(SRCROOT) && autoheader
+	cd $(SRCROOT) && autoconf
+	# need to save intl/CVS
+	cd $(SRCROOT) && if test -d intl/CVS; then cp -rp intl/CVS CVS.intl; fi
+	cd $(SRCROOT) && gettextize --copy --force
+	# restoring intl/CVS
+	cd $(SRCROOT) && if test -d CVS.intl; then mv CVS.intl intl/CVS; fi
+	cd $(SRCROOT) && libtoolize --automake --copy --force
+	cd $(SRCROOT) && perl -pi \
+		-e "s/runpath_var=LD_RUN_PATH/runpath_var=LD_RUN_PATH_DISABLED/og;" \
+		-e "s/hardcode_libdir_flag_spec='.*'/hardcode_libdir_flag_spec=''/og;" \
+		-e "s/export_dynamic_flag_spec='.*'/export_dynamic_flag_spec=''/og;" \
+		ltconfig
+	#cd $(SRCROOT) && perl -ni \
+	#         -e 'if (/must be an absolute directory name/) { \
+	#	       $$_ = <>; \
+	#	       $$_ = <>; \
+	#	       /exit 1/ || die ("not found"); \
+	#	     } else { \
+	#	       print; \
+	#	     }' \
+	#	ltmain.sh
+	cd $(SRCROOT) && $(RM) config.sub config.guess 
+	cd $(SRCROOT) && ln -s /usr/share/automake/config.sub .
+	cd $(SRCROOT) && automake --add-missing
+	cd $(SRCROOT) && patch < debian/config.diffs
+	cd $(SRCROOT) && $(RM) -f config.guess.orig config.sub.orig
+	cd $(SRCROOT) && find . -name Makefile.in -print | \
+		grep -v 'libiberty/' | grep -v 'intl/' | \
+		xargs perl -ni -e \
+		'print; if (/p in \$$\$$list\; do/) { print "\t  p=`basename \$$\$$p`; \\\n"; }'
+	# automake doesn't have a --copy option
+	cd $(SRCROOT) && find . -type l -print | \
+		perl -ne 'chop; \
+			(-e "$$_") && \
+			system "cp $$_ $$_.file; \
+			rm $$_; \
+			mv $$_.file $$_";'
+
+configure: $(BUILD)/config.status
+force-configure $(BUILD)/config.status:
+	$(RM) -r $(BUILD)
+	install -d $(BUILD)
+	cd $(BUILD) && $(SRCROOT)/configure \
+		--enable-shared \
+		--with-dselect \
+		--without-included-gettext \
+		--prefix=/usr \
+		--datadir=/usr/share \
+		--sysconfdir=/etc \
+		--sharedstatedir=/var/lib \
+		--localstatedir=/var/lib \
+		$(EXTRACONFIG)
+
+clean: configure
+	$(MAKE) -C $(BUILD) -i distclean
+	$(RM) -r $(BUILD) debian/files debian/substvars debian/tmp
+	$(RM) $(BUILD)/dpkg-*.tar.gz
+	find $(SRCROOT) \( -name '*~' -o -name '#*#' \) -print0 | xargs -0 $(RM) --
+
+maintainer-clean: configure
+	$(MAKE) -C $(BUILD) -i maintainer-clean
+	$(RM) -r $(BUILD) debian/files debian/substvars debian/tmp
+	$(RM) $(BUILD)/dpkg-*.tar.gz
+	find $(SRCROOT) \( -name '*~' -o -name '#*#' \) -print0 | xargs -0 $(RM) --
+
+build: configure
+	$(MAKE) -C $(BUILD)
+
+binary: build binary-arch binary-indep
+	$(MAKE) -C $(BUILD) DEBIAN=$(DEBIAN) TMP=$(TMP) DEST=$(DEST) binary
+
+binary-arch: build
+	$(MAKE) -C $(BUILD) DEBIAN=$(DEBIAN) TMP=$(TMP) DEST=$(DEST) binary-arch
+
+binary-indep: build
+	$(MAKE) -C $(BUILD) DEBIAN=$(DEBIAN) TMP=$(TMP) DEST=$(DEST) binary-indep

@@ -1,0 +1,20 @@
+#! /bin/csh -f
+# this script munges all files specified in the arglist in order to 
+# bring the files into conformance with the SCSI API changes made 
+# in 3/93.
+#
+set SED_DIR = /Net/grrr/mknrw/dmitch/DRIVERKIT/driverkit/doc
+set sedfile = ${SED_DIR}/scsi_change.sed
+set newline  = ${SED_DIR}/newline
+
+while ( $#argv > 0 )
+  set i = $argv[1]
+  echo $i
+  cp $i /tmp
+  cat $i $newline > ${i}.1
+  sed -f $sedfile ${i}.1 > $i.new
+  rm -f $i ${i}.1
+  mv ${i}.new $i
+  shift
+end
+ 

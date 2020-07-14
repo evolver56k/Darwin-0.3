@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (cross.c, tnrecv.c); 
+        H_FILES = (tncomp.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble, adm3a.keys, makefile, tarread.exe); 
+        SUBPROJECTS = (srccmd); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = utilities; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

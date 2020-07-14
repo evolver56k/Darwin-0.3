@@ -1,0 +1,63 @@
+#
+#	MakeInc.dir
+#	Directory make procedure boiler plate
+#	(c) 1987, 1990, 1991 NeXT Computer, Inc.  All Rights Reserved
+#
+
+OBJROOT=.
+SYMROOT=.
+
+all remake clean clobber print update tags STD PROF DBG: $(OBJROOT) \
+						$(SYMROOT) ALWAYS
+	@echo '#################' make $@ for $(DIR) '###################'
+	@CWD=`pwd`; cd ${OBJROOT}; OBJROOT=`pwd`; cd $$CWD; \
+	CWD=`pwd`; cd ${SYMROOT}; SYMROOT=`pwd`; cd $$CWD; \
+	for i in ${SUBDIR}; \
+	do \
+		echo ================= make $@ for $$i =================; \
+		echo OBJROOT $$OBJROOT SYMROOT $$SYMROOT; \
+		(cd $$i; ${MAKE} OBJROOT=$$OBJROOT SYMROOT=$$SYMROOT \
+				BUILD_ARCHS="$(BUILD_ARCHS)" $@); \
+	done
+	@echo '#################' make $@ for $(DIR) done '###################'
+
+install installdbg installhdrs reinstall: DSTROOT $(OBJROOT) $(SYMROOT) ALWAYS
+	@echo '#################' make $@ for $(DIR) '###################'
+	@CWD=`pwd`; cd ${DSTROOT}; DSTROOT=`pwd`; cd $$CWD; \
+	CWD=`pwd`; cd ${OBJROOT}; OBJROOT=`pwd`; cd $$CWD; \
+	CWD=`pwd`; cd ${SYMROOT}; SYMROOT=`pwd`; cd $$CWD; \
+	for i in ${SUBDIR}; \
+	do \
+		echo ================= make $@ for $$i =================; \
+		echo OBJROOT $$OBJROOT SYMROOT $$SYMROOT; \
+		(cd $$i; ${MAKE} DSTROOT=$$DSTROOT OBJROOT=$$OBJROOT SYMROOT=$$SYMROOT $@); \
+	done
+	@echo '#################' make $@ for $(DIR) done '###################'
+
+installsrc:	SRCROOT ALWAYS
+	@echo '#################' make $@ for $(DIR) '###################'
+	@CWD=`pwd`; cd ${SRCROOT}; SRCROOT=`pwd`; cd $$CWD; \
+	for i in ${SUBDIR}; \
+	do \
+		echo ================= make $@ for $$i =================; \
+		(cd $$i; ${MAKE} SRCROOT=$$SRCROOT/$$i $@); \
+	done
+	tar cf - $(SRCS) | (cd ${SRCROOT}; tar xfBp -)
+	@echo '#################' make $@ for $(DIR) done '###################'
+
+DSTROOT SRCROOT:
+	@if [ -n "${$@}" ]; \
+	then \
+		exit 0; \
+	else \
+		echo Must define $@; \
+		exit 1; \
+	fi
+
+$(OBJROOT):
+	mkdirs $@
+
+$(SYMROOT):
+	mkdirs $@
+
+ALWAYS:

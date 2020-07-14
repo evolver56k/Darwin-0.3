@@ -1,0 +1,245 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+
+/*
+ * Copyright (c) 1995, 1994, 1993, 1992, 1991, 1990  
+ * Open Software Foundation, Inc. 
+ *  
+ * Permission to use, copy, modify, and distribute this software and 
+ * its documentation for any purpose and without fee is hereby granted, 
+ * provided that the above copyright notice appears in all copies and 
+ * that both the copyright notice and this permission notice appear in 
+ * supporting documentation, and that the name of ("OSF") or Open Software 
+ * Foundation not be used in advertising or publicity pertaining to 
+ * distribution of the software without specific, written prior permission. 
+ *  
+ * OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+ * FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL OSF BE LIABLE FOR ANY 
+ * SPECIAL, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN 
+ * ACTION OF CONTRACT, NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING 
+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE 
+ */
+/*
+ * OSF Research Institute MK6.1 (unencumbered) 1/31/1995
+ */
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ *	Matchmaker definitions file for Mach kernel debugging interface.
+ */
+
+subsystem
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	KERNEL_SERVER
+		       mach_debug 3000;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+#include <mach_debug/mach_debug_types.defs>
+
+skip;	/* host_ipc_statistics */
+skip;	/* host_ipc_statistics_reset */
+skip;	/* host_callout_info */
+skip;	/* host_callout_statistics */
+skip;	/* host_callout_statistics_reset */
+
+/*
+ *	Returns information about the memory allocation zones.
+ */
+routine host_zone_info(
+		host		: host_t;
+	out	names		: zone_name_array_t,
+					CountInOut, Dealloc;
+	out	info		: zone_info_array_t,
+					CountInOut, Dealloc);
+					
+routine host_zone_free_space_info(
+		host		: host_t;
+	out	info		: zone_free_space_info_array_t,
+					CountInOut, Dealloc;
+	out	chunks		: zone_free_space_chunk_array_t,
+					CountInOut, Dealloc);
+
+/*
+ *	Returns the exact number of extant send rights
+ *	for the given receive right.
+ */
+
+routine	mach_port_get_srights(
+		task		: ipc_space_t;
+		name		: mach_port_name_t;
+	out	srights		: mach_port_rights_t);
+
+/*
+ *	Returns information about the global reverse hash table.
+ */
+
+routine host_ipc_hash_info(
+		host		: host_t;
+	out	info		: hash_info_bucket_array_t,
+					CountInOut, Dealloc);
+
+/*
+ *	Returns information about the marequest hash table.
+ */
+
+routine host_ipc_marequest_info(
+		host		: host_t;
+	out	max_requests	: unsigned;
+	out	info		: hash_info_bucket_array_t,
+					CountInOut, Dealloc);
+
+/*
+ *	Returns information about an IPC space.
+ */
+
+routine mach_port_space_info(
+		task		: ipc_space_t;
+	out	info		: ipc_info_space_t;
+	out	table_info	: ipc_info_name_array_t,
+					CountInOut, Dealloc;
+	out	tree_info	: ipc_info_tree_name_array_t,
+					CountInOut, Dealloc);
+
+/*
+ *	Returns information about the dead-name requests
+ *	registered with the named receive right.
+ */
+
+routine mach_port_dnrequest_info(
+		task		: ipc_space_t;
+		name		: mach_port_name_t;
+	out	total		: unsigned;	/* total size of table */
+	out	used		: unsigned);	/* amount used */
+
+skip;	/* mach_vm_region_info */
+skip;	/* vm_mapped_pages_info */
+
+/*
+ *	Returns stack usage information:
+ *		reserved	Amount of stack space reserved for pcb.
+ *		total		Number of stacks.
+ *		space		Total VM space for stacks.
+ *		resident	Resident VM space for stacks.
+ *		maxusage	Maximum amount of stack used.
+ *		maxstack	Address in the kernel of the largest stack.
+ */
+
+routine host_stack_usage(
+		host		: host_t;
+	out	reserved	: vm_size_t;
+	out	total		: unsigned;
+	out	space		: vm_size_t;
+	out	resident	: vm_size_t;
+	out	maxusage	: vm_size_t;
+	out	maxstack	: vm_offset_t);
+
+routine processor_set_stack_usage(
+		pset		: processor_set_name_t;
+	out	total		: unsigned;
+	out	space		: vm_size_t;
+	out	resident	: vm_size_t;
+	out	maxusage	: vm_size_t;
+	out	maxstack	: vm_offset_t);
+
+skip;	/* host_virtual_physical_table_info */
+skip;	/* host_load_symbol_table */
+
+skip;	/* mach_port_kernel_object */
+
+skip;	/* mach_vm_region_info */
+skip;	/* mach_vm_object_info */
+skip;	/* mach_vm_object_pages */
+
+/* Returns the machine dependent host information :
+ *	page_size			number of bytes per page
+ *	dcache_block_size	number of bytes in data cache block
+ *	dcache_size			number of bytes in data cache
+ *	icache_size			number of bytes in instruction cache
+ *	caches_unified		boolean
+ *	processor_version	contents of PVR on ppc
+ *	cpu_clock_rate_hz	CPU clock frequency
+ *	bus_clock_rate_hz	Bus clock frequency
+ *	dec_clock_rate_hz	Decrementer frequency (only on ppc)
+ */
+
+routine host_machine_info(
+		host		: host_t;
+	out	info		: host_machine_info_t);
+
+routine vm_reallocate(
+		target_task	: vm_task_t;
+		address		: vm_address_t;
+		size		: vm_size_t);
+
+routine host_zone_collect(
+		host_priv	: host_priv_t;
+		collect_zones	: boolean_t;
+		reclaim_pages	: boolean_t);
+
+routine host_vm_region(
+		host		: host_t;
+	inout	address		: vm_address_t;
+	out	size		: vm_size_t;
+	out	protection	: vm_prot_t;
+	out	max_protection	: vm_prot_t;
+	out	inheritance	: vm_inherit_t;
+	out	is_pageable	: boolean_t;
+#ifdef	MACH_IPC_FLAVOR
+	/* avoid out-translation of the argument */
+	out	object_name	: mach_port_name_t;
+#else	/* MACH_IPC_FLAVOR */
+	out	object_name	: port_name_t;
+#endif	/* MACH_IPC_FLAVOR */
+	out	offset		: vm_offset_t);
+
+routine enable_bluebox(
+		host		: host_t;
+		flag		: unsigned);

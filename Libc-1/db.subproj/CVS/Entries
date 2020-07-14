@@ -1,0 +1,9 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:18:54 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:18:54 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:18:54 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:18:54 1999//TLibc-1
+D/btree.subproj////
+D/db.subproj////
+D/hash.subproj////
+D/mpool.subproj////
+D/recno.subproj////

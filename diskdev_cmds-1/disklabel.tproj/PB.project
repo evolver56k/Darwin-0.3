@@ -1,0 +1,30 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        CLASSES = (); 
+        FRAMEWORKS = (); 
+        H_FILES = (pathnames.h); 
+        M_FILES = (); 
+        OTHER_LIBS = (disk); 
+        OTHER_LINKED = (disklabel.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.dist, disklabel.5.5, disklabel.8); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /sbin; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_MAINNIB = disklabel; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_INSTALLDIR = /sbin; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_MAINNIB = disklabel; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = disklabel; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_INSTALLDIR = /sbin; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_MAINNIB = disklabel; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

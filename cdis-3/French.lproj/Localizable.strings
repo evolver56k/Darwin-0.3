@@ -1,0 +1,95 @@
+/* French Localized Strings */
+
+"DOING_INIT" = "Erasing Darwin OS Volume (please wait)";
+
+"FDISK_HINTS" = "Darwin OS for Intel doesn't understand DOS Extended partition types. Some other PC Operating Systems may create one extended partition that claims the entire disk, while only using a portion of that partition. If that is the case for your disk, you must either use tools under that OS to shrink the extended partition enough to create a traditional partition here, or you can install Darwin OS before other Operating Systems.";
+
+"FDISK_WARNING" = "WARNING: Any changes you make to your disk using fdisk here will NOT be reversable!";
+
+"PDISK_FIND_FREE_ERR" = "A fatal error occurred while trying to find the free partition.";
+
+"PDISK_CREATE_ERR" = "A fatal error occurred while trying to create the booter partition.";
+
+"PDISK_SPLIT_4LDR_ERR" = "A fatal error occurred while trying to create the loader partition.";
+
+"PDISK_SPLIT_4UFS_ERR" = "A fatal error occurred while trying to create the UFS partition.";
+
+"DITTO_FAILED" = "Installation failed due to an unknown error. Please make sure your CD is free of scratches or fingerprints, check your SCSI termination and cabling, read the troubleshooting section of the installation instructions, and try again.";
+
+"REQUIRE_CD" = "This program is for installing Darwin OS on a hard disk when the Darwin OS CD-ROM is the startup disk. Since the Darwin OS CD-ROM isn't the startup disk, you can't use this program.";
+
+"NO_DISKS" = "The Installer was unable to find any disks to install on.";
+
+"WRONG_INSTALLER" =
+"WARNING: You must use the Mac OS 8 based Darwin OS installer\n WARNING: to Install Darwin OS. The Rhapsody DR2 installer\n WARNING: is not compatable.\n";
+
+"WARN_PPC_MSG" =
+"The installer was unable to find an preselected installation target.\n\nWhen you hear the startup chime, hold down the 'C' key to boot\nMac OS from the Darwin OS Install CD, and follow the instructions\nprovided to run the Darwin OS installation script.\n\nPress return to restart.\n";
+
+"WARN_i386_MSG" = 
+"You are about to configure a disk to install Darwin OS 1.0 for Intel.\nInstalling any OS is not risk-free, and may result in crashes, loss of\ndata, or other errors. It is strongly recomended that you back up your\nsystem and install on an external drive dedicated to Darwin OS. If at\nany point the questions asked by the installer are confusing, you\nshould refer to the printed installation manual.\n\n1 ) Ok - ready to install Darwin OS\n2 ) Cancel - do not install at this time\n";
+
+"WRONG_ARCH" = "Installation is only possible on Power Macintosh or x86 type computers.";
+"COPYING_BASE_SYSTEM" = "Copying base system...";
+"COPYING_BASE_SYSTEM_DONE" = "Copying of Files Completed";
+
+"WHICH_DISK" = 
+"Entrez 1 pour installer Darwin OS sur ce disque.\n\nEntrez 2 pour obtenir des options d'installation evoluees.";
+
+/* Displayed above the list of disks */
+"AVAILABLE_DISKS" = "Les disques suivants sont disponibles sur cet ordinateur :";
+
+"ALL_DISKS" =
+"La premiere disquette affichee dans cette liste est la disquette\nde demarrage. Vous pouvez installer les elements essentiels du logiciel\nOPENSTEP sur une autre disquette de cette liste. Dans ce cas, OPENSTEP\nn'est pas automatiquement relance lorsque vous redemarrez l'ordinateur et\nvous devrez configurer la disquette pour qu'elle soit reconnue en tant que\ndisquette de demarrage afin de terminer l'installation de OPENSTEP.\n\nEntrez le numero de la disquette sur laquelle vous voulez\ninstaller OPENSTEP.";
+
+"ALL_DISKS_PPC" =
+"Type the number for the disk on which you want to install Darwin OS.";
+
+/* Options for partitioning the disk */
+"FDISK_MENU1" = "Entrez 1 pour effacer tout le contenu du disque et utiliser les\\n$diskSize Mo pour Darwin OS.";
+"FDISK_MENU2" = "Entrez 2 pour garder de l'espace pour DOS et utiliser le reste\\npour Darwin OS.";
+"FDISK_MENU3" = "Entrez $currentNum pour effacer la partition de $currentSize Mo de Darwin OS et pour\\nl'utiliser pour Darwin OS.";
+"FDISK_MENU4" = "Entrez $freeNum pour conserver les partitions existantes et utiliser les $freeSize Mo\\nde memoire disponible pour Darwin OS.";
+"FDISK_MENU5" = "Entrez $eNum pour utiliser les $eSize Mo de partition etendue de DOS\\npour Darwin OS.";
+"FDISK_MENU6" = "Entrez $choices pour acceder aux options evoluees (en anglais uniquement).";
+
+/* Displayed when they type 2 */
+"HOW_MUCH" = "Entrez la taille de la partition DOS voulue (en mega-octets) : ";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"NO_EXTENDED" = "Il n'y a pas de partition etendue DOS sur ce disque.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"TOO_SMALL" = "Memoire disque insuffisante pour partitionner le disque de cette facon.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"CHOOSE_AGAIN" = "Faites un autre choix.";
+
+/* Last chance to abort */
+"READY" = "Pret a installer Darwin OS\n\nEntrez 1 pour commencer a installer Darwin OS.\nEntrez 2 pour quitter ce programme d'installation.";
+
+/* Displayed in lieu of cryptic commands passing by... */
+"GOING" = "Preparation du disque pour l'installation de Darwin OS en cours.\nCette operation prendra quelques instants...";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INITFAILED" = "L'INITIALISATION DU DISQUE A ECHOUE.\n\nLe programme d'installation n'a pas pu initialiser le disque dur.\nIl est impossible de poursuivre l'installation.";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INSTALLFAILED" = "Disques introuvables.\nL'installation ne peut continuer.\n\n";
+
+/* Displayed when the user aborts, or something goes wrong */
+"QUITTING" = "Sortie du programme d'installation. Cette operation prendra quelques\ninstants...";
+
+"DONE" = "Le disque dur est pret a etre utilise comme disque de demarrage\npour completer l'installation de Darwin OS.";
+
+/* Forces them to eject the floppy right before rebooting */
+"REMOVE_FLOPPY" = "Retirez la disquette du lecteur et appuyez sur Retour.";
+
+/* When we don't have a floppy */
+"RESTART" = "Appuyez sur Retour pour redemarrer l'ordinateur.";
+
+/* Displayed right before rebooting */
+"RESTARTING" = "Redemarrage de l'ordinateur. Cette operation prendra quelques instants...";
+
+/* Displayed when selecting the disk for installation */
+"BOOT_DISK" = "Le disque de demarrage de cet ordinateur est :";

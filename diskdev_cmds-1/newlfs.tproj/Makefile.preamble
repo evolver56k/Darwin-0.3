@@ -1,0 +1,10 @@
+OTHER_GENERATED_OFILES = $(VERS_OFILE)
+
+DISKLABEL_CFILES = dkcksum.c
+SYS_UFS_CFILES = lfs_cksum.c
+OTHER_OFILES = $(DISKLABEL_CFILES:.c=.o) $(SYS_UFS_CFILES:.c=.o)
+VPATH_PREAMBLE = ../XProj/sys/ufs/lfs:../disklabel:
+
+# CFLAGS+=-I../XProj/sys/ufs/lfs
+# ------------------MORE WORK-----------
+-include ../Makefile.include

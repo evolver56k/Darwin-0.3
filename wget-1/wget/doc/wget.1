@@ -1,0 +1,634 @@
+.de FN
+\fI\|\\$1\|\fP
+..
+.TH wget 1 "1996 Nov 11" Wget
+.SH NAME
+wget \- a utility to retrieve files from the World Wide Web
+.SH SYNOPSIS
+.B "wget [options] [URL-list]"
+.SH WARNING
+The information in this man page is an extract from the full
+documentation of
+.I Wget.
+It is well out of date.  Please refer to the info page for full,
+up\-to\-date documentation.  You can view the info documentation with
+the Emacs info subsystem or the standalone info program.
+.SH DESCRIPTION
+.I Wget
+is a utility designed for retrieving binary documents across the Web,
+through the use of \fIHTTP\fP (Hyper Text Transfer Protocol) and
+\fIFTP\fP (File Transfer Protocol), and saving them to disk.
+.I Wget
+is non\-interactive, which means it can work in the background, while
+the user is not logged in, unlike most of web browsers (thus you may
+start the program and log off, letting it do its work). Analysing
+server responses, it distinguishes between correctly and incorrectly
+retrieved documents, and retries retrieving them as many times as
+necessary, or until a user\-specified limit is reached. \fIREST\fP is
+used in \fIFTP\fP on hosts that support it. Proxy servers are
+supported to speed up the retrieval and lighten network load.
+.PP
+.I Wget
+supports a full-featured recursion mechanism, through which you can
+retrieve large parts of the web, creating local copies of remote
+directory hierarchies. Of course, maximum level of recursion and other
+parameters can be specified. Infinite recursion loops are always
+avoided by hashing the retrieved data. All of this works for both
+\fIHTTP\fP and \fIFTP\fP.
+.PP
+The retrieval is conveniently traced with printing dots, each dot
+representing one kilobyte of data received. Builtin features offer
+mechanisms to tune which links you wish to follow (cf. -L, -D and -H).
+
+.SH "URL CONVENTIONS"
+.PP
+Most of the URL conventions described in RFC1738 are supported. Two
+alternative syntaxes are also supported, which means you can use three
+forms of address to specify a file:
+
+Normal URL (recommended form):
+.nf
+http://host[:port]/path
+http://fly.cc.fer.hr/
+ftp://ftp.xemacs.org/pub/xemacs/xemacs-19.14.tar.gz
+ftp://username:password@host/dir/file
+
+.fi
+\fIFTP\fP only (ncftp-like):
+hostname:/dir/file
+
+.nf
+\fIHTTP\fP only (netscape-like):
+hostname(:port)/dir/file
+
+.fi
+You may encode your username and/or password to URL using the form:
+
+.nf
+ftp://user:password@host/dir/file
+
+.fi
+If you do not understand these syntaxes, just use the plain ordinary
+syntax with which you would call \fIlynx\fP or \fInetscape\fP. Note
+that the alternative forms are deprecated, and may cease being
+supported in the future.
+
+.SH OPTIONS
+.PP
+There are quite a few command\-line options for
+.I wget.
+Note that you do not have to know or to use them unless you wish to
+change the default behaviour of the program. For simple operations you
+need no options at all. It is also a good idea to put frequently used
+command\-line options in .wgetrc, where they can be stored in a more
+readable form.
+.PP
+This is the complete list of options with descriptions, sorted in
+descending order of importance:
+.IP "-h --help"
+Print a help screen. You will also get help if you do not supply
+command\-line arguments.
+.PP
+.IP "-V --version"
+Display version of
+.I wget.
+.PP
+.IP "-v --verbose"
+Verbose output, with all the available data. The default output
+consists only of saving updates and error messages. If the output is
+stdout, verbose is default.
+.PP
+.IP "-q --quiet"
+Quiet mode, with no output at all.
+.PP
+.IP "-d --debug"
+Debug output, and will work only if
+.I wget
+was compiled with -DDEBUG. Note that when the program is compiled with
+debug output, it is not printed unless you specify -d.
+.PP
+.IP "-i \fIfilename\fP --input-file=\fIfilename\fP"
+Read URL-s from
+.I filename,
+in which case no URL\-s need to be on the command line. If there are
+URL\-s both on the command line and in a filename, those on the
+command line are first to be retrieved. The filename need not be an
+\fIHTML\fP document (but no harm if it is) - it is enough if the URL-s
+are just listed sequentially.
+
+However, if you specify --force-html, the document will be regarded as
+\fIHTML\fP. In that case you may have problems with relative links,
+which you can solve either by adding <base href="url"> to the document
+or by specifying --base=url on the command\-line.
+.PP
+.IP "-o \fIlogfile\fP --output-file=\fIlogfile\fP"
+Log messages to \fIlogfile\fP, instead of default stdout. Verbose
+output is now the default at logfiles. If you do not wish it, use \-nv
+(non-verbose).
+.PP
+.IP "-a \fIlogfile\fP --append-output=\fIlogfile\fP"
+Append to logfile - same as -o, but appends to a logfile (or creating
+a new one if the old does not exist) instead of rewriting the old log
+file.
+.PP
+.IP "-t \fInum\fP --tries=\fInum\fP"
+Set number of retries to
+.I num.
+Specify 0 for infinite retrying.
+.PP
+.IP "--follow-ftp"
+Follow \fIFTP\fP links from \fIHTML\fP documents.
+.PP
+.IP "-c --continue-ftp"
+Continue retrieval of FTP documents, from where it was left off. If
+you specify "wget -c ftp://sunsite.doc.ic.ac.uk/ls-lR.Z", and there
+is already a file named ls-lR.Z in the current directory,
+.I wget
+continue retrieval from the offset equal to the length of the existing
+file. Note that you do not need to specify this option if the only
+thing you want is
+.I wget
+to continue retrieving where it left off when the connection is lost -
+.I wget
+does this by default. You need this option when you want to continue
+retrieval of a file already halfway retrieved, saved by other FTP
+software, or left by
+.I wget being killed.
+.PP
+.IP "-g \fIon/off\fP --glob=\fIon/off\fP"
+Turn FTP globbing on or off. By default, globbing will be turned on if
+the URL contains a globbing characters (an asterisk, e.g.). Globbing
+means you may use the special characters (wildcards) to retrieve more
+files from the same directory at once, like wget
+ftp://gnjilux.cc.fer.hr/*.msg. Globbing currently works only on UNIX FTP
+servers.
+.PP
+.IP "-e \fIcommand\fP --execute=\fIcommand\fP"
+Execute \fIcommand\fP, as if it were a part of .wgetrc file. A
+command invoked this way will take precedence over the same command
+in .wgetrc, if there is one.
+.PP
+.IP "-N --timestamping"
+Use the so\-called time\-stamps to determine whether to retrieve a
+file. If the last\-modification date of the remote file is equal to,
+or older than that of local file, and the sizes of files are equal,
+the remote file will not be retrieved. This option is useful for
+weekly mirroring of
+.I HTTP
+or
+.I FTP
+sites, since it will not permit downloading of the same file twice.
+.PP
+.IP "-F --force-html"
+When input is read from a file, force it to be \fIHTML\fP. This
+enables you to retrieve relative links from existing \fIHTML\fP files
+on your local disk, by adding <base href> to \fIHTML\fP, or using
+\-\-base.
+.PP
+.IP "-B \fIbase_href\fP --base=\fIbase_href\fP"
+Use \fIbase_href\fP as base reference, as if it were in the file, in
+the form <base href="base_href">. Note that the base in the file will
+take precedence over the one on the command\-line.
+.PP
+.IP "-r --recursive"
+Recursive web\-suck. According to the protocol of the URL, this can
+mean two things. Recursive retrieval of a \fIHTTP\fP URL means that
+.I Wget
+will download the URL you want, parse it as an \fIHTML\fP document (if
+an \fIHTML\fP document it is), and retrieve the files this document is
+referring to, down to a certain depth (default 5; change it with -l).
+.I Wget
+will create a hierarchy of directories locally, corresponding to the
+one found on the \fIHTTP\fP server.
+
+This option is ideal for presentations, where slow connections should
+be bypassed. The results will be especially good if relative links
+were used, since the pages will then work on the new location without
+change.
+
+When using this option with an \fIFTP\fP URL, it will retrieve all the
+data from the given directory and subdirectories, similar to
+\fIHTTP\fP recursive retrieval.
+
+You should be warned that invoking this option may cause grave
+overloading of your connection. The load can be minimized by lowering
+the maximal recursion level (see -l) and/or by lowering the number of
+retries (see -t).
+.PP
+.IP "-m --mirror"
+Turn on mirroring options. This will set recursion and time\-stamping,
+combining \-r and \-N.
+.PP
+.IP "-l \fIdepth\fP --level=\fIdepth\fP"
+Set recursion depth level to the specified level. Default is 5.
+After the given recursion level is reached, the sucking will proceed
+from the parent. Thus specifying -r -l1 should equal a recursion-less
+retrieve from file. Setting the level to zero makes recursion depth
+(theoretically) unlimited. Note that the number of retrieved documents
+will increase exponentially with the depth level.
+.PP
+.IP "-H --span-hosts"
+Enable spanning across hosts when doing recursive retrieving. See
+-r and -D. Refer to
+.I FOLLOWING LINKS
+for a more detailed description.
+.PP
+.IP "-L --relative"
+Follow only relative links. Useful for retrieving a specific homepage
+without any distractions, not even those from the same host. Refer to
+.I FOLLOWING LINKS
+for a more detailed description.
+.PP
+.IP "-D \fIdomain\-list\fP --domains=\fIdomain\-list\fP"
+Set domains to be accepted and DNS looked-up, where domain\-list is a
+comma\-separated list. Note that it does not turn on -H. This speeds
+things up, even if only one host is spanned. Refer to
+.I FOLLOWING LINKS
+for a more detailed description.
+.PP
+.IP "-A \fIacclist\fP / -R \fIrejlist\fP --accept=\fIacclist\fP / --reject=\fIrejlist\fP"
+Comma\-separated list of extensions to accept/reject. For example, if
+you wish to download only GIFs and JPEGs, you will use -A gif,jpg,jpeg.
+If you wish to download everything except cumbersome MPEGs and .AU
+files, you will use -R mpg,mpeg,au.
+.IP "-X list --exclude-directories list"
+Comma\-separated list of directories to exclude from FTP fetching.
+.PP
+.IP "-P \fIprefix\fP --directory-prefix=\fIprefix\fP"
+Set directory prefix ("." by default) to
+\fIprefix\fP. The directory prefix is the directory where all other
+files and subdirectories will be saved to.
+.PP
+.IP "-T \fIvalue\fP --timeout=\fIvalue\fP"
+Set the read timeout to a specified value. Whenever a read is issued,
+the file descriptor is checked for a possible timeout, which could
+otherwise leave a pending connection (uninterrupted read). The default
+timeout is 900 seconds (fifteen minutes).
+.PP
+.IP "-Y \fIon/off\fP --proxy=\fIon/off\fP"
+Turn proxy on or off. The proxy is on by default if the appropriate
+environmental variable is defined.
+.PP
+.IP "-Q \fIquota[KM]\fP --quota=\fIquota[KM]\fP"
+Specify download quota, in bytes (default), kilobytes or
+megabytes. More useful for rc file. See below.
+.PP
+.IP "-O filename --output-document=filename"
+The documents will not be written to the appropriate files, but all
+will be appended to a unique file name specified by this option. The
+number of tries will be automatically set to 1. If this filename is
+`-', the documents will be written to stdout, and --quiet will be
+turned on. Use this option with caution, since it turns off all the
+diagnostics
+.I Wget
+can otherwise give about various errors.
+.PP
+.IP "-S --server-response"
+Print the headers sent by the \fIHTTP\fP server and/or responses sent
+by the \fIFTP\fP server.
+.PP
+.IP "-s --save-headers"
+Save the headers sent by the \fIHTTP\fP server to the file, before the
+actual contents.
+.PP
+.IP "--header=additional-header"
+Define an additional header. You can define more than additional
+headers. Do not try to terminate the header with CR or LF.
+.PP
+.IP "--http-user --http-passwd"
+Use these two options to set username and password
+.I Wget
+will send to \fIHTTP\fP servers. Wget supports only the basic
+WWW authentication scheme.
+.PP
+.IP -nc
+Do not clobber existing files when saving to directory hierarchy
+within recursive retrieval of several files. This option is
+.B extremely
+useful when you wish to continue where you left off with retrieval.
+If the files are .html or (yuck) .htm, it will be loaded from
+the disk, and parsed as if they have been retrieved from the Web.
+.PP
+.IP -nv
+Non\-verbose \- turn off verbose without being completely quiet (use
+-q for that), which means that error messages and basic information
+still get printed.
+.PP
+.IP -nd
+Do not create a hierarchy of directories when retrieving
+recursively. With this option turned on, all files will get
+saved to the current directory, without clobbering (if
+a name shows up more than once, the filenames will get
+extensions .n).
+.PP
+.IP -x
+The opposite of \-nd \-\- Force creation of a hierarchy of directories
+even if it would not have been done otherwise.
+.PP
+.IP -nh
+Disable time-consuming DNS lookup of almost all hosts. Refer to
+.I FOLLOWING LINKS
+for a more detailed description.
+.PP
+.IP -nH
+Disable host-prefixed directories. By default, http://fly.cc.fer.hr/
+will produce a directory named fly.cc.fer.hr in which everything else
+will go. This option disables such behaviour.
+.PP
+.IP --no-parent
+Do not ascend to parent directory.
+.PP
+.IP "-k --convert-links"
+Convert the non-relative links to relative ones locally.
+
+.SH "FOLLOWING LINKS"
+Recursive retrieving has a mechanism that allows you to specify which
+links
+.I wget
+will follow.
+.IP "Only relative links"
+When only relative links are followed (option -L), recursive
+retrieving will never span hosts.
+.b gethostbyname
+will never get called, and the process will be very fast, with the
+minimum strain of the network. This will suit your needs most of the
+time, especially when mirroring the output the output of *2html
+converters, which generally produce only relative links.
+.PP
+.IP "Host checking"
+The drawback of following the relative links solely is that humans
+often tend to mix them with absolute links to the very same host,
+and the very same page. In this mode (which is the default), all
+URL-s that refer to the same host will be retrieved.
+
+The problem with this options are the aliases of the hosts and domains.
+Thus there is no way for
+.I wget
+to know that \fBregoc.srce.hr\fP and \fBwww.srce.hr\fP are the same
+hosts, or that \fBfly.cc.fer.hr\fP is the same as \fBfly.cc.etf.hr\fP.
+Whenever an absolute link is encountered, \fBgethostbyname\fP is
+called to check whether we are really on the same host.  Although
+results of \fBgethostbyname\fP are hashed, so that it will never get
+called twice for the same host, it still presents a nuisance e.g. in
+the large indexes of difference hosts, when each of them has to be
+looked up. You can use -nh to prevent such complex checking, and then
+.I wget
+will just compare the hostname. Things will run much faster, but
+also much less reliable.
+.PP
+.IP "Domain acceptance"
+With the -D option you may specify domains that will be followed.
+The nice thing about this option is that hosts that are not from
+those domains will not get DNS-looked up. Thus you may specify
+-D\fImit.edu\fP,
+.B "just to make sure that nothing outside .mit.edu gets looked up".
+This is very important and useful. It also means that -D does
+\fBnot\fP imply -H (it must be explicitly specified). Feel free to use
+this option, since it will speed things up greatly, with almost all
+the reliability of host checking of all hosts.
+
+Of course, domain acceptance can be used to limit the retrieval to
+particular domains, but freely spanning hosts within the domain,
+but then you must explicitly specify -H.
+.PP
+.IP "All hosts"
+When -H is specified without -D, all hosts are being spanned. It is
+useful to set the recursion level to a small value in those cases.
+Such option is rarely useful.
+.PP
+.IP "\fIFTP\fP"
+The rules for
+.I FTP
+are somewhat specific, since they have to be. To have
+.I FTP
+links followed from
+.I HTML
+documents, you must specify -f (follow_ftp). If you do specify it,
+.I FTP
+links will be able to span hosts even if span_hosts is not set.
+Option relative_only (-L) has no effect on
+.I FTP.
+However, domain acceptance (-D) and suffix rules (-A/-R) still apply.
+
+.SH "STARTUP FILE"
+.I Wget
+supports the use of initialization file
+.B .wgetrc.
+First a system-wide init file will be looked for
+(/usr/local/lib/wgetrc by default) and loaded. Then the user's file
+will be searched for in two places: In the environmental variable
+\fIWGETRC\fP (which is presumed to hold the full pathname) and
+.B $HOME/.wgetrc.
+Note that the settings in user's startup file may override the system
+settings, which includes the quota settings (he he).
+.PP
+The syntax of each line of startup file is simple:
+.sp
+	\fIvariable\fP = \fIvalue\fP
+.sp
+Valid values are different for different variables. The complete set
+of commands is listed below, the letter after equation\-sign denoting
+the value the command takes. It is \fBon/off\fP for \fBon\fP or
+\fBoff\fP (which can also be \fB1\fP or \fB0\fP), \fBstring\fP for any
+string or \fBN\fP for positive integer.  For example, you may specify
+"use_proxy = off" to disable use of proxy servers by default. You may
+use \fBinf\fP for infinite value (the role of \fB0\fP on the command
+line), where appropriate. The commands are case\-insensitive and
+underscore\-insensitive, thus \fBDIr__Prefix\fP is the same as
+\fBdirprefix\fP. Empty lines, lines consisting of spaces, or lines
+beginning with '#' are skipped.
+
+Most of the commands have their equivalent command\-line option,
+except some more obscure or rarely used ones. A sample init file is
+provided in the distribution, named \fIsample.wgetrc\fP.
+
+.IP "accept/reject = \fBstring\fP"
+Same as -A/-R.
+.IP "add_hostdir = \fBon/off\fP"
+Enable/disable host-prefixed hostnames. -nH disables it.
+.IP "always_rest = \fBon/off\fP"
+Enable/disable continuation of the retrieval, the same as -c.
+.IP "base = \fBstring\fP"
+Set base for relative URL-s, the same as -B.
+.IP "convert links = \fBon/off\fP"
+Convert non-relative links locally. The same as -k.
+.IP "debug = \fBon/off\fP"
+Debug mode, same as -d.
+.IP "dir_mode = \fBN\fP"
+Set permission modes of created subdirectories (default is 755).
+.IP "dir_prefix = \fBstring\fP"
+Top of directory tree, the same as -P.
+.IP "dirstruct = \fBon/off\fP"
+Turning dirstruct on or off, the same as -x or -nd, respectively.
+.IP "domains = \fBstring\fP"
+Same as -D.
+.IP "follow_ftp = \fBon/off\fP"
+Follow
+.I FTP
+links from
+.I HTML
+documents, the same as -f.
+.IP "force_html = \fBon/off\fP"
+If set to on, force the input filename to be regarded as an HTML
+document, the same as -F.
+.IP "ftp_proxy = \fBstring\fP"
+Use the string as \fIFTP\fP proxy, instead of the one specified in
+environment.
+.IP "glob = \fBon/off\fP"
+Turn globbing on/off, the same as -g.
+.IP "header = \fBstring\fP"
+Define an additional header, like --header.
+.IP "http_passwd = \fBstring\fP"
+Set \fIHTTP\fP password.
+.IP "http_proxy = \fBstring\fP"
+Use the string as \fIHTTP\fP proxy, instead of the one specified in
+environment.
+.IP "http_user = \fBstring\fP"
+Set \fIHTTP\fP user.
+.IP "input = \fBstring\fP"
+Read the URL-s from filename, like -i.
+.IP "kill_longer = \fBon/off\fP"
+Consider data longer than specified in content-length header
+as invalid (and retry getting it). The default behaviour is to save
+as much data as there is, provided there is more than or equal
+to the value in content-length.
+.IP "logfile = \fBstring\fP"
+Set logfile, the same as -o.
+.IP "login = \fBstring\fP"
+Your user name on the remote machine, for
+.I FTP.
+Defaults to "anonymous".
+.IP "mirror = \fBon/off\fP"
+Turn mirroring on/off. The same as -m.
+.IP "noclobber = \fBon/off\fP"
+Same as -nc.
+.IP "no_parent = \fBon/off\fP"
+Same as --no-parent.
+.IP "no_proxy = \fBstring\fP"
+Use the string as the comma\-separated list of domains to avoid in
+proxy loading, instead of the one specified in environment.
+.IP "num_tries = \fBN\fP"
+Set number of retries per URL, the same as -t.
+.IP "output_document = \fBstring\fP"
+Set the output filename, the same as -O.
+.IP "passwd = \fBstring\fP"
+Your password on the remote machine, for
+.I FTP.
+Defaults to
+username@hostname.domainname.
+.IP "quiet = \fBon/off\fP"
+Quiet mode, the same as -q.
+.IP "quota = \fBquota\fP"
+Specify the download quota, which is useful to put in
+/usr/local/lib/wgetrc. When download quota is specified,
+.I wget
+will stop retrieving after the download sum has become greater than
+quota. The quota can be specified in bytes (default), kbytes ('k'
+appended) or mbytes ('m' appended). Thus "quota = 5m" will set the
+quota to 5 mbytes. Note that the user's startup file overrides system
+settings.
+.IP "reclevel = \fBN\fP"
+Recursion level, the same as -l.
+.IP "recursive = \fBon/off\fP"
+Recursive on/off, the same as -r.
+.IP "relative_only = \fBon/off\fP"
+Follow only relative links (the same as -L). Refer to section
+.I "FOLLOWING LINKS"
+for a more detailed description.
+.IP "robots = \fBon/off\fP"
+Use (or not) robots.txt file.
+.IP "server_response = \fBon/off\fP"
+Choose whether or not to print the \fIHTTP\fP and \fIFTP\fP server
+responses, the same as -S.
+.IP "simple_host_check = \fBon/off\fP"
+Same as -nh.
+.IP "span_hosts = \fBon/off\fP"
+Same as -H.
+.IP "timeout = \fBN\fP"
+Set timeout value, the same as -T.
+.IP "timestamping = \fBon/off\fP"
+Turn timestamping on/off. The same as -N.
+.IP "use_proxy = \fBon/off\fP"
+Turn proxy support on/off. The same as -Y.
+.IP "verbose = \fBon/off\fP"
+Turn verbose on/off, the same as -v/-nv.
+
+.SH SIGNALS
+.PP
+.I Wget
+will catch the \fISIGHUP\fP (hangup signal) and ignore it. If the
+output was on stdout, it will be redirected to a file named
+\fIwget-log\fP. This is also convenient when you wish to redirect
+the output of \fIWget\fP interactively.
+
+.nf
+.ft B
+$ wget http://www.ifi.uio.no/~larsi/gnus.tar.gz &
+$ kill -HUP %%       # to redirect the output
+.ft R
+.fi
+
+\fIWget\fP will not try to handle any signals other than
+\fISIGHUP\fP. Thus you may interrupt \fIWget\fP using ^C or
+\fISIGTERM\fP.
+
+.SH EXAMPLES
+.nf
+Get URL http://fly.cc.fer.hr/:
+.ft B
+wget http://fly.cc.fer.hr/
+
+.ft R
+Force non\-verbose output:
+.ft B
+wget -nv http://fly.cc.fer.hr/
+
+.ft R
+Unlimit number of retries:
+.ft B
+wget -t0 http://www.yahoo.com/
+
+.ft R
+Create a mirror image of fly's web (with the same directory structure
+the original has), up to six recursion levels, with only one try per
+document, saving the verbose output to log file 'log':
+'log':
+.ft B
+wget -r -l6 -t1 -o log http://fly.cc.fer.hr/
+
+.ft R
+Retrieve from yahoo host only (depth 50):
+.ft B
+wget -r -l50 http://www.yahoo.com/
+.fi
+
+.SH ENVIRONMENT
+.IR http_proxy,
+.IR ftp_proxy,
+.IR no_proxy,
+.IR WGETRC,
+.IR HOME
+
+.SH FILES
+.IR /usr/local/lib/wgetrc,
+.IR $HOME/.wgetrc
+
+.SH UNRESTRICTIONS
+.PP
+.I Wget
+is free; anyone may redistribute copies of 
+.I Wget 
+to anyone under the terms stated in the General Public License, a copy
+of which accompanies each copy of
+.I Wget.
+
+.SH "SEE ALSO"
+.IR lynx(1),
+.IR ftp(1)
+
+.SH AUTHOR
+.PP
+Hrvoje Niksic <hniksic@srce.hr> is the author of Wget.  Thanks to the
+beta testers and all the other people who helped with useful
+suggestions.
+

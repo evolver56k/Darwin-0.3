@@ -1,0 +1,152 @@
+Microsoft Developer Studio Workspace File, Format Version 5.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "instsrv"=".\instsrv\Instsrv.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ntpd
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ntpdate
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ntpdc
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ntpdll
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ntpq
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ntptrace
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mkrandkeys
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "libntp"=".\libntp\libntp.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ntpd"=".\ntpd\ntpd.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libntp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ntpdate"=".\ntpdate\ntpdate.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libntp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ntpdc"=".\ntpdc\ntpdc.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libntp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ntpdll"=".\package\ntpdll\ntpdll.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libntp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ntpq"=".\ntpq\ntpq.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libntp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ntptrace"=".\ntptrace\ntptrace.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libntp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

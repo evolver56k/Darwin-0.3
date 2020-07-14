@@ -1,0 +1,142 @@
+<html><head>
+<title>Debian packaging manual - Descriptions of packages - the
+Description field</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 7<br>
+Descriptions of packages - the
+Description field
+</h1>
+
+The <code>Description</code> control file field is used by <kbd>dselect</kbd> when
+the user is selecting which packages to install and by <kbd>dpkg</kbd>
+when it displays information about the status of packages and so
+forth.  It is included on the FTP site in the <kbd>Packages</kbd> files,
+and may also be used by the Debian WWW pages.<P>
+
+The description is intended to describe the program to a user who has
+never met it before so that they know whether they want to install it.
+It should also give information about the significant dependencies and
+conflicts between this package and others, so that the user knows why
+these dependencies and conflicts have been declared.<P>
+
+The field's format is as follows:
+<pre>Description: <var>single line synopsis</var>
+ <var>extended description over several lines</var></pre><P>
+
+The synopsis is often printed in lists of packages and so forth, and
+should be as informative as possible.  Every package should also have
+an extended description.<P>
+<hr>
+<h2><A name="s7.1">
+7.1 Types of formatting line in the extended description
+</A></h2>
+
+<ul>
+<li>Those starting with a single space are part of a paragraph.
+Successive lines of this form will be word-wrapped when displayed.
+The leading space will usually be stripped off.
+<p><li>Those starting with two or more spaces.  These will be displayed
+verbatim.  If the display cannot be panned horizontally the
+displaying program will linewrap them `hard' (ie, without taking
+account of word breaks).  If it can they will be allowed to trail
+off to the right.  None, one or two initial spaces may be deleted,
+but the number of spaces deleted from each line will be the same
+(so that you can have indenting work correctly, for example).
+<p><li>Those containing a single space followed by a single full stop
+character.  These are rendered as blank lines.  This is the <em>only</em>
+way to get a blank line - see below.
+<p><li>Those containing a space, a full stop and some more characters.  These
+are for future expansion.  Do not use them.<p></ul>
+
+<hr>
+<h2><A name="s7.2">
+7.2 Notes about writing descriptions
+</A></h2>
+
+<em>Always</em> start extended description lines with at least one
+whitespace character.  Fields in the control file and in the Packages
+file are separated by field names starting in the first column, just
+as message header fields are in RFC822.  Forgetting the whitespace
+will cause <kbd>dpkg-deb</kbd><A href="footnotes.html#20" name="fr20">[20]</A> to produce a syntax error when trying to build the
+package.  If you force it to build anyway <kbd>dpkg</kbd> will refuse to
+install the resulting mess.<P>
+
+<em>Do not</em> include any completely <em>empty</em> lines. These separate
+different records in the Packages file and different packages in the
+<code>debian/control</code> file, and are forbidden in package control
+files.  See the previous paragraph for what happens if you get this
+wrong.<P>
+
+The single line synopsis should be kept brief - certainly under 80
+characters.  <kbd>dselect</kbd> displays between 25 and 49 characters
+without panning if you're using an 80-column terminal, depending on
+what display options are in effect.<P>
+
+Do not include the package name in the synopsis line.  The display
+software knows how to display this already, and you do not need to
+state it.  Remember that in many situations the user may only see
+the synopsis line - make it as informative as you can.<P>
+
+The extended description should describe what the package does and
+how it relates to the rest of the system (in terms of, for
+example, which subsystem it is which part of).<P>
+
+The blurb that comes with a program in its announcements and/or
+<kbd>README</kbd> files is rarely suitable for use in a description.  It
+is usually aimed at people who are already in the community where the
+package is used.  The description field needs to make sense to anyone,
+even people who have no idea about any of the
+things the package deals with.<P>
+
+Put important information first, both in the synopis and extended
+description.  Sometimes only the first part of the synopsis or of
+the description will be displayed.  You can assume that there will
+usually be a way to see the whole extended description.<P>
+
+You may include information about dependencies and so forth in the
+extended description, if you wish.<P>
+
+Do not use tab characters.  Their effect is not predictable.<P>
+
+Do not try to linewrap the summary (the part on the same line as the
+field name <code>Description</code>) into the extended description.  This will
+not work correctly when the full description is displayed, and makes
+no sense where only the summary is available.
+<hr>
+<h2><A name="s7.3">
+7.3 Example description in control file for Smail
+</A></h2>
+
+<pre>Package: smail
+Version: 3.1.29.1-13
+Maintainer: Ian Jackson &lt;iwj10@cus.cam.ac.uk&gt;
+Recommends: pine | mailx | elm | emacs | mail-user-agent
+Suggests: metamail
+Depends: cron, libc5
+Conflicts: sendmail
+Provides: mail-transport-agent
+Description: Electronic mail transport system.
+ Smail is the recommended mail transport agent (MTA) for Debian.
+ .
+ An MTA is the innards of the mail system - it takes messages from
+ user-friendly mailer programs and arranges for them to be delivered
+ locally or passed on to other systems as required.
+ .
+ In order to make use of it you must have one or more user level
+ mailreader programs such as elm, pine, mailx or Emacs (which has Rmail
+ and VM as mailreaders) installed.  If you wish to send messages other
+ than just to other users of your system you must also have appropriate
+ networking support, in the form of IP or UUCP.</pre>
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-relationships.html">next</A>; <A href="ch-maintainerscripts.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

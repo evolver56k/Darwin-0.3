@@ -1,0 +1,123 @@
+notes on mapping Unix disk to DiskObject
+
+OBSOLETE as of 25 Oct 91..
+
+* block devices map to LogicalDisks. All they can do is open, close,
+  and strategy (readAsync, writeAsync). One per partition.
+  
+  sd0a <==> lsd0a etc.
+  
+* raw devices other than live partition also map onto LogicalDisks to 
+  handle DEV_BSIZE mapping. They can do open, close, read, write, ioctl.
+  One per disk.
+
+* live partitions map onto DiskObjects (SCSIDisk, FloppyDisk). They can do 
+  read, write (maybe ioctl). One per disk.
+  
+* some kind of disk with n partitions has:
+     	n LDs for block devices (lsd0a, lsd0b, lsd0c)
+	one LD for raw device (rsd0a)
+	one DiskObject subclass for live device (sd0)
+	
+* Unix level needs to be able to map a dev_t to an id.
+  DiskObject and LogicalDisk should register with Unix-level code via:
+    
+    	typedef enum {
+		DISK_TYPE_RAW,
+		DISK_TYPE_BLOCK,
+		DISK_TYPE_LIVE
+	} diskType_t;
+
+	- (void)registerUnixDisk 	: (int) Unit
+					  partition : (int) partition	
+					  diskType : (diskType_t)diskType;
+
+	    
+    Unix level will keep a bunch of structs doing this mapping around, 
+    probably as an array, not a list, to simplify lookup:
+	
+    one per Unix unit (one for sd0, one for sd1, etc)
+    
+    typedef {
+    	id raw_dev_id;		// LogicalDisk for raw device
+	id live_part_id;	// DiskObject/SCSIDisk (etc) for live partition
+	id block_id[NPART];	// for block devices
+    } struct dev_to_id_map_t;
+    
+    These are allocated statically, and a pointer to the array is kept in
+    each DiskObject's idMapArray instance variable.
+    
+* SCSIDisk init sequence (# indicates not currently implemented)
+
+  from somewhere {
+	probe and init SCSIController object;
+	SCSIDisk probe:controllerId {
+	    foreach target and lun {
+		    if it's a disk we can snag {
+			    registerDevice;		==> IODevice
+			    registerDisk;		==> DiskObject
+		    }
+	    }
+	}
+  }
+  
+  DiskObject registerDisk {
+  	log raw device info;
+	[registerUnixDisk DISK_TYPE_LIVE]; 
+	[LogicalDisk probe:self]
+	enable disk insert detection;
+  }
+  
+  
+  
+Two level config:
+  
+  go thru all dev_type registers; mark as in use those which we have
+  	internal drivers for;
+  run Config, give it a chance to hand out dev_types to user-level driver 
+  	(only dev_types which we don't have internal drivers for will be
+		reported; dev_numbers for devices with internal drivers
+		will be reported as DEV_TYPE_NULL).
+		
+  statically generate array of these at config time:
+  
+  	typedef {
+		int (*probe_fcn)(void *regptr);
+		dev_type_t dev_type;
+	} internal_device_driver;
+	
+	note "probe_fcn" might be replaced by some objC enumeration of 
+	class names to allow something like [*classname probe]...if not 
+	possible, each driver will just have a little C fcn to do this.
+	
+   internal autoconfig {
+   	for each device page {
+		get internal_device_driver * for this dev_type;
+		if non-null {
+			dev_port_create() a dev_port;
+			(*probe_fcn)(device_page_ptr, dev_port);
+		}
+	}
+   }
+   
+in SCSIDiskUnix:
+
+  internal:
+	sd_probe(device_page_ptr, dev_port)
+	sd_dev_to_id(dev)
+	
+  exported via cdevsw[]:
+  	sd_raw_open(dev, flag)
+  	sd_raw_close(dev)
+  	sd_read(dev, uiop)
+  	sd_write(dev, uiop)
+ 	sd_ioctl(dev, cmd, data, flag)
+	
+  exported via bdevsw[]:
+  	sd_block_open(dev, flag)
+  	sd_block_close(dev)
+	sd_strategy(bp)
+  
+misc todo:
+  maybe SCSIController probe: should do probes of all known SCSI devices?
+  iostats needs to work!

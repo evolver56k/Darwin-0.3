@@ -1,0 +1,15 @@
+\initial {C}
+\entry {\code {convert_string()}}{10}
+\initial {I}
+\entry {\code {illegal_packagename()}}{9}
+\entry {\code {informativeversion()}}{9}
+\initial {P}
+\entry {\code {parseerr()}}{8}
+\entry {\code {parsemustfield()}}{10}
+\entry {\code {parseversion()}}{9}
+\entry {\code {push_checkpoint()}}{7}
+\initial {S}
+\entry {\code {skip_slash_dotslash()}}{10}
+\initial {V}
+\entry {\code {varbufversion()}}{9}
+\entry {\code {versiondescribe()}}{9}

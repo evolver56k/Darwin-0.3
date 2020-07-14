@@ -1,0 +1,7 @@
+Package: shell-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: NetBSD Foundation
+Version: 1998.10.09
+URL: http://www.netbsd.org/
+Description: Shell scripting commands
+Build-Depends: build-base, libcurses

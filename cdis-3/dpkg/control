@@ -1,0 +1,6 @@
+Package: cdis
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 156.1
+Description: Installation tools
+Build-Depends: build-base, drveide-hdrs

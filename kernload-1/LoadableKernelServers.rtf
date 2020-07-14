@@ -1,0 +1,202 @@
+{\rtf0\ansi{\fonttbl\f0\fnil Times-Roman;\f1\ftech Symbol;\f2\fswiss Helvetica;\f3\fmodern Ohlfs;}
+\paperw13620
+\paperh11720
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f0\b0\i0\ulnone\fs24\fc0\cf0 Release 3.1  Copyright 
+\f1 ã
+\f0 1993 by NeXT Computer, Inc.  All Rights Reserved.\
+
+\pard\f2\fs30\fc0\cf0 \
+\
+\
+
+\f0\fs48\li1440 Preliminary 3.1 Release Notes: \
+Writing Loadable Kernel Servers\
+
+\fs28 \
+\
+\
+
+\pard\tx1800\li1440\fc0\cf0 This file contains release notes for both the 3.1 and 3.0 releases of loadable kernel servers.  Items specific to the 3.1 release are listed first, and the Release 3.0 notes follow.  
+\pard\li1440\fc0\cf0 \
+\
+\
+
+\b\fs36\li0 Notes Specific to Release 3.1\
+
+\b0\fs28\li1440 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc1\cf1 New Features\
+
+\pard\b0\li1440\fc0\cf0 \
+
+\pard\tx1800\li1440\fc0\cf0 The following new features have been added to the kernel-server loader since Release 3.0:\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-360\li1800\fc0\cf0 ·	Support for object-oriented loadable kernel servers written in Objective C.\
+\
+·	Support for fat Mach-O files for loadable kernel servers.\
+\
+See the Driver Kit release notes for more information.\
+
+\pard\li1440\fc0\cf0 \
+\
+
+\b\fs36\li0 Notes Specific to Release 3.0
+\pard\tx2160\tx2520\tx2880\b0\fs28\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\li1440\fc0\cf0 \
+In Release 3.0, the following changes were made:\
+
+\b \
+
+\pard\tx1800\tx2160\tx2520\tx2880\b0\fi-360\li1800\fc0\cf0 ·	Changes to the flags required when compiling loadable kernel servers \
+·	New kernel support functions \
+·	Changes to the kernel-server loader and its header files \
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\li1440\fc0\cf0 For more about these and related topics, see Part 2, "Writing Loadable Kernel Servers," of the 
+\i NeXTSTEP Operating System Software
+\i0  manual.\
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\li1440\fc0\cf0 \
+
+\pard\tx2520\tx2880\tx3240\b\fs36\fc0\cf0 C Preprocessor Flags\
+ \
+
+\pard\fs28\li720\fc0\cf0 Incompatible Changes
+\pard\tx1800\tx2160\tx2520\b0\li1440\fc0\cf0 \
+\
+The KERNEL_FEATURES flag must be replaced by the new flag, MACH_USER_API.  To compile a loadable kernel server, you must define MACH_USER_API, KERNEL, and MACH, as shown in Chapter 9, "Building, Loading, and Debugging Loadable Kernel Servers," of the 
+\i NeXTSTEP
+\i0  
+\i Operating System Software
+\i0  manual.  Flags such as these are typically defined either in the 
+\b cc
+\b0  command line (e.g., "-DKERNEL") or inside of source code (e.g., "#define KERNEL 1"). \
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\li1440\fc0\cf0 \
+
+\pard\tx2520\tx2880\tx3240\b\fs36\fc0\cf0 Kernel Support Functions\
+ \
+
+\pard\fs28\li720\fc0\cf0 New Functions\
+
+\pard\tx1800\tx2160\tx2520\b0\li1440\fc0\cf0 \
+The following are new functions that have been added to the kernel since Release 2.0.\
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 ·	Functions for getting and setting clock information: 
+\b\fc1\cf1 clock_value()
+\b0 , 
+\b set_clock()
+\b0 , 
+\b clock_attributes()
+\b0 .  New functions for converting between clock formats have also been added:  
+\b ns_time_to_timeval()
+\b0  and 
+\b timeval_to_ns_time(). 
+\b0  (
+\b microboot()
+\b0  and 
+\b microtime()
+\b0  are obsolete.)\
+\
+
+\fc0\cf0 ·	Functions for setting and canceling timeouts:  
+\b\fc1\cf1 ns_abstimeout()
+\b0 , 
+\b ns_timeout()
+\b0 , 
+\b ns_untimeout()
+\b0 .  These functions replace 
+\b us_abstimeout()
+\b0 , 
+\b us_timeout()
+\b0 , and 
+\b us_untimeout()
+\b0 , which are obsolete.\
+\
+
+\fc0\cf0 ·	A function for getting the task port of the kernel:  
+\b kern_serv_kernel_task_port()
+\b0\fc1\cf1 .  This function makes it easier for loadable kernel servers to send and receive Mach messages that have out-of-line data.\
+\
+
+\fc0\cf0 ·	Functions to help UNIX-style drivers implement the 
+\b select()
+\b0  system call:  
+\b selthreadcache()
+\b0  and 
+\b selthreadclear()
+\b0\fc1\cf1 .\
+\
+
+\fc0\cf0 ·	Functions to help network modules get information about other network modules:  
+\b if_class()
+\b0 , 
+\b iflist_first()
+\b0 , 
+\b iflist_next()
+\b0\fc1\cf1 .\
+\
+
+\fc0\cf0 ·	A function that removes a netif from the system list of netifs:  
+\b if_detach()
+\b0\fc1\cf1 .\
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\li1440\fc0\cf0 \
+
+\pard\tx2520\tx2880\tx3240\b\fs36\fc0\cf0 Kernel-Server Loader\
+ \
+
+\pard\fs28\li720\fc0\cf0 New Features\
+
+\pard\tx1800\tx2160\tx2520\b0\li1440\fc0\cf0 \
+The following are new features that have been added to the kernel-server loader since Release 2.0.\
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 ·	
+\fc1\cf1 A DETACH keyword has been added to Load Command processing.  If this command is used then the 
+\fc0\cf0 kernel-server loader
+\fc1\cf1  will not attempt to unload the server when it shut down.  This is necessary for the correctness of some network protocols.\
+
+\fi-360 \
+\
+
+\pard\b\li720\fc0\cf0 Changes\
+
+\b0 \
+
+\pard\tx1800\tx2160\tx2520\li1440\fc0\cf0 The following compatible changes have been made to the kernel-server loader since Release 2.0.\
+
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 ·	
+\fc1\cf1 Header files are now exported into 
+\b /System/Developer/Imports/kernserv
+\b0 .\
+
+\fi-360 \
+\
+
+\b\fi0\li720\fc0\cf0 Incompatible Changes\
+\
+
+\b0\fi-380\li1800\fc1\cf1 ·	The 
+\b kern_loader_reply_handler.h
+\b0  header file is now generated by MiG.  As a result, the KERN_LOADER_REPLY_INMSG_SIZE and KERN_LOADER_REPLY_OUTMSG_SIZE macros have been replaced with kern_loader_replyMaxRequestSize and kern_loader_replyMaxReplySize, respectively.\
+
+}

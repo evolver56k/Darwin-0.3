@@ -1,0 +1,69 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        FRAMEWORKS = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.include, README.rtf); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (
+            ac.tproj, 
+            accton.tproj, 
+            arch.tproj, 
+            at.tproj, 
+            atrun.tproj, 
+            chkpasswd.tproj, 
+            chpass.tproj, 
+            cron.tproj, 
+            dmesg.tproj, 
+            fastboot.tproj, 
+            fbalert.tproj, 
+            fbshow.tproj, 
+            getty.tproj, 
+            halt.tproj, 
+            hostinfo.tproj, 
+            init.tproj, 
+            iostat.tproj, 
+            kgmon.tproj, 
+            ktrace.tproj, 
+            login.tproj, 
+            mach_init.tproj, 
+            mach_swapon.tproj, 
+            makekey.tproj, 
+            mkfile.tproj, 
+            nologin.tproj, 
+            nvram.tproj, 
+            pagesize.tproj, 
+            passwd.tproj, 
+            pwd_mkdb.tproj, 
+            reboot.tproj, 
+            shutdown.tproj, 
+            swapon.tproj, 
+            sync.tproj, 
+            sysctl.tproj, 
+            update.tproj, 
+            vipw.tproj, 
+            zic.tproj, 
+            zdump.tproj, 
+            vm_stat.tproj, 
+            zprint.tproj
+        ); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/tmp/$(USER)/BUILD"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = system_cmds; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

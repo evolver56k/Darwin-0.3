@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+/*	Copyright (c) 1991 NeXT Computer, Inc.  All rights reserved. 
+ *
+ * Config.h - MIG specification for interface to Config server
+ *
+ * HISTORY
+ * 11-Apr-91    Doug Mitchell at NeXT
+ *      Created.
+ */
+
+subsystem Config 1234567;
+serverprefix	_;
+
+#include <mach/std_types.defs>
+
+import <driverkit/userConfigServer.h>;
+
+type unsigned		= int;
+type IOSlotId		= unsigned;
+type IODeviceType	= unsigned;
+type IODevicePort	= port_t;
+
+routine IORegisterDriver(
+		configPort	: port_t;
+		driverSigPort	: port_t;
+		driver_port	: port_t);
+
+routine IODeleteDriver(
+		configPort	: port_t;
+		driverSigPort	: port_t);
+	
+/*
+ * routine IODeleteDevice(
+ *		configPort	: port_t;
+ *		driverSigPort	: port_t;
+ *		dev_port	: IODevicePort;
+ *	out	rtn		: config_return_t);
+ */
+
+routine IORescanDriver(
+		configPort	: port_t);
+
+routine IOConfigDevice(
+		configPort	: port_t;
+		slotId		: IOSlotId;
+		deviceTypeype	: IODeviceType);
+
+/*
+ * Debug only.
+ */
+routine IODeleteDeviceByType(
+		configPort	: port_t;
+		slotId		: IOSlotId;
+		deviceTypeype	: IODeviceType);

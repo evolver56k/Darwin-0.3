@@ -1,0 +1,8 @@
+#
+# Default paths for subdirectories.
+#
+
+OBJROOT=../../obj/ppc/$(DIR)
+SYMROOT=../../sym/ppc
+DSTROOT=../../dst/ppc
+SRCROOT=/tmp

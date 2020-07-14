@@ -1,0 +1,50 @@
+			Ethernet questions
+			
+1. Why does the 68k driver use IF_ENQUEUE and IF_DEQUEUE? These look like 
+   private macros for the netif module...They'll prevent us from using 
+   only netif.h! How to enqueue and dequeue from netif_t legally?
+   
+   -- Maybe don't have to enqueue mbufs on netif; 68k had to do that 
+      because of finite-size DMA queue...We should just be able to 
+      chan_dma_enqueue 'em.
+
+2. How important is it to use netbuf's instead of mbufs? Is this actually 
+   possible in current system (without a lot of hacking outside of enet
+   driver)?
+   
+   -- Brad says: go for it, by the book. OK, let's try it.
+   
+3. Re: this comment at top of enoutput():
+
+   Use trailer local net encapsulation if enough data in first
+   packet leaves a multiple of 512 bytes of data in remainder.
+
+   I don't see any code which does this.
+   
+   -- I think that the enet driver doesn't have to worry about this; 
+      it's handled in if_venip.c.
+   
+4. engetbuf, I assume, is never called from interrupt level, since 
+   it calls nb_alloc_wrapper, which the tech docs say can not be called
+   from interrupt level. However, 
+   engetbuf() {
+   	en_get()
+		enbuf_alloc()
+			m_clalloc() ...
+			
+   m_clalloc() has a hack to allocate memory at interrupt level. 
+   
+   Will a network module's output or getbuf routines in fact be called
+   at interrupt level?
+   
+   -- Brad and Joel G. both say NO. I'm going to go ahead and assume that
+      I can do RPCs and kallocs from both routines. Brad agreed to help fix
+      deadlock problems which may arise from this. 
+		
+5. Maybe we want the enetBuf's to always be wired. If so, kern_dev needs 
+   one of two changes:
+     -- at dma_enqueue() time, rememeber if current vm_region is pageable;
+        if not, don't bother wiring it, and don't unwire it at dequeue time 
+     -- att arg to chan_dma_enqueue_int() to specifiy whether or not to bother
+        wiring and unwiring the memory.
+	

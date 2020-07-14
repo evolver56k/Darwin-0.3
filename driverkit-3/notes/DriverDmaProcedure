@@ -1,0 +1,95 @@
+			NRW DMA - driver usage
+			
+DMA procedure, block mode devices
+{
+	shut down possible DMA in progress, dequeue descriptors (not 
+		normally done);
+	/*
+	 * enable interrupts at device/channel level. Output devices
+	 * should rely on device-level I/O complete interrupts; input
+	 * devices can use DMA descriptor interrupts.
+	 */
+	enable device error and all channel interrupts;
+	if output operation 
+		enable device I/O complete interrupts;
+	enqueue the dma frame, enabling descriptor interrupt for input only;
+	assert reset_chan and chan_{input,output};
+	enable interrupt notification at kernel level;
+	assert load_desc;
+	assert enable_chan;
+	enable device-specific logic;
+	wait for interrupt or timeout;
+	if any errors (timeout, channel errors, device-specific errors) {
+		error recovery;
+	}
+	else if input operation {
+		if descriptor interrupt {
+			/* I/O Complete */
+			clear descriptor interrupt bit;
+			dequeue DMA frame;
+		}
+		else {
+			spurious interrupt (error);
+		}
+	}
+	else {
+		if Device I/O complete interrupt {
+			/* I/O Complete */
+			clear device interrupt bit;
+			dequeue DMA frame;
+		}
+		else {
+			spurious interrupt (error);
+		}
+	}
+}
+
+DMA procedure, Streaming mode devices
+{
+	/*
+	 * initialize channel for normal operation.
+	 */
+	assert reset_chan and chan_{input,output};
+	enable device error and all channel interrupts;
+	
+	/*
+	 * Main loop, run forever.
+	 */
+	while(1) {
+		wait for interrupt or new command;
+		if(new command) {
+			enqueue the DMA frame, enabling descriptor interrupt
+				and interrupt notification;
+			if descriptor list empty {
+				assert load_desc;
+				assert enable_chan;
+			}
+			if device logic idle
+				enable device-specific logic;
+		}
+		else {
+			/*
+			 * Interrupt. 
+			 */
+			if any errors (timeout, channel errors, 
+			    device-specific errors) {
+				error recovery;
+			}
+			else if descriptor interrupt {
+			
+				/*
+				 * Dequeue all completed frames.
+				 */
+				clear descriptor interrupt bit;
+				do {
+					dequeue_frame(completed only, enable
+						interrupts if no more);
+					I/O complete for that frame;
+				} while(descriptors available);
+			}
+			else {
+				spurious interrupt;
+			}
+		}
+	}
+}

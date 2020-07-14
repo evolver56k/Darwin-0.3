@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+	C_FILES = (tarread.c); 
+	H_FILES = (tar.h); 
+	M_FILES = (); 
+	OTHER_LINKED = (); 
+	OTHER_SOURCES = (Makefile.preamble, makefile.dist, tarread.exe); 
+	SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = tar; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.0; 
+}

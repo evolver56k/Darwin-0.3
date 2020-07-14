@@ -1,0 +1,24 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXCType.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXCType.h/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsAlNum.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsAlpha.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsAscii.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsCntrl.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsDigit.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsGraph.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsLower.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsPrint.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsPunct.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsSpace.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsUpper.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXIsXDigit.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXToAscii.c/1.1.1.1/Wed Apr 14 23:19:12 1999//TLibc-1
+/NXToLower.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/NXToUpper.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/_NXToLower.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+/_NXToUpper.c/1.1.1.1/Wed Apr 14 23:19:13 1999//TLibc-1
+D

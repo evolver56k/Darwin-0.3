@@ -1,0 +1,146 @@
+.TH appletalk 8
+.SH NAME
+
+appletalk - enables you to configure and display AppleTalk
+network interfaces
+
+.SH SYNOPSIS
+appletalk [[-u [-b 
+.I network-interface
+] [-q]] | [[-r | -x] [-c] [-f 
+.I config-file
+] [-q] [-v 
+.I value
+] [-w 
+.I value
+]]] [-a] [-d] [-n] [-p] [-s] [-j] [-m 
+.I value
+] [-t] [-z]
+
+.SH ARGUMENTS
+.SH "    Starting Appletalk in single port mode:"
+
+.TP 8
+-u
+Start AppleTalk in single-interface mode.
+.TP 8
+-b
+.I network-interface
+
+Identifies the network interface that AppleTalk is to use. 
+This option is only valid with the -u option.  The default interface is en0.
+.TP 8
+-q
+Start AppleTalk in non-interactive mode, without prompting the user for zones.
+This option is valid only with -u (or -[rx], see below).
+
+.SH "    Starting Appletalk on multiple ports:"
+
+.TP 8
+-r
+Start AppleTalk in routing mode.
+.TP 8
+-x
+Start AppleTalk in multi-homing mode.
+
+.SH "    Modifiers for multiple ports:"
+
+.TP 8
+-c
+Check config file only.
+.TP 8
+-e
+Check and display configuration only.
+.TP 8
+-f
+.I config-file
+
+Specify a configuration file.  The default configuration file is
+.I /etc/appletalk.cfg
+\.
+.TP 8
+-q
+Start AppleTalk in non-interactive mode, without prompting the user for zones.
+This option is valid only with -r or -x (or -u, see above).
+.TP 8
+-v
+.I value
+
+Set the maximum number of routing table entries to
+.I value
+\.
+.TP 8
+-w
+.I value
+
+Set the maximum number of zip table entries to
+.I value
+\.
+
+.SH "    Other commands:"
+
+.TP 8
+-a
+Check state.
+.TP 8
+-d
+Makes AppleTalk inactive. You must be logged in as "root" to issue this command.
+.TP 8
+-n   
+Displays the current AppleTalk network number and node id.
+.TP 8
+-p
+Print saved PRAM AppleTalk information.
+.TP 8
+-s
+Show statistics and error counts.
+
+.SH Other routing commands.
+
+.TP 8
+-j
+Print router statistics.
+.TP 8
+-m
+.I value
+
+Set the maximum routing, in packets per second, to
+.I value
+\.
+.TP 8
+-t
+Display the routing table.
+.TP 8
+-z
+Display the zone list.
+
+.SH DESCRIPTION
+.I appletalk 
+displays the status of an active AppleTalk
+interface, selects an AppleTalk interface, and makes
+AppleTalk active or inactive.  Any user can display
+statistics, but only users logged in as root can select an
+AppleTalk interface or make it active or inactive.
+
+.SH EXAMPLES
+To display the current AppleTalk status, enter this command line:
+
+appletalk -s
+
+To make AppleTalk inactive, enter this command line:
+
+appletalk -d
+
+To make AppleTalk active on interface en1, enter this command line:
+
+appletalk -b en1 -u
+
+.SH FILES
+/usr/sbin/appletalk
+    Executable file
+
+/etc/appletalk.cfg
+    Configuration file
+
+.SH SEE ALSO
+appletalk.cfg(5), appleping(1), at_cho_prn(8), atlookup(1), atprint(1), atstatus(1)

@@ -1,0 +1,303 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fmodern Courier;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl\red0\green0\blue0;}
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\f0\b0\i0\ul0\fs24 			enet Pseudocode\
+		\
+
+\f1\b\fs28 /* \
+ * instance variables\
+ */
+\f0\b0\fs24 \
+\{\
+	enetBuf_t 	*
+\fc0 TxBufList;	// Free buffers. Maybe one global \
+					//   list?\
+	enetBuf_t 	*RxBufList;\
+	id		txBufLock;	// NXSpinLock; protects TxBufList\
+	id		rxBufLock;\
+	id		rpcLock;	// NXSleepLock; I/O thread and netOutput\
+					//   must grab this to do kernel RPCs\
+	int		numTxBufsQd;	// # of TX DMA buffers enqueued\
+	int 		numRxBufsQd;\
+	port_t		IOPort;		// I/O thread gets all of its work \
+					//   thru here\
+	int 		jamRetryCount;
+\
+\}\
+\
+
+\f1\b\fs28 /* \
+ * Exported Methods	\
+ */
+\f0\b0\fs24 \
+
+\
++ probe:(dev_num_t)devNumber deviceMaster:(port_t)deviceMaster\
+\{\
+	alloc an instance of self;\
+	return [newInst enetInit:devNumber deviceMaster:deviceMaster];\
+\}\
+\
+/*\
+ * I think this is only called once...\
+ */\
+- (int)netInit\
+\{\
+	init instance variables;\
+	init hardware to a good state;\
+	for(some initial # of free enetBufs) \{\
+		kalloc or vm_allocate a page;\
+		break up page into enetBuf's;\
+		for each enetBuf_t \{\
+			init it;\
+			enqueue on Rx or TXBufList;\
+			numFreeBufs++;\
+		\}\
+	\}\
+	[self enqueueRxBufs];\
+\}\
+\
+- (int)netOutput : (netbuf_t)buf\
+		   addrs : (void *)addrs\
+\{\
+	/*\
+	 * Assuming that this is NOT called at interrupt level...\
+	 */\
+	[rpcLock lock];\
+	dma_enqueue(data = nb_map(netbuf), \
+		dma_id = netbuf, \
+		length = nb_size(netbuf));\
+	if(!running) \{\
+		[self dmaStart];\
+		arrange for NetJamTimer() callout in 10 seconds;\
+	\}\
+	[rpcLock unlock];\
+\}\
+		   \
+- (netbuf_t)netGetBuf\
+\{\
+	if no bufs in TxBufList \{\
+		return NULL;\
+	\}\
+	return(nb_alloc_wrapper(&enetBuf->dmaData,\
+		size of DMA Data,\
+		&enetBufFree(),\
+		&enetBuf));\
+\}\
+\
+- (int)netControl : (const char *)command\
+		    data : (void *)data\
+\{\
+	/* crufty crap */\
+\}\
+\
+
+\f1\b\fs28 /* \
+ * Private Methods\
+ */
+\f0\b0\fs24 \
+- (void)enqueueRxBufs\
+\{\
+	/*\
+	 * Enqueue all free bufs in RxBufList on hardware DMA queue\
+	 */\
+	[rpcLock lock];\
+	do \{\
+		get an enetBuf from RxBufList;\
+		netbuf = nb_alloc_wrapper(&enetBuf->dmaData,\
+			size of DMA Data,\
+			&enetBufFree(),\
+			&enetBuf);\
+		dma_enqueue(data = &enetBuf.dmaData,\
+			dma_id = netbuf, \
+			length = sizeof DMA data);\
+		rxDmaQCount++;\
+	\
+	\} while RxBufList not empty;\
+	[rpcLock unlock]; \
+\}\
+\
+- enetInit:(dev_num_t)devNumber deviceMaster:(port_t)deviceMaster\
+\{\
+	get ethernet address from monitor or somewhere;\
+	if_attach(a zillion args);\
+	return self;\
+\}\
+\
+- enetInt\
+\{\
+	if device interrupt \{\
+		log this bogality;\
+	\}\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 	if chan[rcv] interrupt \{\
+		[self enetRxInt];\
+	\}\
+	if chan[xmit] interrupt \{\
+		[self enetTxInt];\
+	\}\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \}\
+\
+/*\
+ * Note should not be any device errors, only channel errors.\
+ */\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 - enetRxInt\
+\{\
+	if any DMA errors (errorInterrupt, busError) \{\
+		dmaAort;\
+		log it and clear it;\
+	\}\
+	if overrun \{\
+		log it and clear it;\
+	\}\
+	do \{\
+		[rpcLock lock];\
+		chan_dma_dequeue(completed only, enable interrupts \
+				if no more);\
+		[rpcLock unlock];\
+		if(dma_id == NULL)\
+			break - done;\
+		if(any errors in chan_status) \{\
+			/* drop it on the floor */\
+			nb_free((netbuf_t)dma_id);\
+		\}\
+		else \{\
+			filter out unwanted multicast packets;\
+			if_handle_input((netbuf_t)dma_id);\
+		\}\
+	\} for all completed descriptors;\
+	[self enqueueRxBufs];\
+\}\
+\
+- enetTxInt\
+\{\
+	abort = 0;\
+	\
+	untimeout(NetJamTimer callout);\
+	if any DMA errors (errorInterrupt, busError) \{\
+		log it and clear it;\
+		dmaDisable;\
+		abort++;\
+	\}\
+	if late collision or underrun \{\
+		log it and clear it;\
+		abort++;\
+	\}\
+	if No heart beat or >15 retries error \{\
+		abort++;\
+		[self enJam];\
+	\}\
+	do \{\
+		[rpcLock lock];\
+		if(abort) \{\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 			chan_dma_dequeue(ALL descriptors, enable ints);\
+		\}\
+		else \{
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 \
+			chan_dma_dequeue(
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 completed only, enable
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0  
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 interrupts 
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 \
+				
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 if no more
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 );\
+		\}\
+		[rpcLock unlock];\
+		if(dma_id == NULL)\
+			break - done;\
+		nb_free((netbuf_t)dma_id);\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 	\} for all completed descriptors;
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 \
+\}\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \
+- (jam_t)enJam\
+\{\
+\
+   	if (++jamRetryCount < max) \
+		return JAM_GOOD;\
+\
+	remember current I/F mode (TPE or thin);\
+	select TPE;\
+	wait some h/w delay for Link Integrity to settle down;\
+	if link integrity good \{\
+		return JAM_GOOD;\
+	\}\
+	else if (mode was TPE on entry) \{\
+		select Thin wire;\
+		return JAM_GOOD;\
+	\}\
+	\
+	/* \
+	 * Net down.\
+	 */\
+	dequeue and free all frames;\
+	set net_down flag; set timeout to clear it in 10 seconds;\
+	if_down();\
+	return JAM_BAD;\
+\}\
+\
+- (enetBuf_t)enetBufGet(which queue)\
+\{\
+	safely get an enetBuf from appropriate queue;\
+\}\
+\
+- (void)enetBufPut\
+\{\
+	safely put an enetBuf on its free queue;\
+\}\
+\
+
+\f1\b\fs28 /*\
+ * Threads and Functions\
+ */
+\f0\b0\fs24 \
+\
+/*\
+ * enetThread() does the following:\
+ * -- handles all interrupts (normally DMA; others are errors)\
+ * -- Dispatches received packets; keeps RX DMA queue as full as possible\
+ * -- detects Net Jammed conditions, reconfigures I/F (TPE or Thin).\
+ */\
+enetThread(id enetObj)\
+\{\
+	msg_receive(IOPort);\
+	switch msg_id \{\
+	    case INT_MSG_DEVICE:\
+	    case INT_MSG_DMA:\
+	    	[enetObj enetInt];\
+	    case ENET_JAMMED_MSG_ID:\
+	   	[enetObj enJam];\
+	\}\
+\}\
+\
+/*\
+ * Called out from nb_free(), as freefunc(freefunc_arg).\
+ */\
+enetBufFree(enetBuf_t *enetBuf) \{\
+  	enqueue this on enetBufList;\
+\}\
+\
+/*\
+ * Called out via IOTimeout(); we arrange for one of these to happen 10\
+ * seconds after we start a DMA out. This handles the "net jammed so bad that\
+ * we don't even see collisions" error, caused by continuous carrier sense.\
+ */\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 NetJamTimer
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 (
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 port_t enetIOPort
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 )
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0  \{\
+	send ENET_JAMMED_MSG message to the I/O thread;\
+\}\
+
+}

@@ -1,0 +1,6 @@
+Package: system-config
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 46
+Description: Device driver configuration
+Build-Depends: build-base

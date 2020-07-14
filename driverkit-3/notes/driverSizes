@@ -1,0 +1,17 @@
+68k release
+	sd.o			13442
+	scsi.o			 2676
+	sc.o			 5252
+		scsi total	21370
+	floppy*.o		23656
+	vol.o			 3320
+		disk total	48346
+		
+driverkit release
+	scsidisk		10967
+	scsi controller		13773 (no fake hardware)
+		scsi total	24740
+	disk device		16850 (no volDriver)
+	IODevice		 9558 (no dma, dispatch - still way big!!)
+	floppy			19886 (no fake hardware
+		disk total	60067

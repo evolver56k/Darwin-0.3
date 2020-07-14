@@ -1,0 +1,29 @@
+/* libsaio.h */
+
+#import "libsa.h"
+#import "saio.h"
+#import "saio_types.h"
+#import "saio_macros.h"
+
+struct dirstuff {
+		int loc;
+		struct iob *io;
+};
+
+#import "saio_internal.h"
+#import "saio_static.h"
+
+extern BOOL verbose_mode;
+
+extern int printf(const char *format, ...);
+
+#if 0
+extern int error(const char *format, ...);
+extern int verbose(const char *format, ...);
+extern int localPrintf(const char *format, ...);
+#else
+#define error(F, A...)			printf(F, ##A)
+#define verbose(F, A...)		printf(F, ##A)
+#define localPrintf(F, A...)	printf(F, ##A)
+#endif
+

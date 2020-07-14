@@ -1,0 +1,3 @@
+<p>This project is being phased out over time as we pull additional command sets from current BSD sources. The upstream source of these commands isn't well defined, and they may be out-of-date.</p>
+
+<p>See <a href="http://www.publicsource.apple.com/projects/darwin/strategy/bsd.html">BSD Software Strategy</a> for more information.</p>

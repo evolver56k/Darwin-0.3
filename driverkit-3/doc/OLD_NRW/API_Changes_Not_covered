@@ -1,0 +1,20 @@
+API Changes not covered by sed script:
+
+IODevice methods
+    get/set parameter method calls changed significantly. 
+    
+IODisk methods:
+    -writeProtected ==> -isWriteProtected 
+    DiskDeviceRw protocol is now IODiskReadingAndWriting; syntax changed.
+    diskIoComplete:status:bytesXfr syntax changed. 
+    Physical disk subclass must explitly cal -setIsPhysical prior to 
+    	calling registerDevice.
+    There is no -registerDisk method.
+    
+user_driver_types.h (no driverTypes.h)
+   IODevRtn is gone, since there is no IODeviceReturn.
+   
+Others
+    The former deviceCommon.h, now return.h, contained a few typedefs
+    	which are now in driverTypes.h.
+	

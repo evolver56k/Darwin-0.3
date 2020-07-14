@@ -1,0 +1,182 @@
+		    LogicalDisk and NXDisk notes
+	
+	    
+r/w
+   device: 	raw, block - _blockSize = dtp->d_secsize
+   		live - _blockSize = physical block size
+   limitations:	works on live as long as disk is formatted (checked by
+			phys device)
+		works on raw and block only when label valid (checked by
+			NXDisk)
+   effects:	faults in non-present disk (by LogicalDisk)
+		
+read label
+   device:	raw (any partition?)
+   limitations:	physDev must be formatted (checked by NXDisk)
+   effects:	faults in non-present disk (by NXDisk)
+   
+write label
+   device: 	raw (any partition?)
+   limitations: physDev must be formatted (checked by NXDisk)
+   		no block devices must be open (currently, maybe this won't
+			work...)
+   effects:	frees all block devices
+   		does a _probeLabel:, possibly creating new instances
+		
+eject
+   device:	raw
+   limitations:	rejected by IODiskDevice ejectDisk if:
+   			-- not removable
+			-- any block devices are open
+			-- physDevice and any logical disks attached
+		rejected by NXDisk devEjectDisk if not raw device
+   effects:	formatted = 0 by [IODiskDevice ejectDisk]
+   		all block devices freed by {NXDisk devEjectDisk]
+		label invalid by [NXDisk devEjectDisk]
+   
+set formatted
+   device:	raw
+   limitations:	no logical disks upstream can be open (checked in
+   			IODiskDevice's setFormatted:)
+   effects:	calls getPhysParams if setting formatted true
+   		calls setFormattedInt - this frees all block devices and
+			negates labelValid in NXDisk
+   
+faulting in non-present disk
+   device: 	live, raw partition 0 (other raw partitions non-existent
+   			when no disk present)
+   limitations: none
+   effects:	NXDiskProbe invoked by volCheck thread. This reads a label
+   			and creates NXDisk partition instances per label info.
+			volCheck thread blocks the whole time NXDiskProbe
+			is running.
+			
+NXDiskProbe
+   device:	none - NXDisk factory method, operates on physDevice
+   limitations: none - called ragardless of physDev state
+   effects:	AS IS:
+   			creates raw device if one doesn't exist
+			registerUnixDisk for both physDev and raw device
+			check ready loop, init lastReadyState
+			getPhysParams if newly ready
+			if not formatted or not ready, done
+			read a label
+			if good, probeLabel:
+   
+probeLabel
+   device:	raw
+   limitations:	assumes that label is good and disk is present
+   effects:	updates state of raw dev params per label
+   		creates and inits one block device per partition
+		
+.............
+Changes:
+
+Instead of "are any logical disks upstream open" ([IOLoogicalDisk isOpen]) we really need "are any other logical disks in the chain other than me". This is for hazardous ops on the raw device like eject and setFormatted which require this to be the only open device.
+
+IOLogicalDisk anyOtherOpen
+{
+	logicalDisk = [physDev logicalDisk];
+	while(logicalDisk) {
+		if(logicalDisk != self) {
+			if([logicalDisk diskIsOpen]
+				return 1;
+		}
+		logicalDisk = [logicalDisk logicalDisk];
+	}
+}
+................
+
+Just have one NXDisk instance per partition. At the NXDisk level there is almost no difference between a block device and a raw device. Change "_diskIsOpen" to "blockDevOpen" and "RawDevOpen". Sometime we only care if any block devices are open (like when writing a label or ejecting); sometimes we want to know if ANY "other" devices are open (use anyOtherOpen).
+................
+setting the formatted flag - current implementation is hosed.
+Sould be:
+
+   device:	NXDisk (though has to work properly on live device!)
+   limitations:	no other logical disks can be open
+   		no block devices can be open 
+		(Both checked in [IODiskDevice setFormatted]
+   effects:	invalidates label
+		frees all NXDisks except for first one
+		updates physParams for physDevice of setting formatted TRUE
+   
+/*
+ * Public version for physDevice.
+ */
+IODiskDevice setFormatted
+{
+	if ANY logical disks open
+		abort
+	update _formatted;
+   	if setting true, [self getPhysParams]
+	if logicalDisk {
+		[logicalDisk setFormattedInt]
+	}
+}
+
+/*
+ * Public version for NXDisk.
+ */
+NXDisk setFormatted
+{
+	if any block devices open
+		abort
+	if any other logical devices open 
+		abort
+	[physDev setFormattedInt]
+	if setting true
+		[physDev getPhysParams]
+	[self setFormattedInt]
+}
+
+/*
+ * Internal version for physDevice.
+ */
+IODiskDevice setFormattedInt
+{
+	update _formatted;
+}
+
+/*
+ * Internal version for NXDisk.
+ */
+NXDisk setFormattedInt
+{
+	free NXDisks other than partition 0
+	mark label invalid and update _formatted;
+}
+
+............
+
+other new restrictions:
+
+anything that blows away NXDisk instances (write label, eject, setFormatted) must be done on the 'a' partition since that's the only one which survives. I think this should be reasonable restriction....
+.............
+
+ejecting - kind of like setFormatted...
+
+IODiskDevice ejectDisk
+{
+	if ANY logical disks attached
+		abort
+	[self devEjectDisk];	// to subclass, like SCSIDisk...
+	_formatted = 0;
+}
+
+NXDisk ejectDisk
+{
+	if any block devices open
+		abort
+	if any other logical devices open 
+		abort
+	if this not partition 0
+		abort
+	[physDev devEjectDisk]
+	invalidate label
+	freePartitions
+}
+
+IODiskDevice devEjectDisk
+{
+	...implemented by subclass...
+}

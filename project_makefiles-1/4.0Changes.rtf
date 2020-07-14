@@ -1,0 +1,107 @@
+{\rtf0\ansi{\fonttbl\f0\fnil TradeGothic;\f1\fmodern Ohlfs;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;\red163\green30\blue22;}
+\pard\tx683\tx1366\tx2049\tx2732\tx3416\tx4099\tx4782\tx5465\tx6148\tx6832\f0\b0\i0\ulnone\fs28\fc0\cf0 \
+<<Idea: Xref to PB manual for further discussion of notable feature changes, such as "dynamic shared libraries", "frameworks", "public, project, and private headers", "dependant frameworks and libraries", how projects get built now, and how project source versions are computed by the makefiles.>>\
+\
+\
+
+\b\fs36 ProjectBuilder "Makefile API"  Changes\
+
+\b0\fs28 \
+
+\b MAKEFILEDIR
+\b0  - The default MAKEFILEDIR has changed from /NextDeveloper/Makefiles/app to /NextDeveloper/Makefiles/project.  The original Makefiles remain on the system, but to get the new features required to build a project based on the NEXTSTEP 4.0 dynamic shared libraries, you will need to use the new Makefiles.  Saving a project with the 4.0 ProjectBuilder will automatically upgrade MAKEFILEDIR for you.  If you need the old Makefile behavior, it is attainable with:\
+\
+   MAKEFILEDIR = /NextDeveloper/Makefiles/app\
+   \
+in your Makefile.preamble.\
+\
+
+\b OTHER_LIBTOOL_FLAGS 
+\b0 -Libtool is used to build static libraries, dynamic libraries, and frameworks.
+\b   
+\b0 Extra flags may be passed to libtool through this new flag.  However, flags are still passed to the link editing phase of an executable (e.g. app, tool) with 
+\b OTHER_LDFLAGS  
+\b0 .<<Maybe these should be combined?  There is some overlap between what you can pass to ld and what you can pass to libtool.  People may not care what tool happens to be used to package together the result of a project, so setting just one thing might be a simpler model.  What do peoplle think?>>\
+\
+
+\b\fc1\cf1 BUNDLELDFLAGS 
+\b0 and
+\b  PALETTELDFLAGS 
+\b0 have been obsoleted.  Bundles and palettes not just take OTHER_LDFLAGS or "Linker Flags" in the ProjectBuilder UI.
+\fc0\cf0 \
+\
+<<Stuff relating to public, private, and project headers is omitted, since these are new 4.0 features and not part of the conversion process.>>\
+\
+
+\b DEPLOY_WITH_VERSION_NAME
+\b0  -For library and framework projects, it's a good idea to set thisto an initial version name for your shared library before you deploy it.  This will allow you to ship a newer, incompatible version of your library later without breaking applications which link against the previous shared library.  A good initial version name might be "A".  Each time you change it (say, to "B") you should also set 
+\b COMPATIBILITY_PROJECT_VERSION 
+\b0 to the current
+ version of your 
+project.\
+\
+
+\b COMMON_CFLAGS, NORMAL_CFLAGS, DEBUG_CFLAGS
+\b0  and 
+\b PROFILE_CFLAGS
+\b0  have been removed and replaced with a more intuitive set of make variables that allow more control of compiler options:\
+  
+\b OPTIMIZATION_CFLAG
+\b0   -- Normally -O, Allows a project to turn off or expand the optimization \
+                         done by the default and profile builds.\
+   
+\b DEBUG_SYMBOLS_CFLAG
+\b0  -- Normally -g.  Allows a project to suppress generation of debugging\
+                          symbols.\
+   
+\b WARNING_CFLAGS
+\b0     Normally -Wall.  Allows a project to reduce the level of warnings the \
+                         compiler emits.\
+   
+\b DEBUG_BUILD_CFLAGS
+\b0  = Normally -DDEBUG.\
+   
+\b PROFILE_BUILD_CFLAGS
+\b0  = Normally "-pg -DPROFILE".\
+\
+
+\b\fc1\cf1 RELOCATABLE_STRIP_OPTS
+\b0  
+and
+\b  DYLD_APP_STRIP_OPPS 
+\b0 are now no longer necessary. Executables which do dynamic loading no longer need to be stripped any differently than apps which do not.  Basically, everything is stripped by default with -S to remove debugging symbols, but these are overridable as documented in the Makefile.postamble template.
+\fc0\cf0 \
+\
+
+\b\fc1\cf1 OTHER_DEBUG_LIBS
+\b0\fc0\cf0 , 
+\b\fc1\cf1 OTHER_PROF_LIBS
+\b0\fc0\cf0 , 
+\b\fc1\cf1 OTHER_JAPANESE_DEBUG_LIB
+\f1\b0\fs24\gray270\fc2\cf2 , 
+\f0\fs28\gray0\fc1\cf1 and
+\f1\fs24\gray270\fc2\cf2  
+\f0\b\fs28\gray0\fc1\cf1 OTHER_JAPANESE_PROF_LIBS 
+\b0 have been obsoleted.  Additionally, 
+\b BUNDLE_LIBSis
+\b0  no longer necessary, since libraries can and should be added directly in ProjectBuilder to any project which directly depends on them.\
+
+\fc0\cf0 \
+\
+
+\b\fs36\fc1\cf1 Other Makefile Suggestions\
+\
+
+\b0\fs28\fc0\cf0 · Consider upgrading library projects and bundle projects which get shared by multiple apps.  The new "framework" project type handles the efficient sharing and dynamic binding of \
+· Strive to minimize the amount of customization you need to do in Makefile.preamble and Makefile.postamble.   The Build Options Inspector in the 4.0 ProjectBuilder provides many capabilities, such as setting search paths and simple flags to cc, that weer previously only possible by modifying these files.\
+
+· If you wrote any top-level double-colon targets that are also implemented by the ProjectBuilder Makefiles, such as app::, install::, all::, now is a good time to rename them to be integrated somewhat more closely.  It is likely that the variables passed to these rules and the order in which they are executed has changed.  Consider using after_install::, before_install::, OTHER_INITIAL_TARGETS, or OTHER_PRODUCT_DEPENDS.\
+· If your project had internal precompiled headers that were used to speed the compilation of the project source, then you might have some rules in place to cause the precompiled .p file to be rebuilt when one of the headers in the project changes.  This is no longer necessary.  Each time you build, these precomps are quickly brought up to date if necessary using fixPrecomps.  Note also that setting PRECOMPS in the Makefiles is no longer necessary, since ProjectBuilder now allows you to denote the headers you feel are worth precompiling.
+\
+
+}

@@ -1,0 +1,6 @@
+Package: liby
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 10
+Description: y library
+Build-Depends: build-base

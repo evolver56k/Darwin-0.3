@@ -1,0 +1,392 @@
+<html><head>
+<title>Debian packaging manual - Declaring relationships between packages</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 8<br>
+Declaring relationships between packages
+</h1>
+
+Packages can declare in their control file that they have certain
+relationships to other packages - for example, that they may not be
+installed at the same time as certain other packages, and/or that they
+depend on the presence of others, or that they should overwrite files
+in certain other packages if present.<P>
+
+This is done using the <code>Depends</code>, <code>Recommends</code>, <code>Suggests</code>,
+<code>Conflicts</code>, <code>Provides</code> and <code>Replaces</code> control file fields.<P>
+<hr>
+<h2><A name="s-depsyntax">
+8.1 Syntax of relationship fields
+</A></h2>
+
+These fields all have a uniform syntax.  They are a list of package
+names separated by commas.<P>
+
+In <code>Depends</code>, <code>Recommends</code>, <code>Suggests</code> and <code>Pre-Depends</code>
+(the fields which declare dependencies of the package in which they
+occur on other packages) these package names may also be lists of
+alternative package names, separated by vertical bar symbols <code>|</code>
+(pipe symbols).<P>
+
+All the fields except <code>Provides</code> may restrict their applicability
+to particular versions of each named package.  This is done in
+parentheses after each individual package name; the parentheses should
+contain a relation from the list below followed by a version number,
+in the format described in <A href="ch-versions.html">Version numbering, chapter 5</A>.<P>
+
+The relations allowed are
+<code>&lt;&lt;</code>,
+<code>&lt;=</code>,
+<code>=</code>,
+<code>&gt;=</code> and
+<code>&gt;&gt;</code>
+for strictly earlier, earlier or equal, exactly equal, later or equal
+and strictly later, respectively.  The forms <code>&lt;</code> and <code>&gt;</code>
+were used to mean earlier/later or equal, rather than strictly
+earlier/later, so they should not appear in new packages (though
+<kbd>dpkg</kbd> still supports them).<P>
+
+Whitespace may appear at any point in the version specification, and
+must appear where it's necessary to disambiguate; it is not otherwise
+significant.  For consistency and in case of future changes to
+<kbd>dpkg</kbd> it is recommended that a single space be used after a
+version relationship and before a version number; it is usual also to
+put a single space after each comma, on either side of each vertical
+bar, and before each open parenthesis.<P>
+
+For example:
+<pre>Package: metamail
+Version: 2.7-3
+Depends: libc5 (&gt;= 5.2.18-4), mime-support, csh | tcsh</pre>
+<hr>
+<h2><A name="s8.2">
+8.2 Dependencies - <code>Depends</code>, <code>Recommends</code>, <code>Suggests</code>, <code>Pre-Depends</code>
+</A></h2>
+
+These four fields are used to declare a dependency by one package on
+another.  They appear in the depending package's control file.<P>
+
+All but <code>Pre-Depends</code> (discussed below) take effect <em>only</em> when
+a package is to be configured.  They do not prevent a package being on
+the system in an unconfigured state while its dependencies are
+unsatisfied, and it is possible to replace a package whose
+dependencies are satisfied and which is properly installed with a
+different version whose dependencies are not and cannot be satisfied;
+when this is done the depending package will be left unconfigured
+(since attempts to configure it will give errors) and will not
+function properly.<P>
+
+For this reason packages in an installation run are usually all
+unpacked first and all configured later; this gives later versions of
+packages with dependencies on later versions of other packages the
+opportunity to have their dependencies satisfied.<P>
+
+Thus <code>Depends</code> allows package maintainers to impose an order in
+which packages should be configured.
+
+<dl>
+<dt><code>Depends</code><dd>This declares an absolute dependency.<P>
+
+<kbd>dpkg</kbd> will not configure
+packages whose dependencies aren't satisfied.  If it is asked to make
+an installation which would cause an installed package's dependencies
+to become unsatisfied it will complain<A href="footnotes.html#21" name="fr21">[21]</A>, unless
+<code>--auto-deconfigure</code> is specified, in which case those packages
+will be deconfigured before the installation proceeds.<P>
+
+<kbd>dselect</kbd> makes it hard for the user to select packages for
+installation, removal or upgrade in a way that would mean that
+packages' <kbd>Depends</kbd> fields would be unsatisfied.  The user can
+override this if they wish, for example if they know that <kbd>dselect</kbd>
+has an out-of-date view of the real package relationships.<P>
+
+The <code>Depends</code> field should be used if the depended-on package is
+required for the depending package to provide a significant amount of
+functionality.
+<p><dt><code>Recommends</code><dd>This declares a strong, but not absolute, dependency.<P>
+
+<code>Recommends</code> is ignored by <kbd>dpkg</kbd>, so that users using the
+command-line (who are presumed to know what they're doing) will not be
+impeded.<P>
+
+It is treated by <kbd>dselect</kbd> exactly as <code>Depends</code> is; this makes
+it hard for the user to select things so as to leave <code>Recommends</code>
+fields unsatisfied, but they are able to do so by being persistent.<P>
+
+The <code>Recommends</code> field should list packages that would be found
+together with this one in all but unusual installations.
+<p><dt><code>Suggests</code><dd>This is used to declare that one package may be more useful with one
+or more others.  Using this field tells the packaging system and the
+user that the listed packages are be related to this one and can
+perhaps enhance its usefulness, but that installing this one without
+them is perfectly reasonable.<P>
+
+<kbd>dselect</kbd> will offer suggsted packages to the system administrator
+when they select the suggesting package, but the default is not to
+install the suggested package.
+<p><dt><code>Pre-Depends</code><dd>This field is like <code>Depends</code>, except that it also forces <kbd>dpkg</kbd>
+to complete installation of the packages named before even starting
+the installation of the package which declares the predependency.<P>
+
+<kbd>dselect</kbd> checks for predependencies when it is doing an
+installation run, and will attempt to find the packages which are
+required to be installed first and do so in the right order.<P>
+
+However, this process is slow (because it requires repeated
+invocations of <kbd>dpkg</kbd>) and troublesome (because it requires
+guessing where to find the appropriate files).<P>
+
+For these reasons, and because this field imposes restrictions on the
+order in which packages may be unpacked (which can be difficult for
+installations from multipart media, for example), <code>Pre-Depends</code>
+should be used sparingly, preferably only by packages whose premature
+upgrade or installation would hamper the ability of the system to
+continue with any upgrade that might be in progress.<P>
+
+When the package declaring it is being configured, a
+<code>Pre-Dependency</code> will be considered satisfied only if the depending
+package has been correctly configured, just as if an ordinary
+<code>Depends</code> had been used.<P>
+
+However, when a package declaring a predependency is being unpacked
+the predependency can be satisfied even if the depended-on package(s)
+are only unpacked or half-configured, provided that they have been
+configured correctly at some point in the past (and not removed or
+partially removed since).  In this case both the previously-configured
+and currently unpacked or half-configured versions must satisfy any
+version clause in the <code>Pre-Depends</code> field.
+<p></dl>
+
+
+When selecting which level of dependency to use you should consider
+how important the depended-on package is to the functionality of the
+one declaring the dependency.  Some packages are composed of
+components of varying degrees of importance.  Such a package should
+list using <code>Depends</code> the package(s) which are required by the more
+important components.  The other components' requirements may be
+mentioned as Suggestions or Recommendations, as appropriate to the
+components' relative importance.
+<hr>
+<h3><A name="s8.2.1">
+8.2.1 Dependencies on shared libraries
+</A></h3>
+
+The dependency fields listed above are used by packages which need
+shared libraries to declare dependencies on the appropriate packages.<P>
+
+These dependencies are usually determined automatically using
+<kbd>dpkg-shlibdeps</kbd> and inserted in the package control file using
+the control file substitution variables mechanism; see <A href="ch-sourcepkg.html#s-srcsubstvars"><code>debian/substvars</code> and variable substitutions, subsection 3.2.4</A> and <A href="ch-sourcepkg.html#s-sourcetools">Tools for processing source packages, section 3.1</A>.
+<hr>
+<h3><A name="s8.2.2">
+8.2.2 Deconfiguration due to removal during bulk installations
+</A></h3>
+
+If <kbd>dpkg</kbd> would like to remove a package due to a conflict, as
+described above, but this would violate a dependency of some other
+package on the system, <kbd>dpkg</kbd> will usually not remove the
+conflicting package and halt with an error.<P>
+
+However, if the <code>--auto-deconfigure</code> (<code>-B</code>) option is used
+<kbd>dpkg</kbd> will automatically `deconfigure' the package with the
+problematic dependency, so that the conflicting package can be removed
+and the package we're trying to install can be installed.  If
+<kbd>dpkg</kbd> is being asked to install packages (rather than just
+unpacking them) it will try to reconfigure the package when it has
+unpacked all its arguments, in the hope that one of the other packages
+it is installing will satisfy the problematic dependency.<P>
+
+<kbd>dselect</kbd> supplies this argument to <kbd>dpkg</kbd> when it invokes it,
+so that bulk installations proceed smoothly.
+<hr>
+<h2><A name="s-conflicts">
+8.3 Alternative packages - <code>Conflicts</code> and <code>Replaces</code>
+</A></h2>
+
+When one package declares a conflict with another <kbd>dpkg</kbd> will
+refuse to allow them to be installed on the system at the same time.<P>
+
+If one package is to be installed, the other must be removed first -
+if the package being installed is marked as replacing (<A href="#s-replaces"><code>Replaces</code> - overwriting files and replacing packages, section 8.5</A>) the one on the system, or the one on the system is
+marked as deselected, or both packages are marked <code>Essential</code>, then
+<kbd>dpkg</kbd> will automatically remove the package which is causing the
+conflict, otherwise it will halt the installation of the new package
+with an error.<P>
+
+<kbd>dselect</kbd> makes it hard to select conflicting packages, though the
+user can override this if they wish.  If they do not override it then
+<kbd>dselect</kbd> will select one of the packages for removal, and the user
+must make sure it is the right one.  In the future <kbd>dselect</kbd> will
+look for the presence of a <code>Replaces</code> field to help decide which
+package should be installed and which removed.<P>
+
+A package will not cause a conflict merely because its configuration
+files are still installed; it must be at least half-installed.<P>
+
+A special exception is made for packages which declare a conflict with
+their own package name, or with a virtual package which they provide
+(see below): this does not prevent their installation, and allows a
+package to conflict with others providing a replacement for it.  You
+use this feature when you want the package in question to be the only
+package providing something.<P>
+
+A <code>Conflicts</code> entry should almost never have an `earlier than'
+version clause.  This would prevent <kbd>dpkg</kbd> from upgrading or
+installing the package which declared such a conflict until the
+upgrade or removal of the conflicted-with package had been completed.
+This aspect of installation ordering is not handled by <kbd>dselect</kbd>,
+so that the use <code>Conflicts</code> in this way is likely to cause problems
+for `bulk run' upgrades and installations.<P>
+
+<hr>
+<h2><A name="s-virtual">
+8.4 Virtual packages - <code>Provides</code>
+</A></h2>
+
+As well as the names of actual (`concrete') packages, the package
+relationship fields <code>Depends</code>, <code>Recommends</code>, <code>Suggests</code> and
+<code>Conflicts</code> may mention virtual packages.<P>
+
+A virtual package is one which appears in the <code>Provides</code> control
+file field of another package.  The effect is as if the package(s)
+which provide a particular virtual package name had been listed by
+name everywhere were the virtual package name appears.<P>
+
+If there are both a real and a virtual package of the same name then
+the dependency may be satisfied (or the conflict caused) by either the
+real package or any of the virtual packages which provide it.  This is
+so that, for example, supposing we have
+<pre>Package: vm
+Depends: emacs</pre>
+and someone else releases an xemacs package they can say
+<pre>Package: xemacs
+Provides: emacs</pre>
+and all will work in the interim (until a purely virtual package name
+is decided on and the <code>emacs</code> and <code>vm</code> packages are changed to
+use it).<P>
+
+If a dependency or a conflict has a version number attached then only
+real packages will be considered to see whether the relationship is
+satisfied (or the prohibition violated, for a conflict) - it is
+assumed that a real package which provides virtual package is not of
+the `right' version.  So, a <code>Provides</code> field may not contain
+version numbers, and the version number of the concrete package which
+provides a particular virtual package will not be looked at when
+considering a dependency on or conflict with the virtual package name.<P>
+
+It is likely that the ability will be added in a future release of
+<kbd>dpkg</kbd> to specify a version number for each virtual package it
+provides.  This feature is not yet present, however, and is expected
+to be used only infrequently.<P>
+
+If you want to specify which of a set of real packages should be the
+default to satisfy a particular dependency on a virtual package, you
+should list the real package as alternative before the virtual.<P>
+
+<hr>
+<h2><A name="s-replaces">
+8.5 <code>Replaces</code> - overwriting files and replacing packages
+</A></h2>
+
+The <code>Replaces</code> control file field has two purposes, which come into
+play in different situations.<P>
+
+Virtual packages (<A href="#s-virtual">Virtual packages - <code>Provides</code>, section 8.4</A>) are not considered when looking
+at a <code>Replaces</code> field - the packages declared as being replaced
+must be mentioned by their real names.
+<hr>
+<h3><A name="s8.5.1">
+8.5.1 Overwriting files in other packages
+</A></h3>
+
+Firstly, as mentioned before, it is usually an error for a package to
+contains files which are on the system in another package, though
+currently the <code>--force-overwrite</code> flag is enabled by default,
+downgrading the error to a warning,<P>
+
+If the overwriting package declares that it replaces the one
+containing the file being overwritten then <kbd>dpkg</kbd> will proceed, and
+replace the file from the old package with that from the new.  The
+file will no longer be listed as `owned' by the old package.<P>
+
+If a package is completely replaced in this way, so that <kbd>dpkg</kbd>
+does not know of any files it still contains, it is considered to have
+disappeared.  It will be marked as not wanted on the system (selected
+for removal) and not installed.  Any conffiles details noted in the
+package will be ignored, as they will have been taken over by the
+replacing package(s).  The package's <kbd>postrm</kbd> script will be run to
+allow the package to do any final cleanup required.
+See <A href="ch-maintainerscripts.html#s-mscriptsinstact">Summary of ways maintainer scripts are called, section 6.2</A>.<P>
+
+In the future <kbd>dpkg</kbd> will discard files which overwrite those from
+another package which declares that it replaces the one being
+installed (so that you can install an older version of a package
+without problems).<P>
+
+This usage of <code>Replaces</code> only takes effect when both packages are
+at least partially on the system at once, so that it can only happen
+if they do not conflict or if the conflict has been overridden.
+<hr>
+<h3><A name="s8.5.2">
+8.5.2 Replacing whole packages, forcing their removal
+</A></h3>
+
+Secondly, <code>Replaces</code> allows <kbd>dpkg</kbd> and <kbd>dselect</kbd> to resolve
+which package should be removed when a conflict - see
+<A href="#s-conflicts">Alternative packages - <code>Conflicts</code> and <code>Replaces</code>, section 8.3</A>.  This usage only takes effect when the two
+packages <em>do</em> conflict, so that the two effects do not interfere
+with each other.<P>
+<hr>
+<h2><A name="s8.6">
+8.6 Defaults for satisfying dependencies - ordering
+</A></h2>
+
+Ordering is significant in dependency fields.<P>
+
+Usually dselect will suggest to the user that they select the package
+with the most `fundamental' class (eg, it will prefer Base packages to
+Optional ones), or the one that they `most wanted' to select in some
+sense.<P>
+
+In the absence of other information <kbd>dselect</kbd> will offer a
+default selection of the first named package in a list of
+alternatives.<P>
+
+However, there is no way to specify the `order' of several packages
+which all provide the same thing, when that thing is listed as a
+dependency.<P>
+
+Therefore a dependency on a virtual package should contain a concrete
+package name as the first alternative, so that this is the default.<P>
+
+For example, consider the set of packages:
+
+<pre>Package: glibcdoc
+Recommends: info-browser
+
+Package: info
+Provides: info-browser
+
+Package: emacs
+Provides: info-browser</pre><P>
+
+If <kbd>emacs</kbd> and <kbd>info</kbd> both have the same priority then
+<kbd>dselect</kbd>'s choice is essentially random.  Better would be
+<pre>Package: glibcdoc
+Recommends: info | info-browser</pre>
+so that <kbd>dselect</kbd> defaults to selecting the lightweight standalone
+info browser.
+
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-conffiles.html">next</A>; <A href="ch-descriptions.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

@@ -1,0 +1,2409 @@
+Replied: Wed, 11 Feb 1998 23:06:20 -0500
+Replied: "Craig Leres <leres@ee.lbl.gov> "
+Replied: Mon, 26 Jan 1998 23:32:15 -0500
+Replied: "Craig Leres <leres@ee.lbl.gov> Marc Brett <Marc.Brett@waii.com>, mills@udel.edu,
+Replied: frank.vance@merlin.london.waii.com"
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa22898;
+          24 Jan 1998 01:13 EST
+Received: by hot.ee.lbl.gov (8.8.8/8.8.5)
+	id WAA01962; Fri, 23 Jan 1998 22:13:30 -0800 (PST)
+Message-Id: <199801240613.WAA01962@hot.ee.lbl.gov>
+To: Marc Brett <Marc.Brett@waii.com>
+Cc: stenn@whimsy.udel.edu, mills@udel.edu, 
+    frank.vance@merlin.london.waii.com, marc.brett@merlin.london.waii.com
+Subject: Re: Fixes for MX4200 driver
+In-reply-to: Your message of Fri, 23 Jan 1998 15:30:05 PST.
+Date: Fri, 23 Jan 1998 22:13:30 PST
+From: Craig Leres <leres@ee.lbl.gov>
+
+
+> Note that they incorporate most of the *bug* fixes noted by Craig Leres on
+> July 17 1997 (xntp3-5.92-export/patches/inbox/3), and a few additional ones
+> (incorrect sentences were being passed to the receiver).
+> 
+> Unfortunately, none of Craig's *portability* patches for FreeBSD are
+> in here, not least because I don't have a FreeBSD platform on which to
+> test the code.  I tried to get automake and autoconf to behave, but got
+> nowhere.  I agree that AC_REPLACE_FUNCS(strerror) is probably the way to
+> go, though.
+
+I brought up 5.92 tonight and the changes I needed are appended.
+Included are the autoconf stuff I needed to make strerror work, the
+Jupiter gps module and some other stuff. I am running this version
+under FreeBSD 2.2.2-RELEASE with a Jupiter and SunOS 4.1.4 with a
+MX4200. I did test the Jupiter module under SunOS 4.1.4 recently but am
+not currently running it with one on that os.
+
+One problem I'm having both under SunOS 4.1.4 and FreeBSD 2.2.2-RELEASE
+is the stupid "DEPS_MAGIC :=" crap automake puts in the makefiles. I
+spent some time poking at automake but don't see how to keep it from
+doing this. (I knew there was at least one reason we never use
+automake...) Anyway, I wrote the appended script to comment them out.
+
+If you'd like me to test 5.93 before you release it, please let me know.
+
+		Craig
+
+------ include/ntp.h  (first of several context diffs)
+
+*** /tmp/,RCSt1a14433	Fri Jan 23 21:48:09 1998
+--- ntp.h	Fri Jan 23 18:08:19 1998
+***************
+*** 429,434 ****
+--- 429,435 ----
+  #define REFCLK_GPS_HP		26	/* HP 58503A Time & Frequency Receiver */
+  #define REFCLK_ARCRON_MSF       27      /* ARCRON MSF radio clock. */
+  #define REFCLK_SHM		28	/* clock attached thru shared memory */
++ #define REFCLK_GPS_JUPITER	29	/* Rockwell Jupiter GPS receiver */
+  #define REFCLK_MAX		30	/* maximum index (room to expand) */
+  
+  /*
+
+------ libntp/Makefile.am
+
+*** /tmp/,RCSt1a14463	Fri Jan 23 21:51:19 1998
+--- Makefile.am	Fri Jan 23 21:06:19 1998
+***************
+*** 11,16 ****
+--- 11,17 ----
+  	utvtoa.c machines.c clocktypes.c md5.c a_md5encrypt.c a_md5decrypt.c \
+  	a_md512crypt.c decodenetnum.c systime.c msyslog.c syssignal.c \
+  	findconfig.c netof.c statestr.c mexit.c
++ libntp_a_LIBADD = @LIBOBJS@
+  INCLUDES = -I$(top_srcdir)/include
+  ETAGS_ARGS = Makefile.am
+  
+------ libntp/clocktypes.c
+
+*** /tmp/,RCSt1a14478	Fri Jan 23 21:52:23 1998
+--- clocktypes.c	Fri Jan 23 18:09:43 1998
+***************
+*** 68,73 ****
+--- 68,75 ----
+  	    "ARCRON_MSF" },
+  	{ REFCLK_SHM,		"Clock attached thru shared Memory (28)",
+  	    "SHM" },
++ 	{ REFCLK_GPS_JUPITER,	"Rockwell Jupiter GPS Receiver (29)",
++ 	    "GPS_JUPITER" },
+  	{ -1,			"", "" }
+  };
+
+------ ntpdate/ntpdate.c
+
+*** /tmp/,RCSt1a14488	Fri Jan 23 21:52:59 1998
+--- ntpdate.c	Fri Jan 23 18:54:39 1998
+***************
+*** 17,22 ****
+--- 17,25 ----
+  #include <signal.h>
+  #include <ctype.h>
+  #include <errno.h>
++ #ifdef HAVE_POLL_H
++ #include <poll.h>
++ #endif
+  #ifndef SYS_WINNT
+  #include <netdb.h>
+  #include <sys/signal.h>
+***************
+*** 93,99 ****
+--- 96,106 ----
+   * File descriptor masks etc. for call to select
+   */
+  int fd;
++ #ifdef HAVE_POLL_H
++ struct pollfd fdmask;
++ #else
+  fd_set fdmask;
++ #endif
+  
+  /*
+   * Initializing flag.  All async routines watch this and only do their
+***************
+*** 514,520 ****
+--- 521,531 ----
+    was_alarmed = 0;
+    rbuflist = (struct recvbuf *)0;
+    while (complete_servers < sys_numservers) {
++ #ifdef HAVE_POLL_H
++     struct pollfd rdfdes;
++ #else
+      fd_set rdfdes;
++ #endif
+      int nfound;
+  
+      if (alarm_flag) {		/* alarmed? */
+***************
+*** 533,540 ****
+--- 544,555 ----
+        timeout.tv_usec = 0;
+        rdfdes = fdmask;
+  #ifndef SYS_VXWORKS
++ #ifdef HAVE_POLL_H
++       nfound = poll(&rdfdes, 1, timeout.tv_sec * 1000);
++ #else
+        nfound = select(fd+1, &rdfdes, (fd_set *)0,
+  		      (fd_set *)0, &timeout);
++ #endif
+  #else
+        nfound = select(fd+1, &rdfdes, (fd_set *)0,
+  		      (fd_set *)0, &tv0);
+***************
+*** 551,561 ****
+--- 566,584 ----
+  #ifndef SYS_WINNT
+  	if (errno != EINTR)
+  #endif
++ #ifdef HAVE_POLL_H
++ 	  msyslog(LOG_ERR, "poll() error: %m");
++ #else
+  	  msyslog(LOG_ERR, "select() error: %m");
++ #endif
+        } else {
+  #ifndef SYS_VXWORKS
++ #ifdef HAVE_POLL_H
++ 	msyslog(LOG_DEBUG, "poll(): nfound = %d, error: %m", nfound);
++ #else
+  	msyslog(LOG_DEBUG, "select(): nfound = %d, error: %m", nfound);
+  #endif
++ #endif
+        }
+        if (alarm_flag) {		/* alarmed? */
+  	was_alarmed = 1;
+***************
+*** 1560,1567 ****
+--- 1583,1595 ----
+      }
+    }
+  
++ #ifdef HAVE_POLL_H
++   fdmask.fd = fd;
++   fdmask.events = POLLIN;
++ #else
+    FD_ZERO(&fdmask);
+    FD_SET(fd, &fdmask);
++ #endif
+  
+    /*
+     * set non-blocking,
+***************
+*** 1691,1697 ****
+--- 1719,1729 ----
+    struct timeval tvzero;
+    int fromlen;
+    l_fp ts;
++ #ifdef HAVE_POLL_H
++   struct pollfd fds;
++ #else
+    fd_set fds;
++ #endif
+  
+    /*
+     * Do a poll to see if we have data
+***************
+*** 1699,1705 ****
+--- 1731,1741 ----
+    for (;;) {
+      fds = fdmask;
+      tvzero.tv_sec = tvzero.tv_usec = 0;
++ #ifdef HAVE_POLL_H
++     n = poll(&fds, 1, tvzero.tv_sec * 1000);
++ #else
+      n = select(fd+1, &fds, (fd_set *)0, (fd_set *)0, &tvzero);
++ #endif
+  
+      /*
+       * If nothing to do, just return.  If an error occurred,
+***************
+*** 1710,1716 ****
+--- 1746,1756 ----
+        return;
+      else if (n == -1) {
+        if (errno != EINTR)
++ #ifdef HAVE_POLL_H
++ 	msyslog(LOG_ERR, "poll() error: %m");
++ #else
+  	msyslog(LOG_ERR, "select() error: %m");
++ #endif
+        return;
+      }
+      get_systime(&ts);
+
+------ xntpd/Makefile.am
+
+*** /tmp/,RCSt1a14498	Fri Jan 23 21:53:28 1998
+--- Makefile.am	Fri Jan 23 18:18:11 1998
+***************
+*** 12,18 ****
+  	ntp_refclock.c ntp_request.c ntp_restrict.c ntp_timer.c \
+  	ntp_unixclock.c ntp_util.c ntp_intres.c ntp_filegen.c ntpd.c \
+  	refclock_conf.c refclock_chu.c refclock_local.c \
+! 	refclock_pst.c refclock_wwvb.c refclock_mx4200.c \
+  	refclock_parse.c refclock_as2201.c refclock_bancomm.c \
+  	refclock_tpro.c refclock_leitch.c refclock_irig.c \
+  	refclock_msfees.c refclock_trak.c refclock_datum.c \
+--- 12,18 ----
+  	ntp_refclock.c ntp_request.c ntp_restrict.c ntp_timer.c \
+  	ntp_unixclock.c ntp_util.c ntp_intres.c ntp_filegen.c ntpd.c \
+  	refclock_conf.c refclock_chu.c refclock_local.c \
+! 	refclock_pst.c refclock_wwvb.c refclock_mx4200.c refclock_jupiter.c \
+  	refclock_parse.c refclock_as2201.c refclock_bancomm.c \
+  	refclock_tpro.c refclock_leitch.c refclock_irig.c \
+  	refclock_msfees.c refclock_trak.c refclock_datum.c \
+
+------ xntpd/refclock_conf.c
+
+*** /tmp/,RCSt1a14503	Fri Jan 23 21:53:37 1998
+--- refclock_conf.c	Fri Jan 23 18:18:31 1998
+***************
+*** 174,179 ****
+--- 174,185 ----
+  #define refclock_shm refclock_none
+  #endif
+  
++ #if defined(JUPITER) && defined(PPS)
++ extern	struct refclock refclock_jupiter;
++ #else
++ #define refclock_jupiter refclock_none
++ #endif
++ 
+  /*
+   * Order is clock_start(), clock_shutdown(), clock_poll(),
+   * clock_control(), clock_init(), clock_buginfo, clock_flags;
+***************
+*** 210,216 ****
+  	&refclock_hpgps,	/* 26 REFCLK_GPS_HP */
+  	&refclock_arc, 		/* 27 REFCLK_ARCRON_MSF */
+  	&refclock_shm,		/* 28 REFCLK_SHM */
+! 	&refclock_none,		/* 29 reserved */
+  	&refclock_none,		/* 30 reserved */
+  };
+  
+--- 216,222 ----
+  	&refclock_hpgps,	/* 26 REFCLK_GPS_HP */
+  	&refclock_arc, 		/* 27 REFCLK_ARCRON_MSF */
+  	&refclock_shm,		/* 28 REFCLK_SHM */
+! 	&refclock_jupiter,	/* 29 REFCLK_JUPITER */
+  	&refclock_none,		/* 30 reserved */
+  };
+  
+
+------ xntpd/refclock_mx4200.c
+
+*** /tmp/,RCSt1a14518	Fri Jan 23 21:53:52 1998
+--- refclock_mx4200.c	Fri Jan 23 18:28:45 1998
+***************
+*** 76,81 ****
+--- 76,86 ----
+   */
+  
+  /*
++  * Check this every time you edit the code!
++  */
++ #define YEAR_RIGHT_NOW 1998
++ 
++ /*
+   * GPS Definitions
+   */
+  #define	DEVICE		"/dev/gps%d"	/* device name and unit */
+***************
+*** 129,141 ****
+  #endif /* PPS */
+  
+  /*
+-  * Imported from perror(3)
+-  */
+- extern int  sys_nerr;
+- extern char *sys_errlist[];
+- extern int  errno;
+- 
+- /*
+   * MX4200 unit control structure.
+   */
+  struct mx4200unit {
+--- 134,139 ----
+***************
+*** 169,174 ****
+--- 167,186 ----
+  
+  static char pmvxg[] = "PMVXG";
+  
++ /* XXX should be somewhere else */
++ #ifdef __GNUC__
++ #if __GNUC__ < 2  || (__GNUC__ == 2 && __GNUC_MINOR__ < 5)
++ #ifndef __attribute__
++ #define __attribute__(args)
++ #endif
++ #endif
++ #else
++ #ifndef __attribute__
++ #define __attribute__(args)
++ #endif
++ #endif
++ /* XXX end */
++ 
+  /*
+   * Function prototypes
+   */
+***************
+*** 190,199 ****
+  #endif /* not QSORT_USES_VOID_P */
+  static	void	mx4200_config	P((struct peer *));
+  static	void	mx4200_ref	P((struct peer *));
+! static	void	mx4200_send	P((struct peer *, char *, ...));
+  static	u_char	mx4200_cksum	P((char *, u_int));
+  static	int	mx4200_jday	P((int, int, int));
+! static	void	mx4200_debug	P((struct peer *, char *, ...));
+  static	int	mx4200_pps	P((struct peer *));
+  
+  /*
+--- 202,213 ----
+  #endif /* not QSORT_USES_VOID_P */
+  static	void	mx4200_config	P((struct peer *));
+  static	void	mx4200_ref	P((struct peer *));
+! static	void	mx4200_send	P((struct peer *, char *, ...))
+!     __attribute__ ((format (printf, 2, 3)));
+  static	u_char	mx4200_cksum	P((char *, u_int));
+  static	int	mx4200_jday	P((int, int, int));
+! static	void	mx4200_debug	P((struct peer *, char *, ...))
+!     __attribute__ ((format (printf, 2, 3)));
+  static	int	mx4200_pps	P((struct peer *));
+  
+  /*
+***************
+*** 297,303 ****
+  	struct peer *peer;
+  {
+  	char tr_mode;
+! 	char add_mode;
+  	int i;
+  	register struct mx4200unit *up;
+  	struct refclockproc *pp;
+--- 311,317 ----
+  	struct peer *peer;
+  {
+  	char tr_mode;
+! 	int add_mode;
+  	int i;
+  	register struct mx4200unit *up;
+  	struct refclockproc *pp;
+***************
+*** 424,434 ****
+  	if (up->moving) {
+  		/* dynamic: solve for pos, alt, time, while moving */
+  		tr_mode = 'D';
+- 		add_mode = 0;
+  	} else {
+  		/* static: solve for pos, alt, time, while stationary */
+  		tr_mode = 'S';
+- 		add_mode = 1;
+  	}
+  	mx4200_send(peer, "%s,%03d,%c,%c,%c,%d,%d,%d,", pmvxg,
+  	    PMVXG_S_TRECOVCONF,
+--- 438,446 ----
+***************
+*** 445,451 ****
+  	 * location) only if we are not moving
+  	 */
+  	if (up->moving) {
+! 		add_mode = 0;	/* delete from list */
+  	} else {
+  		add_mode = 1;	/* add to list */
+  	}
+--- 457,463 ----
+  	 * location) only if we are not moving
+  	 */
+  	if (up->moving) {
+! 		add_mode = 2;	/* delete from list */
+  	} else {
+  		add_mode = 1;	/* add to list */
+  	}
+***************
+*** 458,464 ****
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    add_mode,	/* add/delete sentences from list (1=add) */
+  			/* must be null */
+  	    INTERVAL);	/* sentence output rate (sec) */
+  	    		/* precision for position output */
+--- 470,476 ----
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    add_mode,	/* add/delete sentences from list (1=add, 2=del) */
+  			/* must be null */
+  	    INTERVAL);	/* sentence output rate (sec) */
+  	    		/* precision for position output */
+***************
+*** 474,480 ****
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_PHV, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    add_mode,	/* add/delete sentences from list (1=add) */
+  			/* must be null */
+  	    INTERVAL);	/* sentence output rate (sec) */
+  	    		/* precision for position output */
+--- 486,492 ----
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_PHV, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    add_mode,	/* add/delete sentences from list (1=add, 2=del) */
+  			/* must be null */
+  	    INTERVAL);	/* sentence output rate (sec) */
+  	    		/* precision for position output */
+***************
+*** 579,591 ****
+  	 * "007" Control Port Configuration
+  	 * Stop outputting "022" DOPs
+  	 */
+! 	mx4200_send(peer, "%s,%03d,%03d,%d,%d,,,,,", pmvxg,
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    0);		/* add/delete sentences from list (0=delete) */
+  			/* must be null */
+! 	    		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+--- 591,603 ----
+  	 * "007" Control Port Configuration
+  	 * Stop outputting "022" DOPs
+  	 */
+! 	mx4200_send(peer, "%s,%03d,%03d,%d,%d,,%d,,,", pmvxg,
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    2,		/* add/delete sentences from list (2=delete) */
+  			/* must be null */
+! 	    0);		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+***************
+*** 598,606 ****
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_PHV, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    0);		/* add/delete sentences from list (0=delete) */
+  			/* must be null */
+! 	    		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+--- 610,618 ----
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_PHV, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    2,		/* add/delete sentences from list (2=delete) */
+  			/* must be null */
+! 	    0);		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+***************
+*** 700,706 ****
+  	if ((pp->sloppyclockflag & CLK_FLAG2) !=
+  	    (up->sloppyclockflag & CLK_FLAG2)) {
+  		up->sloppyclockflag = pp->sloppyclockflag;
+! 		mx4200_debug(peer, "mx4200_receive: mode switch: reset receiver\n", cp);
+  		mx4200_config(peer);
+  		return;
+  	}
+--- 712,719 ----
+  	if ((pp->sloppyclockflag & CLK_FLAG2) !=
+  	    (up->sloppyclockflag & CLK_FLAG2)) {
+  		up->sloppyclockflag = pp->sloppyclockflag;
+! 		mx4200_debug(peer,
+! 		    "mx4200_receive: mode switch: reset receiver\n");
+  		mx4200_config(peer);
+  		return;
+  	}
+***************
+*** 768,774 ****
+  	 */
+  	sentence_type = 0;
+  	if ((cp = strchr(pp->a_lastcode, ',')) == NULL) {
+! 		mx4200_debug(peer, "mx4200_receive: no sentence\n", cp);
+  		refclock_report(peer, CEVNT_BADREPLY);
+  		return;
+  	}
+--- 781,787 ----
+  	 */
+  	sentence_type = 0;
+  	if ((cp = strchr(pp->a_lastcode, ',')) == NULL) {
+! 		mx4200_debug(peer, "mx4200_receive: no sentence\n");
+  		refclock_report(peer, CEVNT_BADREPLY);
+  		return;
+  	}
+***************
+*** 793,799 ****
+  			mx4200_debug(peer,
+  				"mx4200_receive: status: %s\n", cp);
+  		}
+! 		mx4200_debug(peer, "mx4200_receive: reset receiver\n", cp);
+  		mx4200_config(peer);
+  		return;
+  	}
+--- 806,812 ----
+  			mx4200_debug(peer,
+  				"mx4200_receive: status: %s\n", cp);
+  		}
+! 		mx4200_debug(peer, "mx4200_receive: reset receiver\n");
+  		mx4200_config(peer);
+  		return;
+  	}
+***************
+*** 1283,1292 ****
+  
+  	/*
+  	 * Check for insane date
+! 	 * (Certainly can't be a year before this code was last altered!)
+  	 */
+  	if (monthday > 31 || month > 12 ||
+! 	    monthday <  1 || month <  1 || year < 1997) {
+  		mx4200_debug(peer,
+  			"mx4200_parse_t: bad date (%4d-%02d-%02d)\n",
+  			year, month, monthday);
+--- 1296,1305 ----
+  
+  	/*
+  	 * Check for insane date
+! 	 * (Certainly can't be any year before this code was last altered!)
+  	 */
+  	if (monthday > 31 || month > 12 ||
+! 	    monthday <  1 || month <  1 || year < YEAR_RIGHT_NOW) {
+  		mx4200_debug(peer,
+  			"mx4200_parse_t: bad date (%4d-%02d-%02d)\n",
+  			year, month, monthday);
+***************
+*** 1706,1712 ****
+  
+  
+  	/* Update values */
+! 	if (ndop <= 0.0 || ndop<= 0.0 || vdop <= 0.0)
+  		return ("nonpositive dop");
+  	up->edop = edop;
+  	up->ndop = ndop;
+--- 1719,1725 ----
+  
+  
+  	/* Update values */
+! 	if (edop <= 0.0 || ndop <= 0.0 || vdop <= 0.0)
+  		return ("nonpositive dop");
+  	up->edop = edop;
+  	up->ndop = ndop;
+***************
+*** 1911,1918 ****
+  	if (ioctl(fdpps, CIOGETEV, (caddr_t)&up->ppsev) < 0) {
+  		/* XXX Actually, if this fails, we're pretty much screwed */
+  		mx4200_debug(peer, "mx4200_pps: CIOGETEV: ");
+! 		if (errno < sys_nerr)
+! 			mx4200_debug(peer, "%s", sys_errlist[errno]);
+  		mx4200_debug(peer, "\n");
+  		refclock_report(peer, CEVNT_FAULT);
+  		return(1);
+--- 1924,1930 ----
+  	if (ioctl(fdpps, CIOGETEV, (caddr_t)&up->ppsev) < 0) {
+  		/* XXX Actually, if this fails, we're pretty much screwed */
+  		mx4200_debug(peer, "mx4200_pps: CIOGETEV: ");
+! 		mx4200_debug(peer, "%s", strerror(errno));
+  		mx4200_debug(peer, "\n");
+  		refclock_report(peer, CEVNT_FAULT);
+  		return(1);
+
+------ util/tickadj.c
+
+*** /tmp/,RCSt1a14528	Fri Jan 23 21:54:08 1998
+--- tickadj.c	Fri Jan 23 18:16:21 1998
+***************
+*** 205,210 ****
+--- 205,213 ----
+  	  break;
+  	case 't':
+  	  writetick = atoi(ntp_optarg);
++ #ifdef TICK_NANO
++ 	  writetick *= 1000;
++ #endif
+  	  if (writetick <= 0)
+  	    {
+  	      (void) fprintf(stderr,
+
+------ config.h.in
+
+*** /tmp/,RCSt1a14538	Fri Jan 23 21:54:20 1998
+--- config.h.in	Fri Jan 23 19:51:41 1998
+***************
+*** 143,148 ****
+--- 143,151 ----
+  /* Magnavox MX4200 GPS receiver */
+  #undef MX4200
+  
++ /* Rockwell Jupiter based GPS receiver */
++ #undef JUPITER
++ 
+  /* NMEA GPS receiver */
+  #undef NMEA
+  
+***************
+*** 528,533 ****
+--- 531,539 ----
+  /* Define if you have the strchr function.  */
+  #undef HAVE_STRCHR
+  
++ /* Define if you have the strerror function.  */
++ #undef HAVE_STRERROR
++ 
+  /* Define if you have the sysconf function.  */
+  #undef HAVE_SYSCONF
+  
+***************
+*** 581,586 ****
+--- 587,595 ----
+  
+  /* Define if you have the <netinet/ip.h> header file.  */
+  #undef HAVE_NETINET_IP_H
++ 
++ /* Define if you have the <poll.h> header file.  */
++ #undef HAVE_POLL_H
+  
+  /* Define if you have the <sched.h> header file.  */
+  #undef HAVE_SCHED_H
+
+------ configure.in
+
+*** /tmp/,RCSt1a14558	Fri Jan 23 21:54:34 1998
+--- configure.in	Fri Jan 23 19:51:19 1998
+***************
+*** 5,10 ****
+--- 5,11 ----
+  AC_CANONICAL_SYSTEM
+  AC_DEFINE_UNQUOTED(STR_SYSTEM, "$target")
+  AM_CONFIG_HEADER(config.h)
++ AC_REPLACE_FUNCS(strerror)
+  AC_ARG_PROGRAM
+  
+  dnl  we need to check for cross compile tools for vxWorks here
+***************
+*** 159,164 ****
+--- 160,166 ----
+  AC_CHECK_HEADERS(termio.h termios.h unistd.h utmp.h utmpx.h)
+  AC_CHECK_HEADERS(net/if.h netinet/in.h netinet/ip.h sys/bsd_audioirig.h)
+  AC_CHECK_HEADERS(sys/chudefs.h sys/clkdefs.h sys/file.h)
++ AC_CHECK_HEADERS(poll.h)
+  case "$target" in
+   *-*-sunos4*) ;;
+   *) AC_CHECK_HEADERS(sys/ioctl.h)
+***************
+*** 1297,1302 ****
+--- 1299,1323 ----
+  if test "$ntp_ok" = "yes"; then
+      ntp_refclock=yes
+      AC_DEFINE(MX4200)
++ fi
++ AC_MSG_RESULT($ntp_ok)
++ case "$ntp_ok$target" in
++  yes*-*-ultrix*) AC_WARN(*** But the expected answer is... no ***) ;;
++ esac
++ 
++ # Not Ultrix
++ AC_MSG_CHECKING(Rockwell Jupiter GPS receiver)
++ AC_ARG_ENABLE(JUPITER,		[  --enable-JUPITER           s Rockwell Jupiter GPS receiver],
++     [ntp_ok=$enableval],
++     [case "$ac_cv_var_ppsclock" in
++      yes) ntp_ok=$ntp_eac
++         ;;
++      *) ntp_ok=no
++         ;;
++     esac])
++ if test "$ntp_ok" = "yes"; then
++     ntp_refclock=yes
++     AC_DEFINE(JUPITER)
+  fi
+  AC_MSG_RESULT($ntp_ok)
+  case "$ntp_ok$target" in
+
+------ acconfig.h
+
+*** /tmp/,RCSt1a14573	Fri Jan 23 21:54:44 1998
+--- acconfig.h	Fri Jan 23 18:36:45 1998
+***************
+*** 88,93 ****
+--- 88,96 ----
+  /* Magnavox MX4200 GPS receiver */
+  #undef MX4200
+  
++ /* Rockwell Jupiter based GPS receiver */
++ #undef JUPITER
++ 
+  /* NMEA GPS receiver */
+  #undef NMEA
+  
+------
+------
+------
+------
+------ misc files (a sharchive)
+
+#! /bin/sh
+# This is a shell archive, meaning:
+# 1. Remove everything above the #! /bin/sh line.
+# 2. Save the resulting text in a file.
+# 3. Execute the file with /bin/sh (not csh) to create the files:
+#	fixautomakedepsmagic
+#	jupiter.h
+#	refclock_jupiter.c
+#	strerror.c
+# This archive created: Fri Jan 23 21:50:28 1998
+export PATH; PATH=/bin:$PATH
+echo shar: extracting "'fixautomakedepsmagic'" '(402 characters)'
+if test -f 'fixautomakedepsmagic'
+then
+	echo shar: will not over-write existing file "'fixautomakedepsmagic'"
+else
+sed 's/^X//' << \SHAR_EOF > 'fixautomakedepsmagic'
+X#!/bin/sh
+X
+Xprog=`basename $0`
+X
+X
+Xt=/tmp/$prog.$$
+X
+Xtrap 'rm -f ${t} ; exit 1' 1 3 15
+X
+Xwhile [ $# -gt 0 ]; do
+X        f=$1
+X	shift
+X	sed -e '/^DEPS_MAGIC :=/,/^-include \$/s/^/#/' $f > $t
+X	c="diff $f $t"
+X	echo $c
+X	$c
+X	tstatus=$?
+X	if [ $tstatus = 0 ]; then
+X		echo "$prog":" $f not modified"
+X	elif [ ! -w $f ]; then
+X		echo "$prog":" $f not not writable"
+X	else
+X		c="cp $t $f"
+X		echo $c
+X		$c
+X	fi
+X	rm -f $t
+Xdone
+SHAR_EOF
+if test 402 -ne "`wc -c < 'fixautomakedepsmagic'`"
+then
+	echo shar: error transmitting "'fixautomakedepsmagic'" '(should have been 402 characters)'
+fi
+chmod +x 'fixautomakedepsmagic'
+fi # end of overwriting check
+echo shar: extracting "'jupiter.h'" '(9321 characters)'
+if test -f 'jupiter.h'
+then
+	echo shar: will not over-write existing file "'jupiter.h'"
+else
+sed 's/^X//' << \SHAR_EOF > 'jupiter.h'
+X/* @(#) $Header: /cvs/Darwin/CoreOS/Services/ntp/ntp/patches/done/15,v 1.1.1.1 1999/04/23 01:21:03 wsanchez Exp $ (LBL) */
+X
+X/*
+X * Rockwell Jupiter GPS receiver definitions
+X *
+X * This is all based on the "Zodiac GPS Receiver Family Designer's
+X * Guide" (dated 12/96)
+X */
+X
+X#define JUPITER_SYNC		0x81ff	/* sync word (book says 0xff81 !?!?) */
+X#define JUPITER_ALL		0xffff	/* disable all output messages */
+X
+X/* Output messages (sent by the Jupiter board) */
+X#define JUPITER_O_GPOS		1000	/* geodetic position status */
+X#define JUPITER_O_EPOS		1001	/* ECEF position status */
+X#define JUPITER_O_CHAN		1002	/* channel summary */
+X#define JUPITER_O_VIS		1003	/* visible satellites */
+X#define JUPITER_O_DGPS		1005	/* differential GPS status */
+X#define JUPITER_O_MEAS		1007	/* channel measurement */
+X#define JUPITER_O_ID		1011	/* receiver id */
+X#define JUPITER_O_USER		1012	/* user-settings output */
+X#define JUPITER_O_TEST		1100	/* built-in test results */
+X#define JUPITER_O_MARK		1102	/* measurement time mark */
+X#define JUPITER_O_PULSE		1108	/* UTC time mark pulse output */
+X#define JUPITER_O_PORT		1130	/* serial port com parameters in use */
+X#define JUPITER_O_EUP		1135	/* EEPROM update */
+X#define JUPITER_O_ESTAT		1136	/* EEPROM status */
+X
+X/* Input messages (sent to the Jupiter board) */
+X#define JUPITER_I_PVTINIT	1200	/* geodetic position and velocity */
+X#define JUPITER_I_USER		1210	/* user-defined datum */
+X#define JUPITER_I_MAPSEL	1211	/* map datum select */
+X#define JUPITER_I_ELEV		1212	/* satellite elevation mask control */
+X#define JUPITER_I_CAND		1213	/* satellite candidate select */
+X#define JUPITER_I_DGPS		1214	/* differential GPS control */
+X#define JUPITER_I_COLD		1216	/* cold start control */
+X#define JUPITER_I_VALID		1217	/* solution validity criteria */
+X#define JUPITER_I_ALT		1219	/* user-entered altitude input */
+X#define JUPITER_I_PLAT		1220	/* application platform control */
+X#define JUPITER_I_NAV		1221	/* nav configuration */
+X#define JUPITER_I_TEST		1300	/* preform built-in test command */
+X#define JUPITER_I_RESTART	1303	/* restart command */
+X#define JUPITER_I_PORT		1330	/* serial port com parameters */
+X#define JUPITER_I_PROTO		1331	/* message protocol control */
+X#define JUPITER_I_RDGPS		1351	/* raw DGPS RTCM SC-104 data */
+X
+Xstruct jheader {
+X	u_short sync;		/* (JUPITER_SYNC) */
+X	u_short id;		/* message id */
+X	u_short len;		/* number of data short wordss (w/o cksum) */
+X	u_char reqid;		/* JUPITER_REQID_MASK bits available as id */
+X	u_char flags;		/* flags */
+X	u_short hsum;		/* header cksum */
+X};
+X
+X#define JUPITER_REQID_MASK	0x3f	/* bits available as id */
+X#define JUPITER_FLAG_NAK	0x01	/* negative acknowledgement */
+X#define JUPITER_FLAG_ACK	0x02	/* acknowledgement */
+X#define JUPITER_FLAG_REQUEST	0x04	/* request ACK or NAK */
+X#define JUPITER_FLAG_QUERY	0x08	/* request one shot output message */
+X#define JUPITER_FLAG_LOG	0x20	/* request periodic output message */
+X#define JUPITER_FLAG_CONN	0x40	/* enable periodic message */
+X#define JUPITER_FLAG_DISC	0x80	/* disable periodic message */
+X
+X#define JUPITER_H_FLAG_BITS \
+X    "\020\1NAK\2ACK\3REQUEST\4QUERY\5MBZ\6LOG\7CONN\10DISC"
+X
+X/* Log request messages (data payload when using JUPITER_FLAG_LOG) */
+Xstruct jrequest {
+X	u_short trigger;		/* if 0, trigger on time trigger on
+X					   update (e.g. new almanac) */
+X	u_short interval;		/* frequency in seconds */
+X	u_short offset;			/* offset into minute */
+X	u_short dsum;			/* checksum */
+X};
+X
+X/* JUPITER_O_GPOS (1000) */
+Xstruct jgpos {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	u_short sseq;			/* sat measurement sequence number */
+X	u_short navval;			/* navigation soltuion validity */
+X	u_short navtype;		/* navigation solution type */
+X	u_short nmeas;			/* # of measurements used in solution */
+X	u_short polar;			/* if 1 then polar navigation */
+X	u_short gweek;			/* GPS week number */
+X	u_short sweek[2];		/* GPS seconds into week */
+X	u_short nsweek[2];		/* GPS nanoseconds into second */
+X	u_short utcday;			/* 1 to 31 */
+X	u_short utcmon;			/* 1 to 12 */
+X	u_short utcyear;		/* 1980 to 2079 */
+X	u_short utchour;		/* 0 to 23 */
+X	u_short utcmin;			/* 0 to 59 */
+X	u_short utcsec;			/* 0 to 59 */
+X	u_short utcnsec[2];		/* 0 to 999999999 */
+X	u_short lat[2];			/* latitude (radians) */
+X	u_short lon[2];			/* longitude (radians) */
+X	u_short height[2];		/* height (meters) */
+X	u_short gsep;			/* geoidal separation */
+X	u_short speed[2];		/* ground speed (meters/sec) */
+X	u_short course;			/* true course (radians) */
+X	u_short mvar;
+X	u_short climb;
+X	u_short mapd;
+X	u_short herr[2];
+X	u_short verr[2];
+X	u_short terr[2];
+X	u_short hverr;
+X	u_short bias[2];
+X	u_short biassd[2];
+X	u_short drift[2];
+X	u_short driftsd[2];
+X	u_short dsum;			/* checksum */
+X};
+X#define JUPITER_O_GPOS_NAV_NOALT	0x01	/* altitude used */
+X#define JUPITER_O_GPOS_NAV_NODGPS	0x02	/* no differential GPS */
+X#define JUPITER_O_GPOS_NAV_NOSAT	0x04	/* not enough satellites */
+X#define JUPITER_O_GPOS_NAV_MAXH		0x08	/* exceeded max EHPE */
+X#define JUPITER_O_GPOS_NAV_MAXV		0x10	/* exceeded max EVPE */
+X
+X/* JUPITER_O_CHAN (1002) */
+Xstruct jchan {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	u_short sseq;			/* sat measurement sequence number */
+X	u_short gweek;			/* GPS week number */
+X	u_short sweek[2];		/* GPS seconds into week */
+X	u_short gpsns[2];		/* GPS nanoseconds from epoch */
+X	struct jchan2 {
+X		u_short flags;		/* flags */
+X		u_short prn;		/* satellite PRN */
+X		u_short chan;		/* channel number */
+X	} sat[12];
+X	u_short dsum;
+X};
+X
+X/* JUPITER_O_VIS (1003) */
+Xstruct jvis {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	u_short gdop;			/* best possible GDOP */
+X	u_short pdop;			/* best possible PDOP */
+X	u_short hdop;			/* best possible HDOP */
+X	u_short vdop;			/* best possible VDOP */
+X	u_short tdop;			/* best possible TDOP */
+X	u_short nvis;			/* number of visible satellites */
+X	struct jvis2 {
+X		u_short prn;		/* satellite PRN */
+X		u_short azi;		/* satellite azimuth (radians) */
+X		u_short elev;		/* satellite elevation (radians) */
+X	} sat[12];
+X	u_short dsum;			/* checksum */
+X};
+X
+X/* JUPITER_O_ID (1011) */
+Xstruct jid {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	char chans[20];			/* number of channels (ascii) */
+X	char vers[20];			/* software version (ascii) */
+X	char date[20];			/* software date (ascii) */
+X	char opts[20];			/* software options (ascii) */
+X	char reserved[20];
+X	u_short dsum;			/* checksum */
+X};
+X
+X/* JUPITER_O_USER (1012) */
+Xstruct juser {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	u_short status;			/* operatinoal status */
+X	u_short coldtmo;		/* cold start time-out */
+X	u_short dgpstmo;		/* DGPS correction time-out*/
+X	u_short emask;			/* elevation mask */
+X	u_short selcand[2];		/* selected candidate */
+X	u_short solflags;		/* solution validity criteria */
+X	u_short nsat;			/* number of satellites in track */
+X	u_short herr[2];		/* minimum expected horizontal error */
+X	u_short verr[2];		/* minimum expected vertical error */
+X	u_short platform;		/* application platform */
+X	u_short dsum;			/* checksum */
+X};
+X
+X/* JUPITER_O_PULSE (1108) */
+Xstruct jpulse {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	u_short reserved[5];
+X	u_short sweek[2];		/* GPS seconds into week */
+X	short offs;			/* GPS to UTC time offset (seconds) */
+X	u_short offns[2];		/* GPS to UTC offset (nanoseconds) */
+X	u_short flags;			/* flags */
+X	u_short dsum;			/* checksum */
+X};
+X#define JUPITER_O_PULSE_VALID		0x1	/* time mark validity */
+X#define JUPITER_O_PULSE_UTC		0x2	/* GPS/UTC sync */
+X
+X/* JUPITER_O_EUP (1135) */
+Xstruct jeup {
+X	u_short stime[2];		/* set time (10 ms ticks) */
+X	u_short seq;			/* sequence number */
+X	u_char dataid;			/* data id */
+X	u_char prn;			/* satellite PRN */
+X	u_short dsum;			/* checksum */
+X};
+X
+X/* JUPITER_I_RESTART (1303) */
+Xstruct jrestart {
+X	u_short seq;			/* sequence number */
+X	u_short flags;
+X	u_short dsum;			/* checksum */
+X};
+X#define JUPITER_I_RESTART_INVRAM	0x01
+X#define JUPITER_I_RESTART_INVEEPROM	0x02
+X#define JUPITER_I_RESTART_INVRTC	0x04
+X#define JUPITER_I_RESTART_COLD		0x80
+X
+X/* JUPITER_I_PVTINIT (1200) */
+Xstruct jpvtinit {
+X	u_short flags;
+X	u_short gweek;			/* GPS week number */
+X	u_short sweek[2];		/* GPS seconds into week */
+X	u_short utcday;			/* 1 to 31 */
+X	u_short utcmon;			/* 1 to 12 */
+X	u_short utcyear;		/* 1980 to 2079 */
+X	u_short utchour;		/* 0 to 23 */
+X	u_short utcmin;			/* 0 to 59 */
+X	u_short utcsec;			/* 0 to 59 */
+X	u_short lat[2];			/* latitude (radians) */
+X	u_short lon[2];			/* longitude (radians) */
+X	u_short height[2];		/* height (meters) */
+X	u_short speed[2];		/* ground speed (meters/sec) */
+X	u_short course;			/* true course (radians) */
+X	u_short climb;
+X	u_short dsum;
+X};
+X#define JUPITER_I_PVTINIT_FORCE		0x01
+X#define JUPITER_I_PVTINIT_GPSVAL	0x02
+X#define JUPITER_I_PVTINIT_UTCVAL	0x04
+X#define JUPITER_I_PVTINIT_POSVAL	0x08
+X#define JUPITER_I_PVTINIT_ALTVAL	0x10
+X#define JUPITER_I_PVTINIT_SPDVAL	0x12
+X#define JUPITER_I_PVTINIT_MAGVAL	0x14
+X#define JUPITER_I_PVTINIT_CLIMBVAL	0x18
+X
+X/* JUPITER_I_PLAT (1220) */
+Xstruct jplat {
+X	u_short seq;			/* sequence number */
+X	u_short platform;		/* application platform */
+X	u_short dsum;
+X};
+X#define JUPITER_I_PLAT_DEFAULT		0	/* default dynamics */
+X#define JUPITER_I_PLAT_LOW		2	/* pedestrian */
+X#define JUPITER_I_PLAT_MED		5	/* land (e.g. automobile) */
+X#define JUPITER_I_PLAT_HIGH		6	/* air */
+SHAR_EOF
+if test 9321 -ne "`wc -c < 'jupiter.h'`"
+then
+	echo shar: error transmitting "'jupiter.h'" '(should have been 9321 characters)'
+fi
+fi # end of overwriting check
+echo shar: extracting "'refclock_jupiter.c'" '(33681 characters)'
+if test -f 'refclock_jupiter.c'
+then
+	echo shar: will not over-write existing file "'refclock_jupiter.c'"
+else
+sed 's/^X//' << \SHAR_EOF > 'refclock_jupiter.c'
+X/*
+X * Copyright (c) 1997, 1998
+X *	The Regents of the University of California.  All rights reserved.
+X *
+X * Redistribution and use in source and binary forms, with or without
+X * modification, are permitted provided that the following conditions
+X * are met:
+X * 1. Redistributions of source code must retain the above copyright
+X *    notice, this list of conditions and the following disclaimer.
+X * 2. Redistributions in binary form must reproduce the above copyright
+X *    notice, this list of conditions and the following disclaimer in the
+X *    documentation and/or other materials provided with the distribution.
+X * 3. All advertising materials mentioning features or use of this software
+X *    must display the following acknowledgement:
+X *	This product includes software developed by the University of
+X *	California, Lawrence Berkeley Laboratory.
+X * 4. The name of the University may not be used to endorse or promote
+X *    products derived from this software without specific prior
+X *    written permission.
+X *
+X * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+X * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+X * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+X * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+X * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+X * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+X * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+X * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+X * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+X * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+X * SUCH DAMAGE.
+X */
+X
+X#ifdef HAVE_CONFIG_H
+X# include <config.h>
+X#endif
+X
+X#if defined(REFCLOCK) && defined(JUPITER) && defined(PPS)
+X
+X#include <stdio.h>
+X#include <ctype.h>
+X#include <sys/time.h>
+X#include <errno.h>
+X
+X#include "ntpd.h"
+X#include "ntp_io.h"
+X#include "ntp_refclock.h"
+X#include "ntp_unixtime.h"
+X#include "ntp_stdlib.h"
+X#include "ntp_calendar.h"
+X
+X#include "jupiter.h"
+X
+X#if __STDC__
+X#include <stdarg.h>
+X#else
+X#include <varargs.h>
+X#endif /* __STDC__ */
+X
+X#include <sys/ppsclock.h>
+X
+X#ifdef XNTP_BIG_ENDIAN
+X#define getshort(s) ((((s) & 0xff) << 8) | (((s) >> 8) & 0xff))
+X#define putshort(s) ((((s) & 0xff) << 8) | (((s) >> 8) & 0xff))
+X#else
+X#define getshort(s) (s)
+X#define putshort(s) (s)
+X#endif
+X
+X/* XXX */
+X#ifdef sun
+Xchar *strerror(int);
+X#endif
+X
+X/*
+X * This driver supports the Rockwell Jupiter GPS Receiver board
+X * adapted to precision timing applications.  It requires the
+X * ppsclock line discipline or streams module described in the
+X * Line Disciplines and Streams Drivers page. It also requires a
+X * gadget box and 1-PPS level converter, such as described in the
+X * Pulse-per-second (PPS) Signal Interfacing page.
+X *
+X * It may work (with minor modifications) with other Rockwell GPS
+X * receivers such as the CityTracker.
+X */
+X
+X/*
+X * GPS Definitions
+X */
+X#define	DEVICE		"/dev/gps%d"	/* device name and unit */
+X#define	SPEED232	B9600		/* baud */
+X
+X/*
+X * The number of raw samples which we acquire to derive a single estimate.
+X * NSAMPLES ideally should not exceed the default poll interval 64.
+X * NKEEP must be a power of 2 to simplify the averaging process.
+X */
+X#define NSAMPLES	64
+X#define NKEEP		8
+X#define REFCLOCKMAXDISPERSE (FP_SECOND/4) /* max sample dispersion */
+X
+X/*
+X * Radio interface parameters
+X */
+X#define	PRECISION	(-18)	/* precision assumed (about 4 us) */
+X#define	REFID	"GPS\0"		/* reference id */
+X#define	DESCRIPTION	"Rockwell Jupiter GPS Receiver" /* who we are */
+X#define	DEFFUDGETIME	0	/* default fudge time (ms) */
+X
+X/* Unix timestamp for the GPS epoch: January 6, 1980 */
+X#define GPS_EPOCH 315964800
+X
+X/* Double short to unsigned int */
+X#define DS2UI(p) ((getshort((p)[1]) << 16) | getshort((p)[0]))
+X
+X/* Double short to signed int */
+X#define DS2I(p) ((getshort((p)[1]) << 16) | getshort((p)[0]))
+X
+X/* One week's worth of seconds */
+X#define WEEKSECS (7 * 24 * 60 * 60)
+X
+X/*
+X * Imported from the ntp_timer module
+X */
+Xextern u_long current_time;	/* current time (s) */
+X
+X/*
+X * Imported from ntpd module
+X */
+Xextern int debug;		/* global debug flag */
+X
+X/*
+X * Juptier unit control structure.
+X */
+Xstruct jupiterunit {
+X	u_int  pollcnt;			/* poll message counter */
+X	u_int  polled;			/* Hand in a time sample? */
+X	u_int  lastserial;		/* last pps serial number */
+X	struct ppsclockev ppsev;	/* PPS control structure */
+X	u_int gweek;			/* current GPS week number */
+X	u_int32 lastsweek;		/* last seconds into GPS week */
+X	u_int32 timecode;		/* current ntp timecode */
+X	u_int32 stime;			/* used to detect firmware bug */
+X	int wantid;			/* don't reconfig on channel id msg */
+X	u_int  moving;			/* mobile platform? */
+X	u_long sloppyclockflag;		/* fudge flags */
+X	u_int  known;			/* position known yet? */
+X	int    coderecv;		/* total received samples */
+X	int    nkeep;			/* number of samples to preserve */
+X	int    rshift;			/* number of rshifts for division */
+X	l_fp   filter[NSAMPLES];	/* offset filter */
+X	l_fp   lastref;			/* last reference timestamp */
+X	u_short sbuf[512];		/* local input buffer */
+X	int ssize;			/* space used in sbuf */
+X};
+X
+X/*
+X * Function prototypes
+X */
+Xstatic	void	jupiter_canmsg(struct peer *, u_int);
+Xstatic	u_short	jupiter_cksum(u_short *, u_int);
+X#ifdef QSORT_USES_VOID_P
+X	int	jupiter_cmpl_fp	P((const void *, const void *));
+X#else
+X	int	jupiter_cmpl_fp	P((const l_fp *, const l_fp *));
+X#endif /* not QSORT_USES_VOID_P */
+Xstatic	void	jupiter_config	P((struct peer *));
+Xstatic	void	jupiter_debug	P((struct peer *, char *, ...))
+X    __attribute__ ((format (printf, 2, 3)));
+Xstatic	char *	jupiter_offset	P((struct peer *));
+Xstatic	char *	jupiter_parse_t	P((struct peer *, u_short *));
+Xstatic	void	jupiter_platform(struct peer *, u_int);
+Xstatic	void	jupiter_poll	P((int, struct peer *));
+Xstatic	int	jupiter_pps	P((struct peer *));
+Xstatic	char *	jupiter_process	P((struct peer *));
+Xstatic	int	jupiter_recv(struct peer *);
+Xstatic	void	jupiter_receive P ((register struct recvbuf *rbufp));
+Xstatic	void	jupiter_reqmsg(struct peer *, u_int, u_int);
+Xstatic	void	jupiter_reqonemsg(struct peer *, u_int);
+Xstatic	char *	jupiter_send(struct peer *, struct jheader *);
+Xstatic	void	jupiter_shutdown	P((int, struct peer *));
+Xstatic	int	jupiter_start	P((int, struct peer *));
+Xstatic	int	jupiter_ttyinit(struct peer *, int);
+X
+X/*
+X * Transfer vector
+X */
+Xstruct	refclock refclock_jupiter = {
+X	jupiter_start,		/* start up driver */
+X	jupiter_shutdown,	/* shut down driver */
+X	jupiter_poll,		/* transmit poll message */
+X	noentry,		/* (clock control) */
+X	noentry,		/* (clock init) */
+X	noentry,		/* (clock buginfo) */
+X	NOFLAGS			/* not used */
+X};
+X
+X/*
+X * jupiter_start - open the devices and initialize data for processing
+X */
+Xstatic int
+Xjupiter_start(register int unit, register struct peer *peer)
+X{
+X	struct refclockproc *pp;
+X	register struct jupiterunit *up;
+X	register int fd;
+X	char gpsdev[20];
+X
+X	/*
+X	 * Open serial port
+X	 */
+X	(void)sprintf(gpsdev, DEVICE, unit);
+X	fd = open(gpsdev, O_RDWR
+X#ifdef O_NONBLOCK
+X	    | O_NONBLOCK
+X#endif
+X	    , 0);
+X	if (fd < 0) {
+X		jupiter_debug(peer, "jupiter_start: open %s: %s\n",
+X		    gpsdev, strerror(errno));
+X		return (0);
+X	}
+X	if (!jupiter_ttyinit(peer, fd))
+X		return (0);
+X
+X	/* Allocate unit structure */
+X	if ((up = (struct jupiterunit *)
+X	    emalloc(sizeof(struct jupiterunit))) == NULL) {
+X		(void) close(fd);
+X		return (0);
+X	}
+X	memset((char *)up, 0, sizeof(struct jupiterunit));
+X	pp = peer->procptr;
+X	pp->io.clock_recv = jupiter_receive;
+X	pp->io.srcclock = (caddr_t)peer;
+X	pp->io.datalen = 0;
+X	pp->io.fd = fd;
+X	if (!io_addclock(&pp->io)) {
+X		(void) close(fd);
+X		free(up);
+X		return (0);
+X	}
+X	pp->unitptr = (caddr_t)up;
+X
+X	/*
+X	 * Initialize miscellaneous variables
+X	 */
+X	peer->precision = PRECISION;
+X	pp->clockdesc = DESCRIPTION;
+X	memcpy((char *)&pp->refid, REFID, 4);
+X
+X
+X	/* Ensure the receiver is properly configured */
+X	jupiter_config(peer);
+X
+X	/* Turn on pulse gathering by requesting the first sample */
+X	if (ioctl(fd, CIOGETEV, (caddr_t)&up->ppsev) < 0) {
+X		jupiter_debug(peer, "jupiter_ttyinit: CIOGETEV: %s\n",
+X		    strerror(errno));
+X		(void) close(fd);
+X		free(up);
+X		return (0);
+X	}
+X	up->lastserial = up->ppsev.serial;
+X	memset(&up->ppsev, 0, sizeof(up->ppsev));
+X	return (1);
+X}
+X
+X/*
+X * jupiter_shutdown - shut down the clock
+X */
+Xstatic void
+Xjupiter_shutdown(register int unit, register struct peer *peer)
+X{
+X	register struct jupiterunit *up;
+X	struct refclockproc *pp;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X	io_closeclock(&pp->io);
+X	free(up);
+X}
+X
+X/*
+X * jupiter_config - Configure the receiver
+X */
+Xstatic void
+Xjupiter_config(register struct peer *peer)
+X{
+X	register int i;
+X	register struct jupiterunit *up;
+X	register struct refclockproc *pp;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/*
+X	 * Initialize the unit variables
+X	 *
+X	 * STRANGE BEHAVIOUR WARNING: The fudge flags are not available
+X	 * at the time jupiter_start is called.  These are set later,
+X	 * and so the code must be prepared to handle changing flags.
+X	 */
+X	up->sloppyclockflag = pp->sloppyclockflag;
+X	if (pp->sloppyclockflag & CLK_FLAG2) {
+X		up->moving = 1;		/* Receiver on mobile platform */
+X		msyslog(LOG_DEBUG, "jupiter_config: mobile platform");
+X	} else {
+X		up->moving = 0;		/* Static Installation */
+X	}
+X
+X	/* XXX fludge flags don't make the trip from the config to here... */
+X#ifdef notdef
+X	/* Configure for trailing edge triggers */
+X#ifdef CIOSETTET
+X	i = ((pp->sloppyclockflag & CLK_FLAG3) != 0);
+X	jupiter_debug(peer, "jupiter_configure: (sloppyclockflag 0x%lx)\n",
+X	    pp->sloppyclockflag);
+X	if (ioctl(pp->io.fd, CIOSETTET, (char *)&i) < 0)
+X		msyslog(LOG_DEBUG, "jupiter_configure: CIOSETTET %d: %m", i);
+X#else
+X	if (pp->sloppyclockflag & CLK_FLAG3)
+X		msyslog(LOG_DEBUG, "jupiter_configure: \
+XNo kernel support for trailing edge trigger");
+X#endif
+X#endif
+X
+X	up->pollcnt     = 2;
+X	up->polled      = 0;
+X	up->known       = 0;
+X	up->gweek = 0;
+X	up->lastsweek = 2 * WEEKSECS;
+X	up->timecode = 0;
+X	up->stime = 0;
+X	up->ssize = 0;
+X	up->coderecv    = 0;
+X	up->nkeep       = NKEEP;
+X	if (up->nkeep > NSAMPLES)
+X		up->nkeep = NSAMPLES;
+X	if (up->nkeep >= 1)
+X		up->rshift = 0;
+X	if (up->nkeep >= 2)
+X		up->rshift = 1;
+X	if (up->nkeep >= 4)
+X		up->rshift = 2;
+X	if (up->nkeep >= 8)
+X		up->rshift = 3;
+X	if (up->nkeep >= 16)
+X		up->rshift = 4;
+X	if (up->nkeep >= 32)
+X		up->rshift = 5;
+X	if (up->nkeep >= 64)
+X		up->rshift = 6;
+X	up->nkeep = 1;
+X	i = up->rshift;
+X	while (i > 0) {
+X		up->nkeep *= 2;
+X		i--;
+X	}
+X
+X	/* Stop outputting all messages */
+X	jupiter_canmsg(peer, JUPITER_ALL);
+X
+X	/* Request the receiver id so we can syslog the firmware version */
+X	jupiter_reqonemsg(peer, JUPITER_O_ID);
+X
+X	/* Flag that this the id was requested (so we don't get called again) */
+X	up->wantid = 1;
+X
+X	/* Request perodic time mark pulse messages */
+X	jupiter_reqmsg(peer, JUPITER_O_PULSE, 1);
+X
+X	/* Set application platform type */
+X	if (up->moving)
+X		jupiter_platform(peer, JUPITER_I_PLAT_MED);
+X	else
+X		jupiter_platform(peer, JUPITER_I_PLAT_LOW);
+X}
+X
+X/*
+X * jupiter_poll - jupiter watchdog routine
+X */
+Xstatic void
+Xjupiter_poll(register int unit, register struct peer *peer)
+X{
+X	register struct jupiterunit *up;
+X	register struct refclockproc *pp;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/*
+X	 * You don't need to poll this clock.  It puts out timecodes
+X	 * once per second.  If asked for a timestamp, take note.
+X	 * The next time a timecode comes in, it will be fed back.
+X	 */
+X
+X	/*
+X	 * If we haven't had a response in a while, reset the receiver.
+X	 */
+X	if (up->pollcnt > 0) {
+X		up->pollcnt--;
+X	} else {
+X		refclock_report(peer, CEVNT_TIMEOUT);
+X
+X		/* Request the receiver id to trigger a reconfig */
+X		jupiter_reqonemsg(peer, JUPITER_O_ID);
+X		up->wantid = 0;
+X	}
+X
+X	/*
+X	 * polled every 64 seconds. Ask jupiter_receive to hand in
+X	 * a timestamp.
+X	 */
+X	up->polled = 1;
+X	pp->polls++;
+X}
+X
+X/*
+X * jupiter_receive - receive gps data
+X * Gag me!
+X */
+Xstatic void
+Xjupiter_receive(register struct recvbuf *rbufp)
+X{
+X	register int bpcnt, cc, size, ppsret;
+X	register u_int32 last_timecode, laststime;
+X	register char *cp;
+X	register u_char *bp;
+X	register u_short *sp;
+X	register u_long sloppyclockflag;
+X	register struct jupiterunit *up;
+X	register struct jid *ip;
+X	register struct jheader *hp;
+X	register struct refclockproc *pp;
+X	register struct peer *peer;
+X
+X	/* Initialize pointers and read the timecode and timestamp */
+X	peer = (struct peer *)rbufp->recv_srcclock;
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/*
+X	 * If operating mode has been changed, then reinitialize the receiver
+X	 * before doing anything else.
+X	 */
+X/* XXX Sloppy clock flags are broken!! */
+X	sloppyclockflag = up->sloppyclockflag;
+X	up->sloppyclockflag = pp->sloppyclockflag;
+X	if ((pp->sloppyclockflag & CLK_FLAG2) !=
+X	    (sloppyclockflag & CLK_FLAG2)) {
+X		jupiter_debug(peer,
+X		    "jupiter_receive: mode switch: reset receiver\n");
+X		jupiter_config(peer);
+X		return;
+X	}
+X
+X	up->pollcnt = 2;
+X
+X	bp = (u_char *)rbufp->recv_buffer;
+X	bpcnt = rbufp->recv_length;
+X
+X	/* This shouldn't happen */
+X	if (bpcnt > sizeof(up->sbuf) - up->ssize)
+X		bpcnt = sizeof(up->sbuf) - up->ssize;
+X
+X	/* Append to input buffer */
+X	memcpy((u_char *)up->sbuf + up->ssize, bp, bpcnt);
+X	up->ssize += bpcnt;
+X
+X	/* While there's at least a header and we parse a intact message */
+X	while (up->ssize > sizeof(*hp) && (cc = jupiter_recv(peer)) > 0) {
+X		hp = (struct jheader *)up->sbuf;
+X		sp = (u_short *)(hp + 1);
+X		size = cc - sizeof(*hp);
+X		switch (getshort(hp->id)) {
+X
+X		case JUPITER_O_PULSE:
+X			if (size != sizeof(struct jpulse)) {
+X				jupiter_debug(peer,
+X				    "jupiter_receive: pulse: len %d != %u\n",
+X				    size, (int)sizeof(struct jpulse));
+X				refclock_report(peer, CEVNT_BADREPLY);
+X				break;
+X			}
+X
+X			/*
+X			 * There appears to be a firmware bug related
+X			 * to the pulse message; in addition to the one
+X			 * per second messages, we get an extra pulse
+X			 * message once an hour (on the anniversary of
+X			 * the cold start). It seems to come 200 ms
+X			 * after the one requested. So if we've seen a
+X			 * pulse message in the last 210 ms, we skip
+X			 * this one.
+X			 */
+X			laststime = up->stime;
+X			up->stime = DS2UI(((struct jpulse *)sp)->stime);
+X			if (laststime != 0 && up->stime - laststime <= 21) {
+X				jupiter_debug(peer, "jupiter_receive: \
+Xavoided firmware bug (stime %.2f, laststime %.2f)\n",
+X    (double)up->stime * 0.01, (double)laststime * 0.01);
+X				break;
+X			}
+X
+X			/* Retrieve pps timestamp */
+X			ppsret = jupiter_pps(peer);
+X
+X			/* Parse timecode (even when there's no pps) */
+X			last_timecode = up->timecode;
+X			if ((cp = jupiter_parse_t(peer, sp)) != NULL) {
+X				jupiter_debug(peer,
+X				    "jupiter_receive: pulse: %s\n", cp);
+X				break;
+X			}
+X
+X			/* Bail if we didn't get a pps timestamp */
+X			if (ppsret)
+X				break;
+X
+X			/* Bail if we don't have the last timecode yet */
+X			if (last_timecode == 0)
+X				break;
+X
+X			/* Add the new sample to a median filter */
+X			if ((cp = jupiter_offset(peer)) != NULL) {
+X				jupiter_debug(peer,
+X				    "jupiter_receive: offset: %s\n", cp);
+X				refclock_report(peer, CEVNT_BADTIME);
+X				break;
+X			}
+X
+X			/*
+X			 * The clock will blurt a timecode every second
+X			 * but we only want one when polled.  If we
+X			 * havn't been polled, bail out.
+X			 */
+X			if (!up->polled)
+X				break;
+X
+X			/*
+X			 * It's a live one!  Remember this time.
+X			 */
+X			pp->lasttime = current_time;
+X
+X			/*
+X			 * Determine the reference clock offset and
+X			 * dispersion. NKEEP of NSAMPLE offsets are
+X			 * passed through a median filter.
+X			 * Save the (filtered) offset and dispersion in
+X			 * pp->offset and pp->dispersion.
+X			 */
+X			if ((cp = jupiter_process(peer)) != NULL) {
+X				jupiter_debug(peer,
+X				    "jupiter_receive: process: %s\n", cp);
+X				refclock_report(peer, CEVNT_BADTIME);
+X				break;
+X			}
+X			/*
+X			 * Return offset and dispersion to control
+X			 * module. We use lastrec as both the reference
+X			 * time and receive time in order to avoid
+X			 * being cute, like setting the reference time
+X			 * later than the receive time, which may cause
+X			 * a paranoid protocol module to chuck out the
+X			 * data.
+X			 */
+X			jupiter_debug(peer,
+X			    "jupiter_receive: process time: \
+X%4d-%03d %02d:%02d:%02d at %s, %s\n",
+X			    pp->year, pp->day,
+X			    pp->hour, pp->minute, pp->second,
+X			    prettydate(&pp->lastrec), lfptoa(&pp->offset, 6));
+X
+X			refclock_receive(peer, &pp->offset, 0, pp->dispersion,
+X				&pp->lastrec, &pp->lastrec, pp->leap);
+X
+X			/*
+X			 * We have succeeded in answering the poll.
+X			 * Turn off the flag and return
+X			 */
+X			up->polled = 0;
+X			break;
+X
+X		case JUPITER_O_ID:
+X			if (size != sizeof(struct jid)) {
+X				jupiter_debug(peer,
+X				    "jupiter_receive: id: len %d != %u\n",
+X				    size, (int)sizeof(struct jid));
+X				refclock_report(peer, CEVNT_BADREPLY);
+X				break;
+X			}
+X			/*
+X			 * If we got this message because the Jupiter
+X			 * just powered up, it needs to be reconfigured.
+X			 */
+X			ip = (struct jid *)sp;
+X			jupiter_debug(peer,
+X			    "jupiter_receive: >> %s chan ver %s, %s (%s)\n",
+X			    ip->chans, ip->vers, ip->date, ip->opts);
+X			msyslog(LOG_DEBUG,
+X			    "jupiter_receive: %s chan ver %s, %s (%s)\n",
+X			    ip->chans, ip->vers, ip->date, ip->opts);
+X			if (up->wantid)
+X				up->wantid = 0;
+X			else {
+X				jupiter_debug(peer,
+X				    "jupiter_receive: reset receiver\n");
+X				jupiter_config(peer);
+X				/* Rese since jupiter_config() just zeroed it */
+X				up->ssize = cc;
+X			}
+X			break;
+X
+X		default:
+X			jupiter_debug(peer,
+X			    "jupiter_receive: >> unknown message id %d\n",
+X			    getshort(hp->id));
+X			break;
+X		}
+X		up->ssize -= cc;
+X		if (up->ssize < 0) {
+X			fprintf(stderr, "jupiter_recv: negative ssize!\n");
+X			abort();
+X		} else if (up->ssize > 0)
+X			memcpy(up->sbuf, (u_char *)up->sbuf + cc, up->ssize);
+X	}
+X	record_clock_stats(&peer->srcadr, "<timecode is binary>");
+X}
+X
+X/*
+X * jupiter_offset - Calculate the offset, and add to the rolling filter.
+X */
+Xstatic char *
+Xjupiter_offset(register struct peer *peer)
+X{
+X	register struct jupiterunit *up;
+X	register struct refclockproc *pp;
+X	register int i;
+X	l_fp offset;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/*
+X	 * Calculate the offset
+X	 */
+X	if (!clocktime(pp->day, pp->hour, pp->minute, pp->second, GMT,
+X		pp->lastrec.l_ui, &pp->yearstart, &offset.l_ui)) {
+X		return ("jupiter_process: clocktime failed");
+X	}
+X	if (pp->usec) {
+X		TVUTOTSF(pp->usec, offset.l_uf);
+X	} else {
+X		MSUTOTSF(pp->msec, offset.l_uf);
+X	}
+X	L_ADD(&offset, &pp->fudgetime1);
+X	up->lastref = offset;   /* save last reference time */
+X	L_SUB(&offset, &pp->lastrec); /* form true offset */
+X
+X	/*
+X	 * A rolling filter.  Initialize first time around.
+X	 */
+X	i = ((up->coderecv)) % NSAMPLES;
+X
+X	up->filter[i] = offset;
+X	if (up->coderecv == 0)
+X		for (i = 1; (u_int) i < NSAMPLES; i++)
+X			up->filter[i] = up->filter[0];
+X	up->coderecv++;
+X
+X	return (NULL);
+X}
+X
+X/*
+X * jupiter_process - process the sample from the clock,
+X * passing it through a median filter and optionally averaging
+X * the samples.  Returns offset and dispersion in "up" structure.
+X */
+Xstatic char *
+Xjupiter_process(register struct peer *peer)
+X{
+X	register struct jupiterunit *up;
+X	register struct refclockproc *pp;
+X	register int i, n;
+X	register int j, k;
+X	l_fp offset, median, lftmp;
+X	u_fp disp;
+X	l_fp off[NSAMPLES];
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/*
+X	 * Copy the raw offsets and sort into ascending order
+X	 */
+X	for (i = 0; i < NSAMPLES; i++)
+X		off[i] = up->filter[i];
+X	qsort((char *)off, NSAMPLES, sizeof(l_fp), jupiter_cmpl_fp);
+X
+X	/*
+X	 * Reject the furthest from the median of NSAMPLES samples until
+X	 * NKEEP samples remain.
+X	 */
+X	i = 0;
+X	n = NSAMPLES;
+X	while ((n - i) > up->nkeep) {
+X		lftmp = off[n - 1];
+X		median = off[(n + i) / 2];
+X		L_SUB(&lftmp, &median);
+X		L_SUB(&median, &off[i]);
+X		if (L_ISHIS(&median, &lftmp)) {
+X			/* reject low end */
+X			i++;
+X		} else {
+X			/* reject high end */
+X			n--;
+X		}
+X	}
+X
+X	/*
+X	 * Copy key values to the billboard to measure performance.
+X	 */
+X	pp->lastref = up->lastref;
+X	pp->coderecv = up->coderecv;
+X	pp->nstages = up->nkeep + 2;
+X	pp->filter[0] = off[0];			/* smallest offset */
+X	pp->filter[1] = off[NSAMPLES-1];	/* largest offset */
+X	for (j = 2, k = i; k < n; j++, k++)
+X		pp->filter[j] = off[k];		/* offsets actually examined */
+X
+X	/*
+X	 * Compute the dispersion based on the difference between the
+X	 * extremes of the remaining offsets. Add to this the time since
+X	 * the last clock update, which represents the dispersion
+X	 * increase with time. We know that NTP_MAXSKEW is 16. If the
+X	 * sum is greater than the allowed sample dispersion, bail out.
+X	 * If the loop is unlocked, return the most recent offset;
+X	 * otherwise, return the median offset.
+X	 */
+X	lftmp = off[n - 1];
+X	L_SUB(&lftmp, &off[i]);
+X	disp = LFPTOFP(&lftmp);
+X	if (disp > REFCLOCKMAXDISPERSE)
+X		return ("Maximum dispersion exceeded");
+X
+X	/*
+X	 * Now compute the offset estimate.  If fudge flag 1
+X	 * is set, average the remainder, otherwise pick the
+X	 * median.
+X	 */
+X	if (pp->sloppyclockflag & CLK_FLAG1) {
+X		L_CLR(&lftmp);
+X		while (i < n) {
+X			L_ADD(&lftmp, &off[i]);
+X			i++;
+X		}
+X		i = up->rshift;
+X		while (i > 0) {
+X			L_RSHIFT(&lftmp);
+X			i--;
+X		}
+X		offset = lftmp;
+X	} else {
+X		i = (n + i) / 2;
+X		offset = off[i];
+X	}
+X
+X	/*
+X	 * The payload: filtered offset and dispersion.
+X	 */
+X
+X	pp->offset = offset;
+X	pp->dispersion = disp;
+X
+X	return (NULL);
+X
+X}
+X
+X/* Compare two l_fp's, used with qsort() */
+Xint
+X#ifdef QSORT_USES_VOID_P
+Xjupiter_cmpl_fp(register const void *p1, register const void *p2)
+X#else
+Xjupiter_cmpl_fp(register const l_fp *fp1, register const l_fp *fp2)
+X#endif
+X{
+X#ifdef QSORT_USES_VOID_P
+X	register const l_fp *fp1 = (const l_fp *)p1;
+X	register const l_fp *fp2 = (const l_fp *)p2;
+X#endif
+X
+X	if (!L_ISGEQ(fp1, fp2))
+X		return (-1);
+X	if (L_ISEQU(fp1, fp2))
+X		return (0);
+X	return (1);
+X}
+X
+Xstatic char *
+Xjupiter_parse_t(register struct peer *peer, register u_short *sp)
+X{
+X	register struct refclockproc *pp;
+X	register struct jupiterunit *up;
+X	register struct tm *tm;
+X	register char *cp;
+X	register struct jpulse *jp;
+X	register struct calendar *jt;
+X	register u_int32 sweek;
+X	register u_int32 last_timecode;
+X	register u_short flags;
+X	time_t t;
+X	struct calendar cal;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X	jp = (struct jpulse *)sp;
+X
+X	/* The timecode is presented as seconds into the current GPS week */
+X	sweek = DS2UI(jp->sweek);
+X
+X	/*
+X	 * If we don't know the current GPS week, calculate it from the
+X	 * current time. (It's too bad they didn't include this
+X	 * important value in the pulse message). We'd like to pick it
+X	 * up from one of the other messages like gpos or chan but they
+X	 * don't appear to be synchronous with time keeping and changes
+X	 * too soon (something like 10 seconds before the new GPS
+X	 * week).
+X	 *
+X	 * If we already know the current GPS week, increment it when
+X	 * we wrap into a new week.
+X	 */
+X	if (up->gweek == 0)
+X		up->gweek = (time(NULL) - GPS_EPOCH) / WEEKSECS;
+X	else if (sweek == 0 && up->lastsweek == WEEKSECS - 1) {
+X		++up->gweek;
+X		jupiter_debug(peer,
+X		    "jupiter_parse_t: NEW gps week %u\n", up->gweek);
+X	}
+X
+X	/*
+X	 * See if the sweek stayed the same (this happens when there is
+X	 * no pps pulse).
+X	 *
+X	 * Otherwise, look for time warps:
+X	 *
+X	 *   - we have stored at least one lastsweek and
+X	 *   - the sweek didn't increase by one and
+X	 *   - we didn't wrap to a new GPS week
+X	 *
+X	 * Then we warped.
+X	 */
+X	if (up->lastsweek == sweek)
+X		jupiter_debug(peer,
+X		    "jupiter_parse_t: gps sweek not incrementing (%d)\n",
+X		    sweek);
+X	else if (up->lastsweek != 2 * WEEKSECS &&
+X	    up->lastsweek + 1 != sweek &&
+X	    !(sweek == 0 && up->lastsweek == WEEKSECS - 1))
+X		jupiter_debug(peer,
+X		    "jupiter_parse_t: gps sweek jumped (was %d, now %d)\n",
+X		    up->lastsweek, sweek);
+X	up->lastsweek = sweek;
+X
+X	/* This timecode describes next pulse */
+X	last_timecode = up->timecode;
+X	up->timecode = (u_int32)JAN_1970 +
+X	    GPS_EPOCH + (up->gweek * WEEKSECS) + sweek;
+X
+X	if (last_timecode == 0)
+X		/* XXX debugging */
+X		jupiter_debug(peer,
+X		    "jupiter_parse_t: UTC <none> (gweek/sweek %u/%u)\n",
+X		    up->gweek, sweek);
+X	else {
+X		/* XXX debugging */
+X		t = last_timecode - (u_int32)JAN_1970;
+X		tm = gmtime(&t);
+X		cp = asctime(tm);
+X
+X		jupiter_debug(peer,
+X		    "jupiter_parse_t: UTC %.24s (gweek/sweek %u/%u)\n",
+X		    cp, up->gweek, sweek);
+X
+X		/* Billboard last_timecode (which is now the current time) */
+X		jt = &cal;
+X		caljulian(last_timecode, jt);
+X		pp = peer->procptr;
+X		pp->year = jt->year;
+X		pp->day = jt->yearday;
+X		pp->hour = jt->hour;
+X		pp->minute = jt->minute;
+X		pp->second = jt->second;
+X		pp->msec = 0;
+X		pp->usec = 0;
+X	}
+X
+X	/* XXX debugging */
+X	tm = gmtime(&up->ppsev.tv.tv_sec);
+X	cp = asctime(tm);
+X	flags = getshort(jp->flags);
+X	jupiter_debug(peer,
+X	    "jupiter_parse_t: PPS %.19s.%06lu %.4s (serial %u)%s\n",
+X	    cp, up->ppsev.tv.tv_usec, cp + 20, up->ppsev.serial,
+X	    (flags & JUPITER_O_PULSE_VALID) == 0 ?
+X	    " NOT VALID" : "");
+X
+X	/* Toss if not designated "valid" by the gps */
+X	if ((flags & JUPITER_O_PULSE_VALID) == 0) {
+X		refclock_report(peer, CEVNT_BADTIME);
+X		return ("time mark not valid");
+X	}
+X
+X	/* We better be sync'ed to UTC... */
+X	if ((flags & JUPITER_O_PULSE_UTC) == 0) {
+X		refclock_report(peer, CEVNT_BADTIME);
+X		return ("time mark not sync'ed to UTC");
+X	}
+X
+X	return (NULL);
+X}
+X
+X/*
+X * Process a PPS signal, returning a timestamp.
+X */
+Xstatic int
+Xjupiter_pps(register struct peer *peer)
+X{
+X	register struct refclockproc *pp;
+X	register struct jupiterunit *up;
+X	register int firsttime;
+X	struct timeval ntp_tv;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/*
+X	 * Grab the timestamp of the PPS signal.
+X	 */
+X	firsttime = (up->ppsev.tv.tv_sec == 0);
+X	if (ioctl(pp->io.fd, CIOGETEV, (caddr_t)&up->ppsev) < 0) {
+X		/* XXX Actually, if this fails, we're pretty much screwed */
+X		jupiter_debug(peer, "jupiter_pps: CIOGETEV: %s\n",
+X		    strerror(errno));
+X		refclock_report(peer, CEVNT_FAULT);
+X		return (1);
+X	}
+X
+X	/*
+X	 * Check pps serial number against last one
+X	 */
+X	if (!firsttime && up->lastserial + 1 != up->ppsev.serial) {
+X		if (up->ppsev.serial == up->lastserial)
+X			jupiter_debug(peer, "jupiter_pps: no new pps event\n");
+X		else
+X			jupiter_debug(peer,
+X			    "jupiter_pps: missed %d pps events\n",
+X				up->ppsev.serial - up->lastserial - 1);
+X		up->lastserial = up->ppsev.serial;
+X		refclock_report(peer, CEVNT_FAULT);
+X		return (1);
+X	}
+X	up->lastserial = up->ppsev.serial;
+X
+X	/*
+X	 * Return the timestamp in pp->lastrec
+X	 */
+X	ntp_tv = up->ppsev.tv;
+X	ntp_tv.tv_sec += (u_int32)JAN_1970;
+X	TVTOTS(&ntp_tv, &pp->lastrec);
+X
+X	return (0);
+X}
+X
+X/*
+X * jupiter_debug - print debug messages
+X */
+X#if __STDC__
+Xstatic void
+Xjupiter_debug(struct peer *peer, char *fmt, ...)
+X#else
+Xstatic void
+Xjupiter_debug(peer, fmt, va_alist)
+X	struct peer *peer;
+X	char *fmt;
+X#endif
+X{
+X	va_list ap;
+X
+X	if (debug) {
+X
+X#if __STDC__
+X		va_start(ap, fmt);
+X#else
+X		va_start(ap);
+X#endif
+X		/*
+X		 * Print debug message to stdout
+X		 * In the future, we may want to get get more creative...
+X		 */
+X		vfprintf(stderr, fmt, ap);
+X
+X		va_end(ap);
+X	}
+X}
+X
+X/* Checksum and transmit a message to the Jupiter */
+Xstatic char *
+Xjupiter_send(register struct peer *peer, register struct jheader *hp)
+X{
+X	register u_int len, size;
+X	register int cc;
+X	register u_short *sp;
+X	static char errstr[132];
+X
+X	size = sizeof(*hp);
+X	hp->hsum = putshort(jupiter_cksum((u_short *)hp,
+X	    (size / sizeof(u_short)) - 1));
+X	len = getshort(hp->len);
+X	if (len > 0) {
+X		sp = (u_short *)(hp + 1);
+X		sp[len] = putshort(jupiter_cksum(sp, len));
+X		size += (len + 1) * sizeof(u_short);
+X	}
+X
+X	if ((cc = write(peer->procptr->io.fd, (char *)hp, size)) < 0) {
+X		(void)sprintf(errstr, "write: %s", strerror(errno));
+X		return (errstr);
+X	} else if (cc != size) {
+X		(void)sprintf(errstr, "short write (%d != %d)", cc, size);
+X		return (errstr);
+X	}
+X	return (NULL);
+X}
+X
+X/* Request periodic message output */
+Xstatic struct {
+X	struct jheader jheader;
+X	struct jrequest jrequest;
+X} reqmsg = {
+X	{ putshort(JUPITER_SYNC), 0,
+X	    putshort((sizeof(struct jrequest) / sizeof(u_short)) - 1),
+X	    0, putshort(JUPITER_FLAG_REQUEST | JUPITER_FLAG_NAK |
+X	    JUPITER_FLAG_CONN | JUPITER_FLAG_LOG), 0 },
+X	{ 0, 0, 0, 0 }
+X};
+X
+X/* An interval of zero means to output on trigger */
+Xstatic void
+Xjupiter_reqmsg(register struct peer *peer, register u_int id,
+X    register u_int interval)
+X{
+X	register struct jheader *hp;
+X	register struct jrequest *rp;
+X	register char *cp;
+X
+X	hp = &reqmsg.jheader;
+X	hp->id = putshort(id);
+X	rp = &reqmsg.jrequest;
+X	rp->trigger = putshort(interval == 0);
+X	rp->interval = putshort(interval);
+X	if ((cp = jupiter_send(peer, hp)) != NULL)
+X		jupiter_debug(peer, "jupiter_reqmsg: %u: %s\n", id, cp);
+X}
+X
+X/* Cancel periodic message output */
+Xstatic struct jheader canmsg = {
+X	putshort(JUPITER_SYNC), 0, 0, 0,
+X	putshort(JUPITER_FLAG_REQUEST | JUPITER_FLAG_NAK | JUPITER_FLAG_DISC),
+X	0
+X};
+X
+Xstatic void
+Xjupiter_canmsg(register struct peer *peer, register u_int id)
+X{
+X	register struct jheader *hp;
+X	register char *cp;
+X
+X	hp = &canmsg;
+X	hp->id = putshort(id);
+X	if ((cp = jupiter_send(peer, hp)) != NULL)
+X		jupiter_debug(peer, "jupiter_canmsg: %u: %s\n", id, cp);
+X}
+X
+X/* Request a single message output */
+Xstatic struct jheader reqonemsg = {
+X	putshort(JUPITER_SYNC), 0, 0, 0,
+X	putshort(JUPITER_FLAG_REQUEST | JUPITER_FLAG_NAK | JUPITER_FLAG_QUERY),
+X	0
+X};
+X
+Xstatic void
+Xjupiter_reqonemsg(register struct peer *peer, register u_int id)
+X{
+X	register struct jheader *hp;
+X	register char *cp;
+X
+X	hp = &reqonemsg;
+X	hp->id = putshort(id);
+X	if ((cp = jupiter_send(peer, hp)) != NULL)
+X		jupiter_debug(peer, "jupiter_reqonemsg: %u: %s\n", id, cp);
+X}
+X
+X/* Set the platform dynamics */
+Xstatic struct {
+X	struct jheader jheader;
+X	struct jplat jplat;
+X} platmsg = {
+X	{ putshort(JUPITER_SYNC), putshort(JUPITER_I_PLAT),
+X	    putshort((sizeof(struct jplat) / sizeof(u_short)) - 1), 0,
+X	    putshort(JUPITER_FLAG_REQUEST | JUPITER_FLAG_NAK), 0 },
+X	{ 0, 0, 0 }
+X};
+X
+Xstatic void
+Xjupiter_platform(register struct peer *peer, register u_int platform)
+X{
+X	register struct jheader *hp;
+X	register struct jplat *pp;
+X	register char *cp;
+X
+X	hp = &platmsg.jheader;
+X	pp = &platmsg.jplat;
+X	pp->platform = putshort(platform);
+X	if ((cp = jupiter_send(peer, hp)) != NULL)
+X		jupiter_debug(peer, "jupiter_platform: %u: %s\n", platform, cp);
+X}
+X
+X/* Checksum "len" shorts */
+Xstatic u_short
+Xjupiter_cksum(register u_short *sp, register u_int len)
+X{
+X	register u_short sum, x;
+X
+X	sum = 0;
+X	while (len-- > 0) {
+X		x = *sp++;
+X		sum += getshort(x);
+X	}
+X	return (~sum + 1);
+X}
+X
+X/* Return the size of the next message (or zero if we don't have it all yet) */
+Xstatic int
+Xjupiter_recv(register struct peer *peer)
+X{
+X	register int n, len, size, cc;
+X	register struct refclockproc *pp;
+X	register struct jupiterunit *up;
+X	register struct jheader *hp;
+X	register u_char *bp;
+X	register u_short *sp;
+X
+X	pp = peer->procptr;
+X	up = (struct jupiterunit *)pp->unitptr;
+X
+X	/* Must have at least a header's worth */
+X	cc = sizeof(*hp);
+X	size = up->ssize;
+X	if (size < cc)
+X		return (0);
+X
+X	/* Search for the sync short if missing */
+X	sp = up->sbuf;
+X	hp = (struct jheader *)sp;
+X	if (getshort(hp->sync) != JUPITER_SYNC) {
+X		/* Wasn't at the front, sync up */
+X		jupiter_debug(peer, "syncing");
+X		bp = (u_char *)sp;
+X		n = size;
+X		while (n >= 2) {
+X			if (bp[0] != (JUPITER_SYNC & 0xff)) {
+X				jupiter_debug(peer, "{0x%x}", bp[0]);
+X				++bp;
+X				--n;
+X				continue;
+X			}
+X			if (bp[1] == ((JUPITER_SYNC >> 8) & 0xff))
+X				break;
+X			jupiter_debug(peer, "{0x%x 0x%x}", bp[0], bp[1]);
+X			bp += 2;
+X			n -= 2;
+X		}
+X		jupiter_debug(peer, "\n");
+X		/* Shuffle data to front of input buffer */
+X		if (n > 0)
+X			memcpy(sp, bp, n);
+X		size = n;
+X		up->ssize = size;
+X		if (size < cc || hp->sync != JUPITER_SYNC)
+X			return (0);
+X	}
+X
+X	if (jupiter_cksum(sp, (cc / sizeof(u_short) - 1)) !=
+X	    getshort(hp->hsum)) {
+X	    jupiter_debug(peer, "jupiter_recv: bad header checksum!\n");
+X		/* This is drastic but checksum errors should be rare */
+X		up->ssize = 0;
+X		return (0);
+X	}
+X
+X	/* Check for a payload */
+X	len = getshort(hp->len);
+X	if (len > 0) {
+X		n = (len + 1) * sizeof(u_short);
+X		/* Not enough data yet */
+X		if (size < cc + n)
+X			return (0);
+X
+X		/* Check payload checksum */
+X		sp = (u_short *)(hp + 1);
+X		if (jupiter_cksum(sp, len) != getshort(sp[len])) {
+X			jupiter_debug(peer,
+X			    "jupiter_recv: bad payload checksum!\n");
+X			/* This is drastic but checksum errors should be rare */
+X			up->ssize = 0;
+X			return (0);
+X		}
+X		cc += n;
+X	}
+X	return (cc);
+X}
+X
+Xstatic int
+Xjupiter_ttyinit(register struct peer *peer, register int fd)
+X{
+X	struct termios termios;
+X
+X	memset((char *)&termios, 0, sizeof(termios));
+X	if (cfsetispeed(&termios, B9600) < 0 ||
+X	    cfsetospeed(&termios, B9600) < 0) {
+X		jupiter_debug(peer,
+X		    "jupiter_ttyinit: cfsetispeed/cfgetospeed: %s\n",
+X		    strerror(errno));
+X		return (0);
+X	}
+X#ifdef HAVE_CFMAKERAW
+X	cfmakeraw(&termios);
+X#else
+X	termios.c_iflag &= ~(IMAXBEL | IXOFF | INPCK | BRKINT | PARMRK |
+X	    ISTRIP | INLCR | IGNCR | ICRNL | IXON | IGNPAR);
+X	termios.c_iflag |= IGNBRK;
+X	termios.c_oflag &= ~OPOST;
+X	termios.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ICANON | ISIG |
+X	    IEXTEN | NOFLSH | TOSTOP | PENDIN);
+X	termios.c_cflag &= ~(CSIZE | PARENB);
+X	termios.c_cflag |= CS8 | CREAD;
+X	termios.c_cc[VMIN] = 1;
+X#endif
+X	termios.c_cflag |= CLOCAL;
+X	if (tcsetattr(fd, TCSANOW, &termios) < 0) {
+X		jupiter_debug(peer, "jupiter_ttyinit: tcsetattr: %s\n",
+X		    strerror(errno));
+X		return (0);
+X	}
+X
+X#ifdef TIOCSPPS
+X	if (ioctl(fd, TIOCSPPS, (char *)&pps_enable) < 0) {
+X		jupiter_debug(peer, "jupiter_ttyinit: TIOCSPPS: %s\n",
+X		    strerror(errno));
+X		return (0);
+X	}
+X#endif
+X#ifdef I_PUSH
+X	if (ioctl(fd, I_PUSH, "ppsclock") < 0) {
+X		jupiter_debug(peer, "jupiter_ttyinit: push ppsclock: %s\n",
+X		    strerror(errno));
+X		return (0);
+X	}
+X#endif
+X
+X	return (1);
+X}
+X
+X#else /* not (REFCLOCK && JUPITER && PPS) */
+Xint refclock_jupiter_bs;
+X#endif /* not (REFCLOCK && JUPITER && PPS) */
+SHAR_EOF
+if test 33681 -ne "`wc -c < 'refclock_jupiter.c'`"
+then
+	echo shar: error transmitting "'refclock_jupiter.c'" '(should have been 33681 characters)'
+fi
+fi # end of overwriting check
+echo shar: extracting "'strerror.c'" '(1284 characters)'
+if test -f 'strerror.c'
+then
+	echo shar: will not over-write existing file "'strerror.c'"
+else
+sed 's/^X//' << \SHAR_EOF > 'strerror.c'
+X/*
+X * Copyright (c) 1988 Regents of the University of California.
+X * All rights reserved.
+X *
+X * Redistribution and use in source and binary forms are permitted
+X * provided that the above copyright notice and this paragraph are
+X * duplicated in all such forms and that any documentation,
+X * advertising materials, and other materials related to such
+X * distribution and use acknowledge that the software was developed
+X * by the University of California, Berkeley.  The name of the
+X * University may not be used to endorse or promote products derived
+X * from this software without specific prior written permission.
+X * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+X * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+X * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+X */
+X
+X#if defined(LIBC_SCCS) && !defined(lint)
+Xstatic const char sccsid[] = "@(#)strerror.c	5.1 (Berkeley) 4/9/89";
+X#endif /* LIBC_SCCS and not lint */
+X
+X#include <sys/types.h>
+X
+X#include <stdio.h>
+X#include <string.h>
+X
+Xchar *
+Xstrerror(errnum)
+X	int errnum;
+X{
+X	extern int sys_nerr;
+X	extern char *sys_errlist[];
+X	static char ebuf[20];
+X
+X	if ((unsigned int)errnum < sys_nerr)
+X		return(sys_errlist[errnum]);
+X	(void)sprintf(ebuf, "Unknown error: %d", errnum);
+X	return(ebuf);
+X}
+SHAR_EOF
+if test 1284 -ne "`wc -c < 'strerror.c'`"
+then
+	echo shar: error transmitting "'strerror.c'" '(should have been 1284 characters)'
+fi
+fi # end of overwriting check
+#	End of shell archive
+exit 0

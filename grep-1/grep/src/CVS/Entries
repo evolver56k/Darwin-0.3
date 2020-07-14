@@ -1,0 +1,26 @@
+/Makefile.am/1.1.1.1/Fri Apr 23 01:07:52 1999//Tgrep-1
+/Makefile.in/1.1.1.2/Fri Apr 23 01:08:11 1999//Tgrep-1
+/alloca.c/1.1.1.1/Fri Apr 23 01:07:52 1999//Tgrep-1
+/btowc.c/1.1.1.1/Fri Apr 23 01:08:12 1999//Tgrep-1
+/dfa.c/1.1.1.2/Fri Apr 23 01:08:12 1999//Tgrep-1
+/dfa.h/1.1.1.2/Fri Apr 23 01:08:12 1999//Tgrep-1
+/dosbuf.c/1.1.1.2/Fri Apr 23 01:08:13 1999//Tgrep-1
+/egrep.man/1.1.1.1/Fri Apr 23 01:07:52 1999//Tgrep-1
+/fgrep.man/1.1.1.1/Fri Apr 23 01:07:52 1999//Tgrep-1
+/getopt.c/1.1.1.1/Fri Apr 23 01:07:52 1999//Tgrep-1
+/getopt.h/1.1.1.2/Fri Apr 23 01:08:13 1999//Tgrep-1
+/getopt1.c/1.1.1.2/Fri Apr 23 01:08:13 1999//Tgrep-1
+/getpagesize.h/1.1.1.1/Fri Apr 23 01:07:52 1999//Tgrep-1
+/grep.1/1.1.1.2/Fri Apr 23 01:08:13 1999//Tgrep-1
+/grep.c/1.1.1.2/Fri Apr 23 01:08:13 1999//Tgrep-1
+/grep.h/1.1.1.2/Fri Apr 23 01:08:14 1999//Tgrep-1
+/kwset.c/1.1.1.2/Fri Apr 23 01:08:14 1999//Tgrep-1
+/kwset.h/1.1.1.2/Fri Apr 23 01:08:14 1999//Tgrep-1
+/memchr.c/1.1.1.2/Fri Apr 23 01:08:14 1999//Tgrep-1
+/obstack.c/1.1.1.2/Fri Apr 23 01:08:14 1999//Tgrep-1
+/obstack.h/1.1.1.2/Fri Apr 23 01:08:14 1999//Tgrep-1
+/regex.c/1.1.1.2/Fri Apr 23 01:08:15 1999//Tgrep-1
+/regex.h/1.1.1.2/Fri Apr 23 01:08:16 1999//Tgrep-1
+/search.c/1.1.1.2/Fri Apr 23 01:08:16 1999//Tgrep-1
+/system.h/1.1.1.2/Fri Apr 23 01:08:16 1999//Tgrep-1
+D

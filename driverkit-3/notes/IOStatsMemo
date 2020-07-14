@@ -1,0 +1,164 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fmodern Courier;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl\red0\green0\blue0;}
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\f0\b0\i0\ul0\fs24 At a meeting last Friday on the general subject of the NRW Token Ring driver, a subject came up which potentially applies to all NRW and IODevice-based drivers. This is the issue of a general "get and set parameters" mechanism which can be used on all drivers - in the Kernel and in user space - from User level Apps and utilities like iostat, netstat, and device-speciifc configuration utilities. iostat needs to get disk tty statistics; network interfaces need to be configured for transfer rate or "which wire" (TPE or thin wire), etc. \
+\
+
+\f1\b\fs28 The problems:
+\f0\b0\fs24 \
+\
+* There is no unified name space for device drivers in the Kernel. There is\
+  nmserver for drivers in User space, but that's not really useful for looking\
+  up devices you don't know anything about, and Kernel drivers can't advertise\
+  in the nmserver. The name space issue is a hot button for 4.0.\
+  \
+* There will be no Remote Object functionality in the 3.0 or 3.1 Kernel.\
+\
+
+\f1\b\fs28 The goals:
+\f0\b0\fs24 \
+\
+* We want a simple, extensible mechanism by which an App or utility can \
+  contact any driver and get or set any integer paramater specific to \
+  that driver. \
+  \
+* We want a mechanism which will work the same - from an App's point of \
+  view - for Kernel drivers and User drivers.\
+  \
+
+\f1\b\fs28 The Proposal:
+\f0\b0\fs24 \
+\
+* The App/utility API for the proposed mechanism involves three new RPCs. \
+  These can be executed by any task with root privileges.\
+\
+
+\fc0   to find out what's there:\
+  \
+
+\f1   dev_return_t 
+\b dev_inquire
+\b0 (\
+  	port_t 
+\i device_master
+\i0 ,	\
+  	int 
+\i devUnit
+\i0 ,			// global device "unit num space"\
+	devtype_t *
+\i devType
+\i0 ,		// e.g., "SCSIDisk", "Ethernet", etc.)\
+	devname_t *
+\i devName
+\i0 		// e.g., "BlockSCSIDisk0a"\
+  );\
+
+\f0   \
+  to get general parameter for devUnit n:\
+  \
+
+\f1   dev_return_t 
+\b dev_param
+\b0 (\
+  	port_t 
+\i device_master
+\i0 ,\
+	int 
+\i devUnit
+\i0 ,\
+	char 
+\i paramName
+\i0 [PARAM_NAME_SIZE],\
+	int *
+\i parameter
+\i0 ,			// returned\
+  );\
+
+\f0   \
+  to set general parameter in devUnit n:\
+  \
+
+\f1   dev_return_t 
+\b dev_set_param
+\b0 (\
+  	port_t 
+\i device_master
+\i0 ,\
+	int 
+\i devUnit
+\i0 ,\
+	char 
+\i paramName
+\i0 [PARAM_NAME_SIZE],\
+	int 
+\i parameter
+\i0 			// returned\
+  );\
+
+\f0 \
+The dev_inquire() call is used to find out what devices are "out there". Once an App finds a devUnit corresponding to a device its interested in dealing with, it uses that devUnit for further operations. \
+\
+dev_param() and dev_set_param() are used to get and set any arbitrary parameter for a specified devUnit; the parameter is addressed by string paramName.\
+\
+* For IODevice-based drivers, there are two new instance varibales and \
+  two new methods:\
+  \
+  New IODevice instance variables:\
+  \
+
+\f1   typedef char devType_t[DEV_TYPE_SIZE];\
+  typedef char devName_t[DEV_NAME_SIZE];\
+  \
+  devType_t devType;\
+  devName_t devName;\
+
+\f0   \
+  A driver must initialize these instance variables prior to calling the \
+  existing registerDevice: method.\
+  \
+  New IODevice methods:\
+\
+
+\f1   - (dev_return_t)getParam:(const char *)paramName param:(int *)parameter;\
+  - (dev_return_t)setParam:(const char *)paramName param:(int)parameter;\
+
+\f0   \
+  Any subclass can override these to handle new parameters; any not known \
+  are passed up to [super getParam:]. Thus, standard NetDriver parameters\
+  like "inPackets" can be handled by the NetDriver superclass, which \
+  subclasses can implement their own device-specific parameters, leaving \
+  the standard ones to NetDriver.\
+    \
+    e.g. in NetDriver:\
+    \
+
+\f1     - (int)getParam:(const char *)paramName\
+    \{\
+    	if(strcmp(paramName, "inPackets"))\
+		return (if_ipackets([self getNetif]);\
+	else if (...)\
+		return whatever;\
+	else\
+		return [super getParam:paramName];\
+    \}\
+
+\f0 \
+* It's a trivial matter to map devUnit numbers to id's of IODevice instances\
+  which register themselves via registerDevice:. \
+  \
+Note that there will be a separate "devUnit" space for Kernel and User. The Three new RPCs defined above will work the same for both. \
+\
+That's my proposal. Some questions:\
+\
+* How do people feel about addressing parameters by string rather than by \
+  #defined or enumerated ints?\
+  \
+* Will this "one integer parameter at a time" mechanism be sufficient?\
+\
+Comments?\
+\
+--dpm
+}

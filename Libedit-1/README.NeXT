@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# The Edit library has a lot of files that BSD generates on the fly.
+# To make life easier for us I have run the generation and just
+# built the project using the generated files.
+#
+#	vi.h
+#	emacs.h
+#	common.h
+#	fcns.h
+#	fcns.c
+#	help.c
+#	help.h
+#	editline.c
+#
+# If you ever feel the need to regenerate these files then run this script.
+#
+
+OSRCS="chared.c common.c el.c emacs.c hist.c key.c map.c parse.c \
+       prompt.c read.c refresh.c search.c sig.c term.c tty.c vi.c \
+       help.c fcns.c"
+
+AHDR="vi.h emacs.h common.h"
+ASRC="vi.c emacs.c common.c"
+
+sh makelist -h vi.c > vi.h
+sh makelist -h emacs.c > emacs.h
+sh makelist -h common.c > common.h
+sh makelist -fh $AHDR > fcns.h
+sh makelist -fc $AHDR > fcns.c
+sh makelist -bc $ASRC > help.c
+sh makelist -bh $ASRC > help.h
+sh makelist -e $OSRCS > editline.c

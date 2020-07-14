@@ -1,0 +1,9 @@
+/* Config table for barDriver instance 1 */
+
+"Type" = "SCSI Disk";
+"Driver Name" = "barDriver";
+"Version" = "2.0";
+"DMA Channels" = "3";
+"IRQ Levels" = "8 9";
+"I/O Ports" = "0x400-0x4ff";
+

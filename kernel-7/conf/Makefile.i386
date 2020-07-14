@@ -1,0 +1,136 @@
+##
+# Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+#
+# @APPLE_LICENSE_HEADER_START@
+# 
+# Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+# Reserved.  This file contains Original Code and/or Modifications of
+# Original Code as defined in and that are subject to the Apple Public
+# Source License Version 1.1 (the "License").  You may not use this file
+# except in compliance with the License.  Please obtain a copy of the
+# License at http://www.apple.com/publicsource and read it before using
+# this file.
+# 
+# The Original Code and all software distributed under the License are
+# distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+# INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+# License for the specific language governing rights and limitations
+# under the License.
+# 
+# @APPLE_LICENSE_HEADER_END@
+##
+
+#
+# Mach Operating System
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement
+# specifies the terms and conditions for use and redistribution.
+#  
+######################################################################
+
+######################################################################
+#BEGIN	Machine dependent Makefile fragment for NeXT i386
+######################################################################
+
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+#
+#  Compilation components
+#
+CC=	cc
+LD=	ld
+
+KCC=cc -static -nostdinc -nostdlib -traditional-cpp
+
+MACHINE_INCLUDES=
+MACHINE_CFLAGS= -arch i386 -I$(SOURCE_DIR)/bsd/include \
+	-fwritable-strings -fno-common -fpascal-strings
+MACHINE_SFLAGS= -arch i386
+LDFLAGS=-e _start  -segaddr __TEXT ${RELOC} \
+	-segaddr __LINKEDIT ${SYMADDR} \
+	-segalign 0x1000 \
+	-force_cpusubtype_ALL \
+	-u __muldi3
+
+MACHINE=i386
+
+LIBS_P= -lcc
+LIBS= -lcc
+
+PRELDDEPS=assym.h
+
+LDOBJS_PREFIX= $(LIBC_OBJ) $(LIBC_UNROLL_OBJ)
+LDOBJS_SUFFIX= $(LIBDRIVER_SOURCE)/$(LIBDRIVER) $(LIBOBJC_SOURCE)/$(LIBOBJC)
+
+LDDEPS_PREFIX=
+SWAPDEPS_PREFIX=
+
+OBJSDEPS=
+
+FEATURES_EXTRA=
+
+LIBC_SRC=	memchr.c memcmp.c memcpy.c memmove.c memset.c pagesize.c
+LIBC_OBJ=	$(LIBC_SRC:.c=.o)
+
+$(LIBC_OBJ):
+	${KCC} $(COPTS) $(MACHINE_CFLAGS) -c -O4 $(MACHINEDIR)/libc/$*.c
+
+LIBC_UNROLL_SRC=	strchr.c strrchr.c strlen.c \
+			strcpy.c strncpy.c strcat.c strncat.c \
+			strcmp.c strncmp.c index.c ffs.c
+LIBC_UNROLL_OBJ=	$(LIBC_UNROLL_SRC:.c=.o)
+
+$(LIBC_UNROLL_OBJ):
+	${KCC} $(COPTS) $(MACHINE_CFLAGS) -c -O4 -funroll-all-loops \
+							$(MACHINEDIR)/libc/$*.c
+
+
+MACHINE_INSTALL=
+
+#
+# Install machine headers.
+#
+MACHINE_COMPATHDRS=
+MACHINE_INSTALLHDRS= i386_installhdrs
+
+MACHINE_EXPORT=    bsd/i386 bsd/dev/i386 kernserv/i386 mach/i386
+MACHINE_LCLEXPORT= bsd/i386 bsd/dev/i386 mach/i386 kernserv/i386 machdep/i386 \
+			machdep/i386/pc_support driverkit/i386
+MACHINE_MIGDIRS=   mach/i386
+
+i386_installhdrs: features DSTROOT
+	echo features = $(FEATURES)
+	$(MKDIRS) ${DSTROOT}${LCLDIR}/machdep/i386
+	install -c -m 444 ${FEATURES}				\
+		${DSTROOT}${LCLDIR}/machdep/i386
+
+MACHINE_TAG_DIRS=							\
+	bsd/i386 bsd/dev/i386 machdep/i386 bsd/if/i386 kernserv/i386 	\
+	mach/i386
+
+#
+# Local clean rule
+#
+MACHINE_CLEAN=i386_clean
+
+i386_clean:
+	rm -rf fpsp
+
+cleanup: ALWAYS
+	for i in ${TAGDIRS}; \
+	do \
+		(cd $(SOURCE_DIR)/$$i; rm -f *.CKP *.OLD *~ *.old core); \
+	done
+
+rebuild: clean cleanup features tags all boot
+	@echo Don't forget to do a make install
+
+######################################################################
+#END	Machine dependent Makefile fragment for NeXT i386
+######################################################################

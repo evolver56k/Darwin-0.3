@@ -1,0 +1,6 @@
+Package: project-makefiles
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 118.2.1
+Description: Legacy NeXT ProjectBuilder makefiles (obsolete)
+Build-Depends: build-base, objc4-hdrs

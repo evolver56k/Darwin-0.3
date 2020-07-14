@@ -1,0 +1,6 @@
+Package: boot
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 64
+Description: Kernel booter
+Build-Depends: build-base, adv-cmds, gawk, drivertools, libc

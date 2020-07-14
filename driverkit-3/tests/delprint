@@ -1,0 +1,3 @@
+#!/bin/csh -f
+# delete printer driver state from Config
+./configutil t ffff0000 30000

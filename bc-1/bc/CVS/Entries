@@ -1,0 +1,24 @@
+/AUTHORS/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/COPYING/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/ChangeLog/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/INSTALL/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/Makefile.am/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/Makefile.in/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/NEWS/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/README/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/acconfig.h/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/aclocal.m4/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/config.h.in/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/configure/1.1.1.1/Thu Apr 15 17:49:57 1999//Tbc-1
+/configure.in/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/install-sh/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/missing/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/mkinstalldirs/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/stamp-h.in/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+D/Examples////
+D/Test////
+D/bc////
+D/dc////
+D/doc////
+D/h////
+D/lib////

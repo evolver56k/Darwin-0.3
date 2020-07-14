@@ -1,0 +1,19 @@
+/Makefile/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/Makefile.dist/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/Makefile.preamble/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/PB.project/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/ctl.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/ctl_transact.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/display.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/get_addrs.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/get_names.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/init_disp.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/invite.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/io.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/look_up.c/1.1.1.1/Sun May  2 03:58:29 1999//Tnetwork_cmds-1
+/msgs.c/1.1.1.1/Sun May  2 03:58:30 1999//Tnetwork_cmds-1
+/talk.1/1.1.1.1/Sun May  2 03:58:30 1999//Tnetwork_cmds-1
+/talk.c/1.1.1.1/Sun May  2 03:58:30 1999//Tnetwork_cmds-1
+/talk.h/1.1.1.1/Sun May  2 03:58:30 1999//Tnetwork_cmds-1
+/talk_ctl.h/1.1.1.1/Sun May  2 03:58:30 1999//Tnetwork_cmds-1
+D

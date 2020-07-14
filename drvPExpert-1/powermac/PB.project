@@ -1,0 +1,48 @@
+{
+    DYNAMIC_CODE_GEN = NO; 
+    FILESTABLE = {
+        HEADERSEARCH = ("$(KERNEL_HEADERS)/machdep"); 
+        H_FILES = (
+            boot.h, 
+            interrupts.h, 
+            powermac_exceptions.h, 
+            powermac_gestalt.h, 
+            powermac.h, 
+            proc_reg.h
+            IOProperties.h
+        ); 
+        OTHER_LINKED = (
+            backsideL2.c, 
+            bat_init.c, 
+            bootargs.c, 
+            debug_misc.c, 
+            identify_machine.c, 
+            interrupt.c, 
+            powermac_init.c, 
+            powermac_vm_init.c, 
+            rtclock.c, 
+            clock_speed.c, 
+            clock_speed_asm.s
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, Load_Commands.sect, README); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (chips, families); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-Wno-format -DDEBUG -DDRIVER_PRIVATE"; 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = powermac; 
+    PROJECTTYPE = "Kernel Server"; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

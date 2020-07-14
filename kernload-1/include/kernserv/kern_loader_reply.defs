@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * "Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.0 (the 'License').  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License."
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+/* 
+ * Copyright (c) 1989 NeXT, Inc.
+ *
+ * HISTORY
+ *  7-July-89  Gregg Kellogg (gk) at NeXT
+ *	Created.
+ *
+ */
+
+/*
+ * interface for kern_loader to user communication.
+ */
+subsystem kern_loader_reply 300;
+
+#include <mach/std_types.defs>
+
+type printf_data_t = ^ array[] of char;
+
+import <kernserv/kern_loader_types.h>;
+
+userprefix kern_loader_reply_;
+
+waittime 1000;
+
+/*
+ * Return a string containing desired information.  The level (from
+ * syslog levels) is also returned.
+ */
+simpleroutine string (
+		reply_port	: port_t;
+		string		: printf_data_t;
+		level		: int);
+
+simpleroutine ping (
+		reply_port	: port_t;
+		id		: int);
+
+simpleroutine log_data (
+		reply_port	: port_t;
+		log_data	: printf_data_t);
+

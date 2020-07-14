@@ -1,0 +1,68 @@
+#!/bin/sh
+
+##
+# Application Services
+##
+
+. /etc/rc.common
+
+##
+# Desktop Database
+##
+
+if [ "${ARCH}" = "ppc" ]; then
+  ConsoleMessage "Starting Desktop Database"
+
+  /System/Library/CoreServices/DesktopDB
+fi
+
+##
+# Start Program to Program Communication Daemon for AppleScript
+##
+
+if [ "${ARCH}" = "ppc" ]; then
+    ConsoleMessage "Starting AppleScript"
+
+    ppcd &
+fi
+
+##
+# Pasteboard server
+##
+
+ConsoleMessage "Starting pasteboard server"
+
+/System/Library/CoreServices/pbs
+
+##
+# InputManager startup procedure
+##
+
+if [ -d /System/Library/InputManagers ]; then
+    ConsoleMessage "Starting input servers"
+
+    cd /System/Library/InputManagers
+
+    for i in *; do
+	if [ -d "${i}" ]; then
+	    if [ "${i}" = "Resources" ]; then continue; fi
+
+	    rcfile=$(basename "${i}")
+
+	    if [ -f "${i}/${rcfile}.rc" ]; then
+		sh "${i}/${rcfile}.rc" $1
+	    fi
+	fi
+    done
+fi
+
+##
+# Start printing services
+##
+
+ConsoleMessage "Starting printing"
+
+rm -f /dev/printer
+
+lpd &
+npd &

@@ -1,0 +1,287 @@
+##
+# Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+#
+# @APPLE_LICENSE_HEADER_START@
+# 
+# Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+# Reserved.  This file contains Original Code and/or Modifications of
+# Original Code as defined in and that are subject to the Apple Public
+# Source License Version 1.1 (the "License").  You may not use this file
+# except in compliance with the License.  Please obtain a copy of the
+# License at http://www.apple.com/publicsource and read it before using
+# this file.
+# 
+# The Original Code and all software distributed under the License are
+# distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+# INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+# License for the specific language governing rights and limitations
+# under the License.
+# 
+# @APPLE_LICENSE_HEADER_END@
+##
+
+#
+# Makefile include file for simple commands
+# Copyright NeXT, Inc.  1992.  All rights reserved.
+#
+
+#
+# TOOLS
+#
+MD= md
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+
+#
+# Default type(s) to build
+#
+TYPES= STD
+
+#
+# Sources for tags
+#
+SRCS= $(HFILES) $(YFILES) $(CFILES) $(SFILES) $(EXTRA_SRCS)
+
+#
+# Build list of object modules from source files
+# Trick is to strip off any path prefix
+#
+XCOBJS= $(CFILES:.c=.o)
+COBJS= $(XCOBJS:t)
+
+XYOBJS= $(YFILES:.y=.o)
+YOBJS= $(XYOBJS:t)
+
+XLOBJS= $(LFILES:.l=.o)
+LOBJS= $(XLOBJS:t)
+
+XSOBJS= $(SFILES:.s=.o)
+SOBJS= $(XSOBJS:t)
+
+#
+# Make the first SOBJ be the first module loaded.  Simplifies
+# getting crt0.s in the right place for programs that need it first.
+#
+OBJS= $(SOBJS) $(YOBJS) $(LOBJS) $(COBJS) $(EXTRA_OBJS)
+
+#
+# This makefile actually does builds in $(OBJROOT).  Set-up vpath so
+# sources may be found.
+#
+STD_VPATH=$(SRCDIR)
+PROF_VPATH=$(SRCDIR)
+DBG_VPATH=$(SRCDIR)
+
+#
+# Options that we want to force.  These are applied to all makes
+# of the appropriate type
+#
+STD_CFORCE=
+PROF_CFORCE=
+DBG_CFORCE=
+
+STD_LDFORCE=
+PROF_LDFORCE=
+DBG_LDFORCE=
+
+#
+# *_NAME's are used by vers_string so that it's apparent which
+# binary type you have (debug, prof, etc) by looking at the vers_string
+#
+STD_NAME=
+PROF_NAME=_PROF
+DBG_NAME=_DBG
+
+#
+# These commands are executed whenever make exits, they clean-up
+# any crud left about.
+#
+STD_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+PROF_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+DBG_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+
+#
+# We have to tell the compiler what type of code to generate
+#
+
+CODE_GEN_STYLE = STATIC
+#
+# Indirection used to get appropriate options for the TYPE of build
+# being done.
+#
+
+STATIC_COPTS = -static
+STATIC_LDOPTS = ${STATIC_COPTS}
+
+DYNAMIC_COPTS = -dynamic -fno-common
+DYNAMIC_LDOPTS = ${DYNAMIC_COPTS}
+
+COPTS= ${$(TYPE)_CFORCE} ${$(TYPE)_COPTS} ${${CODE_GEN_STYLE}_COPTS}
+LDOPTS= ${$(TYPE)_LDFORCE} ${$(TYPE)_LDOPTS} ${${CODE_GEN_STYLE}_LDOPTS}
+XLIBS= ${$(TYPE)_LIBS}
+
+NAME=${$(TYPE)_NAME}
+VPATH=${$(TYPE)_VPATH}
+EXIT=${$(TYPE)_EXIT}
+
+#
+# This is completely untested!
+#
+CMD_FLAGS= "RC_FLAGS=$(RC_FLAGS)" "RC_ARCH=$(RC_ARCH)"
+
+#
+# Cause .c file to be built from yacc file
+#
+XYFILES= $(YFILES:t)
+$(XYFILES:.y=.c): $$(@:.c=.y)
+
+#
+# Indicate that y.tab.h depends on yacc source
+#
+y.tab.h:	$(YFILES)
+
+#
+# Cause .c file to be built from lex file
+#
+XLFILES= $(LFILES:t)
+$(XLFILES:.l=.c): $$(@:.c=.l)
+
+#
+# CCFLAGS are for command line use
+# e.g. make CCFLAGS="-I/foo/bar/include"
+#
+# RC_CFLAGS are for Release Control use.
+#
+.c.o:
+	$(CC) -MD $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) -c -o $@ $<
+	$(MD) -d -u Makedep $*.d
+
+.s.o:
+	$(CC) -MD $(SFLAGS) $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) \
+	  -c -o $@ $<
+	$(MD) -d -u Makedep $*.d
+
+#
+# Standard clean-up on exit
+#
+.EXIT:
+	-$(EXIT)
+
+#
+# Standard targets
+# All executed in "source" directory
+#
+.DEFTARGET:	all
+
+all:	$(TYPES)
+
+remake:	clean all
+
+#
+# Initial rule for handling:
+#	STD (release)
+#	PROF (profiling)
+#	DBG (debugging)
+# builds.
+#
+# "make DBG" builds a debugging version.  Objects are placed
+# DBG_OBJS.
+#
+# Main trick here is to convert (possibly relative) pathnames to
+# absolute paths via pwd.  Then reinvoke make with appropriate
+# macros defined.
+#
+STD PROF DBG:	$(SYMROOT)/$(PROGRAM)_$$@_OBJS \
+ $(OBJROOT)/$(PROGRAM)_$$@_OBJS ALWAYS
+	@echo cd $(OBJROOT)/$(PROGRAM)_$@_OBJS
+	@SRCDIR=`pwd`; \
+	cd $(SYMROOT); SYMDIR=`pwd`; cd $$SRCDIR; \
+	SRCDIR=`relpath -d $(VERSDIR) $(OBJROOT)/$(PROGRAM)_$@_OBJS $$SRCDIR`;\
+	SYMDIR=`relpath -d $(VERSDIR) $(OBJROOT)/$(PROGRAM)_$@_OBJS $$SYMDIR`;\
+	cd $(OBJROOT)/$(PROGRAM)_$@_OBJS; \
+	$(MAKE) -f $$SRCDIR/Makefile TYPE="$@" \
+	 SRCDIR=$$SRCDIR SYMROOT=$$SYMDIR OBJROOT=.. $(CMD_FLAGS) \
+	 $$SYMDIR/$(PROGRAM)_$@_OBJS/$(PROGRAM)
+
+install: DSTROOT $(DSTDIRS) STD install_extra installhdrs ALWAYS
+	install $(IFLAGS) \
+		$(SYMROOT)/$(PROGRAM)_STD_OBJS/$(PROGRAM) \
+		$(DSTROOT)$(BINDIR)/$(PROGRAM)
+
+reinstall: clean install
+
+clean:	ALWAYS
+	-$(RM) -rf $(OBJROOT)/$(PROGRAM)_*_OBJS
+	@-if [ $(SYMROOT) != $(OBJROOT) ]; \
+	then \
+		echo $(RM) -rf $(SYMROOT)/$(PROGRAM)_*_OBJS; \
+		$(RM) -rf $(SYMROOT)/$(PROGRAM)_*_OBJS; \
+	fi
+
+clobber: clean
+	-$(RM) $(RMFLAGS) $(GARBAGE)
+
+tags:	ALWAYS tags_link
+	$(RM) -f TAGS tags
+	etags -et $(SRCS)
+	ctags -w $(SRCS)
+
+#
+# Internal targets
+# All targets below are executed in "source" directory
+#
+
+DSTROOT OBJROOT: ALWAYS
+	@if [ -n "$($@)" ]; \
+	then \
+		exit 0; \
+	else \
+		echo Must define $@; \
+		exit 1; \
+	fi
+
+$(DSTDIRS):
+	$(MKDIRS) $@
+
+$(OBJROOT)/$(PROGRAM)_DBG_OBJS \
+ $(OBJROOT)/$(PROGRAM)_PROF_OBJS \
+ $(OBJROOT)/$(PROGRAM)_STD_OBJS \
+ $(SYMROOT)/$(PROGRAM)_DBG_OBJS \
+ $(SYMROOT)/$(PROGRAM)_PROF_OBJS \
+ $(SYMROOT)/$(PROGRAM)_STD_OBJS:
+	$(MKDIRS) $@
+
+#
+# "Internal" target to building the command
+# Executed in $(OBJROOT)/$(PROGRAM)_$(TYPE)_OBJS
+#
+# This makefile when invoked in the OBJROOT will have the following
+# macros defined:
+#	SRCDIR -- path to the directory containing this Makefile
+#	SYMROOT -- path to the directory that is to contain the result
+#		of this build
+#
+$(SYMROOT)/$(PROGRAM)_$(TYPE)_OBJS/$(PROGRAM): \
+ $(OBJS) vers.o $(SRCDIR)/Makefile
+	$(CC) $(LDFLAGS) $(LDOPTS) $(RC_CFLAGS) \
+		-o $@ $(OBJS) vers.o $(XLIBS) $(LIBS)
+	
+vers.c: $(OBJS)
+	@$(RM) -f $@
+	vers_string -c $(PROGRAM)$(NAME) > $@
+
+ALWAYS:
+
+#
+# This must be designed to work in the context of
+# $(OBJROOT)/$(PROGRAM)_$(TYPE)_OBJS.  Since include
+# files are found relative to the Makefile, this should
+# do the trick.
+#
+-include $(OBJROOT)/$(PROGRAM)_$(TYPE)_OBJS/Makedep

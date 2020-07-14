@@ -1,0 +1,14 @@
+{
+    FILESTABLE = {
+	C_FILES = (); 
+	H_FILES = (telnet.h); 
+	M_FILES = (); 
+	OTHER_LINKED = (); 
+	OTHER_SOURCES = (Makefile.preamble, makefile); 
+	SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    PROJECTNAME = arpa; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.0; 
+}

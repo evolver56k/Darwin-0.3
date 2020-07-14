@@ -1,0 +1,11 @@
+/APPLE_LICENSE/1.1.1.1/Sun May  2 03:14:09 1999//Thfs-1
+/Makefile/1.2/Thu May  6 05:26:43 1999//Thfs-1
+/Makefile.postamble/1.1.1.1/Sun May  2 03:14:09 1999//Thfs-1
+/Makefile.preamble/1.1.1.1/Sun May  2 03:14:09 1999//Thfs-1
+/PB.project/1.2/Thu May  6 05:26:43 1999//Thfs-1
+D/dpkg////
+D/hfs_glue////
+D/hfs_mount////
+D/hfs_newfs////
+D/hfs_test////
+D/hfs_util////

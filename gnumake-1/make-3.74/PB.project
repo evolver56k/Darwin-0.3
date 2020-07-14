@@ -1,0 +1,64 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        H_FILES = (
+            job.h, 
+            file.h, 
+            make.h, 
+            rule.h, 
+            variable.h, 
+            commands.h, 
+            getopt.h, 
+            signame.h, 
+            acconfig.h, 
+            dep.h, 
+            nt.h
+        ); 
+        OTHER_LINKED = (
+            alloca.c, 
+            ar.c, 
+            arscan.c, 
+            commands.c, 
+            default.c, 
+            dir.c, 
+            expand.c, 
+            file.c, 
+            function.c, 
+            getloadavg.c, 
+            getopt.c, 
+            getopt1.c, 
+            implicit.c, 
+            job.c, 
+            main.c, 
+            misc.c, 
+            next.c, 
+            read.c, 
+            readdir.c, 
+            remake.c, 
+            "remote-cstms.c", 
+            "remote-stub.c", 
+            rule.c, 
+            signame.c, 
+            variable.c, 
+            version.c, 
+            vpath.c, 
+            winfsinfo.c
+        ); 
+        OTHER_SOURCES = (configure, configure.in, Makefile.in, "nt-configure"); 
+        SUBPROJECTS = (glob); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_MAINNIB = "make-3.74"; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_MAINNIB = "make-3.74"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = "make-3.74"; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_MAINNIB = "make-3.74"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

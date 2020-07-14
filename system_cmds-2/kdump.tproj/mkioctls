@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# gvdl@NeXT 1 Aug 1995:  Moved include directory
+#    from /usr/include to /usr/include/bsd
+base_include_directory=/NextDeveloper/Headers/bsd
+
+awk '
+BEGIN {
+	print "#include <sys/param.h>"
+	print "#include <sys/socket.h>"
+	print "#include <sys/socketvar.h>"
+	print "#include <net/route.h>"
+	print "#include <net/if.h>"
+	print "#include <sys/termios.h>"
+	print "#define COMPAT_43"
+	print "#include <sys/ioctl.h>"
+	print ""
+	print "char *"
+	print "ioctlname(val)"
+	print "{"
+	print ""
+}
+
+/^#[ 	]*define[ 	]*(TIO|FIO|SIO|OSIO)[A-Z]*[ 	]*_IO/ {
+	
+	# find where the name starts
+	for (i = 1; i <= NF; i++)
+		if ($i ~ /define/)
+			break;
+	++i;
+	# 
+	printf("\tif (val ==  %s)\n\t\treturn(\"%s\");\n", $i, $i);
+
+}
+END {
+	print "\n\treturn(NULL);"
+	print "}"
+}
+' $base_include_directory/sys/ioctl.h $base_include_directory/sys/ioctl_compat.h

@@ -1,0 +1,30 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/bootstrap.defs/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/compat.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/exc.defs/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/exc_catcher.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/exception.c/1.1.1.1/Wed Apr 14 23:19:14 1999//TLibc-1
+/mach.defs/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_data.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_error.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_host.defs/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_init.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_msg.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_msg_receive.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_msg_send.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_port.defs/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mach_traps.s/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mig_allocate.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mig_deallocate.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mig_reply_setup.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/mig_strncpy.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/msg.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/netname.defs/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/sbrk.c/1.1.1.1/Wed Apr 14 23:19:15 1999//TLibc-1
+/slot_name.c/1.1.1.1/Wed Apr 14 23:19:16 1999//TLibc-1
+/ts_convert.c/1.1.1.1/Wed Apr 14 23:19:16 1999//TLibc-1
+D/headers.subproj////
+D/servers.subproj////

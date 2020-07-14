@@ -1,0 +1,7 @@
+Package: bsdmake
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: NetBSD Foundation
+Version: 1997.11.10
+URL: http://www.netbsd.org/
+Description: BSD build driver ("make")
+Build-Depends: build-base

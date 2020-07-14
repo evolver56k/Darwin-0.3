@@ -1,0 +1,103 @@
+Internal autoconfig
+
+* kern_dev_t - a linked list. Starts empty. Add to it on detection
+  of valid dev_type. Never free. Why should we? Probably don't need
+  ref_count!
+
+* need configurable table mapping dev_types to classes, with common
+  probe: function.
+  
+  indirectDevices are the classes which need to be probed with the
+  the id of the device. In internalDevMap, this is a null-terminated
+  array of strings.
+  	
+	eg	className = "SCSIController"
+		indirectDevices = "SCSIDisk", "SCSITape", 
+			"SCSIGeneric", NULL.
+			
+  struct internalDevMap {
+  	const char	*className;
+	const char	*indirectDevices[];
+	slot_id_t 	slot_id;
+	dev_id_t 	dev_id;
+  }
+  
+* Need need a way to probe 'devices' which don't need hardware, like using
+  a list of internalDevMaps with invalid slot/dev ids.
+  
+  struct pseudoDevice {
+  	const char 	*className;
+	const char	*indirectDevices[];
+  }
+  
+/*
+ * This routine runs as a thread in IOTask so that it can allocate a
+ * device_master port which can be object_copyin'd during 
+ * register_device_master. Then, all of the drivers in IOTask can share 
+ * this port.
+ */
+autoconfigInternal() {
+    init kern_dev_list;
+    allocate device_master, register via register_device_master();
+    
+    /*
+     * Create a kern_dev_t for each piece of hardware, including native
+     * devices and NextBus devices.
+     */
+    for each native dev_number {
+	if valid dev_type {
+	    create a kern_dev_t for it {
+		init dev_number, phys params;
+		all else = null/empty;
+	    }
+	}
+	add to kern_dev_list;
+    }
+    
+    for each NextBus board {
+        if slot device
+	    create a kern_dev_t for it;
+	else
+	    for each valid dev_type
+	    	create a kern_dev_t for it;
+    }
+    
+    /*
+     * Start up each device's driver.
+     */
+    for each elt in kern_dev_list {
+    	if an internalDevMap exists for this slot/dev {
+	    if [className probe:dev_number deviceMaster:masterPort] {
+	    	mark kern_dev inUse;  // should be done by driver via
+				      // dev_port_create()
+		foreach indirectDevice {
+		    [indirectDevice probe:directDevice];
+		}
+	    }
+	}
+    }
+    
+    /*
+     * Start up pseudoDevices.
+     */
+    for each elt in pseudoDevice array {
+	if [className probe] {
+	    foreach indirectDevice {
+		[indirectDevice probe:directDevice];
+	    }
+	}
+    }
+}
+
+Questions
+
+* how to pass device_master port to internal drivers? What ports does a 
+  kernel thread have access to when it starts?
+
+* Are driver threads in the kernel task, or threads in a separate task?
+
+* Do the calls to the dma module have to be in a thread, instead of in
+  probe: (in kernel's autoconf context)? Does mach_user_internal work for
+  threads in kernel task? Should IOThreadFork() fork threads off of the
+  kernel task, or a separate one?
+  

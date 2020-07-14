@@ -1,0 +1,6 @@
+# Termination
+
+CALL		stub_terminate		0
+CALL		stub_terminate		1
+
+

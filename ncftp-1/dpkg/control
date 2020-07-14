@@ -1,0 +1,7 @@
+Package: ncftp
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Mike Gleason
+Version: 2.4.3
+URL: ftp://ftp.ncftp.com/pub/ncftp/
+Description: Better ftp client
+Build-Depends: build-base

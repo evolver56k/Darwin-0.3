@@ -1,0 +1,168 @@
+<html><head>
+<title>Debian packaging manual - Binary packages</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 2<br>
+Binary packages
+</h1>
+
+The binary package has two main sections.  The first part consists of
+various control information files and scripts used by <kbd>dpkg</kbd> when
+installing and removing.  See <A href="#s-controlarea">Package control information files, section 2.2</A>.<P>
+
+The second part is an archive containing the files and directories to
+be installed. <P>
+
+In the future binary packages may also contain other components, such
+as checksums and digital signatures. The format for the archive is
+described in full in the <code>deb(5)</code> manpage.
+
+<hr>
+<h2><A name="s-bincreating">
+2.1 Creating package files - <kbd>dpkg-deb</kbd>
+</A></h2>
+
+All manipulation of binary package files is done by <kbd>dpkg-deb</kbd>;
+it's the only program that has knowledge of the format.
+(<kbd>dpkg-deb</kbd> may be invoked by calling <kbd>dpkg</kbd>, as <kbd>dpkg</kbd> will
+spot that the options requested are appropriate to <kbd>dpkg-deb</kbd> and
+invoke that instead with the same arguments.)<P>
+
+In order to create a binary package you must make a directory tree
+which contains all the files and directories you want to have in the
+filesystem data part of the package.  In Debian-format source packages
+this directory is usually <code>debian/tmp</code>, relative to the top of
+the package's source tree.<P>
+
+They should have the locations (relative to the root of the directory
+tree you're constructing) ownerships and permissions which you want
+them to have on the system when they are installed.<P>
+
+With current versions of <kbd>dpkg</kbd> the uid/username and gid/groupname
+mappings for the users and groups being used should be the same on the
+system where the package is built and the one where it is installed.<P>
+
+You need to add one special directory to the root of the miniature
+filesystem tree you're creating: <kbd>DEBIAN</kbd>.  It should contain the
+control information files, notably the binary package control file
+(see <A href="#s-controlfile">The main control information file: <code>control</code>, section 2.3</A>).<P>
+
+The <kbd>DEBIAN</kbd> directory will not appear in the filesystem archive of
+the package, and so won't be installed by <kbd>dpkg</kbd> when the package
+is installed.<P>
+
+When you've prepared the package, you should invoke:
+<pre>dpkg --build <var>directory</var></pre><P>
+
+This will build the package in <code></code><var>directory</var><code>.deb</code>.
+(<kbd>dpkg</kbd> knows that <code>--build</code> is a <kbd>dpkg-deb</kbd> option, so it
+invokes <kbd>dpkg-deb</kbd> with the same arguments to build the package.)<P>
+
+See the manpage <code>dpkg-deb(8)</code> for details of how
+to examine the contents of this newly-created file.  You may find the
+output of following commands enlightening:
+<pre>dpkg-deb --info <var>filename</var>.deb
+dpkg-deb --contents <var>filename</var>.deb
+dpkg --contents <var>filename</var>.deb</pre>
+To view the copyright file for a package you could use this command:
+<pre>dpkg --fsys-tarfile <var>filename</var>.deb | tar xof usr/doc/<var>\*</var>copyright | less</pre>
+<hr>
+<h2><A name="s-controlarea">
+2.2 Package control information files
+</A></h2>
+
+The control information portion of a binary package is a collection of
+files with names known to <kbd>dpkg</kbd>.  It will treat the contents of
+these files specially - some of them contain information used by
+<kbd>dpkg</kbd> when installing or removing the package; others are scripts
+which the package maintainer wants <kbd>dpkg</kbd> to run.<P>
+
+It is possible to put other files in the package control area, but
+this is not generally a good idea (though they will largely be
+ignored).<P>
+
+Here is a brief list of the control info files supported by <kbd>dpkg</kbd>
+and a summary of what they're used for.<P>
+
+<dl>
+<dt><code>control</code><dd>This is the key description file used by <kbd>dpkg</kbd>.  It specifies the
+package's name and version, gives its description for the user, states
+its relationships with other packages, and so forth.
+See <A href="#s-controlfile">The main control information file: <code>control</code>, section 2.3</A>.<P>
+
+It is usually generated automatically from information in the source
+package by the <kbd>dpkg-gencontrol</kbd> program, and with assistance
+from <kbd>dpkg-shlibdeps</kbd>.  See <A href="ch-sourcepkg.html#s-sourcetools">Tools for processing source packages, section 3.1</A>.
+<p><dt><code>postinst</code>, <code>preinst</code>, <code>postrm</code>, <code>prerm</code><dd>These are exectuable files (usually scripts) which <kbd>dpkg</kbd> runs
+during installation, upgrade and removal of packages.  They allow the
+package to deal with matters which are particular to that package or
+require more complicated processing than that provided by <kbd>dpkg</kbd>.
+Details of when and how they are called are in
+<A href="ch-maintainerscripts.html">Package maintainer scripts
+and installation procedure, chapter 6</A>.<P>
+
+It is very important to make these scripts idempotent.<A href="footnotes.html#2" name="fr2">[2]</A>  This is so that if an error occurs, the user
+interrupts <kbd>dpkg</kbd> or some other unforeseen circumstance happens you
+don't leave the user with a badly-broken package.<P>
+
+The maintainer scripts are guaranteed to run with a controlling
+terminal and can interact with the user.  If they need to prompt for
+passwords, do full-screen interaction or something similar you should
+do these things to and from <code>/dev/tty</code>, since <kbd>dpkg</kbd> will at
+some point redirect scripts' standard input and output so that it can
+log the installation process.  Likewise, because these scripts may be
+executed with standard output redirected into a pipe for logging
+purposes, Perl scripts should set unbuffered output by setting
+<code>$|=1</code> so that the output is printed immediately rather than being
+buffered.<P>
+
+Each script should return a zero exit status for success, or a nonzero
+one for failure.
+<p><dt><code>conffiles</code><dd>This file contains a list of configuration files which are to be
+handled automatically by <kbd>dpkg</kbd> (see <A href="ch-conffiles.html">Configuration file handling, chapter 9</A>).  Note
+that not necessarily every configuration file should be listed here.
+<p><dt><code>shlibs</code><dd>This file contains a list of the shared libraries supplied by the
+package, with dependency details for each.  This is used by
+<kbd>dpkg-shlibdeps</kbd> when it determines what dependencies are
+required in a package control file. The <code>shlibs</code> file format is 
+described on <A href="ch-sharedlibs.html#s-shlibs">The <code>shlibs</code> File Format, section 12.1</A>.<P>
+<p></dl>
+
+<hr>
+<h2><A name="s-controlfile">
+2.3 The main control information file: <code>control</code>
+</A></h2>
+
+The most important control information file used by <kbd>dpkg</kbd> when it
+installs a package is <code>control</code>.  It contains all the package's
+`vital statistics'.<P>
+
+The binary package control files of packages built from Debian sources
+are made by a special tool, <kbd>dpkg-gencontrol</kbd>, which reads
+<code>debian/control</code> and <code>debian/changelog</code> to find the
+information it needs.  See <A href="ch-sourcepkg.html">Source packages, chapter 3</A> for more details.<P>
+
+The fields in binary package control files are:
+<ul compact>
+<li><A href="ch-controlfields.html#s-f-Package"><code>Package</code></A> (mandatory)<li><A href="ch-versions.html"><code>Version</code></A> (mandatory)
+<li><A href="ch-controlfields.html#s-f-Architecture"><code>Architecture</code></A>
+(mandatory)<A href="footnotes.html#3" name="fr3">[3]</A>
+<li><A href="ch-relationships.html"><code>Depends</code>, <code>Provides</code> et al.</A><li><A href="ch-controlfields.html#s-f-Essential"><code>Essential</code></A><li><A href="ch-controlfields.html#s-f-Maintainer"><code>Maintainer</code></A><li><A href="ch-controlfields.html#s-f-classification"><code>Section</code>, <code>Priority</code></A><li><A href="ch-controlfields.html#s-f-Source"><code>Source</code></A><li><A href="ch-descriptions.html"><code>Description</code></A><li><A href="ch-controlfields.html#s-f-Installed-Size"><code>Installed-Size</code></A>
+</ul>
+<P>
+
+A description of the syntax of control files and the purpose of these
+fields is available in <A href="ch-controlfields.html">Control files and their fields, chapter 4</A>.
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-sourcepkg.html">next</A>; <A href="ch-scope.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

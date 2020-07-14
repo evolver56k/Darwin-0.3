@@ -1,0 +1,24 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        CLASSES = (); 
+        FRAMEWORKS = (); 
+        H_FILES = (extern.h, stty.h); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (cchar.c, gfmt.c, key.c, modes.c, print.c, stty.c, util.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.dist, stty.1); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /bin; 
+    NEXTSTEP_MAINNIB = stty; 
+    PDO_UNIX_INSTALLDIR = /bin; 
+    PDO_UNIX_MAINNIB = stty; 
+    PROJECTNAME = stty; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /bin; 
+    WINDOWS_MAINNIB = stty; 
+}

@@ -1,0 +1,1566 @@
+{\rtf0\ansi{\fonttbl\f0\froman Times-Roman;\f1\fswiss Helvetica;\f2\fmodern Courier;
+}
+{\colortbl;\red255\green255\blue255;}
+\paperw12260\paperh15340
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\f0\fs24 \cf0 Release 5.4 Copyright 
+\f1 ã
+\f0 1999 by Apple Computer, Inc.  All Rights Reserved.\
+\pard\ql\qnatural
+
+\f1\fs30 \cf0 \
+\
+\pard\tx0\tx2520\tx2880\tx3240\li1440\ql\qnatural
+
+\f0\fs48 \cf0 Apple Need-To-Know Confidential
+\f1\fs30 \
+\pard\ql\qnatural
+\cf0 \
+\pard\li1440\ql\qnatural
+
+\f0\fs48 \cf0 Preliminary 5.4 Release Notes (cctools-295): \
+Compiler Tools for MacOS X PR2\
+
+\fs28 \
+\pard\tx1800\li1440\ql\qnatural
+\cf0 This file contains release notes for the 5.4 release of the Compiler Tools for MacOS X.\
+\pard\li1440\ql\qnatural
+\cf0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 This file contains information about the following topics:\
+
+\b \
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The MacOS X Mach-O GNU-based assemblers\
+·	The MacOS X Mach-O static link editor\
+·	The MacOS X Mach-O dynamic link editor\
+·	Mach-O object tools (
+\i nm
+\i0 , 
+\i otool
+\i0 , and so on)\
+\
+\pard\ql\qnatural
+
+\b\fs36 \cf0 Notes Specific to Release 5.4 (MacOS X PR2)\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-293 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The sources have had the Darwin copyrights added to them.\
+·	A bug fix was maded to the new API _dyld_image_containing_address() that was added for cctools-294. The routine would generally return the wrong for anything loaded with  NSLinkModule() or any non-prebound shared library.  The values used for checking the address ranges effectively had the value of the vmslide (the difference from the staticly linked address and the address loaded) added twice.  So if the vmslide were zero, as in the case with prebound libraries things it would work but tend to fail otherwise (except for the excutable which worked).\
+\
+\pard\ql\qnatural
+
+\b\fs36 \cf0 Notes Specific to Release 5.3 (MacOS X PR1)\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 New Features\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The NSLinkModule() API now can create private modules and the new API NSLookupSymbolInModule() allows symbols to be looked up in a private module.  To do this the interface to NSLinkModule() has change in a compatible way from:\
+	    extern NSModule NSLinkModule(\
+		NSObjectFileImage objectFileImage, \
+		const char *moduleName,\
+		enum bool bindNow);\
+	to:\
+	    extern NSModule NSLinkModule(\
+		NSObjectFileImage objectFileImage, \
+		const char *moduleName,\
+		unsigned long options);\
+	with the options as follows:\
+	    #define NSLINKMODULE_OPTION_NONE 0x0\
+	    #define NSLINKMODULE_OPTION_BINDNOW 0x1\
+	    #define NSLINKMODULE_OPTION_PRIVATE 0x2\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 	The first two are the same as bindNow with a value of FALSE and TRUE.  The private options is what is used to load a private module.  The API for getting to the symbols of a NSModule that has been privately linked is:\
+	    extern NSSymbol NSLookupSymbolInModule(\
+		NSModule module,\
+		const char *symbolName);\
+	Then to get the address of the returned NSSymbol, the existing NSAddressOfSymbol() API can be used.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+·	The NSUnLinkModule() API is now implemented with enough functionality to make Apache work (Radar bug #2262020).  This has been confirmed by Wilfredo Sanchez the owner of the Apache project.  It currently has the following limitations (to be fixed in future releases):\
+\pard\tx1800\tx2380\tx5700\tx6900\li2520\fi-1080\ql\qnatural
+\cf0 		· only works for plugins (can only be called on modules that were returned by NSLinkModule).\
+		· C++ plugins that have static destructor can't be unloaded.  The program will crash in atexit(3) when the unlinked destructor is attempted to be called.\
+		· Objective-C plugins should not be unloaded.  The Objective-C runtime has not been updated to know about unloading and the result is very likely to crash the program.\
+		· The debugger has not been update to know about unloading and trying to debug a program that unloads it's plugins may confuse or crash the debugger.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 	The interface to NSUnLinkModule has change in a compatible way from:\
+	   extern enum bool NSUnLinkModule(\
+		NSModule module,\
+		enum bool keepMemoryMapped);\
+	to:\
+	    extern enum bool NSUnLinkModule(\
+		NSModule module,\
+		int options);\
+	where the options are:\
+\
+	#define NSUNLINKMODULE_OPTION_NONE 0x0\
+	#define NSUNLINKMODULE_OPTION_KEEP_MEMORY_MAPPED 0x1\
+	#define NSUNLINKMODULE_OPTION_RESET_LAZY_REFERENCES 0x2\
+\
+	The first two are the same as keepMemoryMapped with a value of FALSE and TRUE.  The reset lazy references allows unloaded modules with only call sites to undefined functions (direct calls not calls through pointers) to be allowed when unloading and not causing an undefined symbol error.  Then if a subsequent module is loaded that defines symbols that were previously undefined, the call sites will then use the new definitions.  This is currently only implemented for PowerPC.  For intel it prints a message and exits even if the symbol gets redefined.  This will be fixed for intel in a future release.\
+\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 ·	Support for module termination functions has been added for plugins (only).  Currently the compiler pragma CALL_ON_UNLOAD (as well as CALL_ON_LOAD) is not yet implemented to use this feature as intended.  A work around can be done in place of having the pragma:\
+		 void my_term(void)\
+            \{\
+                    /* do module termination */\
+            \}\
+		/* #pragma CALL_ON_UNLOAD my_term */\
+            #pragma SECTION data ".section __DATA, __mod_term_func, mod_init_funcs"\
+            static void (*dummy)(void) = my_term;\
+            #pragma SECTION data\
+\
+·	The cctools-294 project has an implementation of the FreeBSD dlopen() interfaces.  The header file dlfcn.h and the library libdl.a are NOT installed or built by the project by default.  This is to avoid automatic configure scripts of projects from using this stuff in release builds before it can be tested by project owners.  If you are a project owner that wants to use the FreeBSD dlopen() interfaces please see Kevin Enderby, enderby@apple.com (408) 974-3618, and he'll get you the header file and library to test your project with (you will also need cctools-294 installed).  Kevin will be testing all known projects in MacOS X Server that can use these interfaces.  When all know projects are confirmed to work then a future version of cctools will install the header file dlfcn.h and build the library code by default.  Most likely the library code will be in included in System framework and not a separate libdl.a.  At that time a man page will installed.  Currently there is no MacOS X Server version of the man page and the FreeBSD version must be consulted.\
+\
+·	There is support for managing the list of globally exported names in cctools that is generally not well known.  For managing the list of globally exported names with a list of global symbols that is maintained by the developer the existing tools nmedit(l) and strip(1) can be used.  The approach is to build the project normally with full debugging symbols.  Then nmedit(1) is run on that with the list of exported symbols and the result is placed in the standard $(SYMROOT).  nmedit(1) turns all other global symbols not listed in the file into statics.  That resulting file still has all the debugging symbols and can be fully symbolically debugged.  Then when the file is copied from the $(SYMROOT) to the $(DSTROOT) in the install process, it is strip(1)'ed with the usual -S (or other options) to remove debugging symbols.  This leaves the static symbols as well as the global symbols so that back traces will still have the symbol names. Assuming the list of symbols is in the file save_syms, the example commands would be:\
+	    nmedit -s save_syms $(OBJROOT)/hello -o $(SYMROOT)/hello\
+	    strip -S $(SYMROOT)/hello -o $(DSTROOT)/hello\
+	If you are building a dynamic library you may also have to do and "ld -r" of all of your object files into one object file.  If you want to manage the list of globally exported names in your project and can't figure out how to do it with the information here please see Kevin Enderby, enderby@apple.com (408) 974-3618 and he'll be happy to work with you.\
+\
+	In the future there will also be compiler support to use the external/internal #pragmas that CFM uses.  Today you can use the key word __private_extern__ to get this functionality.  If your interested in using __private_extern__ Kevin Enderby will be happy to provide you with the documentation of this feature.\
+\
+·	As of cctools-292, the cctools project has been updated to be able to built with the egcs compiler with no warnings from source code of the project (the header files in Beaker1I2 still produce warnings).\
+·	The cctools-294 project has been ported and tested on  MacOS X using Beaker1L.  To build cctools-294 for MacOS X, first the SDK has to be installed on a PowerPC machine with /System/Administration/Installer.app into /Local/Public/MacOSX.  Then the commands to build it are:\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 		# ~rc/bin/buildit -release Beaker cctools-293 RC_OS=macos\
+	Only the profileServer is left to be ported.  It is currently not built for MacOS X when RC_OS=macos.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-293 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The cctools-294 version of ld(1) as a fix for a crash that ocurred when building the CoreGraphicsRIP-30 project for Beaker1L3.
+\f1\fs24  
+\f0\fs28 \
+·	The new API _dyld_image_containing_address() was added. It takes an address and returns TRUE or FALSE depending on if that address is in any dyld managed image.  Radar bug #2325380.\
+·	The man page for libtool(1) has been updated.  Radar bug #2324061.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-292 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The cctools-293 project code has the fixes needed to complile and use POSIX threads instead of cthreads. This has been tested on Beaker1I2 compiling with -D_ POSIX_THREADS defined (this is defined in <unistd.h> for Beaker1J2 but not for Beaker1I2).  Testing could not be done using Beaker1J2 as is too unstable.  The code that tried to use pthreads in cctools-292 will not even compile when _ POSIX_THREADS is defined.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-291 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The cctools project code now uses POSIX threads instead of cthreads.\
+·	The default segment alignment in the static link editor when linking a PowerPC target is now 4K instead of 8K.  All other target architectures have not changed and their default segment alignment remains 8K.  Radar bug # 2277625.\
+·	The cctools project code now compiles with no warnings from the egcs compiler (header files in Beaker1I2 still produce warnings).\
+·	Moved the i386 assembler to /usr/local/libexec/i386/as for MacOS X builds.  The assembler driver /usr/bin/as and the compiler driver /usr/bin/cc are uneffected and will  find the assembler in either the old or new place.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-290 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug introduced in the cctools-288 ld(1) when doing an ld -r with an indirect entry for a private_extern. This problem would show up when executing a binary with the error from dyld:\
+		
+\f1\fs24 dyld: /System/Applications/MailViewer.app/MailViewer Undefined symbols:\
+		dyld_lazy_symbol_binding_entry_point\
+
+\f0\fs28 	The problem in this case was the Message framework built with the ld(1) that had the bug.  This also has been seen in Carbon apps, with the problem the Carbon framework.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-289 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the code added to nmedit for the -p option.  The bug caused uses of nmedit without the -p option and with the -s option to not find any symbols listed in the -s argument.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-288 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added the -p option to nmedit(l) which instead of changes symbols to static changes them to private externs.  This option is allowed by itself without a -s or -R option which then changes all defined symbols to private extern.  This is used to change all the symbols in libcc_dynamic.a to private extern as the C++ compiler has never supported the keyword __private_extern__.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-287 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed nmedit(l) to change the indirect symbol table entries for global symbols it makes static.  This problem showed up in using nmedit for the work around with the egcs compiler and C++ RTTI common data in a dynamic shared library.\
+·	Fixed ld(1) when doing an ld -r with an indirect entry for a private_extern. This problem showed up when building the Message framework and would get the error from ld: "ld: indirect symbol:_y can not be a private extern". And it also showed up in building Carbon when using strip which would produce the error message from ld: "ld: x.o indirect symbol table entry 0 past the end of  the symbol table".\
+·	Fixed ld(1) to correctly relocate non-lazy symbol pointers for non-global symbols.  This can occur in one of three ways when a global symbol is changed to a non-global,  via private_extern and ld -r, via nmedit and via strip.\
+·	Changed dyld to print on stderr not on stdout for it's debugging output (Radar bug #2274737).\
+·	Added passing -whyload through libtool(1) to ld(1).\
+·	Fixed a bug so that if a PowerPC binary used the RESET_LAZY_REFERENCES NSUnLinkModule() option, and it was not linked with crt1.0, bundle1.o or dylib1.o that has the ".long dyld_stub_binding_helper" fix it won't crash.\
+·	Changed the message printed when the environment variable RC_TRACE_ARCHIVES is set from: "RC_TRACE_ARCHIVES archive_name" to: "[Logging for Build & Integration] Used static archive: archive_name".  Radar bug #2310273.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-286 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The NSLinkModule() now can create private modules and the new API NSLookupSymbolInModule() allows symbols to be looked up in a private module.  See new features above.\
+·	The NSUnLinkModule() API is now implemented with enough functionality to make Apache work (Radar bug #2262020).  See new features above.\
+·	The cctools-287 project has an implementation of the FreeBSD dlopen() interfaces.   See new features above.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+\cf0 Changes since the last release (cctools-285 for the 5.3 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Support for module termination functions has been added for things loaded with NSLinkModule() when NSUnLinkModule() is called.  In this version of cctools NSUnLinkModule() is not implemented (that will be integrated in a later version).  For now to test this -DTESTING_MOD_TERM needs to be set in RC_CFLAGS.\
+·	Change the use of the i386 cpp macro to __i386__ and ppc to __ppc__ so this this version of cctools will compile with the upcoming release of the egcs compiler.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes made in cctools-285\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in libtool(1) that was not using NEXT_ROOT when set to expand -l flags.\
+·	Added printing a line of the form "RC_TRACE_ARCHIVES archive_name", where archive_name is a archive being put into the output of libtool(1) -static or being linked against by ld(1).   This is done when the environment variable RC_TRACE_ARCHIVES is set.   Radar bug #2303376.\
+·	Made a change to the way the cctools project builds it's objects for the System framework.  It now creates archives in /Local/Developer/System for libdyld, librld and libmacho.  It creates profile versions with _pg and -static compiled versions with _static in the filenames.  Radar bug #2268413.\
+·	Removed an incorrect warning in ld(1) that stated 
+\i -keep_private_externs
+\i0  must be used with 
+\i -dynamic
+\i0 .  This would be produced when using ld(1) with 
+\i -static
+\i0 .\
+·	Fixed a bug in ld(1) that was producing an incorrect error of the form "indirect symbol table entry 353 past the end of the symbol table".  This can occured when a file is strip(1)'ed and global symbols are removed.  This was found when the CoreGraphics framework was stripped removing two globals  symbols and then the resulting framework was linked against.\
+·	Fixed a bug in the i386 assembler in assembling the cmpxchg instruction.  Previously this assembled using the opcode from the i486 manual ( 0F A6/r and 0F A7/r ) and was changed to the opcode in the Pentium manual (0F B0/r and 0F B1/r).  The dissassembly in otool(1) was also changed.\
+·	Fixed a bug in ranlib(1) (aka libtool) after printing warnings about with multiple symbols defined different archive members it crashed with a bus error.\
+·	Fixed a bug in strip(1) when using the 
+\i -s filename
+\i0  option on a dynamic library.  This showed when linking against a CoreGraphics framework, the resulting link would fail with a malformed object error "ilocalsym field plus nlocalsym field of module table entry 1 past the end of the symbol table".\
+·	Changed the #import <sys/types.h> in ranlib.h to #include <sys/types.h>. Radar bug #2303937.\
+·	Made cctools 285 build without -DNeXT defined.\
+·	A fix was made to the dyld debug code that get the thread suppend count of reset correctly for the thread that has the dyld lock when the dyld debug thread handles a message.\
+·	The fixes were made to the dyld debug code made in cctools 283.1 were picked up. Includes Radar bug #2286661.\
+·	The fixes to moved the text files gprof.flat and gprof.callg from /usr/lib to /usr/share made in cctools 281.2 were picked up.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes made in cctools-284\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The fix to ar(1), made in cctools-281.1 (Radar bug #2284290) was merged in.  The changed made to fix the dyld debug code made in cctools-283.1 are not in cctools-284.\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes made in cctools-283.1\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixes were made to the dyld debug code for the port to MacOS X (Mach 3.0) to get it working.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+There are no changes in cctools-283 clone\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes made in cctools-282\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The  tools have been ported to MacOS X.  The needed code is #ifdef'ed __MACH30__ which is defined in <mach/mach.h> when building for MacOS X.\
+\pard\li1440\ql\qnatural
+\cf0 \
+\pard\ql\qnatural
+
+\b\fs36 \cf0 Notes Specific to Release 5.2 (Rhapsody CR1)\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 New Features\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The compiler tools now support the 4.4bsd archive extened format 1 for long names (and names with embedded spaces).  This is now the default.  The option -L to produce archives using the extended format and the option -T to truncate names, as previously supported in the ar(1) command now also apply to ranlib(1) and libtool(1).  Radar bug #1670513.\
+·	The header file <mach-o/getsect.h> has been added to the system as the proper place to get the prototypes of the Mach-O routines.  Radar bug #2227839.\
+·	The VMX opcodes have been added to the Rhapsody PowerPC assembler and are documented in the assembler manual.  Radar bug #2237908.\
+·	The  routine sa_rld_with_symtab() was added for use with the standalone runtime link editor.  Radar bug #2231758.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 There are no changes in cctools-281.3 clone\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes made in cctools-281.2\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Moved text files gprof.flat and gprof.callg from /usr/lib to /usr/share .  gprof/Makefile and gprof/gprof.h were changed. Radar bug #2287470.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes made in cctools-281.1\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	In a stat struct there are three struct timespec's  (defined in sys/time.h).  The field name ts_sec was change to tv_sec to match Posix (Radar bug #2005170). So in for cctools, the use in ar/archive.c of the field ts_sec was changed to tv_sec in three places. Radar bug #2284290. \
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-280 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed redo_prebinding to exit with a error code of 3 if the dependent libraries are out of date.  Radar bug #2259447.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-279 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed libtool to pass -F and -L flags to objcunique.  Radar bug #2257931.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-278 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	A bug fix was made to the dyld library debug code that fixes a problem which prevents gdb getting the symbols for dynamic libraries.  Radar bug #2255036.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-277 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The header file <mach-o/rld.h> was moved to PrivateHeaders in the System Framework as it uses <streams/streams.h> in it's API.  Radar bug #2249999.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-276 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the handling of unknown i386 and ppc subtypes so that the routines never fail but return sprintf()'ed strings for the decriptions.  For i386 the string will be of the form "Intel family X model Y" and for ppc it will be "PowerPC cubsubtype X".  Radar bug #2241690.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-275 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Build fix, the Radar bug #2239280 in strip(1) was using a data structure after it was free()'ed.  The free() call was move after the last use.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-274 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the static link editor where the module name of dynamic shared library was set wrong.  This happened when creating a dynamic shared library from an archive library member that had a long name (using the 4.4bsd archive extened format 1).  The module name dynamic shared library would end up like "#1/20" rather than its correct name. Radar bug #2239283.\
+·	Fixed a bug in strip(1) when stripping a dynamic shared library.  This happened when the stripping was removing a symbol defined in one module and referenced in other modules.  The library's table of contents was not correctly updated to reflect this symbol was no longer defined.  This would then cause the static link editor to think the library was malformed as a module was loaded did not define a symbol as expected in the table of contents.  Radar bug #2239280.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-273 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The VMX opcodes have been added to the Rhapsody PowerPC assembler.  Radar bug #2237908.\
+·	Fixed a bug that caused NSModuleForSymbol() to return NULL when called in a module initializer routine on a symbol in that module.  Radar bug #2238301.\
+·	Removed the -arch i586SX and added the following intel x86 specific subtype archs: pentium, pentpro, pentIIm3 and pentIIm5.  Radar bug #2231830.\
+·	Fixed a bug in dyld that used the wrong segment's address for executable's base relocation address.  It was using the segment with the lowest address not the first segment's address. Radar bug #2237029.\
+·	Changed the way the static link editor assigns segment address of segments that were not specified on the command line.  Previously the static link editor often picked overlapping addresses for these segments and the link would then fail.  Now the static link editor assigns segment address at the next available address after the first segment that doesn't overlap with other segments.  So if some segments are assigned address the first segment must also be assigned, which can be done via -seg1addr or by name with -segaddr.  Radar bug #2237029.\
+·	A missing test was added to the static link editor.  This is to prevent it from producing an executable that is prebound which would crash when launched and prebinding was disabled.  This happens when too much address space is spanned and the first segment is more than 24-bits away from a prebound lazy pointer. This occurred with BlueBox. Radar bug #2237029.\
+·	Fixed a bug in the dyld debug library code the caused it to crash (usually the debugger).  This would tend to happen on executables being debugged that did not have it headers linked at the default address.  This occurred with BlueBox.  Radar bug #2236161.\
+·	Added the 
+\i -R filename
+\i0  options to strip(1) and nmedit(l).  This specifies a list of specific symbols to be removed (or changed to static in the case of nmedit(l)).  Also changed the filename syntax to allow white space around symbol names and comment lines starting with a '#'.  Radar bug #2235926.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-272 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed dyld so that it does a fflush(3) after doing any printing with printf(3) so that ProjectBuilder's launcher gets the ouput of things like DYLD_PRINT_LIBRARIES and it does not get buffered in the pipe(2)'ed output.  Radar bug #2227265.  Was approved for cctools-268 but was never integrated.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-271 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed two bugs in dyld that prevents programs launching programs with many frameworks that reference many other frameworks.  Radar bug #2230181.\
+·	The  routine sa_rld_with_symtab() was added for use with the standalone runtime link editor.  Radar bug #2231758.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-270 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Build fix, changed libtool(1) -static not to flag -L
+\i dir
+\i0  and -l
+\i x
+\i0  flags as warings as they are valid flags with -static.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-269 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Build fix, corrected the routine get_toc_byte_sex() which did not have code to deal with the archive extended format #1.  This would cause ld(1) to think the table of contents was malformed if the first member after the table of contents was in extended format #1.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-268 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Build fix, backed off change to libtool(1) to treat incorrect flags as warnings not hard errors.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-267 for the 5.2 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Build fix, removed getmachhead.o from libmacho/dylib.ofileList .\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-266 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The program checksyms(l) used in the Build and Integration build verification pass, now checks that projects are prebound and  has no relocation entries in read only sections.  Radar bug #2227469.\
+·	Changed the profileServer to use 
+\f1\fs24 bootstrap_register
+\f0\fs28 () rather than 
+\f1\fs24 bootstrap_check_in
+\f0\fs28 () so that it can be started from /etc/bootstrap.conf.  See the man page for details.  Radar bug #2227888.\
+·	The VMX opcodes have been added back in to the assembler.  Radar bug #2227999.\
+·	Changed all of the compiler tools to support the 4.4bsd archive extened format 1.  The tools ranlib(1) and libtool(1) now take the -L option to produce archives using the extended format and the -T option to truncate names.  The default is -L.  Radar bug #1670513.\
+·	The error message printed in dyld for the case when the path name of a dynamic library turns out to be a  path name of a directory has been changed.  Previously it just printed can't map_fd the path name.  It now prints the file name is not a regular file.  Radar bug #2227477.\
+·	The processing of the environment variables for dyld paths has been changed to ignore paths with no characters in them.  This led to confusion when the directory layout was changed to have a directory named /System and then the System framework would be searched as /System if a path with no characters in it was in DYLD_LIBRARY_PATH.  Radar bug #2227589.\
+·	Fixed a bug in nm(1) with the -o option on a dynamic shared library that did not print the colon ':' between the library module name and symbol name.  Radar bug #2227852.\
+\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 Documentation\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 PowerPC assembler manual (PowerPC Addressing Modes and Assembler Instructions)
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 See Jeff Mattson (
+\f1\fs24 jmattson_ext@next.com) for the latest copy.
+\f0\fs28 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Dynamic Shared Libraries User's Guide
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 The current version of this can be found in 
+\b (not updated with respect to PowerPC yet)
+\b0 :\
+	~enderby/shlib/user_guide/current/user_guide.ps\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Dynamic Shared Libraries Detailed Design Document
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 The current version of this can be found in 
+\b (updated for PowerPC)
+\b0 :\
+	~enderby/shlib/detail_doc/current/detail_doc.ps\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Man Pages
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 Unix manual pages for the cctools release are installed in /usr/share/man. This allows updated manual pages to be used in software by setting the MANPATH environment variable to include one or more paths.  For example if the Rhapsody man pages are wanted you might set MANPATH as follows in your .login:\
+	setenv MANPATH /usr/share/man\
+\pard\li1440\ql\qnatural
+\cf0 \
+\pard\ql\qnatural
+
+\b\fs36 \cf0 Notes Specific to Release 5.1 (Rhapsody DR2)\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 New Features\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The rld function rld_write_symfile() has been added for use by the kern loader.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-265 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the change of the default headerpad in ld(1) to be the sizeof two section structures because objcunique(1) now can add 2 section headers.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-264 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the default headerpad in ld(1) to be the sizeof two section structures because objcunique(1) now can add 2 section headers.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-263 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added a definition of getenv() in the dyld code that always returns NULL so the reference to_dyld_lookup_and_bind() is not pulled in by the libc_dynamic code.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-262 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The VMX opcodes have been removed.  Radar bug #2219166.\
+·	A bug was fixed in the code that starts the dyld debug thread that effected executables who's load commands were larger than 4k (like ProjectBuilder).  Radar bug #2218925.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-261 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The use of the profil(2) system call has been updated to reflect the fix in the kernel for the bucket incremented in profileServer(1) and in dyld. Radar bug #2215979.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-260 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added supporting the PowerPC subtypes 603e, 603ev and 750. Changed NXFindBestFatArch() for PowerPC subtypes to the following: if an exact match is not found the subtype will be picked from the following order: 750, 604e, 604, 603ev, 603e, 603, ALL. Note the 601 is not in the list, it is only picked via an exact match.  Changed NXCombineCpuSubtypes() for PowerPC subtypes to the following: combining with the ALL type becomes the other type. Combining anything with 601 becomes 601.  All other non exact matches combine to the ALL type. Radar bug #2213821.\
+·	Added the dcba PowerPC optional instruction to the assembler and otool.\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+\cf0 ·	Added the special register names for the PowerPC 750 processor:Radar bug #2212878\
+\pard\tx1800\tx2260\tx5460\tx6900\li1800\fi-360\ql\qnatural
+\cf0 		Special register name	Number\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 		ummcr0	936\
+		upmc1	937\
+		upmc2	938\
+		usia	939\
+		ummcr1	940\
+		upmc3	941\
+		upmc4	942\
+		l2cr	1017\
+		ictc	1019\
+		thrm1	1020\
+		thrm2	1021\
+		thrm3	1022\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 ·	Assembling PowerPC VMX instructions now requires the -force_cpusubtype_ALL flag. And code that uses them must dynamicly check to see if VMX is supported on the processor before using VMX instructions. Radar bug #2213821.\
+·	Change the PowerPC instructions tlbld and tlbli to marked as OPTIONAL rather than 603 specific. This leaves the only instructions specific for a PowerPC cpu being 601 instructions. Radar bug #2213821.\
+·	Moved the assemblers into /usr/libexec and /usr/local/libexec. Radar bug #2213838.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-259 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added the path /Local/Library/Frameworks to checksyms(l)  as a conventional path Frameworks can be found in.  Also corrected "it's" to "its" in error messages.\
+·	Added -c to all the install(1) commands in all the Makefiles.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-258 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed cctools to not use /usr/local/bin/install where it needed the -sS option but rather call strip -S and create a temporary file and install the temporary file.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-257 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed checksyms(l) to once again treat /usr/lib/java as a conventional path libraries can be found in.  This path got changed to /System/Library/Frameworks/JavaVM.framework/Libraries where that path should have been just added.\
+·	Fixed dylib shared pc sampling.  Radar bug #2004555.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-256 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed checksyms(l) to treat /System/Library/Frameworks/JavaVM.framework/Libraries as a conventional path libraries can be found in.\
+·	Changed the default address of dyld to 0x41100000.\
+·	Changed cctools to use /usr/local/bin/install where it needs the -sS option.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-255 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed checksyms(l) to treat /usr/lib/java as a conventional path libraries can be found in.  Radar bug #2005914.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-254 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The VMX opcodes have been added.  Radar bug 2004760.\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-253 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in ld(1) that prevented the Objective-C runtime optimization using _dyld_bind_objc_module() from working.  The bug was in the routine that swaps the module table of a dynamic library.\
+·	Added the rld function rld_write_symfile() for use by the kern loader.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-252 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Updated the cctools project for the new directory layout for Premier (changing the directories with the word Next in them).  See the updated man pages for specific details.\
+·	Added the -b option to checksyms(l) to check dynamic binaries for relocation entries in read-only sections, make sure they are prebound and have had objcunique run on them.  This is not yet the default.\
+·	Delt with a bug in the 4.4bsd ar(1) which produced bad archives when the uid (or gid) field overflowed or underflowed.  Radar bug #2000486.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-251 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the disassembly output of otool(1) for ppc bl instructions that was not printing any address or symbol.  Also added printing out a comment for branch targets to symbol stubs including the name of the symbol the stub is for.\
+·	Changed the ppc dissassembly in otool(1) of "addis rX,0,immed" to "lis rX,immed" and "addi rX,0,immed" to "li rX,immed".\
+·	Updated the dyld(1) man page to include the default fall back paths.\
+·	Removed the -arch m98k which was the same as -arch ppc.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-250 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Corrected the bug fix in ld(1) when doing prebound builds in Slick build environment with $NEXT_ROOT set.  The change also effected Titan builds because RC builds do have $NEXT_ROOT set (to nothing).\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-249 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The man pages now get installed into /usr/share/man directly out of the cctools project.  The man pages had some small updates cleaning up some things. arch(3) was added to the cctools set and updated.  The also now have Apple Computer, Inc. on them instead of NeXT.\
+·	Fixed a bug in as(1) where it would not take the cpu specific arch types -arch ppc604 or -arch ppc604e.  Also changed the assembler to print out the cctools version as the Apple version instead of the NeXT version.\
+·	Changed the ppc locking code in dyld to allow it to be stepped over by single step profiling tools using the step to branch mode in that code.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-248 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed libtool(1) and  redo_prebinding(1) look for objcunique in /usr/bin rather than in /bin.\
+·	Added support for the ppc architecture to redo_prebinding(1).\
+·	Fixed a bug in ld(1) when prebinding and segments in the output file overlap dependent libraries.  In this case the output gets marked as prebound even though a message is printed that says it was disabled.  This would cause redo_prebinding(1) to fail on it because of overlapping segments.\
+·	Fixed a bug in ld(1) when prebinding with -i options.  The indirect symbols being defined with -i options were being turned into prebound undefined symbols.  Then after the binary was strip(1)'ed redo_prebinding(1) would fail on it because of undefined symbols.\
+·	Fixed a bug in ld(1) when doing prebound builds in Slick build envorinment with $NEXT_ROOT set.  It was recording the dynamic libraries name with $NEXT_ROOT prepened to it in LC_PREBOUND_DYLIB load commands.\
+·	Fixed a bug where the ouput of nm(1) -n was not sorted correctly.\
+·	Fixed a potentinal bug in dyld if a very long symbol name was to be printed as part of an error message it could have crashed the program.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-247 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the gmon.out format gprof(1) understands to be in sync with the 4.4bsd format.  The header file <mach-o/gmon.h> is no longer installed and the 4.4bsd file in <sys/gmon.h> with Rhapsody updates is now used.\
+·	Fixed a bug that would cause programs to segfault if dyld had to relocate itself because the executable overlapped with dyld's prefered address.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Changes since the last release (cctools-246 for the 5.1 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The project source tree has been converted to build natively on Rhapsody.\
+·	The binaries are now installed in the correct places for a 4.4BSD system.  There are nolonger any symbolic links to other locations.  Radar bugs #1673496, #1680747 and #1682569.\
+·	The command ar(1) was changed to have the -T options on by default.  This causes archive member names to be truncated and does not use the extend format for long names which the compiler tools does not yet understand. The new option -L causes the extend format to be used.  The hope is the compiler tools will understand the extened format for the Rhapsody Unified release.  Radar bug #1670513.\
+·	Removed the comment allowing the moduleName parameter of NSLinkModule() in <mach-o/dyld.h> to be NULL.  Radar bug #1670835.\
+\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 Documentation\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 PowerPC assembler manual (PowerPC Addressing Modes and Assembler Instructions)
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 See Jeff Mattson (
+\f1\fs24 jmattson_ext@next.com) for the latest copy.
+\f0\fs28 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Dynamic Shared Libraries User's Guide
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 The current version of this can be found in 
+\b (not updated with respect to PowerPC yet)
+\b0 :\
+	~enderby/shlib/user_guide/current/user_guide.ps\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Dynamic Shared Libraries Detailed Design Document
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 The current version of this can be found in 
+\b (updated for PowerPC)
+\b0 :\
+	~enderby/shlib/detail_doc/current/detail_doc.ps\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Man Pages
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 Unix manual pages for the cctools release are installed in /usr/share/man. This allows updated manual pages to be used in software by setting the MANPATH environment variable to include one or more paths.  For example if the Rhapsody man pages are wanted you might set MANPATH as follows in your .login:\
+	setenv MANPATH /usr/share/man\
+\pard\li1440\ql\qnatural
+\cf0 \
+\pard\ql\qnatural
+
+\b\fs36 \cf0 Notes Specific to Release 5.0 (Rhapsody DR1)\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 New Features\
+\
+\pard\tx1800\li1440\ql\qnatural
+
+\b0 \cf0 There is only one new feature for the 5.0 release:\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 ·	The tools now use 
+\b -arch ppc
+\b0  for the PowerPC architecture . The tools have been brought up the 603, 603e, 604 and 604e PowerPC from the 601.  Support for dynamic shared libraries has been added.\
+\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 The current state of the dynamic shared library port to the PowerPC\
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+
+\b0\fs28 \cf0 \
+As of cctools-246 the all the tools are working or ported.  This includes the assembler, the static linker, otool (including it's PowerPC disassembler), the dynamic linker and the various object tools like nm, size, etc.    The PowerPC assembler as of the current release is now complete for the Rhapsody Developer release.  It now supports all of the PowerPC extended mnemonics and all features of the 603, 603e, 604 and 604e PowerPC architecture.\
+\pard\tx1800\tx2160\tx2520\tx2880\li1800\fi-360\ql\qnatural
+\cf0 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 Current status of the support for the PowerPC\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-245 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the static link editor for PPC_RELOC_JBSR relocation types.  The other_part field was being tuncating to the low16 bits.\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-244 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The symbolic links made in /usr/bin for the commands as, ld, strip, strings, nm and size for which the binaries are in /bin were corrected to use a relative path.   Radar bug #1672088.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-242 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Symbolic links were made in /usr/bin for the commands as, ld, strip, strings, nm and size for which the binaries are in /bin.  Radar bug #1672088.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-241 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Removed the builtin macro clrlsdi which was a typo for the correct macro clrlsldi.\
+·	Removed the following builtin macros left over from the NRW port: mtrtcd, mfrtcd, mtrtci, mfrtci, mtbatu, mfbatu, mtbatl and mfbatl.\
+·	Changed the PowerPC instruction "eciwx" to be marked as optional so to require -force_cpusubtype_ALL when used.\
+·	Removed the non-existant "stmd", "mtpmr" and "mfpmr" instructions from the PowerPC assembler.\
+·	Fixed the following extended mnemonics to the PowerPC assembler:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	mtrtcu Rx	equivalent to	mtspr 20,Rx\
+	mtrtcl Rx	equivalent to	mtspr 21,Rx\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 	Note these are 601 specific and the special register numbers moving to (20,21) the Real Time Clock are diffierent from moving from (4,5) the same registers.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-240 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug that caused bundles to not load on the PowerPC 604e as there was no table entry in the ArchInfoTable.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-239 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the PowerPC assembler to nolonger support the mull[o][.] and mulwd[.] instructions produced by the NRW compiler.\
+·	Added the special register names:\
+\pard\tx1800\tx2260\tx5460\tx6900\li1800\fi-360\ql\qnatural
+\cf0 		Special register name	Number	Processor\
+\pard\tx1800\tx2920\tx5700\tx6900\li1800\fi-360\ql\qnatural
+\cf0 		mmcr0	952	604 and 604e\
+		pmc1	953	604 and 604e\
+		pmc2	954	604 and 604e\
+		sia	955	604 and 604e\
+		mmcr1	956	604e\
+		pmc3	957	604e\
+		pmc4	958	604e\
+		sda	959	604 and 604e\
+		dmiss	976	603\
+		dcmp	977	603\
+		hash1	978	603\
+		hash2	979	603\
+		imiss	980	603\
+		icmp	981	603\
+		rpa	982	603\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+\cf0 ·	Removed the bat[0123][ul] 601 special register names left over from the NRW port.  The names with ibat[0123][ul] are to be used.\
+·	Changed the name of the 601 special register "pid" to "pir" and added the special register name "hid15" also with the number 1023.\
+·	Removed the special register names rtcd (281), rtci (282) and fpecr (1022) which appear to be left over from the NRW port.\
+·	Added the special register ear (282) which is optional in the PowerPC.\
+·	Added the special registers tbl (284) and tbu (285) which were missing.\
+·	Fixed the clrrdi simplified mnemonics to use rldicr not rldicl which they were using.\
+·	Added the simplified mnemonic clrlsdi rA,rS,b,n equivalent to rldic rA,rS,n,b-n.\
+·	Added the multiply low double word (mulld) 64-bit instruction.\
+·	Added flagging invalid forms of branch conditional instructions where reserved bits of the BO field are not zero when -force_cpusubtype_ALL is not specified.\
+·	Added flagging all 64-bit compares as invalid forms when -force_cpusubtype_ALL is not specified.\
+·	Added flagging all 64-bit instructions and optional instructions as invalid forms when -force_cpusubtype_ALL is not specified.\
+·	Removed the Power forms, ai[.], of the PowerPC instructions addic[.] from the assembler.\
+·	Removed the non-existant "lmd" instruction from the assembler.\
+·	Added flagging invalid forms load multiple instructions (lmw, lswi and lswx).\
+·	Changed the rA parameter of lhax, lfsx, lfdx, ldx, lbzx, lhbrx, lhzx, lwax, lwbrx, stbx, stdcx., stdx, stfdx, stfiwx, stfsx, sthbrx, sthx, stwbrx, stwx, eciwx, ecowx from rA to (rA|0) to match the manual.  These are the same as the Radar bug #1653885 for lwzx.  The disassembler in otool(1) was also changed to match the manual.\
+·	Changed the rA parameter of lfdu, lfsu, lhau, ldu, lwzu, stbu, stdu, stfdu, stfsu, sthu and stwu from (rA|0) to rA to match the manual. The disassembler in otool(1) was also changed to match the manual.\
+·	Added flagging the "branch conditional to count register" (bcctr and bcctrl) that use the "decrement and test CTR" option as invalid forms.\
+·	Fixed a bug in the static link editor that caused it to exit with an internal error if prebinding was done with objects compiled with PowerPC dynamic code generation.\
+·	Added the file libstuff/fatals.c to the files installed in the GNU source package as it is needed to build the GNU assembler source.\
+·	Changed the cctools project so that atom(1) only gets built for OS=nextstep because it uses the encumbered gnu/a.out.h header file.\
+·	Removed the files gnu/a.out.h and gnu/exec.h from the files that get installed for the GNU source package as they are not needed to build the GNU assembler source and are encumbered with 4.3bsd UNIX.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-238 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug that caused bundles to not load on the PowerPC.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-237 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a build problem where the file /etc/magic should have been installed in /private/etc/magic.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-236 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the PowerPC immediate shifted instructions (addis and lis) to not check the sign of the immediate, but just to check for out of 16 bit range (signed or unsigned).\
+·	Fixed the following extended mnemonic for the PowerPC assembler that was wrong in cctools-235:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	crmove crbT,crbA	equivalent to	cror crbT,crbA,crbA\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 	It was was crxor which it should not have been.\
+·	Added forms of PowerPC instructions: cmpd, cmpdi, cmpld, cmpldi, cmpw, cmpwi, cmplw and cmplwi that take a number as their first parameter (previously they only took a cr register).\
+·	Added forms of PowerPC instructions "tw 31,0,0" and "ori 0,0,0" toallow the zeros to be encoded where registers are required.\
+·	Added the following extended mnemonic to the PowerPC assembler:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	mttbl rS	equivalent to	mtspr 284,rS\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 ·	Fixed the PowerPC opcode of "mttbu rS" "Move to time base upper" to be equivalent to "mtspr 285,rS".\
+·	Removed the PowerPC instruction 
+\b mttb
+\b0  "Move to time base".\
+·	Fixed a bug in the PowerPC instruction "lwzx rD,rA,rB" where rA should have been (rA|0). Radar bug #1653885.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-235 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added the PowerPC instruction 
+\b jbsr
+\b0  pseudo instruction for use with kernel relocatables.  This has  the following form:\
+\pard\tx1800\tx2480\tx3220\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 		jbsr	_foo,L1\
+		...\
+	L1:	lis	r12,hi16(_foo) ; long branch stub\
+		ori	r12,r12,lo16(_foo)\
+		mtctr	r12\
+		bctr
+\f0\b\fs36 \
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0\fs28 \cf0 	The 
+\b jbsr
+\b0  pseudo instruction assembles to a 
+\b bl
+\b0  instruction targeted at 
+\b L1
+\b0 .  It also generates a PPC_RELOC_JBSR relocation entry for the symbol 
+\b _foo
+\b0 .  Then when the linker creates a non-relocatable output file it will change the target of the 
+\b bl
+\b0  instruction to 
+\b _foo
+\b0  if the 
+\b bl
+\b0  instruction's displacement will reach.  Else it will leave the 
+\b bl
+\b0  instruction targeted at 
+\b L1
+\b0 .  
+\i otool
+\i0 (1) understands how to disassemble these pseudo instructions.\
+·	Fixed a bug in both the static and the dynamic link editors where it was not correctly checking for relocation overflow for PPC_RELOC_BR24 relocation types (used with bl instructions).  The checking was off by the high bit as the displacement is signed.
+\b\fs36 \
+
+\b0\fs28 ·	The cctools project has been unencumbered (for Grail, RC_OS=teflon).  The programs ar(1) and file(1) are now ported OpenBSD versions. They should work the same but beware they are completely different sources.\
+·	Added the following extended mnemonics to the PowerPC assembler:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	mtrtcu Rx	equivalent to	mtspr rtcu,Rx\
+	mtrtcl Rx	equivalent to	mtspr rtcl,Rx\
+	mtmq Rx	equivalent to	mtspr mq,Rx\
+	mfrtcu Rx	equivalent to	mfspr Rx,rtcu\
+	mfrtcl Rx	equivalent to	mfspr Rx,rtcl\
+	mfmq Rx	equivalent to	mfspr Rx,mq\
+	bctr BO,BI	equivalent to	bcctr BO,BI\
+	bctrl BO,BI	equivalent to	bcctrl BO,BI\
+	crmove crbT,crbA	equivalent to	crxor crbT,crbA,crbA\
+	crnot crbT,crbA	equivalent to	crnor crbT,crbA,crbA\
+	mfear rT	equivalent to	mfspr rT,282\
+	mtear rS	equivalent to	mtspr 282,rS\
+	mtfs[.] frB	equivalent to	mtfsf[.] 0xff,frB\
+	la rT,d(rA)	equivalent to	addi rT,rA,d\
+	cmp crT,rA,rB	equivalent to	cmp crT,0,rA,rB\
+	cmp num,rA,rB	equivalent to	cmp num,0,rA,rB\
+	cmpi crT,rA,s16	equivalent to	cmpi crT,0,rA,s16\
+	cmpi num,rA,s16	equivalent to	cmpi num,0,rA,s16\
+	cmpl crT,rA,rB	equivalent to	cmpl crT,0,rA,rB\
+	cmpl num,rA,rB	equivalent to	cmpl num,0,rA,rB\
+	cmpli crT,rA,s16	equivalent to	cmpli crT,0,rA,u16\
+	cmpli num,rA,s16	equivalent to	cmpli num,0,rA,u16\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 ·	Added the following mnemonics to the PowerPC assembler:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	eciwx rD,rA,rB\
+	ecowx rS,rA,rB\
+	fres[.] frD,frB\
+	frsqrte[.] frD,frB\
+	fsel[.] frD,frA,frC,frB\
+	fsqrt[.] frD,frB\
+	fsqrts[.] frD,frB\
+	stfiwx frs,rA,rB\
+	tlbsync\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 ·	Added additional forms for the following mnemonics to the PowerPC assembler:\
+\pard\tx2240\tx4280\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	mcrfs crfD,crfS	Allows a crf as the first operand (previously only a number)\
+	mcrxr crfD	Allows a crf as the operand (previously only a number)\
+	mftb rT,TBR	Allows specifying the value of the timer base register\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 ·	Fixed the 4 parameter forms of cmpli, and cmplwi to take an unsigned immediate not a signed immediate.\
+·	Fixed the PowerPC clrlslwi macros which were incorrect as:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	clrlslwi[.] ra,rs,b,n	equivalent to	rlwinm[.] ra,rs,n.b-n,31-b\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 	corrected to:\
+\pard\tx2240\tx4700\tx7180\li1800\fi-360\ql\qnatural
+
+\f1\fs24 \cf0 	clrlslwi[.] ra,rs,b,n	equivalent to	rlwinm[.] ra,rs,n.b-n,31-n\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-234 thru cctools-230 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The only changes were to fix build problems relating to new System Framework & Kernel  header files and the switch to the -dynamic compiler for PowerPC.
+\b\fs36 \
+
+\b0\fs28 ·	Removed the changed the static link editor to ignore -seg1addr (also known as -image_base) for dynamic libraries greater than 0x4000000 for PowerPC.  This was only needed to allow static code gen to be used with Frameworks.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-229 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added ppc604e to the arch table for a specific architecture as this is returned on some Macs.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-228 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The changed the assembler in cctools-228 was wrong.  It resulted in producing bad code when compiling -static (triggered by the change to compiler in cc-752).  The change has been fixed in the cctools-229 assembler.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-227 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the assembler to allow section difference relocations with the -static flag.  This fixes using the cc-752 and getting the "
+\f2\fs24 Can't emit reloc ...
+\f0\fs28 " error message from the assembler.\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-226 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added the PowerPC mnemonics 
+\b ai
+\b0  and 
+\b ai.
+\b0  the assembler which are archaic forms of 
+\b addic[.]
+\b0  as the compiler currently generates them in some cases.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed otool -c  for use with PowerPC core files.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-225 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added ppc604 to the arch table for a specific architecture as this is what the Kernel is returning on the Power Mac 8500.  This was causing code that supported loading bundles to fail (this is library code in System framework, thus a new System framework needs to be built and used to see this fix).
+\b\fs36 \
+
+\b0\fs28 ·	Fixed a bug in the dynamic link editor where it was not correctly calculating the immediate of a HA16 reloc by checking the 0x8000 bit of the other half.  This was causing address to be off by 0x10000.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed a bug in the dynamic link editor when the $HOME environment variable was not set. (the case for the single user prompt on PowerPC).  This was causing bus errors when a dynamic library was not found.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-224 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the static link editor where the __PAGEZERO segment was not being created for PowerPC (left over from NRW when executables started at high addresses and the kernel was at zero).
+\b\fs36 \
+
+\b0\fs28 ·	Changed the static link editor to ignore -seg1addr (also known as -image_base) for dynamic libraries greater than 0x4000000 for PowerPC.  This will allow static code gen to be used with Frameworks.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-223 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the source of cctools-224 to define NO_INDR_LIBC if __TEFLON__ is defined so it will build with SDK2 which is not using 
+\i indr
+\i0 (l).  This will allow cctools-224 to built for the Grail RC target.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed a bug in the static link editor when defining common symbols when a common section exists in the input .o files which has an alignment less than the alignment needed for the common symbols being defined by the link editor did not get aligned correctly.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed 
+\i libtool
+\i0 (1)  running on Teflon so it doesn't always report "internal link edit command failed". The link actually worked but the checking of the return code for Teflon was wrong.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed 
+\i as
+\i0 (1)  running on Teflon so it doesn't always exit non-zero when it runs the target assembler (/lib/arch/as). The assembly actually worked but the checking of the return code for Teflon was wrong.
+\b\fs36 \
+
+\b0\fs28 ·	The other thread states for PowerPC are now printed by otool (useful for core files).
+\b\fs36 \
+
+\b0\fs28 ·	Added the PowerPC simplified mnemonics 
+\b crset
+\b0 , 
+\b crclr
+\b0  and 
+\b mtcr
+\b0  to the assembler.
+\b\fs36 \
+
+\b0\fs28 ·	Added the include file <mach-o/ranlib.h> to the cctools project from <bsd/ranlib.h> and changed 
+\i off_t
+\i0  type to 
+\i unsigned long
+\i0  because 
+\i off_t
+\i0  on Teflon is 64 bits which would break compatibility with existing libraries.
+\b\fs36 \
+
+\b0\fs28 ·	Added the header files <mach-o/sparc/swap.h>and <mach-o/ppc/swap.h> which get installed in the System Framework to be shipped.  This and the added library code allows swapping of thread states.
+\b\fs36 \
+
+\b0\fs28 ·	Added the header files <mach-o/i860/swap.h>and <mach-o/m88k/swap.h> which get installed locally and not shipped.  The code was not added to the System Framework.
+\b\fs36 \
+
+\b0\fs28 ·	Changed the cctools package to install <mach-o/ppc/reloc.h> with the exported headers.  And to install <mach-o/hppa/reloc.h> with the local headers.
+\b\fs36 \
+
+\b0\fs28 ·	Changed of the ppc subtypes to match the kernel.  Only the 601 and 603 types are currently used by the assembler.  The types currently in use are as follows:\
+\pard\tx8100\fi2500\ql\qnatural
+
+\f1\fs24 \cf0 /*\
+ *      PowerPC subtypes\
+ */\
+#define CPU_SUBTYPE_POWERPC_ALL	((cpu_subtype_t) 0)\
+#define CPU_SUBTYPE_POWERPC_601	((cpu_subtype_t) 1)\
+#define CPU_SUBTYPE_POWERPC_602	((cpu_subtype_t) 2)\
+#define CPU_SUBTYPE_POWERPC_603	((cpu_subtype_t) 3)\
+#define CPU_SUBTYPE_POWERPC_603e	((cpu_subtype_t) 4)\
+#define CPU_SUBTYPE_POWERPC_603ev	((cpu_subtype_t) 5)\
+#define CPU_SUBTYPE_POWERPC_604	((cpu_subtype_t) 6)\
+#define CPU_SUBTYPE_POWERPC_604e	((cpu_subtype_t) 7)\
+#define CPU_SUBTYPE_POWERPC_620	((cpu_subtype_t) 8)\
+#define CPU_SUBTYPE_POWERPC_740	((cpu_subtype_t) 9)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 	The 
+\b -arch
+\b0  flags for the 601 and 603 are 
+\b -arch ppc601
+\b0  and 
+\b -arch ppc603
+\b0 .  Others will be defined as needed.\
+·	Updated the NXFindBestFatArch(3) and NXCombineCpuSubtypes(3) to include PowerPC guessing at how to combine the PowerPC subtypes (someone in the OS group should look at this).
+\b\fs36 \
+
+\b0\fs28 ·	Updated the ArchInfoTable to include PowerPC and removed mips and vax which gets returned with NXGetAllArchInfos(3).
+\b\fs36 \
+
+\b0\fs28 ·	Updated <mach-o/swap.h> and library code with all the things for dynamic shared libraries that never made it into the System Framework code.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-222 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed changes to allow cctools-223 to build for 4.2mach as well as PowerPC & Intel with Teflon SDK2.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-221 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added the 
+\b -stack_addr
+\b0  and 
+\b -stack_size
+\b0  options to 
+\i ld
+\i0 (1).  Note the kernel support for these has not yet been added.  So the flags should only be used for bringing up the support in the kernel at this time.  See the 
+\i ld
+\i0 (1) man page for details on these flags.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed a bug in the link editor 
+\i ld
+\i0 (1) for PowerPC HA16 relocation types when bit 15 was set in the other half of the immediate stored in the relocation entry.  This resulted in bad code.  This bug was found when bringing up driverkit and is needed for anyone doing development on driverkit for PowerPC.\
+·	Fixed a bug in the link editor 
+\i ld
+\i0 (1) where it generated an error message for the lazy symbol pointer section in crt1.o for PowerPC which it shouldn't have.  This bug was found bring up -dynamic code gen for PowerPC and is needed for anyone using -dynamic code gen for PowerPC.\
+·	Incorporated many changes to allow cctools-222 to build for PowerPC & Intel with Teflon SDK2.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-220 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The thread status for the PowerPC has changed to match the kernel.  This makes all previous executables incompatible.  The old 
+\i otool
+\i0 (1) will no longer work on PowerPC executables because of this change.  All executables should be relinked.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-219 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the link editor 
+\i ld
+\i0 (1)where $NEXT_ROOT did not get prefixed to depenendent dynamic libraries.\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 \
+Changes since the last release (cctools-218 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added searching fallback paths when dynamic libraries can't be found.  The two paths are in the environment variables DYLD_FALLBACK_FRAMEWORK_PATH and DYLD_FALLBACK_LIBRARY_PATH.  If these are not set they default to $(HOME)/Library/Frameworks:/LocalLibrary/Frameworks:/NextLibrary/Frameworks and $(HOME)/lib:/usr/local/lib:/lib:/usr/lib (bug #69135).
+\b\fs36 \
+
+\b0\fs28 ·	Changed the static linker to pad pure instruction sections of i386 outputs with nop's (bug #77806).
+\b\fs36 \
+
+\b0\fs28 ·	Added 
+\b .section_align
+\b0  
+\i align_value
+\i0  to be allowed in section order files.  This causes the symbol following it to be aligned on a 2^
+\i align_value
+\i0  byte boundary (bug #77807).
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-217 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the cctools project to build with gnumake.
+\b\fs36 \
+
+\b0\fs28 ·	Updated the locking code and the cache management code in the dynamic linker for the PowerPC with suggestions from the ppc bringup team.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-216 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Ported the dynamic linker to PowerPC.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-215 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the standard symbol stubs for the PowerPC to take advantage of the super scaler nature of the 603 and 604.  See the updated 
+\b Dynamic Shared Libraries Detailed Design Document 
+\b0 for the details.
+\b\fs36 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 \
+Changes since the last release (cctools-214 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Made the cctools-215 project build (except for linking dyld and otool) under the Teflon SDK.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed the PowerPC assembler to use the correct opcodes for 
+\b mftb
+\b0  and 
+\b mftbu 
+\b0 and updated
+\b  
+\b0 otool's disassembly.
+\b\fs36 \
+
+\b0\fs28 ·	Added the support in the static link editor to understand thePowerPC position-independent relocation entries (section difference).  This allows PowerPC dynamic shared libraries and executables that use them to be built (Note as stated above there is not yet a compiler that supports 
+\b -dynamic
+\b0  for 
+\b -arch ppc
+\b0 , and there is no dynamic linker yet for PowerPC).
+\b\fs36 \
+
+\b0\fs28 ·	Added the support in the PowerPC assembler for the standard symbol stubs.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-213 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Added the support in the PowerPC assembler for position-independent relocation entries (section difference).  As well as support in otool for printing them and dissassembling with them.
+\b\fs36 \
+
+\b0\fs28 ·	Updated the Detailed Design Document with the first cut at the code generation for 
+\b -dynamic
+\b0  for the PowerPC.  This is just a first pass to allow getting the assember and otool in place so that the compiler work can start.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed a bug in the PowerPC assembler where it treated the comment character ';' (semicolon) as a statement separator.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed the PowerPC assembler to allow 
+\b -arch m98k
+\b0  if passed to it.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-212 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The header files for mach-o subdirectory and the library files were added to the cctools project taken from the libc_macho project.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed the typo in the 
+\i ld
+\i0 (1) warning message for bug #77070.
+\b\fs36 \
+
+\b0\fs28 ·	Fixed a bug in 
+\i ld
+\i0 (1) that was causing prebinding not to happen if a private extern had the same name as a global function in a dependent library (this can occur because 
+\b -lcc_dynamic
+\b0  is being linked in).
+\b\fs36 \
+
+\b0\fs28 ·	Fixed the PowerPC's assembler manual for compare instructions to have a 0 not a 1 for the 32-bit version not the 64-bit version.  For example 
+\b cmp 0,1,RA,RB
+\b0  was changed to 
+\b cmp 0,0,RA,RB
+\b0 .
+\b\fs36 \
+
+\b0\fs28 ·	Changed 
+\i libtool
+\i0 (1) to ignore the 
+\b -pg
+\b0  flag.
+\b\fs36 \
+
+\b0\fs28 ·	Added the 
+\b not rA,rT 
+\b0 and
+\b  not. rA,rT
+\b0  instructions.
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-211 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Fixed a bug in the link editor 
+\i ld
+\i0 (1)where $NEXT_ROOT did not prefix standard framework paths.  Also fixed 
+\b -Z 
+\b0 to not use standard framework paths.\
+·	Changed the following instructions to the correct PowerPC mnemonics:\
+\pard\tx1800\tx2160\tx5660\li1800\fi-340\ql\qnatural
+\cf0 		NRW compiler mnemonic	PowerPC mnemonic\
+\pard\tx1800\tx2380\tx5860\li1800\fi-340\ql\qnatural
+\cf0 		
+\b tlbiex	tlbie\
+		slbiex	slbie\
+
+\b0 	Also corrected the opcodes for 
+\b slbie
+\b0  and 
+\b slbia 
+\b0 instructions.
+\b\fs36 \
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0\fs28 \cf0 ·	The bug in the assembler that causes it exits with a zero status and create an output file if it can't open the input file has been fixed.\
+·	The 
+\b .flag_reg 
+\i\b0 num
+\i0  and 
+\b .noflag_reg
+\b0  
+\i num
+\i0  ppc directives were added to the assembler to allow warnings to be generated for specific register uses.\
+·	The 
+\b -no_ppc601
+\b0  flag and the 
+\b .no_ppc601
+\b0  directive were added to the assembler to warn of 601 uses.\
+·	The 603 instructions 
+\b tlbld rB
+\b0  and 
+\b tlbli rB
+\b0  were added to the assembler.\
+·	The missing 601 instruction 
+\b clcs rD,rA
+\b0  was added to the assembler.\
+·	Use of instructions specific to the 601 and 603 now cause the assembler to mark the resulting object file with the specific cpusubtype.  Note the assembler is currently not complete with respect to instructions for the specfic cpusubtypes.  All of the ppc subtypes have been added to cctools-212's version of <mach/machine.h> but only the 601 and 603 types are currently used.  The types are as follows:\
+\pard\tx8100\fi2500\ql\qnatural
+
+\f1\fs24 \cf0 /*\
+ *      PowerPC subtypes\
+ */\
+#define CPU_SUBTYPE_POWERPC_ALL	((cpu_subtype_t) 0)\
+#define CPU_SUBTYPE_POWERPC_601	((cpu_subtype_t) 1)\
+#define CPU_SUBTYPE_POWERPC_601v	((cpu_subtype_t) 2)\
+#define CPU_SUBTYPE_POWERPC_602	((cpu_subtype_t) 3)\
+#define CPU_SUBTYPE_POWERPC_603	((cpu_subtype_t) 4)\
+#define CPU_SUBTYPE_POWERPC_603e	((cpu_subtype_t) 5)\
+#define CPU_SUBTYPE_POWERPC_603ev	((cpu_subtype_t) 6)\
+#define CPU_SUBTYPE_POWERPC_604	((cpu_subtype_t) 7)\
+#define CPU_SUBTYPE_POWERPC_604e	((cpu_subtype_t) 8)\
+#define CPU_SUBTYPE_POWERPC_620	((cpu_subtype_t) 9)\
+#define CPU_SUBTYPE_POWERPC_X704	((cpu_subtype_t) 10)\
+#define CPU_SUBTYPE_POWERPC_603q	((cpu_subtype_t) 11)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\f0\fs28 \cf0 	The 
+\b -arch
+\b0  flags for the 601 and 603 are 
+\b -arch ppc601
+\b0  and 
+\b -arch ppc603
+\b0 .  Others will be defined as needed.\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-210 for the 5.0 Rhapsody release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	The project sources were changed so that the lib_ofiles target could be built for teflon in the Grail release control target.\
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Changes since the last release (cctools-209.2 for the 4.2 release)\
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0 \cf0 ·	Changed the PowerPC assembler to treat 
+\b $
+\b0  the same as 
+\b .
+\b0  (dot) for the current pc.\
+·	Changed the treatment of 
+\b stswi 
+\b0 and
+\b  lswi
+\b0  instruction's third parameter so that it allows the value 32 in the assembly language and is treated as if it were 0.\
+·	Changed the following instructions to the correct PowerPC mnemonics:\
+\pard\tx1800\tx2160\tx5660\li1800\fi-340\ql\qnatural
+\cf0 		NRW compiler mnemonic	PowerPC mnemonic\
+\pard\tx1800\tx2380\tx5860\li1800\fi-340\ql\qnatural
+\cf0 		
+\b mull	mullw\
+		mull.	mullw.\
+		mullo	mullwo\
+		mullo.	mullwo.\
+		mulwd	mulhw\
+		mulwd.	mulhw.\
+
+\b0 	The NRW compiler mnemonics will continue to work as long as the NRW compiler is in use.  Assembly code should be converted to use the correct mnemonics.  The disassembly of 
+\b otool -tV
+\b0  uses the correct PowerPC mnemonics.
+\b\fs36 \
+\pard\tx1800\tx2160\tx2520\li1800\fi-360\ql\qnatural
+
+\b0\fs28 \cf0 ·	Fixed the 
+\b mr
+\b0  instruction (it was 
+\b ori rA,rS,0
+\b0  not 
+\b or rA,rS,rS
+\b0  as it should have been).  Also added the 
+\b mr.
+\b0  instruction.
+\b\fs36 \
+
+\b0\fs28 ·	Changed the 
+\b lis
+\b0  instruction to treat it's immediate as unsigned causing it not to flag the instructions like 
+\b lis r1,0x8000
+\b0 . This is now consistant with 
+\b addis r1,0,0x8000
+\b0 .
+\b\fs36 \
+
+\b0\fs28 ·	The tools now use 
+\b -arch ppc
+\b0  for the PowerPC architecture (previously they used 
+\b -arch m98k
+\b0 , which still works but is no longer supported).
+\b\fs36 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+\cf0 \
+Documentation\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 PowerPC assembler manual (PowerPC Addressing Modes and Assembler Instructions)
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 See Jeff Mattson (
+\f1\fs24 jmattson_ext@next.com) for the latest copy.
+\f0\fs28 \
+\pard\tx2520\tx2880\tx3240\ql\qnatural
+
+\b\fs36 \cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\fs28 \cf0 Dynamic Shared Libraries User's Guide
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 The current version of this can be found in 
+\b (not updated with respect to PowerPC yet)
+\b0 :\
+	~enderby/shlib/user_guide/current/user_guide.ps\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Dynamic Shared Libraries Detailed Design Document
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 The current version of this can be found in 
+\b (updated for PowerPC)
+\b0 :\
+	~enderby/shlib/detail_doc/current/detail_doc.ps\
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\ql\qnatural
+
+\b \cf0 Man Pages
+\b0 \
+\pard\tx1800\tx2160\tx2520\li1440\ql\qnatural
+\cf0 Unix manual pages for the cctools release are installed in /usr/local/man5.0. This is done for every release in software and allows access to the updated man pages between releases of the man page project that is released by the documentation group but does not get updated on every release. This allows updated manual pages to be used in software by setting the MANPATH environment variable to include one or more paths.  For example if the 5.0 man pages are wanted you might set MANPATH as follows in your .login:\
+	setenv MANPATH /usr/local/man5.0:/usr/local/man:/usr/man\
+\
+}

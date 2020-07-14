@@ -1,0 +1,29 @@
+/KernBus.h/1.1.1.2/Thu Jul 22 22:57:40 1999/-kb/Tkernel-7
+/KernBus.m/1.1.1.2/Thu Jul 22 22:57:40 1999/-kb/Tkernel-7
+/KernBusInterrupt.h/1.1.1.2/Thu Jul 22 22:57:40 1999/-kb/Tkernel-7
+/KernBusInterrupt.m/1.1.1.2/Thu Jul 22 22:57:40 1999/-kb/Tkernel-7
+/KernBusInterruptPrivate.h/1.1.1.2/Thu Jul 22 22:57:40 1999/-kb/Tkernel-7
+/KernBusMemory.h/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernBusMemory.m/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernBusPrivate.h/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernDevice.h/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernDevice.m/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernDeviceDescription.h/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernDeviceDescription.m/1.1.1.2/Thu Jul 22 22:57:41 1999/-kb/Tkernel-7
+/KernDevicePrivate.h/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernLock.h/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernLock.m/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernQueue.h/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernQueue.m/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernQueuePrivate.h/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernStringList.h/1.1.1.2/Thu Jul 22 22:57:42 1999/-kb/Tkernel-7
+/KernStringList.m/1.1.1.2/Thu Jul 22 22:57:43 1999/-kb/Tkernel-7
+/autoconfCommon.h/1.1.1.2/Thu Jul 22 22:57:43 1999/-kb/Tkernel-7
+/autoconfCommon.m/1.1.1.2/Thu Jul 22 22:57:43 1999/-kb/Tkernel-7
+/ddm.c/1.1.1.2/Thu Jul 22 22:57:43 1999/-kb/Tkernel-7
+/driverServerXXX.h/1.1.1.2/Thu Jul 22 22:57:43 1999/-kb/Tkernel-7
+/driverServerXXX.m/1.2/Sun May  2 03:44:33 1999/-kb/Tkernel-7
+/objc_support.m/1.1.1.2/Thu Jul 22 22:57:43 1999/-kb/Tkernel-7
+/xpr_mi.h/1.1.1.2/Thu Jul 22 22:57:44 1999/-kb/Tkernel-7
+D/i386////
+D/ppc////

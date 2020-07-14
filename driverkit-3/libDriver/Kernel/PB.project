@@ -1,0 +1,81 @@
+{
+    FILESTABLE = {
+        CLASSES = (
+            AudioChannel.m, 
+            AudioCommand.m, 
+            AudioStream.m, 
+            audio_kern_server.m, 
+            audio_server.m, 
+            devswAndVfssw.m, 
+            EventDriver.m, 
+            EventInput.m, 
+            EventIO.m, 
+            generalFuncs.m, 
+            generalFuncsPrivate.m, 
+            InputStream.m, 
+            IOAudio.m, 
+            IOBufDevice.m, 
+            IOBuffer.m, 
+            IOConfigTable.m, 
+            IODisplay.m, 
+            IOEthernet.m, 
+            IOEthernetDebugger.m, 
+            IOEventSource.m, 
+            IOFrameBufferDisplay.m, 
+            IOMallocLow.m, 
+            IONetbufQueue.m, 
+            IONetwork.m, 
+            IOSCSIController.m, 
+            IOSVGADisplay.m, 
+            IOTokenRing.m, 
+            IOVGADisplay.m, 
+            IOVGADisplay_instance.m, 
+            kernelDiskMethods.m, 
+            KeyMap.m, 
+            NXConditionLock.m, 
+            NXLock.m, 
+            NXSpinLock.m, 
+            OutputStream.m, 
+            SCSIDisk.m, 
+            SCSIDiskPrivate.m, 
+            SCSIDiskThread.m, 
+            SCSIGeneric.m, 
+            SCSIGlobals.m, 
+            snd_server.m
+        ); 
+        C_FILES = (); 
+        H_FILES = (
+            AudioChannel.h, 
+            AudioCommand.h, 
+            audioLog.h, 
+            AudioStream.h, 
+            audio_kern_server.h, 
+            audio_mix.h, 
+            audio_msgs.h, 
+            audio_mulaw.h, 
+            audio_peak.h, 
+            audio_server.h, 
+            audio_types.h, 
+            ctype.h, 
+            InputStream.h, 
+            OutputStream.h, 
+            portFuncs.h, 
+            snd_reply.h, 
+            snd_server.h
+        ); 
+        OTHER_LINKED = (audio_mix.c, audio_mulaw.c, audio_peak.c, ctype.c, snd_reply.c); 
+        OTHER_SOURCES = (audio.defs, audioReply.defs, Event.defs, Makefile); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = Kernel; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

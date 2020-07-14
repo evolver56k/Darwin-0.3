@@ -1,0 +1,21 @@
+{
+    FILESTABLE = {
+        CLASSES = (); 
+        FRAMEWORKS = (); 
+        H_FILES = (); 
+        OTHER_LINKED = (md.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.dist); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = "/$(USER)/BUILD"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = md; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+}

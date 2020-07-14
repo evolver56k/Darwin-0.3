@@ -1,0 +1,34 @@
+API changes - gotchas/TODO
+
+* options for IOEnqueueDma(), etc - need to be in file shared by user_driver.h and NRWDirectDevice. (DONE in driverTypes.h)
+
+* need separate deviceMaster-like port for IODeviceMaster - this stuff should not need root privilege. (?)
+
+* make NXDIsk ensure that physicalDisk conformsTo(IOPhysicalDiskMethods) before
+  completing registration. (DONE in IODisk.m)
+  
+* Need clean dequeueDma() method in nrw/directDevice.h. DONE
+
+* implement:
+
+	* bdevsw/cdevsw add functions
+	* method in NRWDirectDevice to cover IOEnqueueDmaInt()
+	* dbohman's IONetDevice ==> driverkit ==> mknrw
+	  still need to merge into mknrw.
+	* Get legal typedefs in i386/driverTypes.h (waiting for input from
+  	  Kathy and Dave B.) DONE
+	* implement +connectToIndirectDevices in IODevice. DONE
+	* Rewrite mknrw's autoconfig to use connectToIndirectDevices per
+	  addenda in doc/loadingDevices.rtf.
+	* iostat using IODeviceMaster. Do this after first pass of 
+	  integration to minimize variables during debug.
+	* probeAndInit Example needs to be rewritten. Currently disabled.
+	* userDriver example can be improved. 
+	* nrw Ethernet needs a lot of work to make it an NRWDirectDevice using
+	  IONetwork.
+	* bsd/dev/nrw direct devices should work, but need to be converted
+	  to use directDevice(NRW) methods.
+	  
+* EventDriver does a probe in evFrameBufferDevicePort. It's probably wrong...
+  attachEventSource has one too, maybe it juswt needs a declaration.
+  

@@ -1,0 +1,7 @@
+OTHER_GENERATED_OFILES = $(VERS_OFILE)
+
+MOUNT=	../mount
+MOUNT_CFILES = getmntopts.c
+VPATH_PREAMBLE = ${MOUNT}:
+OTHER_OFILES = $(MOUNT_CFILES:.c=.o)
+-include ../Makefile.include

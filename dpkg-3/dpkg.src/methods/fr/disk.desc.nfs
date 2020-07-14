@@ -1,0 +1,10 @@
+Installation au travers d'un réseau, à partir d'un serveur NFS
+qui n'est pas encore monté.
+
+Le serveur devrait comporter le fichier 'Packages.gz' de chaque
+distribution à installer (en général 'main', 'contrib' et 'non-free'),
+ainsi que les fichiers binary*/*/*.deb files.
+
+La manière la plus facile pour le serveur de les récupérer est de
+faire une copie, éventuellement partielle, de la hiérarchie du site FTP,
+si cela est possible.

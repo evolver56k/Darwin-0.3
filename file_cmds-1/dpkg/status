@@ -1,0 +1,1 @@
+<p>Some file commands in NetBSD implement the <code>-h</code> flag and can otherwise charge permissions on symlinks. But this requires <code>lchmod</code>(2) from NetBSD and we don't currently implement that, so it is disabled with <code>-D__APPLE__</code>.</p>

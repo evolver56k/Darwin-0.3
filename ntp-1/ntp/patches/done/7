@@ -1,0 +1,96 @@
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa01436;
+          23 Dec 1997 05:00 EST
+Received: from critter.freebsd.dk by huey.udel.edu id aa20637;
+          23 Dec 1997 04:59 EST
+Received: from critter.freebsd.dk (localhost.cybercity.dk [127.0.0.1])
+	by critter.freebsd.dk (8.8.7/8.8.7) with ESMTP id KAA01660;
+	Tue, 23 Dec 1997 10:57:21 +0100 (CET)
+	(envelope-from phk@critter.freebsd.dk)
+To: Dave Mills <mills@huey.udel.edu>
+cc: mills@udel.edu
+Subject: libntp addition
+In-reply-to: Your message of "Mon, 22 Dec 1997 19:45:25 EST."
+             <199712221945.aa18733@huey.udel.edu> 
+Date: Tue, 23 Dec 1997 10:57:20 +0100
+Message-ID: <1658.882871040@critter.freebsd.dk>
+From: Poul-Henning Kamp <phk@critter.freebsd.dk>
+
+
+Hi Dave,
+
+Here is my proposed addition to libntp:  ymd2yd().  It converts
+from year/month/day to yead/day_in_year.  This is used in a
+handfull of the refclocks.
+
+
+diff -ru ntp-4.0.70a-export/include/ntp_stdlib.h oncore/include/ntp_stdlib.h
+--- ntp-4.0.70a-export/include/ntp_stdlib.h	Sat Oct 25 00:28:40 1997
++++ oncore/include/ntp_stdlib.h	Sun Dec 21 19:52:43 1997
+@@ -44,6 +44,7 @@
+ extern	void	init_random	P((void));
+ extern	struct savekey *auth_findkey P((u_long));
+ extern	int	auth_moremem	P((void));
++extern	int	ymd2yd		P((int, int, int));
+ 
+ #ifdef	DES
+ extern	void	DESauth1crypt	P((u_long, u_int32 *, int));
+diff -ru ntp-4.0.70a-export/libntp/Makefile.am oncore/libntp/Makefile.am
+--- ntp-4.0.70a-export/libntp/Makefile.am	Sat Oct 18 06:33:33 1997
++++ oncore/libntp/Makefile.am	Sun Dec 21 19:46:50 1997
+@@ -11,7 +11,7 @@
+ 	ranny.c tsftomsu.c tstotv.c tvtoa.c tvtots.c uglydate.c uinttoa.c \
+ 	utvtoa.c machines.c clocktypes.c md5.c a_md5encrypt.c a_md5decrypt.c \
+ 	a_md512crypt.c decodenetnum.c systime.c msyslog.c syssignal.c \
+-	findconfig.c netof.c statestr.c mexit.c
++	findconfig.c netof.c statestr.c mexit.c ymd2yd.c
+ INCLUDES = -I$(top_srcdir)/include
+ ETAGS_ARGS = Makefile.am
+
+diff -ru /dev/null oncore/libntp/ymd2yd.c
++++ oncore/include/ntp_stdlib.h	Sun Dec 21 19:52:43 1997
+--- /dev/null	Tue Dec 23 10:48:12 1997
++++ oncore/libntp/ymd2yd.c	Tue Dec 23 10:54:10 1997
+@@ -0,0 +1,37 @@
++/*
++ * ymd2yd - compute the date in the year from y/m/d
++ */
++
++#include "ntp_fp.h"
++#include "ntp_unixtime.h"
++#include "ntp_stdlib.h"
++
++/*
++ * Tables to compute the day of year from yyyymmdd timecode.
++ * Viva la leap.
++ */
++static int day1tab[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
++static int day2tab[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
++
++int
++ymd2yd(
++	int y,
++	int m,
++	int d
++	)
++{
++	int i, *t;
++
++	if (m < 1 || m > 12 || d < 1)
++		return (-1);
++
++	if ((y % 4) || (y == 2000)) 
++		t = day1tab;
++	else 
++		t = day2tab;
++	if (d > t[m - 1])
++		return (-1);
++	for (i = 0; i < m - 1; i++) 
++		d += t[i];
++	return d;
++}
+
+Merry X-mas!
+
+--
+Poul-Henning Kamp             FreeBSD coreteam member
+phk@FreeBSD.ORG               "Real hackers run -current on their laptop."

@@ -1,0 +1,21 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (getgrouplist.c, glob.c, hton.c, putpwpasswd.c, pwcache.c, rcmd.c, rcmdsh.c); 
+        OTHER_SOURCES = (); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = util; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,5 @@
+{
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_BUILDTOOL = /bin/gnumake; 
+}

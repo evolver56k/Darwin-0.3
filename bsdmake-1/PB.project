@@ -1,0 +1,58 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        FRAMEWORKS = (); 
+        H_FILES = (
+            bit.h, 
+            buf.h, 
+            config.h, 
+            dir.h, 
+            hash.h, 
+            job.h, 
+            list.h, 
+            lst.h, 
+            make.h, 
+            nonints.h, 
+            pathnames.h, 
+            sprite.h
+        ); 
+        OTHER_LINKED = (
+            arch.c, 
+            buf.c, 
+            compat.c, 
+            cond.c, 
+            dir.c, 
+            for.c, 
+            hash.c, 
+            job.c, 
+            main.c, 
+            make.c, 
+            parse.c, 
+            str.c, 
+            suff.c, 
+            targ.c, 
+            util.c, 
+            var.c
+        ); 
+        OTHER_SOURCES = (Makefile, Makefile.preamble, Makefile.postamble, PROJECT, make.1); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/tmp/$(NAME)/Build"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-Wall -Werror"; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = bsdmake; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

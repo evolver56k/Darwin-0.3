@@ -1,0 +1,29 @@
+/AUTHORS/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/COPYING/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/ChangeLog/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/INSTALL/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/Makefile.am/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/Makefile.in/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/NEWS/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/README/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/TODO/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/aclocal.m4/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/config.guess/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/configure/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/configure.in/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/i960glue.c/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/install-sh/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/mkinstalldirs/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/runtest/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/runtest.exp/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/site.tmpl/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/stub-loader.c/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/tcl-mode.el/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+/testglue.c/1.1.1.1/Wed Aug  4 22:26:58 1999//Tgdb-1
+D/baseboards////
+D/config////
+D/contrib////
+D/doc////
+D/example////
+D/lib////
+D/testsuite////

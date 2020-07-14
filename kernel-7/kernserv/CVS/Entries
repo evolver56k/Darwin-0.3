@@ -1,0 +1,21 @@
+/c_utils.h/1.1.1.2/Thu Jul 22 22:57:53 1999/-kb/Tkernel-7
+/clock_timer.h/1.1.1.2/Thu Jul 22 22:57:53 1999/-kb/Tkernel-7
+/insertmsg.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kalloc.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_notify.c/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_notify.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_server.c/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_server.defs/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_server_reply.defs/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_server_reply_types.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/kern_server_types.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/loadable_fs.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/lock.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/macro_help.h/1.1.1.2/Thu Jul 22 22:57:54 1999/-kb/Tkernel-7
+/ns_timer.h/1.1.1.2/Thu Jul 22 22:57:55 1999/-kb/Tkernel-7
+/prototypes.h/1.1.1.2/Thu Jul 22 22:57:55 1999/-kb/Tkernel-7
+/queue.h/1.1.1.2/Thu Jul 22 22:57:55 1999/-kb/Tkernel-7
+/sched_prim.h/1.1.1.2/Thu Jul 22 22:57:55 1999/-kb/Tkernel-7
+D/i386////
+D/machine////
+D/ppc////

@@ -1,0 +1,78 @@
+.TH aurpd 8
+.SH NAME
+.B aurpd 
+- Start up the AURP routing function
+
+.SH SYNOPSIS
+.B aurpd 
+[-dq] [-l 
+.I logfile
+] [
+.I config_file
+]
+
+.SH FLAGS
+.TP 8
+-d
+terminate an existing aurp daemon
+.TP 8
+-q 
+"quiet" - most error and other messages are suppressed
+.TP 8
+-l 
+log to the specified file (normally stdout)
+.TP 8
+.I config_file
+The file 
+.B aurpd 
+uses to configure itself
+(cf. aurp_tunnel.cfg(5)).  The default, if a name is not provided, is
+"/etc/aurp_tunnel.cfg".
+
+.SH DESCRIPTION
+
+The 
+.B aurpd 
+daemon initializes and configures kernel support for AURP,
+Apple's Update Routing Protocol.  The configuration file is read and
+parsed, and the kernel's AURP tunneling support is set up.
+
+Currently, the following AURP functionality is supported:
+.TP 8
+	- tunneling through UDP
+.TP 8
+	- explicit network number hiding
+.TP 8
+	- explicit network number advertising.
+
+.in 7
+The configuration file specifies the endpoints, local and remote, of
+the tunnels to be configured.  The tunnel will provide access to all
+AppleTalk network numbers reachable from the local endpoint, unless
+the 'hide' or 'export' keywords are specified in the file.  See
+aurp_tunnel.cfg(5) for more details.
+
+The AURP daemon will remain running until another instance of the
+command is run with the '-d' flag to terminate the session.  When run
+with the '-d' flag, the 'aurpd' command will invoke a kernel operation
+that will shut down the tunnel and eventually cause the existing
+'aurpd' process to exit after it receives a message from the stack,
+indicating that shutdown is complete.
+
+.SH RETURN VALUES
+.TP 8
+	 0 - Clean exit
+.TP 8
+	-1 - Not super-user (must be root)
+.TP 8
+	-3 - Problem parsing the config file
+.TP 8
+	-4 - Can't fork
+.SH BUGS
+The tunnel mechanism doesn't lend itself to use on a multihomed host
+that doesn't enable forwarding for IP packets.  The '-v' switch,
+although specified in the "usage" printout, will only cause aurpd to
+complain about an unknown flag.
+
+.SH SEE ALSO
+appletalk(8), aurp_tunnel.cfg(5)

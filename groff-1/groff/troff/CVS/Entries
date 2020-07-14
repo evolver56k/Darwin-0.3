@@ -1,0 +1,26 @@
+/Makefile.dep/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/Makefile.sub/1.1.1.2/Fri Apr 23 01:14:24 1999//Tgroff-1
+/TODO/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/charinfo.h/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/column.cc/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/dictionary.cc/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/dictionary.h/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/div.cc/1.1.1.1/Fri Apr 23 01:12:29 1999//Tgroff-1
+/div.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/env.cc/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/env.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/hvunits.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/hyphen.us/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/input.cc/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/node.cc/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/node.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/number.cc/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/reg.cc/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/reg.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/request.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/symbol.cc/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/symbol.h/1.1.1.1/Fri Apr 23 01:12:30 1999//Tgroff-1
+/token.h/1.1.1.1/Fri Apr 23 01:12:31 1999//Tgroff-1
+/troff.h/1.1.1.1/Fri Apr 23 01:12:31 1999//Tgroff-1
+/troff.man/1.1.1.1/Fri Apr 23 01:12:31 1999//Tgroff-1
+D

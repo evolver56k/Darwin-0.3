@@ -1,0 +1,12 @@
+FILESTABLE = {
+    OTHER_SOURCES = (Makefile);
+    SUBPROJECTS = ();
+    TOOLS = (timed.tproj, timedop.tproj);
+};
+LOCALIZABLE_FILES = {
+};
+LANGUAGE = English;
+PROJECTVERSION = 1.1;
+PROJECTTYPE = Legacy;
+PROJECTNAME = SMM.doc;
+GENERATEMAIN = YES;

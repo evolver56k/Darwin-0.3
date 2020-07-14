@@ -1,0 +1,76 @@
+Replied: Sat, 10 Jan 1998 22:54:38 -0500
+Replied: "Poul-Henning Kamp <phk@critter.freebsd.dk> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa24660;
+          10 Jan 1998 12:31 EST
+Received: from critter.freebsd.dk (localhost.cybercity.dk [127.0.0.1])
+	by critter.freebsd.dk (8.8.7/8.8.7) with ESMTP id SAA05746;
+	Sat, 10 Jan 1998 18:28:32 +0100 (CET)
+	(envelope-from phk@critter.freebsd.dk)
+To: stenn@whimsy.udel.edu
+cc: Dave Mills <mills@huey.udel.edu>, mills@udel.edu
+Subject: another patch
+Date: Sat, 10 Jan 1998 18:28:32 +0100
+Message-ID: <5744.884453312@critter.freebsd.dk>
+From: Poul-Henning Kamp <phk@critter.freebsd.dk>
+
+
+Hi,
+
+Here comes another patch: this one initializes the sys_precision 
+correctly for FreeBSD-current (and consequently future releases).
+
+patch -p1 as usual
+
+Poul-Henning
+
+--- ref/ntpd/ntp_proto.c	Thu Jan  8 19:53:28 1998
++++ phk/ntpd/ntp_proto.c	Sat Jan 10 18:23:52 1998
+@@ -19,6 +19,9 @@
+ #include "ntp_refclock.h"
+ #endif
+ 
++#if defined(__FreeBSD__) && __FreeBSD__ >= 3
++#include <sys/sysctl.h>
++#endif
+ 
+ /*
+  * System variables are declared here.  See Section 3.2 of the
+@@ -1949,7 +1952,33 @@
+ #ifdef HAVE_GETCLOCK
+ 	struct timespec ts;
+ #endif
++#if defined(__FreeBSD__) && __FreeBSD__ >= 3
++	u_long freq;
++	int j;
++#endif
+ 
++#if defined(__FreeBSD__) && __FreeBSD__ >= 3
++	/* Try to see if we can find the frequency of of the counter
++	 * which drives our timekeeping
++	 */
++	j = sizeof freq;
++	i = sysctlbyname("kern.timecounter.frequency",
++	        &freq, &j , 0, 0);
++	if (i)
++		i = sysctlbyname("machdep.tsc_freq",
++	                &freq, &j , 0, 0);
++	if (i)
++		i = sysctlbyname("machdep.i586_freq",
++	                &freq, &j , 0, 0);
++	if (i)
++		i = sysctlbyname("machdep.i8254_freq",
++	                &freq, &j , 0, 0);
++	if (!i) {
++		for (i = 1; freq ; i--)
++			freq >>= 1;
++		return (i);
++	}
++#endif
+ 	usec = 0;
+ 	val = MAXSTEP;
+ #ifdef HAVE_GETCLOCK
+
+--
+Poul-Henning Kamp             FreeBSD coreteam member
+phk@FreeBSD.ORG               "Real hackers run -current on their laptop."
+"Drink MONO-tonic, it goes down but it will NEVER come back up!"

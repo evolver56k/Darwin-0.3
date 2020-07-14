@@ -1,0 +1,4 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:1757: Origin of test
+define(`foo', `Macro `foo'.')dnl A very simple macro, indeed.
+foo
+dnl @result{}Macro foo.

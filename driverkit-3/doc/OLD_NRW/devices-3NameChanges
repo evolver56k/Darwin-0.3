@@ -1,0 +1,57 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fmodern Courier;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl\red0\green0\blue0;}
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\f0\b0\i0\ul0\fs24 			
+\f1\b\fs28 Name changes in devices-3
+\f0\b0\fs24 \
+			\
+Format:\
+\
+
+\f1\b\fs28 Module name
+\f0\b0\fs24 	\
+	Functions\
+		old name		new name\
+		...			...\
+		old name		new name\
+	Methods\
+		old name		new name\
+		etc.\
+		\
+..............................................................................\
+\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\f1\b\fs28 libIO
+\f0\b0\fs24 \
+	Functions\
+		IOThreadFork()		IOForkThread()\
+		
+\fc0 IOTThreadThread()	IOSuspendThread()\
+		IOThreadResume()	IOResumeThread()\
+		IOThreadExit()		IOExitThread()\
+		IOUnTimeout()		IOUntimeout()\
+		libIOInit()		IOlibIOInit()\
+		\
+
+\f1\b\fs28 IODevice
+\f0\b0\fs24 \
+	methods\
+		IOThreadFork()		IOForkThread()\
+		
+IOTThreadThread()	IOSuspendThread()\
+		IOThreadResume()	IOResumeThread()\
+		IOThreadExit()		IOExitThread()\
+		IOUnTimeout()		IOUntimeout()\
+		libIOInit()		IOlibIOInit()\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 				\
+		\
+..............................................................................\
+\
+Other changes:\
+\
+* changed IODevice's regText:regArray: to libIO IOIntToString().
+}

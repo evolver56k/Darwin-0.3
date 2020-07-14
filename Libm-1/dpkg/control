@@ -1,0 +1,6 @@
+Package: libm
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 15
+Description: Math library
+Build-Depends: build-base

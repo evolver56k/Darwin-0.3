@@ -1,0 +1,20 @@
+/.gdbinit/1.1.1.2/Thu Jul 22 22:55:25 1999/-kb/Tkernel-7
+/APPLE_LICENSE/1.2/Thu Jul 22 23:04:58 1999/-kb/Tkernel-7
+/MakeInc.csh/1.1.1.2/Thu Jul 22 22:55:25 1999/-kb/Tkernel-7
+/MakeInc.dir/1.1.1.2/Thu Jul 22 22:55:25 1999/-kb/Tkernel-7
+/MakeInc.simple/1.1.1.2/Thu Jul 22 22:55:25 1999/-kb/Tkernel-7
+/Makefile/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+D/bsd////
+D/conf////
+D/dpkg////
+D/driverkit////
+D/ipc////
+D/kern////
+D/kernserv////
+D/mach////
+D/mach_debug////
+D/machdep////
+D/mon////
+D/src////
+D/uxkern////
+D/vm////

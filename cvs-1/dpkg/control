@@ -1,0 +1,7 @@
+Package: cvs
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Cyclic Software
+Version: 1.10
+URL: http://www.cyclic.com/cvs/info.html
+Description: Concurrent Versions System
+Build-Depends: build-base, perl

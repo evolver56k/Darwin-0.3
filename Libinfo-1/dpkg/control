@@ -1,0 +1,6 @@
+Package: libinfo
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 44.2
+Description: NetInfo library
+Build-Depends: build-base, librpcsvc-hdrs, libinfo-hdrs

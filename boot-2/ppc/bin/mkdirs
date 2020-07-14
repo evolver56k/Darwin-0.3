@@ -1,0 +1,47 @@
+#!/bin/sh
+# Mark Tamura
+
+if test $# -eq 0
+then
+    exit 0
+fi
+
+PARTS=`echo $1 | gawk -F/ '{
+
+    for (i = 1 ; i < 200 ; i++)
+        print $i
+}'`
+
+SLASH=`echo $1 | gawk '{
+
+    print substr($1,1,1)
+}'`
+
+DIR=""
+
+for FILE in $PARTS
+do
+    if test -z $DIR
+    then
+        if test $SLASH = '/'
+        then
+            DIR=/$FILE
+        else
+            DIR=$FILE
+        fi
+    else
+        DIR=$DIR/$FILE
+    fi
+
+    if test ! -d $DIR
+    then
+        echo $DIR
+        mkdir $DIR
+        if test $? -eq 1
+        then
+            exit 1
+        fi
+    fi
+done
+
+exit 0

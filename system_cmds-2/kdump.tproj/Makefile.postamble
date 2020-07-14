@@ -1,0 +1,4 @@
+VPATH += :../ktrace
+
+ioctl.c: mkioctls
+	$(SHELL) mkioctls > $(SFILE_DIR)/ioctl.c

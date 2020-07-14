@@ -1,0 +1,23 @@
+# Initialization
+
+CALL		stub_announce		0
+
+# Associate ports with proc/arg
+
+SMAP		stub0		stub_server	0
+SMAP		stub1		stub_server	1
+ADVERTISE	stub0
+ADVERTISE	stub1
+
+# Set proc to be called when a port dies
+
+PORT_DEATH	stub_port_gone
+
+# This driver must be wired down.
+
+WIRE
+
+
+
+
+

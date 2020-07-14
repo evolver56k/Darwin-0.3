@@ -1,0 +1,37 @@
+{
+    CURRENTLY_ACTIVE_VERSION = YES; 
+    DEPLOY_WITH_VERSION_NAME = A; 
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = (); 
+        FRAMEWORKS = (); 
+        H_FILES = (vol.h, volvar.h, vdi_translation.h, JapaneseConverter.h); 
+        OTHER_LINKED = (CFUnicodeDecomposition.c, JapaneseConverter.c, VDI.c, vdi_translation.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(NEXT_ROOT)/NextDeveloper/Makefiles/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = /usr/lib; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_LINKEROPTIONS = "-seg1addr 0x64f00000"; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/NextDeveloper/bin/make; 
+    PDO_UNIX_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PDO_UNIX_PUBLICHEADERSDIR = "/LocalDeveloper/Headers/$(NAME)"; 
+    PROJECTNAME = "VDI-interface"; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/NextDeveloper/Executables/make; 
+    WINDOWS_INSTALLDIR = "$(HOMEDRIVE)/LocalDeveloper/Libraries"; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+    WINDOWS_PUBLICHEADERSDIR = "$(HOMEDRIVE)/LocalDeveloper/Headers/$(NAME)"; 
+}

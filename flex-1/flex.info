@@ -1,0 +1,20 @@
+##
+# flex
+##
+
+Title		Flex
+BuildDiskTitle	Flex
+Version		2.5.4a
+Description	This package contains flex, the GNU Fast Lexer. Flex is a yacc-compatible lexer with many additional features.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		flex #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

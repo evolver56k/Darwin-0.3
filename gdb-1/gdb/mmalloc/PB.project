@@ -1,0 +1,47 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (mmalloc.h, mmprivate.h); 
+        OTHER_LINKED = (
+            attach.c, 
+            detach.c, 
+            keys.c, 
+            mcalloc.c, 
+            mfree.c, 
+            mm.c, 
+            mmalloc.c, 
+            "mmap-sup.c", 
+            mmcheck.c, 
+            mmemalign.c, 
+            mmstats.c, 
+            mmtrace.c, 
+            mrealloc.c, 
+            mvalloc.c, 
+            "sbrk-sup.c"
+        ); 
+        OTHER_SOURCES = (
+            COPYING.LIB, 
+            ChangeLog, 
+            Makefile.in, 
+            TODO, 
+            configure, 
+            configure.in, 
+            mmalloc.info, 
+            mmalloc.texi, 
+            mmtrace.awk
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = mmalloc; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

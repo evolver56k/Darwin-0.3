@@ -1,0 +1,176 @@
+			VolumeCheck notes
+
+* Panel requests
+
+  -- DiskObject detects "disk not present"
+  -- DiskObject calls vol_panel_disk_num(abort_fcn, queue_ptr)
+  -- either
+     -- Disk is inserted. volCheck thread detects via checkReady:
+     -- WS sends abort. vol driver calls abort_fcn.
+     
+  -- can't have I/O thread(s) block waiting for insertion detection - all
+     threads might evetually block, leaving no thread to do checkReady.
+     
+     
+* Insertion detect
+  -- driver maintains readyState as instance. calls to checkReady: return
+     immediately if state = ready, else do some I/O to find state.
+  -- volCheck thread calls checkReady: once per second if state != ready.
+     -- if transition to ready, call vol_notify_dev if no panel request
+        pending. Call diskPresent: regardless.
+     -- if state was ejecting, and is now ready, bump per-dev counter. If
+        limit exceeded, vol_panel_request(PR_RT_EJECT_REQ).
+     
+  DiskObject subclass's read/write methods verify readyState = ready before
+  proceeding. if not ready, call vol_panel_disk_num(abort_fcn, queue_ptr)....
+  
+  readyState transitions
+ 
+ 	lastReadyState init'd by subclass, then only changed by volCheck!!!
+	 
+  	init: RS_NOTREADY or RS_NODISK (by subclass)
+  
+	RS_NOTREADY, RS_NODISK
+		==> RS_READY when checkReady, called by volCheck, determines
+		    that hardware is ready. Done by volCheck.
+		    
+	RS_READY
+		==> RS_NOTREADY on error. Done by volCheck in 
+		    volCheckNotReady().
+		==> RS_EJECTING when I/O thread grabs eject cmd from ioQ.
+		    Done by volCheck in volCheckEjecting().
+		
+	RS_EJECTING
+		==> RS_NODISK when volCheck sees a RS_NODISK or RS_NOTREADY.
+		    Done by volCheck.
+		
+* in DiskObject subclass:
+   
+     generic exported method:
+     	if this I/O requires no disk
+		enqueue on queue_(always)
+	else
+		enqueue on queue_(needs_disk)
+	wakeup I/O thread (queueLock)
+	
+     generic I/O thread (floppy I/O thread or SCSI disk thread...) {
+     
+        while(1) {
+	    sleep on queueLock;
+	    process everything on queue_(always);
+	    if state != RS_EJECTING, RS_NODISK
+	    	process everything in queue_(needs_disk)
+	    else {
+	        if anything in queue_(needs_disk)
+		    [self requestDisk:]
+	    }
+	}
+     }
+
+     abortRequest (from volCheck thread, from vol driver, from WSM):
+     	pass down to I/O thread (via queue_always).
+	I/O thread does ioComplete on everything in queue_(needs_disk);
+	
+     diskPresent: (called by volCheck thread on disk insert detect
+     	just wakeup I/O thread. It'll process everything in queue_(needs_disk).
+	
+* in volCheck:
+
+     state per registered removable drive {
+     	readyState_t last_readyState;
+	dev_t dev;
+	boolean_t is_ejecting;
+	int eject_counter;
+	boolean_t eject_request_pending;
+	boolean_t disk_request_pending;
+     }
+     A queue of these is set up, one element per removable drive at
+        registerDisk: time.
+	
+     while(1) {
+	for each abort request in queue (from WSM) {
+	    [driver_id abortRequest:]
+	    disk_request_pending = FALSE for that drive;
+	}
+	
+	for each registered removable drive {
+	    switch last_readyState {
+		RS_READY:
+		    if is_ejecting {
+		        checkReady;
+			switch new state {
+			    RS_READY:
+			    	if(!eject_request_pending) {
+				    bump eject_counter;
+				    if exceeded {
+				        make eject_request;
+					eject_request_pending = TRUE;
+				    }
+				 }
+				 break;
+			    RS_NOTREADY:
+			    RS_NODISK:
+			    default:
+			    	if(eject_request_pending) {
+				    cancel panel;
+				    eject_request_pending = FALSE;
+				}
+		        }
+		    }
+		    else no action;
+		
+		default (no disk, not ready):
+		    checkReady;
+		    switch new state {
+			RS_READY:
+			    if(disk_request_pending) 
+			    	cancel panel;
+			    else
+				vol_notify_dev();
+			    [driver_id diskPresent:]; // REGARDLESS
+			    [NXDisk probe:]
+			    break;
+			default:
+			    no action;
+		    }
+		    break;
+	    } /* switch last ready state */
+	}  /* for each drive */  
+	sleep(one second);
+     }
+     
+/*
+ * Called by vol driver
+ */
+volCheckAbort(param = id of device? ptr to volCheckEntry?) {
+	add an abortRequest to volCheck's abortReqQueue;
+}
+
+/*
+ * Called by DiskObject subclass
+ */
+requestDisk {
+	if(!disk_request_pending) {
+		vol_panel_dev();
+		disk_request_pending = TRUE;
+	}
+}
+
+exception conditions:
+  -- eject request pending, disk still ready
+     volCheck thread knows isEjecting. Counts 'n' "ready" states. requests
+         eject panel.
+	 
+  -- panel request pending, disk detected.
+     volCheck knows requestPending; detects transition to RS_READY.
+     invokes driver's diskPresent:
+     driver's I/O thread wakes up, sees RS_READY, processes everything in
+     	queue_(needs_disk).
+	
+  -- panel request pending, WS sends abort message
+     volCheckabort calls  driver's abortRequest:
+     driver's abortReqeust:
+     	pass down to I/O thread.
+	I/O thread ioComplete's everything on queue_(needs_disk).
+     
+  

@@ -1,0 +1,23 @@
+/config.vms/1.1.1.1/Fri Apr 23 01:28:51 1999//Tperl-1
+/descrip.mms/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/descrip_mms.template/1.1.1.1/Fri Apr 23 01:34:03 1999//Tperl-1
+/fndvers.com/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/gen_shrfls.pl/1.1.1.2/Fri Apr 23 01:34:03 1999//Tperl-1
+/genconfig.pl/1.1.1.2/Fri Apr 23 01:34:04 1999//Tperl-1
+/genopt.com/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/make_command.com/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/mms2make.pl/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/munchconfig.c/1.1.1.1/Fri Apr 23 01:34:04 1999//Tperl-1
+/myconfig.com/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/perlvms.pod/1.1.1.2/Fri Apr 23 01:34:04 1999//Tperl-1
+/perly_c.vms/1.1.1.2/Fri Apr 23 01:34:05 1999//Tperl-1
+/perly_h.vms/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/sockadapt.c/1.1.1.1/Fri Apr 23 01:28:52 1999//Tperl-1
+/sockadapt.h/1.1.1.2/Fri Apr 23 01:34:06 1999//Tperl-1
+/subconfigure.com/1.1.1.1/Fri Apr 23 01:34:06 1999//Tperl-1
+/test.com/1.1.1.2/Fri Apr 23 01:34:06 1999//Tperl-1
+/vms.c/1.1.1.2/Fri Apr 23 01:34:06 1999//Tperl-1
+/vms_yfix.pl/1.1.1.2/Fri Apr 23 01:34:07 1999//Tperl-1
+/vmsish.h/1.1.1.2/Fri Apr 23 01:34:07 1999//Tperl-1
+/writemain.pl/1.1.1.1/Fri Apr 23 01:28:53 1999//Tperl-1
+D/ext////

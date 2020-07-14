@@ -1,0 +1,130 @@
+.ds At AppleTalk
+.TH zip 3
+.SH NAME
+.NA zip_getmyzone
+.NA zip_getzonelist 
+.NA zip_locallist
+.TX
+\*(At Zone Information Protocol (ZIP) interface
+.SH SYNOPSIS
+.\" .nf
+.B "#include <at/appletalk.h>"
+.br
+.B "#include <at/atp.h>"
+.br
+.B "#include <at/nbp.h>"
+.br
+.B "#include <at/zip.h>"
+.PP
+.BI int\0zip_getmyzone(at_nvestr_t\0* zone );
+.PP
+.BI int\0zip_getzonelist(int\0 start ,
+.BI at_nvestr_t\0* buf []);
+.PP
+.BI int\0zip_getlocalzones(int\0 start ,
+.BI at_nvestr_t\0* buf []);
+.fi
+.SH DESCRIPTION
+The ZIP interface provides applications with access to the 
+\*(At Zone Information Protocol operations.
+.PP
+The
+.B zip_getmyzone
+routine
+obtains the zone name for the local network.  In case of ALAP, this would
+involve sending a ZIP request to a local bridge to get the zone
+name of the default network.  In case of ELAP, the request is completed
+on the node itself.
+.TP 8
+.I zone 
+A pointer to the zone name.
+The zone string is defined by the following structure (see
+.BR <at/nbp.h>) :
+.sp
+.nf
+\s-1\f7typedef struct  at_nvestr {
+        u_char  len;
+        u_char  str[AT_NVE_STR_SIZE];
+} at_nvestr_t;\f1\s0
+.fi
+.TP
+.I len 
+The size of the string in bytes.
+.TP
+.I str
+The zone name.
+.PP
+This routine returns 0 upon success.
+.PP
+The
+.B zip_getzonelist
+routine
+is used to obtain a complete list of all the zone names defined
+in the internet.
+This routine sends a ZIP request to a bridge for the list of zone names
+in the internet.
+The list is placed into the supplied buffer as concatenated
+.B at_nvestr_t
+structures.
+.TP 8
+.I start
+The starting index for the get zone list request.
+The start index is the 
+value of the index at which to start
+including zone names in the response.
+It is used to obtain a zone list that may not fit into one ATP
+response packet.
+The start index should initially be 1.
+While 
+.B zip_getzonelist
+returns a value greter than zero, the caller must reissue
+.B zip_getzonelist
+calls, specifying a start index
+of the previous start index plus the previous return value of 
+.BR zip_getzonelist .
+.TP
+.I buf
+A buffer to hold this list of zone names.
+Each zone name is an
+.B at_nvestr_t
+structure.
+The size of the zone list buffer (in bytes) must be at least 
+.BR AT_ATP_DATA_SIZE .
+Upon successful completion,
+this routines returns the number of zone names in the list.
+When all zones in the bridge's Zone Information Table
+have been returned, this routine returns 0.
+.PP
+The
+.B zip_getlocalzones
+routine usage and behavior are the same as 
+.B zip_getzonelist
+except that it returns the list of zones on the local EtherTalk
+cable rather than all the zones on the internet.
+.SH DIAGNOSTICS
+All routines return -1 on error
+with a detailed error code stored in
+.BR errno .
+.TP 20
+.B [EINVAL]
+Invalid parameter (all).
+.TP
+.B [EIO]
+An I/O error occurred.
+.TP
+.B [ENETUNREACH]
+A bridge node could not be found to process the request (all).
+.TP
+.B [ENXIO]
+An error occurred while sending a message to a device.
+.PP
+Routines also return any error codes returned by the underlying ATP,
+DDP, or ALAP layers.
+.SH WARNING
+The returned zone strings are not null-terminated.
+.SH "SEE ALSO"
+.BR ddp (3),
+.BR lap (3),
+.BR atp (3),
+.br
+.IR "Inside AppleTalk" .

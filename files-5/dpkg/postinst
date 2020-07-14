@@ -1,0 +1,5 @@
+#! /bin/sh
+
+echo -n 'Re-mounting /dev ...'
+mount -t fdesc -o union stdin /dev
+echo ' done'

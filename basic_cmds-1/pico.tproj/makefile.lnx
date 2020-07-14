@@ -1,0 +1,61 @@
+#
+# Makefile for Berkeley UNIX (4.3bsd) of the PINE composer library and 
+# stand-alone editor pico.
+#
+
+#includes symbol for debugging
+DASHO=		-g
+#for normal build
+#DASHO=		-O
+
+
+CFLAGS=	 	-Dbsd -DLINUX -DPOSIX -DJOB_CONTROL \
+		-I/usr/include/bsd
+
+
+# switches for library building
+LIBCMD=		ar
+LIBARGS=	ru
+RANLIB=		ranlib
+
+LIBS=		-ltermcap -lbsd -lc
+
+OFILES=		attach.o ansi.o basic.o bind.o browse.o buffer.o \
+		composer.o display.o file.o fileio.o line.o osdep.o \
+		pico.o random.o region.o search.o spell.o tcap.o \
+		window.o word.o
+
+CFILES=		attach.c ansi.c basic.c bind.c browse.c buffer.c \
+		composer.c display.c file.c fileio.c line.c osdep.c \
+		pico.c random.c region.c search.c spell.c tcap.c \
+		window.c word.c
+
+HFILES=		estruct.h edef.h efunc.h ebind.h pico.h
+
+
+#
+# dependencies for the Unix versions of pico and libpico.a
+#
+all:		pico
+
+osdep.c:	os_unix.c
+		rm -f osdep.c
+		cp os_unix.c osdep.c
+
+osdep.h:	os_unix.h
+		rm -f osdep.h
+		cp os_unix.h osdep.h
+
+libpico.a:	osdep.c osdep.h $(OFILES)
+		$(LIBCMD) $(LIBARGS) libpico.a $(OFILES)
+		$(RANLIB) libpico.a
+
+pico:		main.c libpico.a
+		$(CC) $(CFLAGS) main.c libpico.a $(LIBS) -o pico
+
+.c.o:		; $(CC) -c $(CFLAGS) $(DASHO) $*.c
+
+$(OFILES):	$(HFILES)
+
+clean:
+		rm -f *.a *.o *~ osdep.c osdep.h

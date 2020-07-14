@@ -1,0 +1,27 @@
+{
+    FILESTABLE = {
+        Documentation = (strftime.3); 
+        Headers = (); 
+        Resources = (); 
+        SUBPROJECTS = (); 
+        Sources = (
+            strncasecmp.c, 
+            tzset.c, 
+            memcmp.c, 
+            memcpy.c, 
+            memset.c, 
+            strchr.c, 
+            strerror.c, 
+            strftime.c, 
+            strtod.c, 
+            system.c
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = missing; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

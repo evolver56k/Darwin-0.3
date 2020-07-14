@@ -1,0 +1,7 @@
+Package: bash
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 2.02.1
+URL: ftp://prep.ai.mit.edu/pub/gnu/bash-2.02.1.tar.gz
+Description: Bourne-again shell
+Build-Depends: build-base

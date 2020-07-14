@@ -1,0 +1,101 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = ("alloca-botch.h", "alloca-norm.h"); 
+        OTHER_LINKED = (
+            alloca.c, 
+            argv.c, 
+            asprintf.c, 
+            atexit.c, 
+            basename.c, 
+            bcmp.c, 
+            bcopy.c, 
+            bzero.c, 
+            "choose-temp.c", 
+            clock.c, 
+            concat.c, 
+            copysign.c, 
+            "cplus-dem.c", 
+            dummy.c, 
+            fdmatch.c, 
+            floatformat.c, 
+            fnmatch.c, 
+            getcwd.c, 
+            getopt.c, 
+            getopt1.c, 
+            getpagesize.c, 
+            getruntime.c, 
+            hex.c, 
+            index.c, 
+            insque.c, 
+            memchr.c, 
+            memcmp.c, 
+            memcpy.c, 
+            memmove.c, 
+            memset.c, 
+            mpw.c, 
+            msdos.c, 
+            objalloc.c, 
+            obstack.c, 
+            pexecute.c, 
+            random.c, 
+            rename.c, 
+            rindex.c, 
+            sigsetmask.c, 
+            spaces.c, 
+            strcasecmp.c, 
+            strchr.c, 
+            strdup.c, 
+            strerror.c, 
+            strncasecmp.c, 
+            strrchr.c, 
+            strsignal.c, 
+            strstr.c, 
+            strtod.c, 
+            strtol.c, 
+            strtoul.c, 
+            tmpnam.c, 
+            vasprintf.c, 
+            vfork.c, 
+            vfprintf.c, 
+            vprintf.c, 
+            vsprintf.c, 
+            waitpid.c, 
+            xatexit.c, 
+            xexit.c, 
+            xmalloc.c, 
+            xstrdup.c, 
+            xstrerror.c
+        ); 
+        OTHER_SOURCES = (
+            COPYING.LIB, 
+            ChangeLog, 
+            Makefile.in, 
+            README, 
+            "config.h-vms", 
+            config.table, 
+            configure.bat, 
+            configure.in, 
+            functions.def, 
+            makefile.dos, 
+            makefile.vms, 
+            "mpw-config.in", 
+            "mpw-make.sed", 
+            vmsbuild.com
+        ); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = libiberty; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

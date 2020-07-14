@@ -1,0 +1,333 @@
+# Makefile.in generated automatically by automake 1.3 from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DISTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+CATOBJEXT = @CATOBJEXT@
+CC = @CC@
+CWARNS = @CWARNS@
+CXX = @CXX@
+DATADIRNAME = @DATADIRNAME@
+EMACS = @EMACS@
+GENCAT = @GENCAT@
+GMSGFMT = @GMSGFMT@
+GT_NO = @GT_NO@
+GT_YES = @GT_YES@
+INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
+INSTOBJEXT = @INSTOBJEXT@
+INTLDEPS = @INTLDEPS@
+INTLLIBS = @INTLLIBS@
+INTLOBJS = @INTLOBJS@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MKINSTALLDIRS = @MKINSTALLDIRS@
+MSGFMT = @MSGFMT@
+NM = @NM@
+OPTCFLAGS = @OPTCFLAGS@
+PACKAGE = @PACKAGE@
+POFILES = @POFILES@
+POSUB = @POSUB@
+RANLIB = @RANLIB@
+USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
+USE_NLS = @USE_NLS@
+VERSION = @VERSION@
+dselect_SUBDIRS = @dselect_SUBDIRS@
+l = @l@
+lispdir = @lispdir@
+perlpath = @perlpath@
+
+AUTOMAKE_OPTIONS = 1.1 foreign
+
+localedir = $(prefix)/share/locale
+
+XGETTEXT = PATH=../src:$$PATH /usr/bin/xgettext --foreign-user --directory=$(top_srcdir) --directory=$(top_builddir)
+MSGMERGE = PATH=../src:$$PATH msgmerge
+
+SOURCES = cat-id-tbl.c
+
+ALL_LINGUAS = en fr ja_JP.EUC
+ALL_PACKAGES = libdpkg dpkgdeb dpkgutil dpkg dselect
+
+POGFILES = \
+  $(foreach lingua,$(ALL_LINGUAS), \
+    $(foreach package,$(ALL_PACKAGES), \
+      $(package).$(lingua).pog))
+
+GMOFILES = \
+  $(foreach lingua,$(ALL_LINGUAS), \
+    $(foreach package,$(ALL_PACKAGES), \
+      $(package).$(lingua).gmo))
+
+CATALOGS = $(GMOFILES)
+
+POTFILES = $(addsuffix .pot,$(ALL_PACKAGES))
+
+DISTFILES = ChangeLog stamp-cat-id $(POGFILES) $(POTFILES) $(GMOFILES) $(SOURCES)
+SUFFIXES = .c .o .po .pog .pox .gmo .mo .msg .cat
+
+libdpkg_POTFILES = \
+	lib/arch.c \
+	lib/database.c \
+	lib/dbmodify.c \
+	lib/dump.c \
+	lib/ehandle.c \
+	lib/fields.c \
+	lib/lock.c \
+	lib/mlib.c \
+	lib/myopt.c \
+	lib/parse.c \
+	lib/parsehelp.c \
+	lib/showcright.c \
+	lib/varbuf.c
+
+dpkg_POTFILES = \
+	dpkg/archives.c \
+	dpkg/cleanup.c \
+	dpkg/configure.c \
+	dpkg/depcon.c \
+	dpkg/enquiry.c \
+	dpkg/errors.c \
+	dpkg/filesdb.c \
+	dpkg/help.c \
+	dpkg/main.c \
+	dpkg/packages.c \
+	dpkg/processarc.c \
+	dpkg/remove.c \
+	dpkg/select.c \
+	dpkg/update.c
+
+dpkgdeb_POTFILES = \
+	dpkg-deb/build.c \
+	dpkg-deb/extract.c \
+	dpkg-deb/info.c \
+	dpkg-deb/main.c
+
+dselect_POTFILES = \
+	dselect/basecmds.cc \
+	dselect/baselist.cc \
+	dselect/basetop.cc \
+	dselect/bindings.cc \
+	dselect/curkeys.cc \
+	dselect/main.cc \
+	dselect/methkeys.cc \
+	dselect/methlist.cc \
+	dselect/method.cc \
+	dselect/methparse.cc \
+	dselect/pkgcmds.cc \
+	dselect/pkgdepcon.cc \
+	dselect/pkgdisplay.cc \
+	dselect/pkginfo.cc \
+	dselect/pkgkeys.cc \
+	dselect/pkglist.cc \
+	dselect/pkgsublist.cc \
+	dselect/pkgtop.cc \
+	dselect/helpmsgs.cc
+
+dpkgutil_POTFILES = \
+	split/info.c \
+	split/join.c \
+	split/main.c \
+	split/queue.c \
+	split/split.c \
+	md5sum/md5sum.c \
+	scripts/start-stop-daemon.c
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+DIST_COMMON =  ChangeLog Makefile.am Makefile.in
+
+
+TAR = tar
+GZIP = --best
+all: Makefile
+
+.SUFFIXES:
+.SUFFIXES: .c .cat .gmo .mo .msg .o .po .pog .pox
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign po/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+tags: TAGS
+TAGS:
+
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = po
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign po/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: 
+	@$(NORMAL_INSTALL)
+
+install-data: install-data-local
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: 
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs:
+
+
+mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(DISTCLEANFILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-generic
+
+clean:  clean-generic mostlyclean
+
+distclean:  distclean-generic clean
+	-rm -f config.status
+	-rm -f libtool
+
+maintainer-clean:  maintainer-clean-generic distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: tags distdir info dvi installcheck install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
+
+
+all: 	potfiles catalogs
+potfiles: $(addprefix $(srcdir)/,$(POTFILES))
+catalogs: $(CATALOGS)
+
+%.gmo: %.pog
+	#file=$(srcdir)/`echo $* | sed 's,.*/,,'`.gmo \
+        #  && rm -f $$file && $(GMSGFMT) -o $$file $<
+	echo $@
+
+$(srcdir)/%.pot: $(%_POTFILES)
+	$(XGETTEXT) --default-domain=$* \
+		--add-comments --keyword=_ --keyword=N_ $($*_POTFILES)
+	rm -f $@
+	mv $*.po $@
+
+.PHONY: install-data-local update-po
+
+install-data-local:
+
+	set -e; \
+	for package in $(ALL_PACKAGES); do \
+	  for lang in $(ALL_LINGUAS); do \
+	    $(mkinstalldirs) $(localedir)/$$lang/LC_MESSAGES; \
+	    cp -p $(srcdir)/$$package.$$lang.gmo $(localedir)/$$lang/LC_MESSAGES/$$package.mo; \
+	  done; \
+	done
+
+update-po: Makefile $(addprefix $(srcdir)/,$(POTFILES))
+	set -e; cd $(srcdir) && \
+	for package in $(ALL_PACKAGES); do \
+	  for lang in $(ALL_LINGUAS); do \
+	    mv $$package.$$lang.pog $$package.$$lang.old.pog; \
+	    echo "$$package.$$lang:"; \
+	    if $(MSGMERGE) $$package.$$lang.old.pog $$package.pot -o $$package.$$lang.pog; then \
+	      rm -f $$package.$$lang.old.pog; \
+	    else \
+	      echo "msgmerge for $$package.$$lang failed"; \
+	      rm -f $$package.$$lang.pog; \
+	      mv $$package.$$lang.old.pog $$package.$$lang.pog; \
+	    fi; \
+	  done \
+	done
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

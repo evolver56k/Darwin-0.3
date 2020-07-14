@@ -1,0 +1,16 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        HEADERSEARCH = (., ..); 
+        H_FILES = (ectype.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (ectype.c, mkdctype.c); 
+        OTHER_SOURCES = (Makefile.dist, Makefile.preamble, Makefile.postamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = mkdctype; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+}

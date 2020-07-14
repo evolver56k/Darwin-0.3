@@ -1,0 +1,14 @@
+Todos for 1.5 or further.
+
+- implement "persistent" retrieving.
+- allow time-stamping by arbitrary date.
+- fix Unix directory parsing to allow for spaces in file names.
+- allow size limit to files.
+- allow wildcards in -X/-I.
+- -k to convert convert relative references to absolute if not downloaded.
+- recognize HTML comments.
+- download to .in* when mirroring.
+- move/delete nonexistent files when mirroring.
+- implement a switch to avoid downloading multiple files (e.g. x and x.gz).
+- implement uploading (--put local-file?) in FTP and HTTP.
+- implement better spider options.

@@ -1,0 +1,32 @@
+Replied: Thu, 19 Feb 1998 02:02:52 -0500
+Replied: "JJEVNISEK@qgraph.com "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa25892;
+          18 Feb 1998 07:12 EST
+Received: from racerx.qgraph.com ("port 1910"@racerx.qgraph.com)
+ by Ihub.qgraph.com (PMDF V5.1-10 #24057)
+ with ESMTP id <01ITPR31K3OU00031L@Ihub.qgraph.com> for stenn@whimsy.udel.edu;
+ Wed, 18 Feb 1998 06:10:38 CST
+Received: from DECNET-MAIL (JJEVNISEK@LUGE)
+ by hub.qgraph.com (PMDF V5.1-10 #24057) id <01ITPQS8OBB4000DL3@hub.qgraph.com>
+ for stenn@whimsy.udel.edu; Wed, 18 Feb 1998 06:07:27 -0600 (CST)
+Date: Wed, 18 Feb 1998 06:07:26 -0600 (CST)
+From: JJEVNISEK@qgraph.com
+Subject: Minor windows nt bug in ntp 4.0.71
+To: stenn@whimsy.udel.edu
+Message-id: <01ITPQS8OKYQ000DL3@hub.qgraph.com>
+X-VMS-To: INET::"stenn@whimsy.udel.edu"
+X-VMS-Cc: JJEVNISEK
+MIME-version: 1.0
+Content-type: TEXT/PLAIN; CHARSET=US-ASCII
+
+Harlan,
+
+A minor bug exists in the windows nt implementation of ntp 4.0.71 in the
+file ntp-4.0.71/include/winnt/sys/time.h. The lines
+     extern int gettimeofday P((struct timeval *));
+     extern int settimeofday P((struct timeval *));
+should be replaced by the lines
+     extern int gettimeofday (struct timeval *);
+     extern int settimeofday (struct timeval *);
+Jeff
+jjevnisek@qgraph.com

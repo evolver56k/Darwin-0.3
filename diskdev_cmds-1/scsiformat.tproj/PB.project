@@ -1,0 +1,22 @@
+{
+    APPCLASS = NSApplication; 
+    BUILDDIR = ""; 
+    BUILDTOOL = /bin/make; 
+    COMPILEROPTIONS = ""; 
+    FILESTABLE = {
+	FRAMEWORKS = (); 
+	HEADERSEARCH = (); 
+	M_FILES = (); 
+	OTHER_LIBS = (); 
+	OTHER_LINKED = (scsiformat.c); 
+	OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.dist, scsiformat.8); 
+    }; 
+    INSTALLDIR = /sbin; 
+    LANGUAGE = English; 
+    LINKEROPTIONS = ""; 
+    LOCALIZABLE_FILES = {}; 
+    MAINNIB = scsiformat; 
+    PROJECTNAME = scsiformat; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.0; 
+}

@@ -1,0 +1,62 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (
+            klm_prot.h, 
+            lockf.h, 
+            lockmgr.h, 
+            nlm_prot.h, 
+            priv_prot.h, 
+            prot_lock.h, 
+            prot_time.h, 
+            sm_inter.h, 
+            sm_res.h
+        ); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (
+            hash.c, 
+            prot_alloc.c, 
+            prot_freeall.c, 
+            prot_libr.c, 
+            prot_lock.c, 
+            prot_main.c, 
+            prot_msg.c, 
+            prot_pklm.c, 
+            prot_pnlm.c, 
+            prot_priv.c, 
+            prot_proc.c, 
+            prot_share.c, 
+            sm_monitor.c, 
+            svc_udp.c, 
+            tcp.c, 
+            udp.c, 
+            ufs_lockf.c, 
+            xdr_klm.c, 
+            xdr_nlm.c, 
+            xdr_sm.c
+        ); 
+        OTHER_SOURCES = (Makefile.dist, Makefile.preamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    NEXTSTEP_COMPILEROPTIONS = "-DVAX_PORT"; 
+    NEXTSTEP_INSTALLDIR = /usr/libexec; 
+    NEXTSTEP_LINKEROPTIONS = ""; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = "-DVAX_PORT"; 
+    PDO_UNIX_INSTALLDIR = /usr/libexec; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = rpc.lockd; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_COMPILEROPTIONS = "-DVAX_PORT"; 
+    WINDOWS_INSTALLDIR = /usr/libexec; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

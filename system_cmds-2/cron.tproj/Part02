@@ -1,0 +1,3007 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of archive 2 (of 2)."
+# Contents:  CHANGES MAIL crontab.c do_command.c entry.c misc.c
+# Wrapped by vixie@gw.home.vix.com on Sun Jan 16 19:20:52 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'CHANGES' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'CHANGES'\"
+else
+echo shar: Extracting \"'CHANGES'\" \(7968 characters\)
+sed "s/^X//" >'CHANGES' <<'END_OF_FILE'
+XVixie Cron		Changes from V2 to V3
+XPaul Vixie
+X29-Dec-1993
+X
+XThe crontab command now conforms to POSIX 1003.2.  This means that when you
+Xinstall it, if you have any "crontab" command lines floating around in shell
+Xscripts (such as /etc/rc or /etc/rc.local), you will need to change them.
+X
+XI have integrated several changes made by BSDi for their BSD/386 operating
+Xsystem; these were offerred to me before I started consulting for them, so
+Xit is safe to say that they were intended for publication.  Most notably,
+Xthe name of the cron daemon has changed from "crond" to "cron".  This was
+Xdone for compatibility with 4.3BSD.  Another change made for the same reason
+Xis the ability to read in an /etc/crontab file which has an extra field in
+Xeach entry, between the time fields and the command.  This field is a user
+Xname, and it permits the /etc/crontab command to contain commands which are
+Xto be run by any user on the system.  /etc/crontab is not "installed" via
+Xthe crontab(1) command; it is automatically read at startup time and it will
+Xbe reread whenever it changes.
+X
+XI also added a "-e" option to crontab(1).  Nine people also sent me diffs
+Xto add this option, but I had already implemented it on my own.  I actually
+Xreleased an interrim version (V2.2, I think) for limited testing, and got a
+Xchance to fix a bad security bug in the "-e" option thanks to XXX.
+X
+XThe daemon used to be extraordinarily sloppy in its use of file descriptors.
+XA heck of a lot of them were left open in spawned jobs, which caused problems
+Xfor the daemon and also caused problems with the spawned jobs if they were 
+Xshell scripts since "sh" and "csh" have traditionally used hidden file
+Xdescriptors to pass information to subshells, and cron was causing them to
+Xthink they were subshells.  If you had trouble with "sh" or "csh" scripts in
+XV2, chances are good that V3 will fix your problems.
+X
+XAbout a dozen people have reminded me that I forgot to initialize "crontab_fd"
+Xin database.c.  Keith Cantrell was the first, so he gets the point.
+X
+XSteve Simmons reminded me that once an account has been deleted from the system,
+X"crontab -u USER -d" will not work.  My solution is to suggest to all of you that
+Xbefore you delete a user's account, you first delete that user's crontab file if
+Xany.  From cron's point of view, usernames can never be treated as arbitrary
+Xstrings.  Either they are valid user names, or they are not.  I will not make
+Xan exception for the "-d" case, for security reasons that I consider reasonable.
+XIt is trivial for a root user to delete the entry by hand if necessary.
+X
+XDan O'Neil reminded me that I forgot to reset "log_fd" in misc.c.  A lot of others
+Xalso reminded me of this, but Dan gets the point.  I didn't fix it there, since the
+Xreal bug was that it should have been open in the parent.
+X
+XPeter Kabal reminded me that I forgot to "#ifdef DEBUGGING" some code in misc.c.
+XHans Trompert actually told me first, but Peter sent the patch so he gets the point.
+X
+XRussell Nelson told me that I'd forgotten to "#include <syslog.h>" in misc.c,
+Xwhich explains why a lot of other people complained that it wasn't using syslog
+Xeven when they configured it that way :-).  Steve Simmons told me first, though,
+Xso he gets the point.
+X
+XAn interrim version of the daemon tried to "stat" every file before executing it;
+Xthis turned out to be a horribly bad idea since finding the name of a file from
+Xa shell command is a hard job (that's why we have shells, right?)  I removed this
+Xbogus code.  Dave Burgess gets the point.
+X
+XDennis R. Conley sent a suggestion for MMDF systems, which I've added to the
+Xcomments in cron.h.
+X
+XMike Heisler noted that I use comments in the CONVERSION file which are documented
+Xas illegal in the man pages.  Thanks, Mike.
+X
+XIrving Wolfe sent me some very cheerful changes for a NeXT system, but I consider
+Xthe system itself broken and I can't bring myself to #ifdef for something as screwed
+Xup as this system seems to be.  Sorry, NeXT users -- pray for POSIX.  Irving also
+Xasked for a per-job MAILTO, but the syntactic overkill that would require is more
+Xthan I'm willing to add.  Remember, on BSD4.2, cron was a 12K daemon.  My cron is
+Xabout ten times that size already.
+X
+XLots of folks complained that the autogenerated "Date:" header wasn't in ARPA format.
+XI didn't understand this -- either folks will use Sendmail and not generate a Date:
+Xat all (since Sendmail will do it), or folks will use something other than Sendmail
+Xwhich won't care about Date: formats.  But I've "fixed" it anyway...
+X
+XSeveral people suggested that "*" should be able to take a "/step".  One person
+Xsuggested that "N/step" ought to mean "N-last/step", but that's stretching things
+Xa bit far.  "*/step" seems quite intuitive to me, so I've added it.  Colin Plumb
+Xsent in the first and most polite request for this feature.
+X
+XAs with every release of Cron, BIND, and seemingly everything else I do, one
+Xuser stands out with the most critical but also the most useful analysis.
+XCron V3's high score belongs to Peter Holzer, who sent in the nicest looking
+Xpatch for the "%" interpretation problem and also helped me understand a
+Xtricky bit of badness in the "log_fd" problem.
+X
+Xagulbra@flode.nvg.unit.no wins the honors for being the first to point out the
+Xnasty security hole in "crontab -r".  'Nuff said.
+X
+XSeveral folks pointed out that log_it() needed to exist even if logging was
+Xdisabled.  Some day I will create a tool that will compile a subsystem with
+Xevery possible combination and permutation of #ifdef options, but meanwhile
+Xthanks to everybody.
+X
+Xjob_runqueue() was using storage after freeing it, since Jordan told me back
+Xin 1983 that C let you do that, and I believed him in 1986 when I wrote all
+Xthis junk.  Linux was the first to die from this error, and the Linux people
+Xsent me the most amazing, um, collection of patches for this problem.  Thanks
+Xfor all the fish.
+X
+XJeremy Bettis reminded me that popen() isn't safe.  I grabbed Ken Arnold's 
+Xversion of popen/pclose from the ftpd and hacked it to taste.  We're safe now,
+Xfrom this at least.
+X
+XBranko Lankester sent me a very timely and helpful fix for a looming security
+Xproblem in my "crontab -e" implementation.
+X
+X--------
+X
+XVixie Cron		Changes from V1 to V2
+XPaul Vixie
+X8-Feb-1988
+X
+XMany changes were made in a rash of activity about six months ago, the exact
+Xlist of which is no longer clear in my memory.  I know that V1 used a file
+Xcalled POKECRON in /usr/spool/cron to tell it that it was time to re-read
+Xall the crontab files; V2 uses the modtime the crontab directory as a flag to
+Xcheck out the crontab files; those whose modtime has changed will be re-read,
+Xand the others left alone.  Note that the crontab(1) command will do a utimes
+Xcall to make sure the mtime of the dir changes, since the filename/inode will
+Xoften remain the same after a replacement and the mtime wouldn't change in
+Xthat case.
+X
+X8-Feb-88: made it possible to use much larger environment variable strings.
+X	V1 allowed 100 characters; V2 allows 1000.  This was needed for PATH
+X	variables on some systems.  Thanks to Toerless Eckert for this idea.
+X	E-mail: UUCP: ...pyramid!fauern!faui10!eckert
+X
+X16-Feb-88: added allow/deny, moved /usr/spool/cron/crontabs to
+X	/usr/lib/cron/tabs.  allow and deny are /usr/lib/cron/{allow,deny},
+X	since the sysv naming for this depends on 'at' using the same
+X	dir, which would be stupid (hint: use /usr/{lib,spool}/at).
+X
+X22-Feb-88: made it read the spool directory for crontabs and look each one
+X	up using getpwnam() rather than reading all passwds with getpwent()
+X	and trying to open each crontab.
+X
+X9-Dec-88: made it sync to :00 after the minute, makes cron predictable.
+X	added logging to /var/cron/log.
+X
+X14-Apr-90: (actually, changes since December 1989)
+X	fixed a number of bugs reported from the net and from John Gilmore.
+X	added syslog per Keith Bostic.  security features including not
+X	being willing to run a command owned or writable by other than
+X	the owner of the crontab 9not working well yet)
+END_OF_FILE
+if test 7968 -ne `wc -c <'CHANGES'`; then
+    echo shar: \"'CHANGES'\" unpacked with wrong size!
+fi
+# end of 'CHANGES'
+fi
+if test -f 'MAIL' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'MAIL'\"
+else
+echo shar: Extracting \"'MAIL'\" \(20680 characters\)
+sed "s/^X//" >'MAIL' <<'END_OF_FILE'
+X[ this is really old mail that came to me in response to my 1986 posting
+X  to usenet asking for feature suggestions before releasing the first 
+X  version of cron.  it is presented here for its entertainment value.
+X  --vix ]
+X
+X$Id: Part02,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $
+X
+XFrom ptsfa!lll-crg!ames!acornrc!bob Wed Dec 31 10:07:08 1986
+XDate: Wed, 31 Dec 86 08:59:31 pst
+XFrom: lll-crg!ames!acornrc!bob (Bob Weissman)
+XTo: ptsfa!vixie!paul
+XStatus: RO
+X
+XSure, here's a suggestion: I'd like to be able to run a program, say,
+Xevery two hours.  Current cron requires me to write
+X0,2,4,6,8,10,12,14,16,18,20,22 in the hours field.  How about a notation
+Xto handle this more elegantly?
+X
+X<<	Okay, I've allowed 0-22/2 as a means of handling this.
+X	The time specification for my cron is as follows:
+X		specification = range {"," range}
+X		range = (start "-" finish ["/" step]) | single-unit
+X	This allows "1,3,5-7", which the current cron doesn't (it won't
+X	do a range inside a list), and handles your specific need.	>>
+X
+XFrom drw@mit-eddie Wed Dec 31 18:25:27 1986
+XDate: Wed, 31 Dec 86 14:28:19 est
+XFrom: drw@mit-eddie (Dale Worley)
+XTo: mit-eddie!vixie!paul
+XStatus: RO
+X
+XWe have a lot of lines in our crontab of the form
+X
+X	00 12 * * * su user < /usr/users/user/script.file
+X
+XThis barfs (silently!) on our system (Dec Ultrix 1.2 == 4.2bsd) if
+Xuser's shell is csh.  This, I am told, is because csh requires that
+Xthe environment be set up in certain ways, which cron doesn't do.
+X(Actually, I believe, it is because /etc/rc, which runs cron, doesn't
+Xset up the environment enough for csh to run, and cron just inherits
+Xthe situation.)  Anyway, the point is that if you find out what csh
+Xreally needs in its environment, you might want to set up cron to
+Xprovide some reasonable defaults (if it isn't supplied by cron's
+Xparent).  Also, could you tell me what csh needs, if you find out, so
+Xwe can hack our /etc/rc?
+X
+X<<	well, the environment IS a problem. processes that cron forks
+X	will inherit the environment of the person who ran the cron
+X	daemon... I plan to edit out such useless things as TERMCAP,
+X	TERM, and the like; supply correct values for HOME, USER, CWD,
+X	and whatever else comes to mind.  I'll make sure csh works...	>>
+XFrom ptsfa!ames!seismo!dgis!generous Thu Jan  1 07:33:17 1987
+XDate: Thu Jan 1 10:29:20 1987
+XFrom: ames!seismo!dgis!generous (Curtis Generous)
+XTo: nike!ptsfa!vixie!paul
+XStatus: RO
+X
+XPaul:
+X
+XOne of the limitations of the present versions of cron is the lack
+Xof the capability of specifying a way to execute a command every
+Xn units of time.
+X
+XHere is a good example:
+X
+X# Present method to start up uucico
+X02,12,22,32,42,52 * * * * 	exec /usr/lib/uucp/uucico -r1
+X
+X# New method ?? (the ':' here is just one possibility for syntax)
+X02:10 * * * *			exec /usr/lib/uucp/uucico -r1
+X
+XThis method would prove very helpful for those programs that get started
+Xevery few minutes, making the entry long and not easily readable.  The first
+Xnumber would specify the base time, and the second number the repetition
+Xinterval.
+X
+X<<	Good idea, but bob@acornrc beat you to it.  I used '/' instead of
+X	':'.  This is my personal preference, and seems intuitive when you
+X	think of the divide operator in C... Does anyone have a preference? >>
+X
+XFrom ptsfa!lll-lcc!seismo!decuac!c3pe!c3engr!charles Thu Jan  1 17:04:24 1987
+XFrom: lll-lcc!seismo!c3pe!c3engr!charles (Charles Green)
+XTo: c3pe!decuac!dolqci!vrdxhq!seismo!lll-lcc!ptsfa!vixie!paul
+XDate: Thu Jan  1 19:22:47 1987
+XStatus: RO
+X
+XWell, this isn't a compatible extension, but I have in times past wondered
+Xabout a facility to let you start a process at intervals of, say, 17 minutes,
+Xinstead of particular minutes out of each hour.
+X
+X<<	This was a popular request!	>>
+X
+XFrom seismo!uwvax!astroatc!nicmad!norvax!mann Sun Jan  4 13:04:01 1987
+XDate: Fri, 2 Jan 87 09:23:53 cst
+XFrom: lll-lcc!seismo!uwvax!astroatc!nicmad!norvax!mann (Tom Mann)
+XTo: ptsfa!vixie!paul
+XStatus: RO
+X
+XI'm not sure if it is in cron (either SysV or BSD ... if it is, I haven't
+Xfigured it out ) but a comment feature would SURE BE NICE!.
+XThere are times when I want to comment out an entry
+Xfor a period of time; it might also make it a lot more legible.
+X
+X<<	My cron allows blank lines and standard #-type comments.  I know
+X	that one BSD4.2 cron I've used had it.  I don't know about SysV.  >>
+X
+XFrom ptsfa!hoptoad!hugh Mon Jan  5 10:26:46 1987
+XDate: Mon, 5 Jan 87 01:22:17 PST
+XFrom: hoptoad!hugh (Hugh Daniel)
+XTo: ptsfa!vixie!paul
+XStatus: RO
+X
+X  Hi, I do have a BIG one that I would like.  I want to log ALL output
+Xfrom command lines into a file for each line.  Thus I might have a chance
+Xof finding out why my crontab entry did not work.
+X  This would seem to work best if done by cron, as it is now I have a google
+Xof shell scripts laying about just to put the error output where I can see
+Xit.
+X
+X<<	My cron (and the SysV cron) will send mail to the owner of the
+X	particular crontab file if a command generates any output on stdout
+X	or stderr.  This can be irritating, but if you write a script such
+X	that any output means a problem occurred, you can avoid most logfile
+X	needs, and not generate mail except in unforeseen circumstances.   >>
+X
+XFrom ptsfa!dual!ucbvax!ihnp4!anvil!es!Robert_Toxen Mon Jan  5 13:08:46 1987
+XFrom: dual!ucbvax!ihnp4!anvil!es!Robert_Toxen
+XDate: Fri,  2 Jan 87 14:25:29 EST
+XTo: anvil!ihnp4!ucbvax!dual!ptsfa!vixie!paul
+XStatus: RO
+X
+XHere are some suggestions:
+X1. Run it through the C preprocessor via "/lib/<whatever>".
+X
+X<<	hmmm. this seems of limited utility, and if you really wanted
+X	to do it that way, you could do it yourself (since users can
+X	write to their own crontab files).  I'll add '-' (read stdin)
+X	to the crontab installer program to facilitate this.		>>
+X
+X2. Allow specifying every Nth day of week, i.e., every second Wednesday.
+X   I did this to calendar by separating the day of week (Wed=4, which one
+X   to start on and N with slashes).  I took modulo the day of year as a
+X   starting point so that someone with a desk calendar documenting such
+X   things can easily determine the offset (second number).  I did this
+X   while at SGI; alas I don't have a copy of the code.
+X
+X<<	I can see how this could be useful, but I'm not sure how I'd
+X	implement it.  Cron currently doesn't keep track of the last time
+X	a given command was run; whether the current Wednesday is the first
+X	or second since the command was last run would be pretty hard to
+X	figure out.  I'd have to keep a database of commands and their
+X	execution around, and purge it when the crontab was overwritten.
+X	This is too much work for me, but if someone adds it, let me know.  >>
+X
+XFrom ptsfa!ames!seismo!cbmvax!devon!paul Tue Jan  6 05:50:17 1987
+XFrom: ames!seismo!cbmvax!devon!paul
+XTo: cbmvax!seismo!nike!ptsfa!vixie!paul
+XDate: Mon Jan  5 09:29:57 1987
+XStatus: RO
+X
+XOne problem that has always plagued me with cron is the assumed ORing.
+XI'd like to see some type of ANDing implemented.  I guess I can best
+Xdescribe this by example.  Say I have the following line in my crontab
+Xfile:
+X
+X*  *  4-31  *  1-6	/usr/bin/command
+X
+XWhat this does is run 'command' on the 4th thru 31st days of the
+Xmonth, AND on Monday thru Saturday; which probably means running it
+Xevery day of the month (unless Sunday falls on days 1-3).  This
+Xhappens because cron runs the command if the day-of-month OR the
+Xday-of-week is true.
+X
+XWhat I'd like to happen with the above line is to run the command ONLY
+Xon Monday thru Saturday any time after the 3rd of the month, e.g. if
+Xthe day-of-month AND the day-of-week are true.
+X
+XMy proposal to you is to implement some special chars for the first
+Xfive fields.  Examples:
+X
+X*  *  !1-3  *  1-6	/usr/bin/command
+X
+X(run command Mon-Sat, but NOT [!] on the first 3 days of the month)
+X
+X*  *  &4-31 *  &1-6	/usr/bin/command
+X
+X(run command if day-of-month AND day-of-week are true)
+X
+XGet the picture?  This would be compatable with existing versions of
+Xcron (which wouldn't currently be using any special characters, so
+Xthat old crontabs would be handled correctly).
+X
+X<<	This message made me aware of the actual boolean expression involved
+X	in a crontab entry.  I'd assumed that it was
+X		(minute && hour && DoM && month && DoW)
+X	But it's really
+X		(minute && hour && month && (DoM || DoW))
+X
+X	I can see some value in changing this, but with a fixed order of
+X	fields, operators get to be kindof unary, which && and || really
+X	aren't.  If someone has an idea on a syntax that allows useful
+X	variations to the standard (&& && && (||)) default, please suggest. >>
+X
+XFrom bobkat!pedz Tue Jan  6 20:02:10 1987
+XFrom: pedz@bobkat.UUCP (Pedz Thing)
+XDate: 2 Jan 87 17:34:44 GMT
+XStatus: RO
+X
+XLog files!  It would be nice to be able to specify a log for cron
+Xitself and also a log for each program's stdout and stderr to go to.
+XThe latter can of course be done with > and 2> but it would be nice if
+Xthere could be a single line with some sort of pattern like
+X`> /usr/spool/log/%' and the command would be substituted for the %.
+XAnother thing which would be nice is to be able to specify which shell
+Xto call to give the command to.
+X
+X<<	Log files are done with mail.  The '%' idea could be useful if
+X	a different character were used (% is special to cron, see man
+X	page); a different directory would have to be chosen, since each
+X	user has their own crontab file; and something intelligent would
+X	have to be done in the file naming, since the first word of the
+X	command might be ambiguous (with other commands).  In short, it's
+X	too much work.  Sorry.						  >>
+X
+XFrom guy%gorodish@sun Tue Jan  6 20:03:13 1987
+XFrom: guy%gorodish@sun (Guy Harris)
+XMessage-ID: <10944@sun.uucp>
+XDate: 5 Jan 87 12:09:09 GMT
+XReferences: <429@vixie.UUCP> <359@bobkat.UUCP>
+XSender: news@sun.uucp
+XStatus: RO
+X
+X> Another thing which would be nice is to be able to specify which shell
+X> to call to give the command to.
+X
+XWell, the obvious choice would be the user's shell, but this wouldn't work
+Xfor accounts like "uucico".
+X
+X<<	I use the owning user's shell, and to handle "uucico" I check a
+X	list of "acceptable shells" (currently compiled in, does anybody
+X	mind?), substituting a default (compiled in) shell if the user's
+X	shell isn't on the list.
+X
+X	BTW, "compiled in" means that it's in a .h file, easily changed
+X	during installation, but requiring recompilation to modify.  You
+X	don't have to go digging through the code to find it...		  >>
+X
+XFrom qantel!hplabs!ucbvax!mwm@violet.berkeley.edu Tue Jan  6 21:24:48 1987
+XTo: hplabs!qantel!vixie!paul (Paul Vixie Esq)
+XDate: 04 Jan 87 00:42:35 PST (Sun)
+XFrom: Mike Meyer <mwm@violet.berkeley.edu>
+XStatus: RO
+X
+X<<[Discussion of RMS/FSF, and mwm's GNU Cron deleted]>>
+X
+XOh, yeah - here are the extensions on my cron:
+X
+X1) Sunday is both day 0 and day 7, so it complies with both SysV and
+XBSD cron.
+X
+X<<	Good idea. I did it too, thanks for informing me.	>>
+X
+X2) At is integrated into the cron. Instead of atrun to scan the
+X/usr/spool/at directory, at files are put into the /usr/lib/cron
+Xdirectory along with users cron files, and cron fabricates a line from
+Xa crontab file to run them. This is considered a major win by all who
+Xuse it.
+X
+X<<	I don't use 'at', and my cron doesn't do anything with it.  To run
+X	'at', I use 'atrun' the same way the current BSD cron does.  My
+X	crontab files are in /usr/spool/cron/crontabs, in the SysV
+X	tradition -- not in /usr/lib/cron.  This is a configuration
+X	parameter, of course.						>>
+X
+XThere are two known restrictions:
+X
+X1) I don't support any of the SysV security hooks. I don't have a use
+Xfor them, and RMS didn't like the idea at all :-).
+X
+X<<	This means cron.allow and cron.deny.  I plan to support them, as
+X	they've been quite helpful at various HPUX sites I've administered. >>
+X
+X2) Cron expects to be able to create files with names longer than 14
+Xcharacters, which makes it hard to run on SysV. At least one person
+Xwas working on a port, but I don't know how it's going. That might
+Xmake for a good reason for releasing yours, right there.
+X
+X<<	If someone has SysV (with the 14-character limit), they probably
+X	won't want my cron, since it doesn't add much to the standard
+X	version (which they may have support for).  My cron is not currently
+X	portable to non-BSD systems, since it relies on interval timers (I
+X	needed to sleep for intervals more granular than seconds alone would
+X	allow).  The port would be trivial, and I will do it if a lot of
+X	people ask for it...						>>
+X
+XOh, yeah - I'm going to see about getting this cron integrated into
+Xthe next 4BSD release.
+X
+X<<	How does one go about this?  I have a few nifty gadgets I'd like
+X	to contribute, this cron being one of them...			>>
+X
+X<<[more FSF/GNU discussion deleted]>>
+X
+XFrom qantel!hplabs!ames!ut-sally!ut-ngp!melpad!bigtex!james Tue Jan  6 21:24:57 1987
+XPosted-Date: Fri, 2 Jan 87 19:26:16 est
+XDate: Fri, 2 Jan 87 19:26:16 est
+XFrom: hplabs!ames!ut-sally!ut-ngp!bigtex!james
+XTo: vixie!paul
+XStatus: RO
+X
+XYes!!!  There are several critical failures in System V cron...
+X
+X1. Pass all variables in cron's environment into the environment of things
+X   cron starts up, or at least into the crontab entries started up (at jobs
+X   will inherit the environment of the user).  If nothing else it is critically
+X   important that the TZ variable be passed on.  PATH should be passed on too.
+X   Basically, passing environment values allows one to design a standard
+X   environment with TZ and PATH and have that run by everything.  If anyone
+X   tells you this is no big deal, consider what happens when uucico is
+X   started by cron in CA to make a long distance phone link...  Unless the
+X   administrator is really on his/her toes, calls scheduled at 5pm will really
+X   go at two in the afternoon, needlessly incurring huge phone bills, all
+X   because System V refuses to pass the TZ from its environment down.  There
+X   are work arounds, but only putting it in cron will really work.  This is
+X   not a security hole.
+X
+X<<	delete TERM and TERMCAP; modify HOME, USER, and CWD; pass TZ and
+X	PATH through undisturbed.  any other requests out there?
+X
+X	BSD doesn't have this problem -- TZ is passed right on through if
+X	you define it in the shell before starting my cron daemon.  However,
+X	the BSD I'm running this on doesn't need TZ to be defined anyway...
+X	The default in the kernel has been just fine so far...  But just the
+X	same, if/when I port to SysV (I guess I really should), I'll make
+X	sure this works right.
+X
+X	I guess I've been spoiled.  HPUX is SysV-based, and I never had a
+X	problem with cron and TZ when I used it.			  >>
+X
+X2. A way to avoid logging stuff in /usr/lib/cron/log.  I have a cron entry
+X   run uudemon.hr every 10 minutes.  This is 144 times/day.  Each run generates
+X   three lines of text, for a total of 432 lines of text I don't want to see.
+X   Obviously this should be optional, but it would be nice if there were a
+X   way to flag an entry so that it wasn't logged at all unless there was an
+X   error.
+X
+X<<	I don't know nothin' 'bout no /usr/lib/cron/log.  What is this file?
+X	I don't see any reason to create log entries, given the mail-the-
+X	output behaviour.  Opinions, anyone?				>>
+X
+XI will come up with other ideas no doubt, but I can always implement them
+Xmyself.
+X
+X<<	That's what I like about PD software.  Please send me the diffs!  >>
+X
+XThe other problem you have is making sure you can run standard
+Xcrontabs.  I would suggest something like this: if the command part of the
+Xentry starts with an unescaped -, then flags and options follow immediately
+Xthereafter.  As in:
+X
+X2,12,22,32,42,52 * * * * -q /usr/lib/uucp/uudemon.hr
+X
+XThis could mean do not log the uudemon.hr run unless there is a problem of
+Xsome kind.  This is probably safe as not many filenames start with "-", and
+Xthose that do are already a problem for people.
+X
+X<<	Since I don't plan on supporting /usr/lib/cron/log in ANY form unless
+X	many people request it, I won't be needing -q as you've defined it.
+X	I could use something like this to avoid sending mail on errors, for
+X	the occasional script that you don't want to bullet-proof.
+X
+X	The compatibility issue is CRITICAL.  The 4.3BSD crontab format is
+X	a crime against the whole philosophy of Unix(TM), in my opinion.   >>
+X
+XOne other minor thing to consider is the ulimit: can different users get
+Xdifferent ulimits for their crontab entries?
+X
+X<<	Boy I'm ignorant today.  What's a ulimit, and what should I do with
+X	it in a crontab?  Suggestions, enlightenment, etc ??		   >>
+X
+XFrom qantel!lll-crg!ames!uw-beaver!uw-nsr!john Tue Jan  6 23:32:44 1987
+XDate: Thu, 1 Jan 87 10:53:05 pst
+XFrom: lll-crg!ames!uw-beaver!uw-nsr!john (John Sambrook 5-7433)
+XTo: vixie!paul
+XStatus: RO
+X
+XHow about not hardwiring the default environment that cron builds for its
+Xchildren in the cron program itself?  Our cron does this and it's the pits
+Xbecause we are TZ=PST8PDT not TZ=EST5EDT !
+X
+X<<	yeachk.  I assure you, I will not hardwire the TZ!		>>
+XFrom ptsfa!well!dv Fri Jan  9 04:01:50 1987
+XDate: Thu, 8 Jan 87 23:50:40 pst
+XFrom: well!dv (David W. Vezie)
+XTo: ptsfa!vixie!paul
+XStatus: RO
+X
+X6, have a special notation called 'H' which would expand to weekends
+X   and holidays (you'd have to keep a database somewhere of real
+X   holidays), and also 'W' for workdays (neither weekend or holiday).
+X
+X<<	Too much work.  There should be a standard way to define and
+X	detect holidays under Unix(TM); if there were, I'd use it.  As
+X	it is, I'll leave this for someone else to add.
+X
+X	I can see the usefulness; it just doesn't quite seem worth it.    >>
+XFrom qantel!gatech!akgua!blnt1!jat Wed Jan 14 20:00:40 1987
+XDate: Tue, 13 Jan 87 16:39:38 EST
+XFrom: gatech!akgua!blnt1!jat
+XStatus: RO
+X
+X1) Add some way to tell cron to reread the files, say kill -1 <pid>
+X
+X<<	whenever the 'crontab' program is run and updates a crontab file,
+X	a file /usr/spool/cron/POKECRON is created; next time the cron
+X	daemon wakes up, it sees it, and re-reads the crontab files.
+X
+X	I thought of handling the signal; even implemented it.  Then this
+X	clever idea hit me and I ripped it all out and added a single
+X	IF-statement to handle the POKECRON file.			>>
+X
+X2) Have some kind of retry time so that if a command fails, cron will try to
+X   execute it again after a certain period.  This is useful if you have some
+X   type of cleanup program that can run at the scheduled time for some reason
+X   (such as locked device, unmounted filesystem, etc).
+X
+X<<	Hmmm, sounds useful.  I could do this by submitting an 'at' job...
+X	I'll think about it.						>>
+XFrom ptsfa!dual!ucbvax!ihnp4!mtuxo!ender Sat Jan  3 16:54:00 1987
+XFrom: dual!ucbvax!ihnp4!mtuxo!ender
+XDate: Sat, 3 Jan 87 14:05:13 PST
+XTo: ucbvax!dual!ptsfa!vixie!paul
+XStatus: RO
+X
+XIt would be nice if nonprivileged users can setup personal crontab files
+X(~/.cronrc, say) and be able to run personal jobs at regular intervals.
+X	
+X<<	this is done, but in the SysV style: the 'crontab' program installs
+X	a new crontab file for the executing user (can be overridden by root
+X	for setup of uucp and news).  the advantage of this is that (1) when
+X	a crontab is changed, the daemon can be informed automatically; and
+X	(2) the file can be syntax-checked before installation.		>>
+XFrom ptsfa!ames!seismo!ihnp4!lcc!richard Fri Jan 16 04:47:33 1987
+XDate: Fri, 16 Jan 87 07:44:57 EST
+XTo: nike!ptsfa!vixie!paul
+XStatus: RO
+X
+XThe System V cron is nice, but it has a few annoying features.  One is that
+Xits mail files will say that the previous message is the output of "one of your
+Xcron commands."  I wish it would say WHICH cron commmand.
+X
+X<<	Done.  Also which shell, which user (useful when the mail gets
+X	forwarded), which home directory, and other useful crud.	>>
+X
+XAnother problem is with timezones.  It is necessary to specify TZ=PST8PDT (or
+Xwhatever) when you invoke cron (from inittab, or /etc/rc) and it is also
+Xnecessary to add TZ=PST8PDT to each crontab line which might need it.  Cron
+Xshould automatically export its idea of the "TZ" to each invoked command, and
+Xit should be possible to put a line in the crontab file which overrides that
+Xfor every command in the file (e.g., most users are on EST, so cron is run
+Xwith TZ=EST5EDT; but one user is usually on PST and wants all of his cron
+Xcommands to run with TZ=PST8PDT).  This might be extended to allow any
+Xenvironment variable to be specified once for the whole crontab file (e.g.,
+XPATH).
+X
+X<<	Well, since I run the user's shell, you could put this into .cshrc.
+X	generic environment-variable setting could be useful, though.  Since
+X	I have to modify the environment anyway, I'll consider this.	  >>
+X
+XA log file might be a nice idea, but the System V cron log is too verbose.
+XI seem to remember that cron keeps it open, too; so you can't even have
+Xsomething go and periodically clean it out.
+X
+X<<	I don't do /usr/lib/cron/log.  I wasn't aware of this file until I
+X	got all these suggestions.  Do people want this file?  Tell me!    >>
+END_OF_FILE
+if test 20680 -ne `wc -c <'MAIL'`; then
+    echo shar: \"'MAIL'\" unpacked with wrong size!
+fi
+# end of 'MAIL'
+fi
+if test -f 'crontab.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'crontab.c'\"
+else
+echo shar: Extracting \"'crontab.c'\" \(13490 characters\)
+sed "s/^X//" >'crontab.c' <<'END_OF_FILE'
+X/* Copyright 1988,1990,1993,1994 by Paul Vixie
+X * All rights reserved
+X *
+X * Distribute freely, except: don't remove my name from the source or
+X * documentation (don't take credit for my work), mark your changes (don't
+X * get me blamed for your possible bugs), don't alter or remove this
+X * notice.  May be sold if buildable source is provided to buyer.  No
+X * warrantee of any kind, express or implied, is included with this
+X * software; use at your own risk, responsibility for damages (if any) to
+X * anyone resulting from the use of this software rests entirely with the
+X * user.
+X *
+X * Send bug reports, bug fixes, enhancements, requests, flames, etc., and
+X * I'll try to keep a version up to date.  I can be reached as follows:
+X * Paul Vixie          <paul@vix.com>          uunet!decwrl!vixie!paul
+X */
+X
+X#if !defined(lint) && !defined(LINT)
+Xstatic char rcsid[] = "$Id: Part02,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $";
+X#endif
+X
+X/* crontab - install and manage per-user crontab files
+X * vix 02may87 [RCS has the rest of the log]
+X * vix 26jan87 [original]
+X */
+X
+X
+X#define	MAIN_PROGRAM
+X
+X
+X#include "cron.h"
+X#include <errno.h>
+X#include <fcntl.h>
+X#include <sys/file.h>
+X#include <sys/stat.h>
+X#ifdef USE_UTIMES
+X# include <sys/time.h>
+X#else
+X# include <time.h>
+X# include <utime.h>
+X#endif
+X#if defined(POSIX)
+X# include <locale.h>
+X#endif
+X
+X
+X#define NHEADER_LINES 3
+X
+X
+Xenum opt_t	{ opt_unknown, opt_list, opt_delete, opt_edit, opt_replace };
+X
+X#if DEBUGGING
+Xstatic char	*Options[] = { "???", "list", "delete", "edit", "replace" };
+X#endif
+X
+X
+Xstatic	PID_T		Pid;
+Xstatic	char		User[MAX_UNAME], RealUser[MAX_UNAME];
+Xstatic	char		Filename[MAX_FNAME];
+Xstatic	FILE		*NewCrontab;
+Xstatic	int		CheckErrorCount;
+Xstatic	enum opt_t	Option;
+Xstatic	struct passwd	*pw;
+Xstatic	void		list_cmd __P((void)),
+X			delete_cmd __P((void)),
+X			edit_cmd __P((void)),
+X			poke_daemon __P((void)),
+X			check_error __P((char *)),
+X			parse_args __P((int c, char *v[]));
+Xstatic	int		replace_cmd __P((void));
+X
+X
+Xstatic void
+Xusage(msg)
+X	char *msg;
+X{
+X	fprintf(stderr, "%s: usage error: %s\n", ProgramName, msg);
+X	fprintf(stderr, "usage:\t%s [-u user] file\n", ProgramName);
+X	fprintf(stderr, "\t%s [-u user] { -e | -l | -r }\n", ProgramName);
+X	fprintf(stderr, "\t\t(default operation is replace, per 1003.2)\n");
+X	fprintf(stderr, "\t-e\t(edit user's crontab)\n");
+X	fprintf(stderr, "\t-l\t(list user's crontab)\n");
+X	fprintf(stderr, "\t-r\t(delete user's crontab)\n");
+X	exit(ERROR_EXIT);
+X}
+X
+X
+Xint
+Xmain(argc, argv)
+X	int	argc;
+X	char	*argv[];
+X{
+X	int	exitstatus;
+X
+X	Pid = getpid();
+X	ProgramName = argv[0];
+X
+X#if defined(POSIX)
+X	setlocale(LC_ALL, "");
+X#endif
+X
+X#if defined(BSD)
+X	setlinebuf(stderr);
+X#endif
+X	parse_args(argc, argv);		/* sets many globals, opens a file */
+X	set_cron_uid();
+X	set_cron_cwd();
+X	if (!allowed(User)) {
+X		fprintf(stderr,
+X			"You (%s) are not allowed to use this program (%s)\n",
+X			User, ProgramName);
+X		fprintf(stderr, "See crontab(1) for more information\n");
+X		log_it(RealUser, Pid, "AUTH", "crontab command not allowed");
+X		exit(ERROR_EXIT);
+X	}
+X	exitstatus = OK_EXIT;
+X	switch (Option) {
+X	case opt_list:		list_cmd();
+X				break;
+X	case opt_delete:	delete_cmd();
+X				break;
+X	case opt_edit:		edit_cmd();
+X				break;
+X	case opt_replace:	if (replace_cmd() < 0)
+X					exitstatus = ERROR_EXIT;
+X				break;
+X	}
+X	exit(0);
+X	/*NOTREACHED*/
+X}
+X	
+X
+Xstatic void
+Xparse_args(argc, argv)
+X	int	argc;
+X	char	*argv[];
+X{
+X	int		argch;
+X
+X	if (!(pw = getpwuid(getuid()))) {
+X		fprintf(stderr, "%s: your UID isn't in the passwd file.\n",
+X			ProgramName);
+X		fprintf(stderr, "bailing out.\n");
+X		exit(ERROR_EXIT);
+X	}
+X	strcpy(User, pw->pw_name);
+X	strcpy(RealUser, User);
+X	Filename[0] = '\0';
+X	Option = opt_unknown;
+X	while (EOF != (argch = getopt(argc, argv, "u:lerx:"))) {
+X		switch (argch) {
+X		case 'x':
+X			if (!set_debug_flags(optarg))
+X				usage("bad debug option");
+X			break;
+X		case 'u':
+X			if (getuid() != ROOT_UID)
+X			{
+X				fprintf(stderr,
+X					"must be privileged to use -u\n");
+X				exit(ERROR_EXIT);
+X			}
+X			if (!(pw = getpwnam(optarg)))
+X			{
+X				fprintf(stderr, "%s:  user `%s' unknown\n",
+X					ProgramName, optarg);
+X				exit(ERROR_EXIT);
+X			}
+X			(void) strcpy(User, optarg);
+X			break;
+X		case 'l':
+X			if (Option != opt_unknown)
+X				usage("only one operation permitted");
+X			Option = opt_list;
+X			break;
+X		case 'r':
+X			if (Option != opt_unknown)
+X				usage("only one operation permitted");
+X			Option = opt_delete;
+X			break;
+X		case 'e':
+X			if (Option != opt_unknown)
+X				usage("only one operation permitted");
+X			Option = opt_edit;
+X			break;
+X		default:
+X			usage("unrecognized option");
+X		}
+X	}
+X
+X	endpwent();
+X
+X	if (Option != opt_unknown) {
+X		if (argv[optind] != NULL) {
+X			usage("no arguments permitted after this option");
+X		}
+X	} else {
+X		if (argv[optind] != NULL) {
+X			Option = opt_replace;
+X			(void) strcpy (Filename, argv[optind]);
+X		} else {
+X			usage("file name must be specified for replace");
+X		}
+X	}
+X
+X	if (Option == opt_replace) {
+X		/* we have to open the file here because we're going to
+X		 * chdir(2) into /var/cron before we get around to
+X		 * reading the file.
+X		 */
+X		if (!strcmp(Filename, "-")) {
+X			NewCrontab = stdin;
+X		} else {
+X			/* relinquish the setuid status of the binary during
+X			 * the open, lest nonroot users read files they should
+X			 * not be able to read.  we can't use access() here
+X			 * since there's a race condition.  thanks go out to
+X			 * Arnt Gulbrandsen <agulbra@pvv.unit.no> for spotting
+X			 * the race.
+X			 */
+X
+X			if (swap_uids() < OK) {
+X				perror("swapping uids");
+X				exit(ERROR_EXIT);
+X			}
+X			if (!(NewCrontab = fopen(Filename, "r"))) {
+X				perror(Filename);
+X				exit(ERROR_EXIT);
+X			}
+X			if (swap_uids() < OK) {
+X				perror("swapping uids back");
+X				exit(ERROR_EXIT);
+X			}
+X		}
+X	}
+X
+X	Debug(DMISC, ("user=%s, file=%s, option=%s\n",
+X		      User, Filename, Options[(int)Option]))
+X}
+X
+X
+Xstatic void
+Xlist_cmd() {
+X	char	n[MAX_FNAME];
+X	FILE	*f;
+X	int	ch;
+X
+X	log_it(RealUser, Pid, "LIST", User);
+X	(void) sprintf(n, CRON_TAB(User));
+X	if (!(f = fopen(n, "r"))) {
+X		if (errno == ENOENT)
+X			fprintf(stderr, "no crontab for %s\n", User);
+X		else
+X			perror(n);
+X		exit(ERROR_EXIT);
+X	}
+X
+X	/* file is open. copy to stdout, close.
+X	 */
+X	Set_LineNum(1)
+X	while (EOF != (ch = get_char(f)))
+X		putchar(ch);
+X	fclose(f);
+X}
+X
+X
+Xstatic void
+Xdelete_cmd() {
+X	char	n[MAX_FNAME];
+X
+X	log_it(RealUser, Pid, "DELETE", User);
+X	(void) sprintf(n, CRON_TAB(User));
+X	if (unlink(n)) {
+X		if (errno == ENOENT)
+X			fprintf(stderr, "no crontab for %s\n", User);
+X		else
+X			perror(n);
+X		exit(ERROR_EXIT);
+X	}
+X	poke_daemon();
+X}
+X
+X
+Xstatic void
+Xcheck_error(msg)
+X	char	*msg;
+X{
+X	CheckErrorCount++;
+X	fprintf(stderr, "\"%s\":%d: %s\n", Filename, LineNumber-1, msg);
+X}
+X
+X
+Xstatic void
+Xedit_cmd() {
+X	char		n[MAX_FNAME], q[MAX_TEMPSTR], *editor;
+X	FILE		*f;
+X	int		ch, t, x;
+X	struct stat	statbuf;
+X	time_t		mtime;
+X	WAIT_T		waiter;
+X	PID_T		pid, xpid;
+X
+X	log_it(RealUser, Pid, "BEGIN EDIT", User);
+X	(void) sprintf(n, CRON_TAB(User));
+X	if (!(f = fopen(n, "r"))) {
+X		if (errno != ENOENT) {
+X			perror(n);
+X			exit(ERROR_EXIT);
+X		}
+X		fprintf(stderr, "no crontab for %s - using an empty one\n",
+X			User);
+X		if (!(f = fopen("/dev/null", "r"))) {
+X			perror("/dev/null");
+X			exit(ERROR_EXIT);
+X		}
+X	}
+X
+X	(void) sprintf(Filename, "/tmp/crontab.%d", Pid);
+X	if (-1 == (t = open(Filename, O_CREAT|O_EXCL|O_RDWR, 0600))) {
+X		perror(Filename);
+X		goto fatal;
+X	}
+X#ifdef HAS_FCHOWN
+X	if (fchown(t, getuid(), getgid()) < 0) {
+X#else
+X	if (chown(Filename, getuid(), getgid()) < 0) {
+X#endif
+X		perror("fchown");
+X		goto fatal;
+X	}
+X	if (!(NewCrontab = fdopen(t, "r+"))) {
+X		perror("fdopen");
+X		goto fatal;
+X	}
+X
+X	Set_LineNum(1)
+X
+X	/* ignore the top few comments since we probably put them there.
+X	 */
+X	for (x = 0;  x < NHEADER_LINES;  x++) {
+X		ch = get_char(f);
+X		if (EOF == ch)
+X			break;
+X		if ('#' != ch) {
+X			putc(ch, NewCrontab);
+X			break;
+X		}
+X		while (EOF != (ch = get_char(f)))
+X			if (ch == '\n')
+X				break;
+X		if (EOF == ch)
+X			break;
+X	}
+X
+X	/* copy the rest of the crontab (if any) to the temp file.
+X	 */
+X	if (EOF != ch)
+X		while (EOF != (ch = get_char(f)))
+X			putc(ch, NewCrontab);
+X	fclose(f);
+X	if (fflush(NewCrontab) < OK) {
+X		perror(Filename);
+X		exit(ERROR_EXIT);
+X	}
+X again:
+X	rewind(NewCrontab);
+X	if (ferror(NewCrontab)) {
+X		fprintf(stderr, "%s: error while writing new crontab to %s\n",
+X			ProgramName, Filename);
+X fatal:		unlink(Filename);
+X		exit(ERROR_EXIT);
+X	}
+X	if (fstat(t, &statbuf) < 0) {
+X		perror("fstat");
+X		goto fatal;
+X	}
+X	mtime = statbuf.st_mtime;
+X
+X	if ((!(editor = getenv("VISUAL")))
+X	 && (!(editor = getenv("EDITOR")))
+X	    ) {
+X		editor = EDITOR;
+X	}
+X
+X	/* we still have the file open.  editors will generally rewrite the
+X	 * original file rather than renaming/unlinking it and starting a
+X	 * new one; even backup files are supposed to be made by copying
+X	 * rather than by renaming.  if some editor does not support this,
+X	 * then don't use it.  the security problems are more severe if we
+X	 * close and reopen the file around the edit.
+X	 */
+X
+X	switch (pid = fork()) {
+X	case -1:
+X		perror("fork");
+X		goto fatal;
+X	case 0:
+X		/* child */
+X		if (setuid(getuid()) < 0) {
+X			perror("setuid(getuid())");
+X			exit(ERROR_EXIT);
+X		}
+X		if (chdir("/tmp") < 0) {
+X			perror("chdir(/tmp)");
+X			exit(ERROR_EXIT);
+X		}
+X		execlp(editor, editor, Filename, NULL);
+X		perror(editor);
+X		exit(ERROR_EXIT);
+X		/*NOTREACHED*/
+X	default:
+X		/* parent */
+X		break;
+X	}
+X
+X	/* parent */
+X	xpid = wait(&waiter);
+X	if (xpid != pid) {
+X		fprintf(stderr, "%s: wrong PID (%d != %d) from \"%s\"\n",
+X			ProgramName, xpid, pid, editor);
+X		goto fatal;
+X	}
+X	if (WIFEXITED(waiter) && WEXITSTATUS(waiter)) {
+X		fprintf(stderr, "%s: \"%s\" exited with status %d\n",
+X			ProgramName, editor, WEXITSTATUS(waiter));
+X		goto fatal;
+X	}
+X	if (WIFSIGNALED(waiter)) {
+X		fprintf(stderr,
+X			"%s: \"%s\" killed; signal %d (%score dumped)\n",
+X			ProgramName, editor, WTERMSIG(waiter),
+X			WCOREDUMP(waiter) ?"" :"no ");
+X		goto fatal;
+X	}
+X	if (fstat(t, &statbuf) < 0) {
+X		perror("fstat");
+X		goto fatal;
+X	}
+X	if (mtime == statbuf.st_mtime) {
+X		fprintf(stderr, "%s: no changes made to crontab\n",
+X			ProgramName);
+X		goto remove;
+X	}
+X	fprintf(stderr, "%s: installing new crontab\n", ProgramName);
+X	switch (replace_cmd()) {
+X	case 0:
+X		break;
+X	case -1:
+X		for (;;) {
+X			printf("Do you want to retry the same edit? ");
+X			fflush(stdout);
+X			q[0] = '\0';
+X			(void) fgets(q, sizeof q, stdin);
+X			switch (islower(q[0]) ? q[0] : tolower(q[0])) {
+X			case 'y':
+X				goto again;
+X			case 'n':
+X				goto abandon;
+X			default:
+X				fprintf(stderr, "Enter Y or N\n");
+X			}
+X		}
+X		/*NOTREACHED*/
+X	case -2:
+X	abandon:
+X		fprintf(stderr, "%s: edits left in %s\n",
+X			ProgramName, Filename);
+X		goto done;
+X	default:
+X		fprintf(stderr, "%s: panic: bad switch() in replace_cmd()\n");
+X		goto fatal;
+X	}
+X remove:
+X	unlink(Filename);
+X done:
+X	log_it(RealUser, Pid, "END EDIT", User);
+X}
+X	
+X
+X/* returns	0	on success
+X *		-1	on syntax error
+X *		-2	on install error
+X */
+Xstatic int
+Xreplace_cmd() {
+X	char	n[MAX_FNAME], envstr[MAX_ENVSTR], tn[MAX_FNAME];
+X	FILE	*tmp;
+X	int	ch, eof;
+X	entry	*e;
+X	time_t	now = time(NULL);
+X	char	**envp = env_init();
+X
+X	(void) sprintf(n, "tmp.%d", Pid);
+X	(void) sprintf(tn, CRON_TAB(n));
+X	if (!(tmp = fopen(tn, "w+"))) {
+X		perror(tn);
+X		return (-2);
+X	}
+X
+X	/* write a signature at the top of the file.
+X	 *
+X	 * VERY IMPORTANT: make sure NHEADER_LINES agrees with this code.
+X	 */
+X	fprintf(tmp, "# DO NOT EDIT THIS FILE - edit the master and reinstall.\n");
+X	fprintf(tmp, "# (%s installed on %-24.24s)\n", Filename, ctime(&now));
+X	fprintf(tmp, "# (Cron version -- %s)\n", rcsid);
+X
+X	/* copy the crontab to the tmp
+X	 */
+X	rewind(NewCrontab);
+X	Set_LineNum(1)
+X	while (EOF != (ch = get_char(NewCrontab)))
+X		putc(ch, tmp);
+X	ftruncate(fileno(tmp), ftell(tmp));
+X	fflush(tmp);  rewind(tmp);
+X
+X	if (ferror(tmp)) {
+X		fprintf(stderr, "%s: error while writing new crontab to %s\n",
+X			ProgramName, tn);
+X		fclose(tmp);  unlink(tn);
+X		return (-2);
+X	}
+X
+X	/* check the syntax of the file being installed.
+X	 */
+X
+X	/* BUG: was reporting errors after the EOF if there were any errors
+X	 * in the file proper -- kludged it by stopping after first error.
+X	 *		vix 31mar87
+X	 */
+X	Set_LineNum(1 - NHEADER_LINES)
+X	CheckErrorCount = 0;  eof = FALSE;
+X	while (!CheckErrorCount && !eof) {
+X		switch (load_env(envstr, tmp)) {
+X		case ERR:
+X			eof = TRUE;
+X			break;
+X		case FALSE:
+X			e = load_entry(tmp, check_error, pw, envp);
+X			if (e)
+X				free(e);
+X			break;
+X		case TRUE:
+X			break;
+X		}
+X	}
+X
+X	if (CheckErrorCount != 0) {
+X		fprintf(stderr, "errors in crontab file, can't install.\n");
+X		fclose(tmp);  unlink(tn);
+X		return (-1);
+X	}
+X
+X#ifdef HAS_FCHOWN
+X	if (fchown(fileno(tmp), ROOT_UID, -1) < OK)
+X#else
+X	if (chown(tn, ROOT_UID, -1) < OK)
+X#endif
+X	{
+X		perror("chown");
+X		fclose(tmp);  unlink(tn);
+X		return (-2);
+X	}
+X
+X#ifdef HAS_FCHMOD
+X	if (fchmod(fileno(tmp), 0600) < OK)
+X#else
+X	if (chmod(tn, 0600) < OK)
+X#endif
+X	{
+X		perror("chown");
+X		fclose(tmp);  unlink(tn);
+X		return (-2);
+X	}
+X
+X	if (fclose(tmp) == EOF) {
+X		perror("fclose");
+X		unlink(tn);
+X		return (-2);
+X	}
+X
+X	(void) sprintf(n, CRON_TAB(User));
+X	if (rename(tn, n)) {
+X		fprintf(stderr, "%s: error renaming %s to %s\n",
+X			ProgramName, tn, n);
+X		perror("rename");
+X		unlink(tn);
+X		return (-2);
+X	}
+X	log_it(RealUser, Pid, "REPLACE", User);
+X
+X	poke_daemon();
+X
+X	return (0);
+X}
+X
+X
+Xstatic void
+Xpoke_daemon() {
+X#ifdef USE_UTIMES
+X	struct timeval tvs[2];
+X	struct timezone tz;
+X
+X	(void) gettimeofday(&tvs[0], &tz);
+X	tvs[1] = tvs[0];
+X	if (utimes(SPOOL_DIR, tvs) < OK) {
+X		fprintf(stderr, "crontab: can't update mtime on spooldir\n");
+X		perror(SPOOL_DIR);
+X		return;
+X	}
+X#else
+X	if (utime(SPOOL_DIR, NULL) < OK) {
+X		fprintf(stderr, "crontab: can't update mtime on spooldir\n");
+X		perror(SPOOL_DIR);
+X		return;
+X	}
+X#endif /*USE_UTIMES*/
+X}
+END_OF_FILE
+if test 13490 -ne `wc -c <'crontab.c'`; then
+    echo shar: \"'crontab.c'\" unpacked with wrong size!
+fi
+# end of 'crontab.c'
+fi
+if test -f 'do_command.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'do_command.c'\"
+else
+echo shar: Extracting \"'do_command.c'\" \(12854 characters\)
+sed "s/^X//" >'do_command.c' <<'END_OF_FILE'
+X/* Copyright 1988,1990,1993,1994 by Paul Vixie
+X * All rights reserved
+X *
+X * Distribute freely, except: don't remove my name from the source or
+X * documentation (don't take credit for my work), mark your changes (don't
+X * get me blamed for your possible bugs), don't alter or remove this
+X * notice.  May be sold if buildable source is provided to buyer.  No
+X * warrantee of any kind, express or implied, is included with this
+X * software; use at your own risk, responsibility for damages (if any) to
+X * anyone resulting from the use of this software rests entirely with the
+X * user.
+X *
+X * Send bug reports, bug fixes, enhancements, requests, flames, etc., and
+X * I'll try to keep a version up to date.  I can be reached as follows:
+X * Paul Vixie          <paul@vix.com>          uunet!decwrl!vixie!paul
+X */
+X
+X#if !defined(lint) && !defined(LINT)
+Xstatic char rcsid[] = "$Id: Part02,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $";
+X#endif
+X
+X
+X#include "cron.h"
+X#include <sys/signal.h>
+X#if defined(sequent)
+X# include <sys/universe.h>
+X#endif
+X#if defined(SYSLOG)
+X# include <syslog.h>
+X#endif
+X
+X
+Xstatic void		child_process __P((entry *, user *)),
+X			do_univ __P((user *));
+X
+X
+Xvoid
+Xdo_command(e, u)
+X	entry	*e;
+X	user	*u;
+X{
+X	Debug(DPROC, ("[%d] do_command(%s, (%s,%d,%d))\n",
+X		getpid(), e->cmd, u->name, e->uid, e->gid))
+X
+X	/* fork to become asynchronous -- parent process is done immediately,
+X	 * and continues to run the normal cron code, which means return to
+X	 * tick().  the child and grandchild don't leave this function, alive.
+X	 *
+X	 * vfork() is unsuitable, since we have much to do, and the parent
+X	 * needs to be able to run off and fork other processes.
+X	 */
+X	switch (fork()) {
+X	case -1:
+X		log_it("CRON",getpid(),"error","can't fork");
+X		break;
+X	case 0:
+X		/* child process */
+X		acquire_daemonlock(1);
+X		child_process(e, u);
+X		Debug(DPROC, ("[%d] child process done, exiting\n", getpid()))
+X		_exit(OK_EXIT);
+X		break;
+X	default:
+X		/* parent process */
+X		break;
+X	}
+X	Debug(DPROC, ("[%d] main process returning to work\n", getpid()))
+X}
+X
+X
+Xstatic void
+Xchild_process(e, u)
+X	entry	*e;
+X	user	*u;
+X{
+X	int		stdin_pipe[2], stdout_pipe[2];
+X	register char	*input_data;
+X	char		*usernm, *mailto;
+X	int		children = 0;
+X
+X	Debug(DPROC, ("[%d] child_process('%s')\n", getpid(), e->cmd))
+X
+X	/* mark ourselves as different to PS command watchers by upshifting
+X	 * our program name.  This has no effect on some kernels.
+X	 */
+X	/*local*/{
+X		register char	*pch;
+X
+X		for (pch = ProgramName;  *pch;  pch++)
+X			*pch = MkUpper(*pch);
+X	}
+X
+X	/* discover some useful and important environment settings
+X	 */
+X	usernm = env_get("LOGNAME", e->envp);
+X	mailto = env_get("MAILTO", e->envp);
+X
+X#ifdef USE_SIGCHLD
+X	/* our parent is watching for our death by catching SIGCHLD.  we
+X	 * do not care to watch for our children's deaths this way -- we
+X	 * use wait() explictly.  so we have to disable the signal (which
+X	 * was inherited from the parent).
+X	 */
+X	(void) signal(SIGCHLD, SIG_IGN);
+X#else
+X	/* on system-V systems, we are ignoring SIGCLD.  we have to stop
+X	 * ignoring it now or the wait() in cron_pclose() won't work.
+X	 * because of this, we have to wait() for our children here, as well.
+X	 */
+X	(void) signal(SIGCLD, SIG_DFL);
+X#endif /*BSD*/
+X
+X	/* create some pipes to talk to our future child
+X	 */
+X	pipe(stdin_pipe);	/* child's stdin */
+X	pipe(stdout_pipe);	/* child's stdout */
+X	
+X	/* since we are a forked process, we can diddle the command string
+X	 * we were passed -- nobody else is going to use it again, right?
+X	 *
+X	 * if a % is present in the command, previous characters are the
+X	 * command, and subsequent characters are the additional input to
+X	 * the command.  Subsequent %'s will be transformed into newlines,
+X	 * but that happens later.
+X	 */
+X	/*local*/{
+X		register int escaped = FALSE;
+X		register int ch;
+X
+X		for (input_data = e->cmd;  ch = *input_data;  input_data++) {
+X			if (escaped) {
+X				escaped = FALSE;
+X				continue;
+X			}
+X			if (ch == '\\') {
+X				escaped = TRUE;
+X				continue;
+X			}
+X			if (ch == '%') {
+X				*input_data++ = '\0';
+X				break;
+X			}
+X		}
+X	}
+X
+X	/* fork again, this time so we can exec the user's command.
+X	 */
+X	switch (vfork()) {
+X	case -1:
+X		log_it("CRON",getpid(),"error","can't vfork");
+X		exit(ERROR_EXIT);
+X		/*NOTREACHED*/
+X	case 0:
+X		Debug(DPROC, ("[%d] grandchild process Vfork()'ed\n",
+X			      getpid()))
+X
+X		/* write a log message.  we've waited this long to do it
+X		 * because it was not until now that we knew the PID that
+X		 * the actual user command shell was going to get and the
+X		 * PID is part of the log message.
+X		 */
+X		/*local*/{
+X			char *x = mkprints((u_char *)e->cmd, strlen(e->cmd));
+X
+X			log_it(usernm, getpid(), "CMD", x);
+X			free(x);
+X		}
+X
+X		/* that's the last thing we'll log.  close the log files.
+X		 */
+X#ifdef SYSLOG
+X		closelog();
+X#endif
+X
+X		/* get new pgrp, void tty, etc.
+X		 */
+X		(void) setsid();
+X
+X		/* close the pipe ends that we won't use.  this doesn't affect
+X		 * the parent, who has to read and write them; it keeps the
+X		 * kernel from recording us as a potential client TWICE --
+X		 * which would keep it from sending SIGPIPE in otherwise
+X		 * appropriate circumstances.
+X		 */
+X		close(stdin_pipe[WRITE_PIPE]);
+X		close(stdout_pipe[READ_PIPE]);
+X
+X		/* grandchild process.  make std{in,out} be the ends of
+X		 * pipes opened by our daddy; make stderr go to stdout.
+X		 */
+X		close(STDIN);	dup2(stdin_pipe[READ_PIPE], STDIN);
+X		close(STDOUT);	dup2(stdout_pipe[WRITE_PIPE], STDOUT);
+X		close(STDERR);	dup2(STDOUT, STDERR);
+X
+X		/* close the pipes we just dup'ed.  The resources will remain.
+X		 */
+X		close(stdin_pipe[READ_PIPE]);
+X		close(stdout_pipe[WRITE_PIPE]);
+X
+X		/* set our login universe.  Do this in the grandchild
+X		 * so that the child can invoke /usr/lib/sendmail
+X		 * without surprises.
+X		 */
+X		do_univ(u);
+X
+X		/* set our directory, uid and gid.  Set gid first, since once
+X		 * we set uid, we've lost root privledges.
+X		 */
+X		setgid(e->gid);
+X# if defined(BSD)
+X		initgroups(env_get("LOGNAME", e->envp), e->gid);
+X# endif
+X		setuid(e->uid);		/* we aren't root after this... */
+X		chdir(env_get("HOME", e->envp));
+X
+X		/* exec the command.
+X		 */
+X		{
+X			char	*shell = env_get("SHELL", e->envp);
+X
+X# if DEBUGGING
+X			if (DebugFlags & DTEST) {
+X				fprintf(stderr,
+X				"debug DTEST is on, not exec'ing command.\n");
+X				fprintf(stderr,
+X				"\tcmd='%s' shell='%s'\n", e->cmd, shell);
+X				_exit(OK_EXIT);
+X			}
+X# endif /*DEBUGGING*/
+X			execle(shell, shell, "-c", e->cmd, (char *)0, e->envp);
+X			fprintf(stderr, "execl: couldn't exec `%s'\n", shell);
+X			perror("execl");
+X			_exit(ERROR_EXIT);
+X		}
+X		break;
+X	default:
+X		/* parent process */
+X		break;
+X	}
+X
+X	children++;
+X
+X	/* middle process, child of original cron, parent of process running
+X	 * the user's command.
+X	 */
+X
+X	Debug(DPROC, ("[%d] child continues, closing pipes\n", getpid()))
+X
+X	/* close the ends of the pipe that will only be referenced in the
+X	 * grandchild process...
+X	 */
+X	close(stdin_pipe[READ_PIPE]);
+X	close(stdout_pipe[WRITE_PIPE]);
+X
+X	/*
+X	 * write, to the pipe connected to child's stdin, any input specified
+X	 * after a % in the crontab entry.  while we copy, convert any
+X	 * additional %'s to newlines.  when done, if some characters were
+X	 * written and the last one wasn't a newline, write a newline.
+X	 *
+X	 * Note that if the input data won't fit into one pipe buffer (2K
+X	 * or 4K on most BSD systems), and the child doesn't read its stdin,
+X	 * we would block here.  thus we must fork again.
+X	 */
+X
+X	if (*input_data && fork() == 0) {
+X		register FILE	*out = fdopen(stdin_pipe[WRITE_PIPE], "w");
+X		register int	need_newline = FALSE;
+X		register int	escaped = FALSE;
+X		register int	ch;
+X
+X		Debug(DPROC, ("[%d] child2 sending data to grandchild\n", getpid()))
+X
+X		/* close the pipe we don't use, since we inherited it and
+X		 * are part of its reference count now.
+X		 */
+X		close(stdout_pipe[READ_PIPE]);
+X
+X		/* translation:
+X		 *	\% -> %
+X		 *	%  -> \n
+X		 *	\x -> \x	for all x != %
+X		 */
+X		while (ch = *input_data++) {
+X			if (escaped) {
+X				if (ch != '%')
+X					putc('\\', out);
+X			} else {
+X				if (ch == '%')
+X					ch = '\n';
+X			}
+X
+X			if (!(escaped = (ch == '\\'))) {
+X				putc(ch, out);
+X				need_newline = (ch != '\n');
+X			}
+X		}
+X		if (escaped)
+X			putc('\\', out);
+X		if (need_newline)
+X			putc('\n', out);
+X
+X		/* close the pipe, causing an EOF condition.  fclose causes
+X		 * stdin_pipe[WRITE_PIPE] to be closed, too.
+X		 */
+X		fclose(out);
+X
+X		Debug(DPROC, ("[%d] child2 done sending to grandchild\n", getpid()))
+X		exit(0);
+X	}
+X
+X	/* close the pipe to the grandkiddie's stdin, since its wicked uncle
+X	 * ernie back there has it open and will close it when he's done.
+X	 */
+X	close(stdin_pipe[WRITE_PIPE]);
+X
+X	children++;
+X
+X	/*
+X	 * read output from the grandchild.  it's stderr has been redirected to
+X	 * it's stdout, which has been redirected to our pipe.  if there is any
+X	 * output, we'll be mailing it to the user whose crontab this is...
+X	 * when the grandchild exits, we'll get EOF.
+X	 */
+X
+X	Debug(DPROC, ("[%d] child reading output from grandchild\n", getpid()))
+X
+X	/*local*/{
+X		register FILE	*in = fdopen(stdout_pipe[READ_PIPE], "r");
+X		register int	ch = getc(in);
+X
+X		if (ch != EOF) {
+X			register FILE	*mail;
+X			register int	bytes = 1;
+X			int		status = 0;
+X
+X			Debug(DPROC|DEXT,
+X				("[%d] got data (%x:%c) from grandchild\n",
+X					getpid(), ch, ch))
+X
+X			/* get name of recipient.  this is MAILTO if set to a
+X			 * valid local username; USER otherwise.
+X			 */
+X			if (mailto) {
+X				/* MAILTO was present in the environment
+X				 */
+X				if (!*mailto) {
+X					/* ... but it's empty. set to NULL
+X					 */
+X					mailto = NULL;
+X				}
+X			} else {
+X				/* MAILTO not present, set to USER.
+X				 */
+X				mailto = usernm;
+X			}
+X		
+X			/* if we are supposed to be mailing, MAILTO will
+X			 * be non-NULL.  only in this case should we set
+X			 * up the mail command and subjects and stuff...
+X			 */
+X
+X			if (mailto) {
+X				register char	**env;
+X				auto char	mailcmd[MAX_COMMAND];
+X				auto char	hostname[MAXHOSTNAMELEN];
+X
+X				(void) gethostname(hostname, MAXHOSTNAMELEN);
+X				(void) sprintf(mailcmd, MAILARGS,
+X					       MAILCMD, mailto);
+X				if (!(mail = cron_popen(mailcmd, "w"))) {
+X					perror(MAILCMD);
+X					(void) _exit(ERROR_EXIT);
+X				}
+X				fprintf(mail, "From: root (Cron Daemon)\n");
+X				fprintf(mail, "To: %s\n", mailto);
+X				fprintf(mail, "Subject: Cron <%s@%s> %s\n",
+X					usernm, first_word(hostname, "."),
+X					e->cmd);
+X# if defined(MAIL_DATE)
+X				fprintf(mail, "Date: %s\n",
+X					arpadate(&TargetTime));
+X# endif /* MAIL_DATE */
+X				for (env = e->envp;  *env;  env++)
+X					fprintf(mail, "X-Cron-Env: <%s>\n",
+X						*env);
+X				fprintf(mail, "\n");
+X
+X				/* this was the first char from the pipe
+X				 */
+X				putc(ch, mail);
+X			}
+X
+X			/* we have to read the input pipe no matter whether
+X			 * we mail or not, but obviously we only write to
+X			 * mail pipe if we ARE mailing.
+X			 */
+X
+X			while (EOF != (ch = getc(in))) {
+X				bytes++;
+X				if (mailto)
+X					putc(ch, mail);
+X			}
+X
+X			/* only close pipe if we opened it -- i.e., we're
+X			 * mailing...
+X			 */
+X
+X			if (mailto) {
+X				Debug(DPROC, ("[%d] closing pipe to mail\n",
+X					getpid()))
+X				/* Note: the pclose will probably see
+X				 * the termination of the grandchild
+X				 * in addition to the mail process, since
+X				 * it (the grandchild) is likely to exit
+X				 * after closing its stdout.
+X				 */
+X				status = cron_pclose(mail);
+X			}
+X
+X			/* if there was output and we could not mail it,
+X			 * log the facts so the poor user can figure out
+X			 * what's going on.
+X			 */
+X			if (mailto && status) {
+X				char buf[MAX_TEMPSTR];
+X
+X				sprintf(buf,
+X			"mailed %d byte%s of output but got status 0x%04x\n",
+X					bytes, (bytes==1)?"":"s",
+X					status);
+X				log_it(usernm, getpid(), "MAIL", buf);
+X			}
+X
+X		} /*if data from grandchild*/
+X
+X		Debug(DPROC, ("[%d] got EOF from grandchild\n", getpid()))
+X
+X		fclose(in);	/* also closes stdout_pipe[READ_PIPE] */
+X	}
+X
+X	/* wait for children to die.
+X	 */
+X	for (;  children > 0;  children--)
+X	{
+X		WAIT_T		waiter;
+X		PID_T		pid;
+X
+X		Debug(DPROC, ("[%d] waiting for grandchild #%d to finish\n",
+X			getpid(), children))
+X		pid = wait(&waiter);
+X		if (pid < OK) {
+X			Debug(DPROC, ("[%d] no more grandchildren--mail written?\n",
+X				getpid()))
+X			break;
+X		}
+X		Debug(DPROC, ("[%d] grandchild #%d finished, status=%04x",
+X			getpid(), pid, WEXITSTATUS(waiter)))
+X		if (WIFSIGNALED(waiter) && WCOREDUMP(waiter))
+X			Debug(DPROC, (", dumped core"))
+X		Debug(DPROC, ("\n"))
+X	}
+X}
+X
+X
+Xstatic void
+Xdo_univ(u)
+X	user	*u;
+X{
+X#if defined(sequent)
+X/* Dynix (Sequent) hack to put the user associated with
+X * the passed user structure into the ATT universe if
+X * necessary.  We have to dig the gecos info out of
+X * the user's password entry to see if the magic
+X * "universe(att)" string is present.
+X */
+X
+X	struct	passwd	*p;
+X	char	*s;
+X	int	i;
+X
+X	p = getpwuid(u->uid);
+X	(void) endpwent();
+X
+X	if (p == NULL)
+X		return;
+X
+X	s = p->pw_gecos;
+X
+X	for (i = 0; i < 4; i++)
+X	{
+X		if ((s = strchr(s, ',')) == NULL)
+X			return;
+X		s++;
+X	}
+X	if (strcmp(s, "universe(att)"))
+X		return;
+X
+X	(void) universe(U_ATT);
+X#endif
+X}
+END_OF_FILE
+if test 12854 -ne `wc -c <'do_command.c'`; then
+    echo shar: \"'do_command.c'\" unpacked with wrong size!
+fi
+# end of 'do_command.c'
+fi
+if test -f 'entry.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'entry.c'\"
+else
+echo shar: Extracting \"'entry.c'\" \(12410 characters\)
+sed "s/^X//" >'entry.c' <<'END_OF_FILE'
+X/* Copyright 1988,1990,1993,1994 by Paul Vixie
+X * All rights reserved
+X *
+X * Distribute freely, except: don't remove my name from the source or
+X * documentation (don't take credit for my work), mark your changes (don't
+X * get me blamed for your possible bugs), don't alter or remove this
+X * notice.  May be sold if buildable source is provided to buyer.  No
+X * warrantee of any kind, express or implied, is included with this
+X * software; use at your own risk, responsibility for damages (if any) to
+X * anyone resulting from the use of this software rests entirely with the
+X * user.
+X *
+X * Send bug reports, bug fixes, enhancements, requests, flames, etc., and
+X * I'll try to keep a version up to date.  I can be reached as follows:
+X * Paul Vixie          <paul@vix.com>          uunet!decwrl!vixie!paul
+X */
+X
+X#if !defined(lint) && !defined(LINT)
+Xstatic char rcsid[] = "$Id: Part02,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $";
+X#endif
+X
+X/* vix 26jan87 [RCS'd; rest of log is in RCS file]
+X * vix 01jan87 [added line-level error recovery]
+X * vix 31dec86 [added /step to the from-to range, per bob@acornrc]
+X * vix 30dec86 [written]
+X */
+X
+X
+X#include "cron.h"
+X
+X
+Xtypedef	enum ecode {
+X	e_none, e_minute, e_hour, e_dom, e_month, e_dow,
+X	e_cmd, e_timespec, e_username
+X} ecode_e;
+X
+Xstatic char	get_list __P((bitstr_t *, int, int, char *[], int, FILE *)),
+X		get_range __P((bitstr_t *, int, int, char *[], int, FILE *)),
+X		get_number __P((int *, int, char *[], int, FILE *));
+Xstatic int	set_element __P((bitstr_t *, int, int, int));
+X
+Xstatic char *ecodes[] =
+X	{
+X		"no error",
+X		"bad minute",
+X		"bad hour",
+X		"bad day-of-month",
+X		"bad month",
+X		"bad day-of-week",
+X		"bad command",
+X		"bad time specifier",
+X		"bad username",
+X	};
+X
+X
+Xvoid
+Xfree_entry(e)
+X	entry	*e;
+X{
+X	free(e->cmd);
+X	env_free(e->envp);
+X	free(e);
+X}
+X
+X
+X/* return NULL if eof or syntax error occurs;
+X * otherwise return a pointer to a new entry.
+X */
+Xentry *
+Xload_entry(file, error_func, pw, envp)
+X	FILE		*file;
+X	void		(*error_func)();
+X	struct passwd	*pw;
+X	char		**envp;
+X{
+X	/* this function reads one crontab entry -- the next -- from a file.
+X	 * it skips any leading blank lines, ignores comments, and returns
+X	 * EOF if for any reason the entry can't be read and parsed.
+X	 *
+X	 * the entry is also parsed here.
+X	 *
+X	 * syntax:
+X	 *   user crontab:
+X	 *	minutes hours doms months dows cmd\n
+X	 *   system crontab (/etc/crontab):
+X	 *	minutes hours doms months dows USERNAME cmd\n
+X	 */
+X
+X	ecode_e	ecode = e_none;
+X	entry	*e;
+X	int	ch;
+X	char	cmd[MAX_COMMAND];
+X	char	envstr[MAX_ENVSTR];
+X
+X	Debug(DPARS, ("load_entry()...about to eat comments\n"))
+X
+X	skip_comments(file);
+X
+X	ch = get_char(file);
+X	if (ch == EOF)
+X		return NULL;
+X
+X	/* ch is now the first useful character of a useful line.
+X	 * it may be an @special or it may be the first character
+X	 * of a list of minutes.
+X	 */
+X
+X	e = (entry *) calloc(sizeof(entry), sizeof(char));
+X
+X	if (ch == '@') {
+X		/* all of these should be flagged and load-limited; i.e.,
+X		 * instead of @hourly meaning "0 * * * *" it should mean
+X		 * "close to the front of every hour but not 'til the
+X		 * system load is low".  Problems are: how do you know
+X		 * what "low" means? (save me from /etc/cron.conf!) and:
+X		 * how to guarantee low variance (how low is low?), which
+X		 * means how to we run roughly every hour -- seems like
+X		 * we need to keep a history or let the first hour set
+X		 * the schedule, which means we aren't load-limited
+X		 * anymore.  too much for my overloaded brain. (vix, jan90)
+X		 * HINT
+X		 */
+X		ch = get_string(cmd, MAX_COMMAND, file, " \t\n");
+X		if (!strcmp("reboot", cmd)) {
+X			e->flags |= WHEN_REBOOT;
+X		} else if (!strcmp("yearly", cmd) || !strcmp("annually", cmd)){
+X			bit_set(e->minute, 0);
+X			bit_set(e->hour, 0);
+X			bit_set(e->dom, 0);
+X			bit_set(e->month, 0);
+X			bit_nset(e->dow, 0, (LAST_DOW-FIRST_DOW+1));
+X		} else if (!strcmp("monthly", cmd)) {
+X			bit_set(e->minute, 0);
+X			bit_set(e->hour, 0);
+X			bit_set(e->dom, 0);
+X			bit_nset(e->month, 0, (LAST_MONTH-FIRST_MONTH+1));
+X			bit_nset(e->dow, 0, (LAST_DOW-FIRST_DOW+1));
+X		} else if (!strcmp("weekly", cmd)) {
+X			bit_set(e->minute, 0);
+X			bit_set(e->hour, 0);
+X			bit_nset(e->dom, 0, (LAST_DOM-FIRST_DOM+1));
+X			bit_nset(e->month, 0, (LAST_MONTH-FIRST_MONTH+1));
+X			bit_set(e->dow, 0);
+X		} else if (!strcmp("daily", cmd) || !strcmp("midnight", cmd)) {
+X			bit_set(e->minute, 0);
+X			bit_set(e->hour, 0);
+X			bit_nset(e->dom, 0, (LAST_DOM-FIRST_DOM+1));
+X			bit_nset(e->month, 0, (LAST_MONTH-FIRST_MONTH+1));
+X			bit_nset(e->dow, 0, (LAST_DOW-FIRST_DOW+1));
+X		} else if (!strcmp("hourly", cmd)) {
+X			bit_set(e->minute, 0);
+X			bit_set(e->hour, (LAST_HOUR-FIRST_HOUR+1));
+X			bit_nset(e->dom, 0, (LAST_DOM-FIRST_DOM+1));
+X			bit_nset(e->month, 0, (LAST_MONTH-FIRST_MONTH+1));
+X			bit_nset(e->dow, 0, (LAST_DOW-FIRST_DOW+1));
+X		} else {
+X			ecode = e_timespec;
+X			goto eof;
+X		}
+X	} else {
+X		Debug(DPARS, ("load_entry()...about to parse numerics\n"))
+X
+X		ch = get_list(e->minute, FIRST_MINUTE, LAST_MINUTE,
+X			      PPC_NULL, ch, file);
+X		if (ch == EOF) {
+X			ecode = e_minute;
+X			goto eof;
+X		}
+X
+X		/* hours
+X		 */
+X
+X		ch = get_list(e->hour, FIRST_HOUR, LAST_HOUR,
+X			      PPC_NULL, ch, file);
+X		if (ch == EOF) {
+X			ecode = e_hour;
+X			goto eof;
+X		}
+X
+X		/* DOM (days of month)
+X		 */
+X
+X		if (ch == '*')
+X			e->flags |= DOM_STAR;
+X		ch = get_list(e->dom, FIRST_DOM, LAST_DOM,
+X			      PPC_NULL, ch, file);
+X		if (ch == EOF) {
+X			ecode = e_dom;
+X			goto eof;
+X		}
+X
+X		/* month
+X		 */
+X
+X		ch = get_list(e->month, FIRST_MONTH, LAST_MONTH,
+X			      MonthNames, ch, file);
+X		if (ch == EOF) {
+X			ecode = e_month;
+X			goto eof;
+X		}
+X
+X		/* DOW (days of week)
+X		 */
+X
+X		if (ch == '*')
+X			e->flags |= DOW_STAR;
+X		ch = get_list(e->dow, FIRST_DOW, LAST_DOW,
+X			      DowNames, ch, file);
+X		if (ch == EOF) {
+X			ecode = e_dow;
+X			goto eof;
+X		}
+X	}
+X
+X	/* make sundays equivilent */
+X	if (bit_test(e->dow, 0) || bit_test(e->dow, 7)) {
+X		bit_set(e->dow, 0);
+X		bit_set(e->dow, 7);
+X	}
+X
+X	/* ch is the first character of a command, or a username */
+X	unget_char(ch, file);
+X
+X	if (!pw) {
+X		char		*username = cmd;	/* temp buffer */
+X
+X		Debug(DPARS, ("load_entry()...about to parse username\n"))
+X		ch = get_string(username, MAX_COMMAND, file, " \t");
+X
+X		Debug(DPARS, ("load_entry()...got %s\n",username))
+X		if (ch == EOF) {
+X			ecode = e_cmd;
+X			goto eof;
+X		}
+X
+X		pw = getpwnam(username);
+X		if (pw == NULL) {
+X			ecode = e_username;
+X			goto eof;
+X		}
+X		Debug(DPARS, ("load_entry()...uid %d, gid %d\n",e->uid,e->gid))
+X	}
+X
+X	e->uid = pw->pw_uid;
+X	e->gid = pw->pw_gid;
+X
+X	/* copy and fix up environment.  some variables are just defaults and
+X	 * others are overrides.
+X	 */
+X	e->envp = env_copy(envp);
+X	if (!env_get("SHELL", e->envp)) {
+X		sprintf(envstr, "SHELL=%s", _PATH_BSHELL);
+X		e->envp = env_set(e->envp, envstr);
+X	}
+X	if (!env_get("HOME", e->envp)) {
+X		sprintf(envstr, "HOME=%s", pw->pw_dir);
+X		e->envp = env_set(e->envp, envstr);
+X	}
+X	if (!env_get("PATH", e->envp)) {
+X		sprintf(envstr, "PATH=%s", _PATH_DEFPATH);
+X		e->envp = env_set(e->envp, envstr);
+X	}
+X	sprintf(envstr, "%s=%s", "LOGNAME", pw->pw_name);
+X	e->envp = env_set(e->envp, envstr);
+X#if defined(BSD)
+X	sprintf(envstr, "%s=%s", "USER", pw->pw_name);
+X	e->envp = env_set(e->envp, envstr);
+X#endif
+X
+X	Debug(DPARS, ("load_entry()...about to parse command\n"))
+X
+X	/* Everything up to the next \n or EOF is part of the command...
+X	 * too bad we don't know in advance how long it will be, since we
+X	 * need to malloc a string for it... so, we limit it to MAX_COMMAND.
+X	 * XXX - should use realloc().
+X	 */ 
+X	ch = get_string(cmd, MAX_COMMAND, file, "\n");
+X
+X	/* a file without a \n before the EOF is rude, so we'll complain...
+X	 */
+X	if (ch == EOF) {
+X		ecode = e_cmd;
+X		goto eof;
+X	}
+X
+X	/* got the command in the 'cmd' string; save it in *e.
+X	 */
+X	e->cmd = strdup(cmd);
+X
+X	Debug(DPARS, ("load_entry()...returning successfully\n"))
+X
+X	/* success, fini, return pointer to the entry we just created...
+X	 */
+X	return e;
+X
+X eof:
+X	free(e);
+X	if (ecode != e_none && error_func)
+X		(*error_func)(ecodes[(int)ecode]);
+X	while (ch != EOF && ch != '\n')
+X		ch = get_char(file);
+X	return NULL;
+X}
+X
+X
+Xstatic char
+Xget_list(bits, low, high, names, ch, file)
+X	bitstr_t	*bits;		/* one bit per flag, default=FALSE */
+X	int		low, high;	/* bounds, impl. offset for bitstr */
+X	char		*names[];	/* NULL or *[] of names for these elements */
+X	int		ch;		/* current character being processed */
+X	FILE		*file;		/* file being read */
+X{
+X	register int	done;
+X
+X	/* we know that we point to a non-blank character here;
+X	 * must do a Skip_Blanks before we exit, so that the
+X	 * next call (or the code that picks up the cmd) can
+X	 * assume the same thing.
+X	 */
+X
+X	Debug(DPARS|DEXT, ("get_list()...entered\n"))
+X
+X	/* list = range {"," range}
+X	 */
+X	
+X	/* clear the bit string, since the default is 'off'.
+X	 */
+X	bit_nclear(bits, 0, (high-low+1));
+X
+X	/* process all ranges
+X	 */
+X	done = FALSE;
+X	while (!done) {
+X		ch = get_range(bits, low, high, names, ch, file);
+X		if (ch == ',')
+X			ch = get_char(file);
+X		else
+X			done = TRUE;
+X	}
+X
+X	/* exiting.  skip to some blanks, then skip over the blanks.
+X	 */
+X	Skip_Nonblanks(ch, file)
+X	Skip_Blanks(ch, file)
+X
+X	Debug(DPARS|DEXT, ("get_list()...exiting w/ %02x\n", ch))
+X
+X	return ch;
+X}
+X
+X
+Xstatic char
+Xget_range(bits, low, high, names, ch, file)
+X	bitstr_t	*bits;		/* one bit per flag, default=FALSE */
+X	int		low, high;	/* bounds, impl. offset for bitstr */
+X	char		*names[];	/* NULL or names of elements */
+X	int		ch;		/* current character being processed */
+X	FILE		*file;		/* file being read */
+X{
+X	/* range = number | number "-" number [ "/" number ]
+X	 */
+X
+X	register int	i;
+X	auto int	num1, num2, num3;
+X
+X	Debug(DPARS|DEXT, ("get_range()...entering, exit won't show\n"))
+X
+X	if (ch == '*') {
+X		/* '*' means "first-last" but can still be modified by /step
+X		 */
+X		num1 = low;
+X		num2 = high;
+X		ch = get_char(file);
+X		if (ch == EOF)
+X			return EOF;
+X	} else {
+X		if (EOF == (ch = get_number(&num1, low, names, ch, file)))
+X			return EOF;
+X
+X		if (ch != '-') {
+X			/* not a range, it's a single number.
+X			 */
+X			if (EOF == set_element(bits, low, high, num1))
+X				return EOF;
+X			return ch;
+X		} else {
+X			/* eat the dash
+X			 */
+X			ch = get_char(file);
+X			if (ch == EOF)
+X				return EOF;
+X
+X			/* get the number following the dash
+X			 */
+X			ch = get_number(&num2, low, names, ch, file);
+X			if (ch == EOF)
+X				return EOF;
+X		}
+X	}
+X
+X	/* check for step size
+X	 */
+X	if (ch == '/') {
+X		/* eat the slash
+X		 */
+X		ch = get_char(file);
+X		if (ch == EOF)
+X			return EOF;
+X
+X		/* get the step size -- note: we don't pass the
+X		 * names here, because the number is not an
+X		 * element id, it's a step size.  'low' is
+X		 * sent as a 0 since there is no offset either.
+X		 */
+X		ch = get_number(&num3, 0, PPC_NULL, ch, file);
+X		if (ch == EOF)
+X			return EOF;
+X	} else {
+X		/* no step.  default==1.
+X		 */
+X		num3 = 1;
+X	}
+X
+X	/* range. set all elements from num1 to num2, stepping
+X	 * by num3.  (the step is a downward-compatible extension
+X	 * proposed conceptually by bob@acornrc, syntactically
+X	 * designed then implmented by paul vixie).
+X	 */
+X	for (i = num1;  i <= num2;  i += num3)
+X		if (EOF == set_element(bits, low, high, i))
+X			return EOF;
+X
+X	return ch;
+X}
+X
+X
+Xstatic char
+Xget_number(numptr, low, names, ch, file)
+X	int	*numptr;	/* where does the result go? */
+X	int	low;		/* offset applied to result if symbolic enum used */
+X	char	*names[];	/* symbolic names, if any, for enums */
+X	int	ch;		/* current character */
+X	FILE	*file;		/* source */
+X{
+X	char	temp[MAX_TEMPSTR], *pc;
+X	int	len, i, all_digits;
+X
+X	/* collect alphanumerics into our fixed-size temp array
+X	 */
+X	pc = temp;
+X	len = 0;
+X	all_digits = TRUE;
+X	while (isalnum(ch)) {
+X		if (++len >= MAX_TEMPSTR)
+X			return EOF;
+X
+X		*pc++ = ch;
+X
+X		if (!isdigit(ch))
+X			all_digits = FALSE;
+X
+X		ch = get_char(file);
+X	}
+X	*pc = '\0';
+X
+X	/* try to find the name in the name list
+X	 */
+X	if (names) {
+X		for (i = 0;  names[i] != NULL;  i++) {
+X			Debug(DPARS|DEXT,
+X				("get_num, compare(%s,%s)\n", names[i], temp))
+X			if (!strcasecmp(names[i], temp)) {
+X				*numptr = i+low;
+X				return ch;
+X			}
+X		}
+X	}
+X
+X	/* no name list specified, or there is one and our string isn't
+X	 * in it.  either way: if it's all digits, use its magnitude.
+X	 * otherwise, it's an error.
+X	 */
+X	if (all_digits) {
+X		*numptr = atoi(temp);
+X		return ch;
+X	}
+X
+X	return EOF;
+X}
+X
+X
+Xstatic int
+Xset_element(bits, low, high, number)
+X	bitstr_t	*bits; 		/* one bit per flag, default=FALSE */
+X	int		low;
+X	int		high;
+X	int		number;
+X{
+X	Debug(DPARS|DEXT, ("set_element(?,%d,%d,%d)\n", low, high, number))
+X
+X	if (number < low || number > high)
+X		return EOF;
+X
+X	bit_set(bits, (number-low));
+X	return OK;
+X}
+END_OF_FILE
+if test 12410 -ne `wc -c <'entry.c'`; then
+    echo shar: \"'entry.c'\" unpacked with wrong size!
+fi
+# end of 'entry.c'
+fi
+if test -f 'misc.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'misc.c'\"
+else
+echo shar: Extracting \"'misc.c'\" \(13523 characters\)
+sed "s/^X//" >'misc.c' <<'END_OF_FILE'
+X/* Copyright 1988,1990,1993,1994 by Paul Vixie
+X * All rights reserved
+X *
+X * Distribute freely, except: don't remove my name from the source or
+X * documentation (don't take credit for my work), mark your changes (don't
+X * get me blamed for your possible bugs), don't alter or remove this
+X * notice.  May be sold if buildable source is provided to buyer.  No
+X * warrantee of any kind, express or implied, is included with this
+X * software; use at your own risk, responsibility for damages (if any) to
+X * anyone resulting from the use of this software rests entirely with the
+X * user.
+X *
+X * Send bug reports, bug fixes, enhancements, requests, flames, etc., and
+X * I'll try to keep a version up to date.  I can be reached as follows:
+X * Paul Vixie          <paul@vix.com>          uunet!decwrl!vixie!paul
+X */
+X
+X#if !defined(lint) && !defined(LINT)
+Xstatic char rcsid[] = "$Id: Part02,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $";
+X#endif
+X
+X/* vix 26jan87 [RCS has the rest of the log]
+X * vix 30dec86 [written]
+X */
+X
+X
+X#include "cron.h"
+X#if SYS_TIME_H
+X# include <sys/time.h>
+X#else
+X# include <time.h>
+X#endif
+X#include <sys/file.h>
+X#include <sys/stat.h>
+X#include <errno.h>
+X#include <string.h>
+X#include <fcntl.h>
+X#if defined(SYSLOG)
+X# include <syslog.h>
+X#endif
+X
+X
+X#if defined(LOG_DAEMON) && !defined(LOG_CRON)
+X#define LOG_CRON LOG_DAEMON
+X#endif
+X
+X
+Xstatic int		LogFD = ERR;
+X
+X
+Xint
+Xstrcmp_until(left, right, until)
+X	char	*left;
+X	char	*right;
+X	int	until;
+X{
+X	register int	diff;
+X
+X	while (*left && *left != until && *left == *right) {
+X		left++;
+X		right++;
+X	}
+X
+X	if ((*left=='\0' || *left == until) &&
+X	    (*right=='\0' || *right == until)) {
+X		diff = 0;
+X	} else {
+X		diff = *left - *right;
+X	}
+X
+X	return diff;
+X}
+X
+X
+X/* strdtb(s) - delete trailing blanks in string 's' and return new length
+X */
+Xint
+Xstrdtb(s)
+X	char	*s;
+X{
+X	char	*x = s;
+X
+X	/* scan forward to the null
+X	 */
+X	while (*x)
+X		x++;
+X
+X	/* scan backward to either the first character before the string,
+X	 * or the last non-blank in the string, whichever comes first.
+X	 */
+X	do	{x--;}
+X	while (x >= s && isspace(*x));
+X
+X	/* one character beyond where we stopped above is where the null
+X	 * goes.
+X	 */
+X	*++x = '\0';
+X
+X	/* the difference between the position of the null character and
+X	 * the position of the first character of the string is the length.
+X	 */
+X	return x - s;
+X}
+X
+X
+Xint
+Xset_debug_flags(flags)
+X	char	*flags;
+X{
+X	/* debug flags are of the form    flag[,flag ...]
+X	 *
+X	 * if an error occurs, print a message to stdout and return FALSE.
+X	 * otherwise return TRUE after setting ERROR_FLAGS.
+X	 */
+X
+X#if !DEBUGGING
+X
+X	printf("this program was compiled without debugging enabled\n");
+X	return FALSE;
+X
+X#else /* DEBUGGING */
+X
+X	char	*pc = flags;
+X
+X	DebugFlags = 0;
+X
+X	while (*pc) {
+X		char	**test;
+X		int	mask;
+X
+X		/* try to find debug flag name in our list.
+X		 */
+X		for (	test = DebugFlagNames, mask = 1;
+X			*test && strcmp_until(*test, pc, ',');
+X			test++, mask <<= 1
+X		    )
+X			;
+X
+X		if (!*test) {
+X			fprintf(stderr,
+X				"unrecognized debug flag <%s> <%s>\n",
+X				flags, pc);
+X			return FALSE;
+X		}
+X
+X		DebugFlags |= mask;
+X
+X		/* skip to the next flag
+X		 */
+X		while (*pc && *pc != ',')
+X			pc++;
+X		if (*pc == ',')
+X			pc++;
+X	}
+X
+X	if (DebugFlags) {
+X		int	flag;
+X
+X		fprintf(stderr, "debug flags enabled:");
+X
+X		for (flag = 0;  DebugFlagNames[flag];  flag++)
+X			if (DebugFlags & (1 << flag))
+X				fprintf(stderr, " %s", DebugFlagNames[flag]);
+X		fprintf(stderr, "\n");
+X	}
+X
+X	return TRUE;
+X
+X#endif /* DEBUGGING */
+X}
+X
+X
+Xvoid
+Xset_cron_uid()
+X{
+X#if defined(BSD) || defined(POSIX)
+X	if (seteuid(ROOT_UID) < OK) {
+X		perror("seteuid");
+X		exit(ERROR_EXIT);
+X	}
+X#else
+X	if (setuid(ROOT_UID) < OK) {
+X		perror("setuid");
+X		exit(ERROR_EXIT);
+X	}
+X#endif
+X}
+X
+X
+Xvoid
+Xset_cron_cwd()
+X{
+X	struct stat	sb;
+X
+X	/* first check for CRONDIR ("/var/cron" or some such)
+X	 */
+X	if (stat(CRONDIR, &sb) < OK && errno == ENOENT) {
+X		perror(CRONDIR);
+X		if (OK == mkdir(CRONDIR, 0700)) {
+X			fprintf(stderr, "%s: created\n", CRONDIR);
+X			stat(CRONDIR, &sb);
+X		} else {
+X			fprintf(stderr, "%s: ", CRONDIR);
+X			perror("mkdir");
+X			exit(ERROR_EXIT);
+X		}
+X	}
+X	if (!(sb.st_mode & S_IFDIR)) {
+X		fprintf(stderr, "'%s' is not a directory, bailing out.\n",
+X			CRONDIR);
+X		exit(ERROR_EXIT);
+X	}
+X	if (chdir(CRONDIR) < OK) {
+X		fprintf(stderr, "cannot chdir(%s), bailing out.\n", CRONDIR);
+X		perror(CRONDIR);
+X		exit(ERROR_EXIT);
+X	}
+X
+X	/* CRONDIR okay (now==CWD), now look at SPOOL_DIR ("tabs" or some such)
+X	 */
+X	if (stat(SPOOL_DIR, &sb) < OK && errno == ENOENT) {
+X		perror(SPOOL_DIR);
+X		if (OK == mkdir(SPOOL_DIR, 0700)) {
+X			fprintf(stderr, "%s: created\n", SPOOL_DIR);
+X			stat(SPOOL_DIR, &sb);
+X		} else {
+X			fprintf(stderr, "%s: ", SPOOL_DIR);
+X			perror("mkdir");
+X			exit(ERROR_EXIT);
+X		}
+X	}
+X	if (!(sb.st_mode & S_IFDIR)) {
+X		fprintf(stderr, "'%s' is not a directory, bailing out.\n",
+X			SPOOL_DIR);
+X		exit(ERROR_EXIT);
+X	}
+X}
+X
+X
+X/* acquire_daemonlock() - write our PID into /etc/cron.pid, unless
+X *	another daemon is already running, which we detect here.
+X *
+X * note: main() calls us twice; once before forking, once after.
+X *	we maintain static storage of the file pointer so that we
+X *	can rewrite our PID into the PIDFILE after the fork.
+X *
+X * it would be great if fflush() disassociated the file buffer.
+X */
+Xvoid
+Xacquire_daemonlock(closeflag)
+X	int closeflag;
+X{
+X	static	FILE	*fp = NULL;
+X
+X	if (closeflag && fp) {
+X		fclose(fp);
+X		fp = NULL;
+X		return;
+X	}
+X
+X	if (!fp) {
+X		char	pidfile[MAX_FNAME];
+X		char	buf[MAX_TEMPSTR];
+X		int	fd, otherpid;
+X
+X		(void) sprintf(pidfile, PIDFILE, PIDDIR);
+X		if ((-1 == (fd = open(pidfile, O_RDWR|O_CREAT, 0644)))
+X		    || (NULL == (fp = fdopen(fd, "r+")))
+X		    ) {
+X			sprintf(buf, "can't open or create %s: %s",
+X				pidfile, strerror(errno));
+X			fprintf(stderr, "%s: %s\n", ProgramName, buf);
+X			log_it("CRON", getpid(), "DEATH", buf);
+X			exit(ERROR_EXIT);
+X		}
+X
+X		if (flock(fd, LOCK_EX|LOCK_NB) < OK) {
+X			int save_errno = errno;
+X
+X			fscanf(fp, "%d", &otherpid);
+X			sprintf(buf, "can't lock %s, otherpid may be %d: %s",
+X				pidfile, otherpid, strerror(save_errno));
+X			fprintf(stderr, "%s: %s\n", ProgramName, buf);
+X			log_it("CRON", getpid(), "DEATH", buf);
+X			exit(ERROR_EXIT);
+X		}
+X
+X		(void) fcntl(fd, F_SETFD, 1);
+X	}
+X
+X	rewind(fp);
+X	fprintf(fp, "%d\n", getpid());
+X	fflush(fp);
+X	(void) ftruncate(fileno(fp), ftell(fp));
+X
+X	/* abandon fd and fp even though the file is open. we need to
+X	 * keep it open and locked, but we don't need the handles elsewhere.
+X	 */
+X}
+X
+X/* get_char(file) : like getc() but increment LineNumber on newlines
+X */
+Xint
+Xget_char(file)
+X	FILE	*file;
+X{
+X	int	ch;
+X
+X	ch = getc(file);
+X	if (ch == '\n')
+X		Set_LineNum(LineNumber + 1)
+X	return ch;
+X}
+X
+X
+X/* unget_char(ch, file) : like ungetc but do LineNumber processing
+X */
+Xvoid
+Xunget_char(ch, file)
+X	int	ch;
+X	FILE	*file;
+X{
+X	ungetc(ch, file);
+X	if (ch == '\n')
+X		Set_LineNum(LineNumber - 1)
+X}
+X
+X
+X/* get_string(str, max, file, termstr) : like fgets() but
+X *		(1) has terminator string which should include \n
+X *		(2) will always leave room for the null
+X *		(3) uses get_char() so LineNumber will be accurate
+X *		(4) returns EOF or terminating character, whichever
+X */
+Xint
+Xget_string(string, size, file, terms)
+X	char	*string;
+X	int	size;
+X	FILE	*file;
+X	char	*terms;
+X{
+X	int	ch;
+X
+X	while (EOF != (ch = get_char(file)) && !strchr(terms, ch)) {
+X		if (size > 1) {
+X			*string++ = (char) ch;
+X			size--;
+X		}
+X	}
+X
+X	if (size > 0)
+X		*string = '\0';
+X
+X	return ch;
+X}
+X
+X
+X/* skip_comments(file) : read past comment (if any)
+X */
+Xvoid
+Xskip_comments(file)
+X	FILE	*file;
+X{
+X	int	ch;
+X
+X	while (EOF != (ch = get_char(file))) {
+X		/* ch is now the first character of a line.
+X		 */
+X
+X		while (ch == ' ' || ch == '\t')
+X			ch = get_char(file);
+X
+X		if (ch == EOF)
+X			break;
+X
+X		/* ch is now the first non-blank character of a line.
+X		 */
+X
+X		if (ch != '\n' && ch != '#')
+X			break;
+X
+X		/* ch must be a newline or comment as first non-blank
+X		 * character on a line.
+X		 */
+X
+X		while (ch != '\n' && ch != EOF)
+X			ch = get_char(file);
+X
+X		/* ch is now the newline of a line which we're going to
+X		 * ignore.
+X		 */
+X	}
+X	if (ch != EOF)
+X		unget_char(ch, file);
+X}
+X
+X
+X/* int in_file(char *string, FILE *file)
+X *	return TRUE if one of the lines in file matches string exactly,
+X *	FALSE otherwise.
+X */
+Xstatic int
+Xin_file(string, file)
+X	char *string;
+X	FILE *file;
+X{
+X	char line[MAX_TEMPSTR];
+X
+X	rewind(file);
+X	while (fgets(line, MAX_TEMPSTR, file)) {
+X		if (line[0] != '\0')
+X			line[strlen(line)-1] = '\0';
+X		if (0 == strcmp(line, string))
+X			return TRUE;
+X	}
+X	return FALSE;
+X}
+X
+X
+X/* int allowed(char *username)
+X *	returns TRUE if (ALLOW_FILE exists and user is listed)
+X *	or (DENY_FILE exists and user is NOT listed)
+X *	or (neither file exists but user=="root" so it's okay)
+X */
+Xint
+Xallowed(username)
+X	char *username;
+X{
+X	static int	init = FALSE;
+X	static FILE	*allow, *deny;
+X
+X	if (!init) {
+X		init = TRUE;
+X#if defined(ALLOW_FILE) && defined(DENY_FILE)
+X		allow = fopen(ALLOW_FILE, "r");
+X		deny = fopen(DENY_FILE, "r");
+X		Debug(DMISC, ("allow/deny enabled, %d/%d\n", !!allow, !!deny))
+X#else
+X		allow = NULL;
+X		deny = NULL;
+X#endif
+X	}
+X
+X	if (allow)
+X		return (in_file(username, allow));
+X	if (deny)
+X		return (!in_file(username, deny));
+X
+X#if defined(ALLOW_ONLY_ROOT)
+X	return (strcmp(username, ROOT_USER) == 0);
+X#else
+X	return TRUE;
+X#endif
+X}
+X
+X
+Xvoid
+Xlog_it(username, xpid, event, detail)
+X	char	*username;
+X	int	xpid;
+X	char	*event;
+X	char	*detail;
+X{
+X	PID_T			pid = xpid;
+X#if defined(LOG_FILE)
+X	char			*msg;
+X	TIME_T			now = time((TIME_T) 0);
+X	register struct tm	*t = localtime(&now);
+X#endif /*LOG_FILE*/
+X
+X#if defined(SYSLOG)
+X	static int		syslog_open = 0;
+X#endif
+X
+X#if defined(LOG_FILE)
+X	/* we assume that MAX_TEMPSTR will hold the date, time, &punctuation.
+X	 */
+X	msg = malloc(strlen(username)
+X		     + strlen(event)
+X		     + strlen(detail)
+X		     + MAX_TEMPSTR);
+X
+X	if (LogFD < OK) {
+X		LogFD = open(LOG_FILE, O_WRONLY|O_APPEND|O_CREAT, 0600);
+X		if (LogFD < OK) {
+X			fprintf(stderr, "%s: can't open log file\n",
+X				ProgramName);
+X			perror(LOG_FILE);
+X		} else {
+X			(void) fcntl(LogFD, F_SETFD, 1);
+X		}
+X	}
+X
+X	/* we have to sprintf() it because fprintf() doesn't always write
+X	 * everything out in one chunk and this has to be atomically appended
+X	 * to the log file.
+X	 */
+X	sprintf(msg, "%s (%02d/%02d-%02d:%02d:%02d-%d) %s (%s)\n",
+X		username,
+X		t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, pid,
+X		event, detail);
+X
+X	/* we have to run strlen() because sprintf() returns (char*) on old BSD
+X	 */
+X	if (LogFD < OK || write(LogFD, msg, strlen(msg)) < OK) {
+X		if (LogFD >= OK)
+X			perror(LOG_FILE);
+X		fprintf(stderr, "%s: can't write to log file\n", ProgramName);
+X		write(STDERR, msg, strlen(msg));
+X	}
+X
+X	free(msg);
+X#endif /*LOG_FILE*/
+X
+X#if defined(SYSLOG)
+X	if (!syslog_open) {
+X		/* we don't use LOG_PID since the pid passed to us by
+X		 * our client may not be our own.  therefore we want to
+X		 * print the pid ourselves.
+X		 */
+X# ifdef LOG_DAEMON
+X		openlog(ProgramName, LOG_PID, LOG_CRON);
+X# else
+X		openlog(ProgramName, LOG_PID);
+X# endif
+X		syslog_open = TRUE;		/* assume openlog success */
+X	}
+X
+X	syslog(LOG_INFO, "(%s) %s (%s)\n", username, event, detail);
+X
+X#endif /*SYSLOG*/
+X
+X#if DEBUGGING
+X	if (DebugFlags) {
+X		fprintf(stderr, "log_it: (%s %d) %s (%s)\n",
+X			username, pid, event, detail);
+X	}
+X#endif
+X}
+X
+X
+Xvoid
+Xlog_close() {
+X	if (LogFD != ERR) {
+X		close(LogFD);
+X		LogFD = ERR;
+X	}
+X}
+X
+X
+X/* two warnings:
+X *	(1) this routine is fairly slow
+X *	(2) it returns a pointer to static storage
+X */
+Xchar *
+Xfirst_word(s, t)
+X	register char *s;	/* string we want the first word of */
+X	register char *t;	/* terminators, implicitly including \0 */
+X{
+X	static char retbuf[2][MAX_TEMPSTR + 1];	/* sure wish C had GC */
+X	static int retsel = 0;
+X	register char *rb, *rp;
+X
+X	/* select a return buffer */
+X	retsel = 1-retsel;
+X	rb = &retbuf[retsel][0];
+X	rp = rb;
+X
+X	/* skip any leading terminators */
+X	while (*s && (NULL != strchr(t, *s))) {
+X		s++;
+X	}
+X
+X	/* copy until next terminator or full buffer */
+X	while (*s && (NULL == strchr(t, *s)) && (rp < &rb[MAX_TEMPSTR])) {
+X		*rp++ = *s++;
+X	}
+X
+X	/* finish the return-string and return it */
+X	*rp = '\0';
+X	return rb;
+X}
+X
+X
+X/* warning:
+X *	heavily ascii-dependent.
+X */
+Xvoid
+Xmkprint(dst, src, len)
+X	register char *dst;
+X	register unsigned char *src;
+X	register int len;
+X{
+X	while (len-- > 0)
+X	{
+X		register unsigned char ch = *src++;
+X
+X		if (ch < ' ') {			/* control character */
+X			*dst++ = '^';
+X			*dst++ = ch + '@';
+X		} else if (ch < 0177) {		/* printable */
+X			*dst++ = ch;
+X		} else if (ch == 0177) {	/* delete/rubout */
+X			*dst++ = '^';
+X			*dst++ = '?';
+X		} else {			/* parity character */
+X			sprintf(dst, "\\%03o", ch);
+X			dst += 4;
+X		}
+X	}
+X	*dst = '\0';
+X}
+X
+X
+X/* warning:
+X *	returns a pointer to malloc'd storage, you must call free yourself.
+X */
+Xchar *
+Xmkprints(src, len)
+X	register unsigned char *src;
+X	register unsigned int len;
+X{
+X	register char *dst = malloc(len*4 + 1);
+X
+X	mkprint(dst, src, len);
+X
+X	return dst;
+X}
+X
+X
+X#ifdef MAIL_DATE
+X/* Sat, 27 Feb 93 11:44:51 CST
+X * 123456789012345678901234567
+X */
+Xchar *
+Xarpadate(clock)
+X	time_t *clock;
+X{
+X	time_t t = clock ?*clock :time(0L);
+X	struct tm *tm = localtime(&t);
+X	static char ret[30];	/* zone name might be >3 chars */
+X	
+X	(void) sprintf(ret, "%s, %2d %s %2d %02d:%02d:%02d %s",
+X		       DowNames[tm->tm_wday],
+X		       tm->tm_mday,
+X		       MonthNames[tm->tm_mon],
+X		       tm->tm_year,
+X		       tm->tm_hour,
+X		       tm->tm_min,
+X		       tm->tm_sec,
+X		       TZONE(*tm));
+X	return ret;
+X}
+X#endif /*MAIL_DATE*/
+X
+X
+X#ifdef HAVE_SAVED_SUIDS
+Xstatic int save_euid;
+Xint swap_uids() { save_euid = geteuid(); return seteuid(getuid()); }
+Xint swap_uids_back() { return seteuid(save_euid); }
+X#else /*HAVE_SAVED_UIDS*/
+Xint swap_uids() { return setreuid(geteuid(), getuid()); }
+Xint swap_uids_back() { return swap_uids(); }
+X#endif /*HAVE_SAVED_UIDS*/
+END_OF_FILE
+if test 13523 -ne `wc -c <'misc.c'`; then
+    echo shar: \"'misc.c'\" unpacked with wrong size!
+fi
+# end of 'misc.c'
+fi
+echo shar: End of archive 2 \(of 2\).
+cp /dev/null ark2isdone
+MISSING=""
+for I in 1 2 ; do
+    if test ! -f ark${I}isdone ; then
+	MISSING="${MISSING} ${I}"
+    fi
+done
+if test "${MISSING}" = "" ; then
+    echo You have unpacked both archives.
+    rm -f ark[1-9]isdone
+else
+    echo You still need to unpack the following archives:
+    echo "        " ${MISSING}
+fi
+##  End of shell archive.
+exit 0

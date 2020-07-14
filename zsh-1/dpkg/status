@@ -1,0 +1,1 @@
+<p>We don't have dynamic module suport, as it requires dlopen()-style linking support. It would be cool to add dyld support (some work) or to get dyld to support dlopen() API's (harder, but then we get dlopen() API's).</p>

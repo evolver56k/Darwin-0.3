@@ -1,0 +1,16 @@
+Changed all includes of "../conf/*" to "*" and copied conf/portability.h and
+conf/options.h into named directory.
+
+Changed:
+
+#ifdef NeXT
+# define NEED_PUTENV
+# define NEED_SETENV
+#endif
+
+to
+
+#if defined(NeXT) && BSD < 199506
+# define NEED_PUTENV
+# define NEED_SETENV
+#endif

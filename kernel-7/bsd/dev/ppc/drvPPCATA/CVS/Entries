@@ -1,0 +1,23 @@
+/AtapiCnt.h/1.1.1.2/Thu Jul 22 22:55:51 1999/-kb/Tkernel-7
+/AtapiCnt.m/1.1.1.2/Thu Jul 22 22:55:51 1999/-kb/Tkernel-7
+/AtapiCntCmds.h/1.1.1.2/Thu Jul 22 22:55:51 1999/-kb/Tkernel-7
+/AtapiCntCmds.m/1.1.1.2/Thu Jul 22 22:55:51 1999/-kb/Tkernel-7
+/AtapiCntInternal.h/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/AtapiCntInternal.m/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/AtapiCntPublic.h/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/Cmd646xRegs.h/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/IdeCnt.h/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/IdeCnt.m/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/IdeCntCmds.h/1.1.1.2/Thu Jul 22 22:55:52 1999/-kb/Tkernel-7
+/IdeCntCmds.m/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeCntDma.h/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeCntDma.m/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeCntInit.h/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeCntInit.m/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeCntInline.h/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeCntPublic.h/1.1.1.2/Thu Jul 22 22:55:53 1999/-kb/Tkernel-7
+/IdeDDM.h/1.1.1.2/Thu Jul 22 22:55:54 1999/-kb/Tkernel-7
+/ata_extern.h/1.1.1.2/Thu Jul 22 22:55:54 1999/-kb/Tkernel-7
+/atapi_extern.h/1.1.1.2/Thu Jul 22 22:55:54 1999/-kb/Tkernel-7
+/io_inline.h/1.1.1.2/Thu Jul 22 22:55:54 1999/-kb/Tkernel-7
+D

@@ -1,0 +1,32 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        OTHER_SOURCES = (
+            "mh-apollo68v", 
+            "mh-bsd44", 
+            "mh-gnu", 
+            "mh-go32", 
+            "mh-isc", 
+            "mh-ncr3000", 
+            "mh-nextstep", 
+            "mh-posix", 
+            "mh-sco", 
+            "mh-sco4", 
+            "mh-sysv", 
+            "mh-sysv4"
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = config; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,19 @@
+#! /bin/csh -f
+# this script munges all of *.[cmh] in cwd in order to bring the files into 
+# conformance with the driverkit API changes made in 1/93.
+#
+set SED_DIR = /Net/grrr/mknrw/dmitch/DRIVERKIT/driverkit/doc
+set sedfile1 = ${SED_DIR}/api_change.sed
+set sedfile2 = ${SED_DIR}/disk_changes.sed
+set newline  = ${SED_DIR}/newline
+
+foreach i (*.[cmh])
+  echo $i
+  cp $i /tmp
+  cat $i $newline > $i.1
+  sed -f $sedfile1 $i.1 > $i.2
+  sed -f $sedfile2 $i.2 > $i.new
+  rm -f $i $i.1 $i.2
+  mv $i.new $i
+end
+ 

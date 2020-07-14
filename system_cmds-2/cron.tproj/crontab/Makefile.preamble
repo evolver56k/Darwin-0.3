@@ -1,0 +1,7 @@
+OTHER_GENERATED_OFILES = $(VERS_OFILE)
+
+SHARED_CFILES = compat.c entry.c env.c misc.c
+SHARED_OFILES = $(SHARED_CFILES:.c=.o)
+OTHER_OFILES = $(SHARED_OFILES)
+
+-include ../../Makefile.include

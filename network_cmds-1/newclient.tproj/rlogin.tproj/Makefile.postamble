@@ -1,0 +1,2 @@
+after_install::
+	$(CHFLAGS) schg $(DSTROOT)$(INSTALLDIR)/$(NAME)

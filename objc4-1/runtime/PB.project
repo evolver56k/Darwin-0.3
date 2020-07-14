@@ -1,0 +1,90 @@
+{
+    CURRENTLY_ACTIVE_VERSION = YES; 
+    DEPLOY_WITH_VERSION_NAME = A; 
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = (); 
+        H_FILES = (
+            error.h, 
+            hashtable2.h, 
+            maptable.h, 
+            "objc-api.h", 
+            "objc-class.h", 
+            "objc-config.h", 
+            "objc-dispatch.h", 
+            "objc-file.h", 
+            "objc-load.h", 
+            "objc-private.h", 
+            "objc-runtime.h", 
+            "objc-sel.h", 
+            objc.h, 
+            Object.h, 
+            Protocol.h, 
+            vectors.h, 
+            zone.h
+        ); 
+        OTHER_LINKED = (
+            cplus_init.c, 
+            except.c, 
+            hashtable2.m, 
+            maptable.m, 
+            NXLogError.c, 
+            "objc-class.m", 
+            "objc-errors.m", 
+            "objc-file.m", 
+            "objc-globaldata.m", 
+            "objc-globaltext.m", 
+            "objc-kernel.c", 
+            "objc-load.m", 
+            "objc-moninit.c", 
+            "objc-runtime.m", 
+            "objc-sel.m", 
+            Object.m, 
+            Protocol.m
+        ); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            m.template, 
+            h.template, 
+            ObjCNotes.rtf, 
+            malloc.m, 
+            "objc-file-generic.m", 
+            "objc-file-macho.m", 
+            "objc-file-hpux.m", 
+            objc_dllMain.c, 
+            objc4.ofileList
+        ); 
+        PUBLIC_HEADERS = (
+            "objc-class.h", 
+            "objc-api.h", 
+            "objc-load.h", 
+            "objc-runtime.h", 
+            objc.h, 
+            Object.h, 
+            Protocol.h, 
+            zone.h, 
+            error.h, 
+            hashtable2.h
+        ); 
+        SUBPROJECTS = (Messengers.subproj, OldClasses.subproj); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_INSTALLDIR = "$(LOCAL_DEVELOPER_DIR)/Libraries"; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = runtime; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_INSTALLDIR = /.; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

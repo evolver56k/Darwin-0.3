@@ -1,0 +1,6 @@
+Package: dpkg-scriptlib
+Maintainer: Klee Dienes <kdienes@apple.com>
+Vendor: Apple Computer, Inc.
+Version: 0.2
+Description: Perl and Python interfaces to dpkg
+Build-Depends: build-base, gnuzip

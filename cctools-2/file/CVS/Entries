@@ -1,0 +1,21 @@
+/Makefile/1.1.1.1/Fri May  7 17:45:15 1999//Tcctools-2
+/apprentice.c/1.1.1.1/Fri May  7 17:45:12 1999//Tcctools-2
+/ascmagic.c/1.1.1.1/Fri May  7 17:45:12 1999//Tcctools-2
+/compress.c/1.1.1.1/Fri May  7 17:45:13 1999//Tcctools-2
+/file.1/1.1.1.1/Fri May  7 17:45:15 1999//Tcctools-2
+/file.c/1.1.1.1/Fri May  7 17:45:11 1999//Tcctools-2
+/file.h/1.1.1.1/Fri May  7 17:45:14 1999//Tcctools-2
+/fsmagic.c/1.1.1.1/Fri May  7 17:45:12 1999//Tcctools-2
+/internat.c/1.1.1.1/Fri May  7 17:45:13 1999//Tcctools-2
+/is_tar.c/1.1.1.1/Fri May  7 17:45:13 1999//Tcctools-2
+/magic.5/1.1.1.1/Fri May  7 17:45:15 1999//Tcctools-2
+/names.h/1.1.1.1/Fri May  7 17:45:14 1999//Tcctools-2
+/notes/1.1.1.1/Fri May  7 17:45:16 1999//Tcctools-2
+/patchlevel.h/1.1.1.1/Fri May  7 17:45:14 1999//Tcctools-2
+/print.c/1.1.1.1/Fri May  7 17:45:13 1999//Tcctools-2
+/readelf.c/1.1.1.1/Fri May  7 17:45:13 1999//Tcctools-2
+/readelf.h/1.1.1.1/Fri May  7 17:45:14 1999//Tcctools-2
+/readfat.c/1.1.1.1/Fri May  7 17:45:14 1999//Tcctools-2
+/softmagic.c/1.1.1.1/Fri May  7 17:45:12 1999//Tcctools-2
+/tar.h/1.1.1.1/Fri May  7 17:45:15 1999//Tcctools-2
+D/magdir////

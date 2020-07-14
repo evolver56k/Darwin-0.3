@@ -1,0 +1,210 @@
+#define KVM_PUNT	1	
+#define REQUIRE_SECT_ALIGN	1	/* */
+
+static boolean_t fd_setup_rw_req(fd_volume_t fvp, 
+	boolean_t bad_block_map)	/* TRUE = check for remapping */
+{
+	/* input:  fvp->start_sect
+	 *	   fvp->bytes_to_go
+	 *	   fvp->start_addrs
+	 *	   fvp->io_flags
+	 *	   fvp->dev_ioreq.pmap
+	 *	   fvp->dev_ioreq.map
+	 *	   fvp->format_info
+	 * output: fvp->current_sect
+	 *	   fvp->current_byte_cnt
+	 *	   fvp->current_addrs
+	 *	   fvp->dev_ioreq
+	 * 
+	 * This routine determines the largest "safe" I/O which can be
+	 * performed starting at fvp->start_sect, up to a max of 
+	 * fvp->bytes_to_go bytes. The bad block table will only be consulted
+	 * if bad_block_map is also TRUE.
+	 *
+	 * No I/O is allowed to go past a track boundary.
+	 *
+	 * Short writes (less than one sector) result in user data being 
+	 * copied to *fvp->sect_buf, memory for which is allocated here.
+	 * DMA occurs out of this buffer. The buffer must be freed upon I/O
+	 * complete. 
+	 *
+	 * Parameters describing the resulting "safe" I/O are placed in
+	 * fvp->current_sect and fvp->current_byte_cnt. An fd_rw_cmd is then
+	 * generated and placed in fvp->dev_ioreq.cmd_blk[].
+	 *
+	 * Returns TRUE if mapping occurred.
+	 */
+	struct fd_rw_cmd start_rw_cmd;		/* first sector, phys params */
+	struct fd_format_info *fip = &fvp->format_info;
+	u_int sect_size = fip->sectsize_info.sect_size;
+	int num_sects = howmany(fvp->bytes_to_go, sect_size);
+	int bytes_to_xfr;
+	caddr_t start_addrs;
+	
+	XDBG(("fd_setup_rw_req: start_sect = %d\n", fvp->start_sect));
+	/*
+	 * See if we'll wrap past a track boundary. Max sector number on
+	 * a track is sects_per_trk, NOT sects_per_trk-1...
+	 */
+	fd_log_2_phys(fvp, fvp->start_sect, &start_rw_cmd);
+	if((start_rw_cmd.sector + num_sects) >
+	  (fip->sectsize_info.sects_per_trk+1)) {
+		num_sects = fip->sectsize_info.sects_per_trk -
+		    start_rw_cmd.sector + 1;
+		bytes_to_xfr = num_sects * sect_size;
+		XDBG(("fd_setup_rw_req: track wrap: num_sects = %d\n", 
+			num_sects));
+	}
+	else {
+		/*
+		 * The whole I/O fits on one track.
+		 */
+		bytes_to_xfr = fvp->bytes_to_go;
+	}
+	/*
+	 * See if we have to deal with a partial sector.
+	 */
+	start_addrs = fvp->start_addrs;
+	fvp->padded_byte_cnt = 0;	
+#ifdef	REQUIRE_SECT_ALIGN
+	if(bytes_to_xfr & (sect_size - 1)) {
+		printf("fd%d: PARTIAL SECTOR I/O\n", fvp->volume_num);
+	}
+short_write_out:
+
+	fvp->current_sect     = fvp->start_sect;
+	fvp->current_byte_cnt = bytes_to_xfr;
+	fvp->current_addrs    = start_addrs;
+	fd_gen_rw_cmd(fvp,
+		&fvp->dev_ioreq,
+		fvp->current_sect,
+		fvp->current_byte_cnt,
+		fvp->current_addrs,
+		fvp->io_flags & FVIOF_READ);
+	return(FALSE);
+	
+} /* fd_setup_rw_req() */
+
+/*
+ * generate a write or read command in *fdiop (No I/O).
+ */
+static void fd_gen_rw_cmd(fd_volume_t fvp,
+	fd_ioreq_t fdiop,
+	u_int sector,
+	u_int byte_count,
+	caddr_t dma_addrs,
+	int read)		/* non-zero ==> read */
+{
+	struct fd_rw_cmd *cmdp = (struct fd_rw_cmd *)fdiop->cmd_blk;
+	struct fd_format_info *fip = &fvp->format_info;
+	
+	XADDBG(("fd_gen_rw_cmd: sector 0x%x byte_count 0x%x read = %d\n",
+		sector, byte_count, read));
+	bzero(cmdp, SIZEOF_RW_CMD);
+	fd_log_2_phys(fvp, sector, cmdp);	/* assign track, head, sect */
+	cmdp->mt = 0;				/* multitrack - always false */
+	cmdp->mfm = fip->density_info.mfm;
+	cmdp->opcode = read ? FCCMD_READ : FCCMD_WRITE;
+	cmdp->hds = cmdp->head;
+	/*
+	 * controller thread writes drive_sel.
+	 */
+	cmdp->sector_size = fip->sectsize_info.n;
+	/*
+	 * eot = the number of the LAST sector to be read/written.
+	 */
+	cmdp->eot = cmdp->sector + howmany(byte_count,
+					   fip->sectsize_info.sect_size) - 1;
+	cmdp->gap_length = fip->sectsize_info.rw_gap_length;
+	cmdp->dtl = 0xff;
+	
+	fdiop->density = fip->density_info.density;
+	fdiop->timeout = TO_RW;
+	fdiop->command = FDCMD_CMD_XFR;
+	fdiop->num_cmd_bytes = SIZEOF_RW_CMD;
+	fdiop->addrs = dma_addrs;
+	fdiop->byte_count = byte_count;
+	fdiop->num_stat_bytes = SIZEOF_RW_STAT;
+	if(read)
+		fdiop->flags |= FD_IOF_DMA_RD;
+	else
+		fdiop->flags &= ~FD_IOF_DMA_RD;
+	
+} /* fd_gen_rw_cmd() */
+
+/*
+ * convert logical sector # into cylinder, head, sector. No range checking.
+ * Physical parameters are obtained from *fvp->labelp and fvp->sects_per_track.
+ *
+ * First sector on a track is sector 1.
+ */
+static void fd_log_2_phys(fd_volume_t fvp,
+	u_int sector,
+	struct fd_rw_cmd *cmdp)
+{
+	u_int track;
+	struct fd_format_info *fip = &fvp->format_info;
+	
+	ASSERT((fip->sectsize_info.sects_per_trk != 0) && 
+	       (fip->disk_info.tracks_per_cyl != 0));	
+	track = sector / fip->sectsize_info.sects_per_trk;
+	cmdp->cylinder = track / fip->disk_info.tracks_per_cyl;
+	cmdp->head     = track % fip->disk_info.tracks_per_cyl;
+	cmdp->sector   = sector % fip->sectsize_info.sects_per_trk + 1;
+	XADDBG(("fd_log_2_phys: lsect 0x%x; cyl 0x%x  head 0x%x  sector "
+		"0x%x\n", sector, cmdp->cylinder, cmdp->head, cmdp->sector-1));
+}
+
+........................
+
+what we really want:
+
+/*
+ * Common r/w routine. The following fdBuf fields are required:
+ *	block
+ *	blockCnt
+ *	buf
+ *	client
+ *	pending
+ *
+ * block and blockCnt are assumed to be already adjusted for overflow.
+ */
+- (ioReturn_t)fdRwCommon	: (fdBuf_t *)fdBuf
+{
+	int currentBlock = fdBuf->block;
+	int blocksToGo = fdBuf->blockCnt;
+	char *currentBuf = fdBuf->buf;
+	int currentBlockCnt;
+	fdIoReq_t fdIoReq;
+	ioReturn_t rtn;
+	int block_size = [self getBlockSize];
+	boolean_t readFlag = fdBuf->command == FDC_READ ? TRUE : FALSE;
+	
+	xpr_fd("fdRwCommon: block 0x%x count 0x%x\n", 
+		fdBuf->block, fdBuf->BlockCnt, 3,4,5);
+	
+	/*
+	 * We never cross a track boundary while reading and writing. This
+	 * loop is executed once for each segment.
+	 */
+	while(blocksToGo) {
+	
+		/*
+		 * Set up controller command block for current segment.
+		 */
+		currentBlockCnt = [self rwBlockCount:currentBlock
+			blocksToGo:blocksToGo];
+		[self fdGenRwCmd:currentBlock
+			blockCount:currentBlockCnt
+			fdIoReq:&fdIoReq
+			read:readFlag];
+		fdIoReq->command = FDCMD_CMD_XFR;
+		fdIoReq->addrs = currentBuf;
+		fdIoReq->byte_count = currentBlockCnt * block_size;
+		rtn = [self fdSendCmd:&fdIoReq];
+		
+		/*
+		 * OK, what happened?
+		 */
+	}
+}

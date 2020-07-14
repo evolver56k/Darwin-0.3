@@ -1,0 +1,16 @@
+{
+    FILESTABLE = {
+        Documentation = (ChangeLog); 
+        Headers = (config.h, popen.h); 
+        Makefiles = (Makefile); 
+        Resources = (mkinstal.sh); 
+        SUBPROJECTS = (awklib, include); 
+        Sources = (getid.c, popen.c); 
+    }; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = pc; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

@@ -1,0 +1,5 @@
+problem - a driver deletes some ports via device_delete(), then crashes. On restart, should it have access to all of the dev_ports it initially had? Currently it won't because Config did device_destroy()'s on the dev_ports. Those dev_entry's willl be missing from the driver_entry's dev_list...
+
+Also, how to assign a deleted device to another driver if the deletor keeps running? A config_scan() will just add it to that driver's dev_list and since that driver's already running, it won't get exec'd. 
+
+Only solution I see is to disallow device_delete() - only allow driver_delete().

@@ -1,0 +1,119 @@
+			notes for IODisk presentation
+			
+IODevAndIdInfo usage
+
+* Declared in disk driver's kernel glue layer
+* Fields:
+  * rawDev, blockDev:
+    * init'd:
+      * in dev-specific routine in kernel glue layer (e.g., 
+        sd_init_idmap(), called from SCSIDisk's +initialize)
+    * Used: 
+      * for volCheck communication (needed for insertion/automount)
+  
+  * id's 
+    * init'd: 
+      * in -registerUnixDisk (in mk/driverkit/kernselDiskMethods,
+  	called from IODiskPartition +probe, for both physical disk and all
+  	valid IODiskPartition instances). 
+    * Used:
+      * in kernel glue layer, to convert dev_t to id
+  
+* IODisk instances have pointer to associated IODevAndIdInfo. 
+  * init'd by -setDevAndIdInfo
+    * in dev-specific +probe for physical disks
+    * in -connectToPhysicalDisk for all logical disks (it's set to phys
+      disk's IODevAndIdInfo)
+      
+  * used: 
+    * connectToPhysicalDisk, to get physicalDisk's struct
+    * {register,unregister}UnixDisk
+    * Calls from IODisk to volCheckRegister()
+    
+* Protocols to be implemented by disk drivers
+
+  @protocol IODiskReadingAndWriting
+  
+  - (IOReturn) readAt		: (unsigned)offset 
+				  length : (unsigned)length 
+				  buffer : (unsigned char *)buffer
+				  actualLength : (unsigned *)actualLength 
+				  client : (vm_task_t)client;
+
+  - (IOReturn) readAsyncAt	: (unsigned)offset 
+				  length : (unsigned)length 
+				  buffer : (unsigned char *)buffer
+				  pending : (void *)pending
+				  client : (vm_task_t)client;
+		
+  - (IOReturn) writeAt		: (unsigned)offset 
+				  length : (unsigned)length 
+				  buffer : (unsigned char *)buffer
+				  actualLength : (unsigned *)actualLength 
+				  client : (vm_task_t)client;
+		  
+  - (IOReturn) writeAsyncAt	: (unsigned)offset 
+				  length : (unsigned)length 
+				  buffer : (unsigned char *)buffer
+				  pending : (void *)pending
+				  client : (vm_task_t)client;
+  @end
+  
+  @protocol IOPhysicalDiskMethods
+
+  /* called when volCheck or IODiskPartition knows that something
+     has changed which driver should be aware of.
+     e.g.: setFormatted, disk insertion detect, transition to ready. */
+     
+  - (IOReturn)updatePhysicalParameters;
+  
+  /* called by volCheck per user input on insert request panel */
+  
+  - (void)abortRequest;
+  
+  /* called by volCheck when transition to ready is detected. Wakes up 
+     I/O threads which are waiting for disk. */
+     
+  - (void)diskBecameReady;
+  
+  /* ensures disk is present/ready, with alert panel if necessary. Called
+    by clients before doing r/w. */
+    
+  - (IOReturn)isDiskReady	: (BOOL)prompt;
+  
+  - (IOReturn) ejectPhysical;	
+  
+  /* Used by volCheck (mostly) and at probe time by IODiskPartition. */
+  - (IODiskReadyState)updateReadyState;
+
+  @end
+
+.........................................
+
+Outline:
+
+1. Intro
+   -- class hierarchy - draw it
+   -- leaf classes just know how to read, write, eject, sense status
+   -- IODiskPartition takes care of disk labels, partitions
+   -- volCheck module takes care of polling for ready and panel requests
+   
+2. volCheck module functions: 
+   -- insertion detection
+   -- alert panels
+   -- abort notification
+   
+   Discuss briefly the IPC between vol and WS. 
+   
+3. IODiskReadingAndWriting protocol
+   -- briefly mention 'pending', more to come...
+   
+4. IOPhysicalDiskMethods protocol
+
+5. kernel glue layer
+
+   Start with IODevAndIdInfo. 
+   
+6. I/O thread architecture, incl. I/O queues
+
+7. Q&A

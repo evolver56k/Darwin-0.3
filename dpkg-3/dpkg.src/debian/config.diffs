@@ -1,0 +1,39 @@
+diff -u config.sub config.sub
+--- config.sub	1997/09/18 02:26:38	1.1.1.1
++++ config.sub	1998/01/11 05:22:15	1.2
+@@ -689,7 +689,7 @@
+ 	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* \
+ 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
+ 	      | -cygwin32* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
+-	      | -mingw32* | -linux-gnu* | -uxpv*)
++	      | -mingw32* | -linux-gnu* | -uxpv* | -rhapsody* | -openstep* )
+ 	# Remember, each alternative MUST END IN *, to match a version number.
+ 		;;
+ 	-linux*)
+diff -u config.guess config.guess
+--- config.guess	1997/09/18 02:26:38	1.1.1.1
++++ config.guess	1998/01/11 05:22:13	1.2
+@@ -552,6 +552,12 @@
+                            # says <Richard.M.Bartel@ccMail.Census.GOV>
+         echo i586-unisys-sysv4
+         exit 0 ;;
++    Power*Macintosh:Rhapsody:*:*)
++        echo powerpc-apple-rhapsody${UNAME_RELEASE}
++	exit 0 ;;
++    *:Rhapsody:*:*)
++	echo ${UNAME_MACHINE}-apple-rhapsody${UNAME_RELEASE}
++	exit 0 ;;
+ esac
+ 
+ #echo '(No uname command or uname output not recognized.)' 1>&2
+@@ -595,7 +601,10 @@
+ #endif
+   int version;
+   version=`(hostinfo | sed -n 's/.*NeXT Mach \([0-9]*\).*/\1/p') 2>/dev/null`;
++  if (version < 4)
+   printf ("%s-next-nextstep%d\n", __ARCHITECTURE__, version);
++  else
++    printf ("%s-next-openstep%d\n", __ARCHITECTURE__, version);
+   exit (0);
+ #endif
+ 

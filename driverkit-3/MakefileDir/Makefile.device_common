@@ -1,0 +1,364 @@
+#
+# Common makefile fragment for use by driverkit-based driver projects.
+#
+
+MAKEFILEDIR = $(MAKEFILEPATH)/pb_makefiles
+include $(MAKEFILEDIR)/platform.make
+
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+#
+# OBJROOT and SYMROOT are overridden by RC tools for builds from read-only
+# source.
+#
+OBJROOT= .
+SYMROOT= .
+
+#
+# Macros used for compiling.
+#
+CFILES= $(COMMON_CFILES) $(MACHINE_COMMON_CFILES)
+MFILES= $(COMMON_MFILES) $(MACHINE_COMMON_MFILES)
+MD_CFILES=$(${MACHINE}_CFILES)
+MD_MFILES=$(${MACHINE}_MFILES)
+
+COMMON_OFILES= 	$(CFILES:.c=.o) $(MFILES:.m=.o)
+KERNEL_OFILES= 	$(KERNEL_CFILES:.c=.o) $(KERNEL_MFILES:.m=.o)
+USER_OFILES= 	$(USER_CFILES:.c=.o) $(USER_MFILES:.m=.o)
+MD_OFILES=	$(MD_CFILES:.c=.o) $(MD_MFILES:.m=.o)
+
+IO_SERVER=
+#IO_SERVER= -DIOSERVER
+
+#
+# For installsrc and tags.
+#
+COMMONSOURCE=  $(COMMON_MFILES) $(COMMON_CFILES) \
+	$(USER_MFILES) $(USER_CFILES) $(KERNEL_MFILES) $(KERNEL_CFILES) \
+	$(COMMON_PUBLIC_HFILES) $(COMMON_PRIVATE_HFILES) $(OTHER_SOURCE) 
+
+
+CFLAGS= -g -O -Wall -Wnoformat -I. -I.. -MD
+VPATH = $(OBJROOT)/$(BUILD_DIR):$(SYMROOT)/$(BUILD_DIR):$(MACHINE):$(OPT_VPATH)
+EXEC_LD= /bin/cc
+RELOC_LD= /bin/ld
+KL_LD= /usr/bin/kl_ld
+
+m88k_CFLAGS=
+m68k_CFLAGS=	
+i386_CFLAGS=
+MD_CFLAGS=	$(${MACHINE}_CFLAGS)
+
+#
+# For building user-level executable .o file.
+#
+# Forcing dependency on both SYMROOT and OBJROOT is necessary here to avoid
+# making actual binary builds dependent on the modify date of the directory 
+# they are in - in such a case, successive makes would repeatedly build the
+# binary since the modify time of one of its dependencies keeps getting
+# changed. If SYMROOT and OBJROOT are identical (as in normal developement
+# builds, in which case they're both '.'), we'll get a warning because
+# there will be two rules for building '.'. This won't break anything.
+#
+# NRW_BUILD is currently defined to allow testing of IODeviceNRW stuff on
+# 68k platforms.
+#
+release: $(SYMROOT) $(OBJROOT) always
+	@echo '********** Building $(MACHINE) release $(BUILD_NAME) **********'
+	$(MAKE) $(BUILD_NAME) \
+		"BUILD_DIR=$(MACHINE)release" \
+		"OBJROOT=$(OBJROOT)" \
+	    	"SYMROOT=$(SYMROOT)" \
+		"MACHINE=$(MACHINE)" \
+		"LIBS=$(RELEASE_LIBS)" \
+		"OFILES= $(COMMON_OFILES) $(USER_OFILES) $(MD_OFILES)" \
+		"LDFLAGS= $(RELEASE_LDFLAGS)" \
+		"OTHER_CFLAGS=$(RELEASE_CFLAGS) $(MD_CFLAGS) \
+		-arch $(MACHINE) $(IO_SERVER) "
+
+debug: $(SYMROOT) $(OBJROOT) always
+	@echo '********** Building $(MACHINE) debug $(BUILD_NAME) **********'
+	$(MAKE) $(BUILD_NAME) \
+		"BUILD_DIR=$(MACHINE)debug" \
+		"OBJROOT=$(OBJROOT)" \
+	    	"SYMROOT=$(SYMROOT)" \
+		"MACHINE=$(MACHINE)" \
+		"CFLAGS=-DDEBUG -DDDM_DEBUG $(CFLAGS)" \
+		"LIBS=$(DEBUG_LIBS)" \
+		"OFILES= $(COMMON_OFILES) $(USER_OFILES) $(MD_OFILES)" \
+		"LDFLAGS= $(DEBUG_LDFLAGS)" \
+		"OTHER_CFLAGS=$(DEBUG_CFLAGS) $(MD_CFLAGS) \
+		 -arch $(MACHINE) $(IO_SERVER) "
+
+#
+# For building kern-loadable modules.
+#
+relocrelease: $(SYMROOT) $(OBJROOT) always
+	@echo '******** Building $(MACHINE) $(BUILD_NAME)_reloc ********'
+	$(MAKE) $(BUILD_NAME)_reloc \
+		"BUILD_DIR=$(MACHINE)relocrelease" \
+		"OBJROOT=$(OBJROOT)" \
+	    	"SYMROOT=$(SYMROOT)" \
+		"MACHINE=$(MACHINE)" \
+		"LIBS=$(RELEASE_KERN_LIBS)" \
+		"OFILES= $(COMMON_OFILES) $(KERNEL_OFILES) $(MD_OFILES)" \
+		"LDFLAGS= $(KL_RELEASE_FLAGS)" \
+		"OTHER_CFLAGS=$(RELEASE_CFLAGS) -arch $(MACHINE) \
+		 -DKERNEL -DMACH_USER_API -I$(NEXT_ROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/System.framework/PrivateHeaders"
+
+relocdebug: $(SYMROOT) $(OBJROOT) always
+	@echo '******** Building $(MACHINE) debug $(BUILD_NAME)_reloc ********'
+	$(MAKE) $(BUILD_NAME)_reloc \
+		"BUILD_DIR=$(MACHINE)relocdebug" \
+		"OBJROOT=$(OBJROOT)" \
+	    	"SYMROOT=$(SYMROOT)" \
+		"MACHINE=$(MACHINE)" \
+		"LIBS=$(DEBUG_KERN_LIBS)" \
+		"OFILES= $(COMMON_OFILES) $(KERNEL_OFILES) $(MD_OFILES)" \
+		"LDFLAGS= $(KL_DEBUG_FLAGS)" \
+		"OTHER_CFLAGS=$(DEBUG_CFLAGS) -arch $(MACHINE) \
+		 -DKERNEL -DMACH_USER_API -I$(NEXT_ROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/System.framework/PrivateHeaders \
+		 -DDEBUG -DDDM_DEBUG"
+
+all:	targets lipoize tags
+
+#
+# Build all targets. 
+#
+targets:	always
+	@if [ -n "$(RC_ARCHS_LOCAL)" ]; then				\
+	    machines="$(RC_ARCHS_LOCAL)";				\
+	elif [ -n "$(RC_ARCHS)" ]; then					\
+	    machines="$(RC_ARCHS)";					\
+	elif [ -n "$(MACHINE_LIST)" ]; then				\
+	    machines="$(MACHINE_LIST)";					\
+	elif [ -n "$(MACHINE)" ]; then					\
+	    machines="$(MACHINE)";					\
+	else								\
+	    echo no machine list found;					\
+	    exit 1;							\
+	fi;								\
+	for machine in $$machines; do	   				\
+	    echo "========== Building all for $$machine ==========";	\
+	    $(MAKE) $(TARGET_LIST) 					\
+	    	"MACHINE=$$machine"  					\
+	    	"OBJROOT=$(OBJROOT)"					\
+	    	"SYMROOT=$(SYMROOT)"					\
+	    	"DSTROOT=$(DSTROOT)";					\
+	done
+
+#
+# Create fat versions if necessary. If there is more than 
+# one machine in INSTALL_MACHINES, lipo together all 
+# architectures for each INSTALL_TARGET. In either case, 
+# installable target(s) are left in $(SYMROOT).
+#
+lipoize: always
+	@if [ -n "$(RC_ARCHS_LOCAL)" ]; then				\
+	    machines="$(RC_ARCHS_LOCAL)";				\
+	elif [ -n "$(RC_ARCHS)" ]; then					\
+	    machines="$(RC_ARCHS)";					\
+	elif [ -n "$(INSTALL_MACHINES)" ]; then				\
+	    machines="$(INSTALL_MACHINES)";				\
+	elif [ -n "$(MACHINE)" ]; then					\
+	    machines="$(MACHINE)";					\
+	else								\
+	    echo no machine list found;					\
+	    exit 1;							\
+	fi;								\
+	for target in $(TARGET_LIST); do	 			\
+	    if [ $$target = relocrelease ]; then			\
+		modname="$(BUILD_NAME)_reloc";				\
+	    elif [ $$target = relocdebug ]; then			\
+		modname="$(BUILD_NAME)_reloc";				\
+	    else							\
+		modname="$(BUILD_NAME)";				\
+	    fi;								\
+	    echo rm -f $(SYMROOT)/$$modname;				\
+	    rm -f $(SYMROOT)/$$modname;					\
+	    if [ "`echo $$machines | wc -w`" -eq 1 ]; then		\
+	    	machine=$$machines;					\
+	    	echo cp -p $(OBJROOT)/$$machine"`echo $$target`"/$$modname $(SYMROOT); \
+		cp -p $(OBJROOT)/$$machine"`echo $$target`"/$$modname $(SYMROOT); \
+	    else 							\
+		args="";						\
+		for machine in $$machines; do				\
+		    args="$$args $(OBJROOT)/$$machine$$target""/$$modname"; \
+		done;							\
+		echo lipo -create -output $(SYMROOT)/$$modname $$args;	\
+		lipo -create -output $(SYMROOT)/$$modname $$args;	\
+	    fi;								\
+	done
+
+install: DSTROOT $(DSTROOT)/$(INSTALL_BIN_DIR) targets lipoize 		\
+		installhdrs other_install
+	@echo cd $(SYMROOT);						\
+	cd $(SYMROOT);							\
+	for target in `echo $(INSTALL_TARGETS)`; do	   		\
+	    if [ $$target = relocrelease ]; then			\
+		    modname="$(BUILD_NAME)_reloc";			\
+	    elif [ $$target = relocdebug ]; then			\
+		    modname="$(BUILD_NAME)_reloc";			\
+	    else							\
+		    modname="$(BUILD_NAME)";				\
+	    fi;								\
+	    echo install $(INSTALLFLAGS) $$modname $(DSTROOT)$(INSTALL_BIN_DIR); \
+	    install $(INSTALLFLAGS) $$modname 				\
+		    $(DSTROOT)$(INSTALL_BIN_DIR); 			\
+	done
+
+installsrc: 	SRCROOT $(SRCROOT)
+#	
+# first install the common source (in this directory).
+#
+	gnutar cf - $(COMMONSOURCE) Makefile | (cd $(SRCROOT); gnutar xpf -)	
+#
+# now install all of the machine-dependent source (if there is any).
+#
+	@if [ -n "${SOURCE_SUBDIRS}" ]; \
+	then \
+		SUBDIRS="$(SOURCE_SUBDIRS)"; \
+	else \
+		SUBDIRS=foo; \
+	fi; \
+	if [ -n "${SOURCE_SUBDIRS}" ]; \
+	then  \
+	    for i in $$SUBDIRS; \
+	    do \
+		    echo ================= make $@ for $$i =================; \
+		    (cd $$i; ${MAKE} SRCROOT=$(SRCROOT)/$$i $@) || exit $?; \
+	    done \
+	fi
+	
+installhdrs:	DSTROOT $(DSTROOT)/$(INSTALL_HDR_DIR)
+#
+# first install the public header files from this directory.
+	@if [ -n "${COMMON_PUBLIC_HFILES}" ]; 		\
+	then  						\
+	    echo install -c -m 644 $(COMMON_PUBLIC_HFILES) $(DSTROOT)$(INSTALL_HDR_DIR); \
+	    install -c -m 644 $(COMMON_PUBLIC_HFILES) 	\
+	    	$(DSTROOT)$(INSTALL_HDR_DIR); 		\
+	fi
+#
+# now install all of the machine-dependent headers (if there are any).
+#
+	@if [ -n "${SOURCE_SUBDIRS}" ]; 		\
+	then 						\
+		SUBDIRS="$(SOURCE_SUBDIRS)"; 		\
+	else 						\
+		SUBDIRS=foo; 				\
+	fi; 						\
+	if [ -n "${SOURCE_SUBDIRS}" ]; 			\
+	then  						\
+	    for i in $$SUBDIRS; 			\
+	    do 						\
+		echo ================= make $@ for $$i =================; \
+		(cd $$i; ${MAKE} DSTDIR=$(DSTROOT)$(INSTALL_HDR_DIR) $@) || exit $?; \
+	    done 					\
+	fi;
+	
+$(OBJROOT)/$(BUILD_DIR) $(SYMROOT)/$(BUILD_DIR)  		\
+$(DSTROOT)/$(INSTALL_BIN_DIR) $(DSTROOT)/$(INSTALL_HDR_DIR) 	\
+$(OBJROOT) $(SRCROOT) $(SYMROOT):
+	$(MKDIRS) $@
+
+tags:	$(OBJROOT) always
+	rm -f tags
+	ctags -o $(OBJROOT)/tags $(COMMONSOURCE)
+
+always:
+
+clean:
+	-rm -rf $(OBJROOT)/*debug 		\
+		$(OBJROOT)/*release 		\
+		$(OBJROOT)/*kerndebug 		\
+		$(OBJROOT)/*kernrelease 	\
+		$(OBJROOT)/*relocdebug 		\
+		$(OBJROOT)/*relocrelease 	\
+		$(SYMROOT)/$(BUILD_NAME) $(SYMROOT)/$(BUILD_NAME)_reloc \
+		*.d Makedep *~ tags $(OTHER_CLEAN_FILES) 
+	@if [ -n "${SOURCE_SUBDIRS}" ]; \
+	then \
+		SUBDIRS="$(SOURCE_SUBDIRS)"; \
+	else \
+		SUBDIRS=foo; \
+	fi; \
+	if [ -n "${SOURCE_SUBDIRS}" ]; \
+	then  \
+	    for i in $$SUBDIRS; \
+	    do \
+		    echo ================= make $@ for $$i =================; \
+		    (cd $$i; ${MAKE} $@) || exit $?; \
+	    done \
+	fi
+
+#
+# Build executable and relocatable .o.
+#
+# setting LDFLAGS to '-r' in the device-specific Makefile prevents
+# an executable from being generated.
+#
+# Main Makefile may define OTHER_DEPENDS.
+#
+$(BUILD_NAME): $(OBJROOT)/$(BUILD_DIR) $(OTHER_DEPENDS) $(OFILES)
+	$(LD) -arch $(MACHINE) $(LDFLAGS) -o $(OBJROOT)/$(BUILD_DIR)/$@ \
+		$(OFILES) $(LIBS)
+
+#
+# Build kern-loadable relocatable.
+# Main Makefile Must define:
+#	SERVER_NAME
+#	KS_VAR_NAME
+#
+# May define:
+#	OTHER_DEPENDS (typically which will force a mig run). 
+#
+$(BUILD_NAME)_reloc: $(OBJROOT)/$(BUILD_DIR) \
+		     $(OTHER_DEPENDS) $(OFILES) $(LOAD_COMMANDS) \
+		     $(UNLOAD_COMMANDS)
+	@if [ -n "${UNLOAD_COMMANDS}" ]; \
+	then \
+		UNLOAD="-u $(UNLOAD_COMMANDS)"; \
+	else \
+		UNLOAD=" "; \
+	fi; \
+	echo $(KL_LD) -n $(SERVER_NAME) -l $(LOAD_COMMANDS) \
+		$$UNLOAD -i $(KS_VAR_NAME) $(LDFLAGS) \
+		-o $(OBJROOT)/$(BUILD_DIR)/$@  $(OFILES) $(LIBS); \
+	$(KL_LD) -n $(SERVER_NAME) -l $(LOAD_COMMANDS) \
+		$$UNLOAD -i $(KS_VAR_NAME) $(LDFLAGS) \
+		-o $(OBJROOT)/$(BUILD_DIR)/$@  $(OFILES) $(LIBS)
+
+#
+# The additional -I here picks up possible header files which are
+# created in the build directory (say, by MIG).
+#
+.c.o:
+	$(CC) $(CFLAGS) $(OTHER_CFLAGS) -c $(*F).c \
+		-I$(OBJROOT)/$(BUILD_DIR) \
+		-dependency-file $(OBJROOT)/$(BUILD_DIR)/$(*F).d \
+		-o $(OBJROOT)/$(BUILD_DIR)/$(*F).o 
+	md -u $(OBJROOT)/$(BUILD_DIR)/Makedep -d $(OBJROOT)/$(BUILD_DIR)/$(*F).d
+
+.m.o:
+	$(CC) $(CFLAGS) $(OTHER_CFLAGS) -c $(*F).m \
+		-I$(OBJROOT)/$(BUILD_DIR) \
+		-dependency-file $(OBJROOT)/$(BUILD_DIR)/$(*F).d \
+		-o $(OBJROOT)/$(BUILD_DIR)/$(*F).o 
+	md -u $(OBJROOT)/$(BUILD_DIR)/Makedep -d $(OBJROOT)/$(BUILD_DIR)/$(*F).d
+
+SRCROOT DSTROOT:
+	@if [ -n "${$@}" ]; \
+	then \
+		exit 0; \
+	else \
+		echo Must define $@; \
+		exit 1; \
+	fi
+
+-include Makedep
+

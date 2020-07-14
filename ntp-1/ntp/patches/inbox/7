@@ -1,0 +1,168 @@
+Replied: Wed, 18 Mar 1998 23:08:26 -0500
+Replied: "Kamal A Mostafa <kamal@images.com> "
+Replied: Wed, 18 Mar 1998 23:06:43 -0500
+Replied: "Kamal A Mostafa <kamal@images.com> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa03192;
+          18 Mar 1998 03:51 EST
+Received: from green.images.com (green.images.com [198.207.178.4]) by orange.images.com (8.8.5/SCO5) with ESMTP id AAA01741; Wed, 18 Mar 1998 00:51:24 -0800 (PST)
+Received: (from kamal@localhost) by green.images.com (8.8.5/SCO5) id AAA09918; Wed, 18 Mar 1998 00:51:22 -0800 (PST)
+Message-ID: <19980318005121.49416@green>
+Date: Wed, 18 Mar 1998 00:51:21 -0800
+From: Kamal A Mostafa <kamal@images.com>
+To: stenn@whimsy.udel.edu
+Cc: Kamal A Mostafa <kamal@images.com>, kamalm@sco.com
+Subject: xntp3-5.92d patch for SCO
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=OXfL5xGRrasGEqWY
+X-Mailer: Mutt 0.89i
+
+
+--OXfL5xGRrasGEqWY
+Content-Type: application/pgp-signed; charset=us-ascii
+
+-----BEGIN PGP SIGNED MESSAGE-----
+
+Hello Harlan-
+
+I take it that you're in charge of patches to xntp3 (?)...  I've been testing
+xntpd3-5.92 for a few weeks now on a number of SCO OpenServer systems (on my
+network at home, and at SCO actually -- I'm an engineer there, and I'm
+working on updating the version of xntpd that we ship in our distribution).
+
+I had two problems building/using xntpd on SCO OpenServer 5.0.*:
+
+ - mkstemp() is missing from the target .so on SCO OpenServer 5.0.0, so
+   avoiding it (for all SCO releases) is desireable.
+
+ - mlockall() is just a stub under all SCO OpenServer releases to date.
+   xntpd runs anyway, but yields a "mlockall not implemented" message
+   in syslog.
+
+I patched both functions out via configure.in (so mktemp() and plock() get
+used instead), and it all builds and runs.  Again, that's with 5.92.
+
+I just built 5.92d (again, with those two patches) about 30 minutes ago, and
+it looks okay so far on my first test target (a Stratum-3 server pointed at
+three Stratum-2's servers with one peer and one client).
+
+Attached is a patch to configure.in (relative to 5.92d) for those two issues.
+
+
+
+I've had mostly good results (with 5.92) on an NTP subnet of about 15
+systems, but I have had two specific problems, on which I'd greatly value
+your most wise advice...
+
+Problem 1.  On two of my systems (so far), I've seen xntpd go into some sort
+of infinite-spin situation (after running happily for hours or days).  When
+this happens, 'ps' reports that it is constantly consuming cycles and netstat
+reports that it is still listening at the NTP port, but xntpd doesn't respond
+to any sort of communication (e.g. 'ntpq -p' just hangs until it times out;
+clients of this server get no responses; 'ntpdate -d localhost' gets no
+receive() packets).  When its in this state, even 'kill -9' won't kill xntpd.
+This scenario occurs randomly with no warning in syslog, nor any interesting
+behavior in loopstats.  It's happened several times over a period of three
+weeks on one of my systems, and happened at least once on another system.
+Have any similar problems been reported against 5.92?
+
+Problem 2.  A colleague tried using my 5.92 build of xntpd as a broadcast
+client -- it consistently dumps core.  xntpd -d says that the dump occurs
+right after receiving the second incoming broadcast packet.  Here's the stack
+trace from dbxtra, implicating ntp_peer.c+561.
+
+	newpeer(srcadr = 0x4158a0, dstadr = 0x410640, hmode = 9, version = 3,
+		minpoll = 6, maxpoll = 10, ttl = 0, key = 0),
+		line 561 in "ntp_peer.c"
+	receive(rbufp = 0x41589c), line 625 in "ntp_proto.c"
+	main(argc = 1, argv = 0x7ffffb64, 0x7ffffb6c), line 817 in "ntpd.c"
+
+I also located a news-posting from another 5.92 user who reported the same
+behavior on his Solaris system, but his was a multicast client, whereas ours
+is just regular broadcast.  Note that I haven't tried 5.92d as a broadcast
+client yet, so forgive me if you fixed this one already.  :-}
+
+
+Any hints would be most appreciated!
+
+Thanks (and to all of you UDel folks) for xntpd.  :-}  Great stuff!
+
+ -k
+
+Kamal A. Mostafa
+<kamal@images.com>
+<kamalm@sco.com>
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.6.2
+
+iQCVAwUBNQ+Kgorzk78EeS5RAQE0NgP+KQcroloeiTAsOEz0hnpIhXYL9AQaswAt
+wXa/a+E+NYmKf+7g5aWtPEVK7ewf+JAfdayA5d7241SLY3mDT7HTkuJ4SrVlHRqV
+vZEt4Md78sCU4Tp3/TXuAAtmIXNsLhaZAahm1a3YL/hhq7j0wssuFGnTovtCNnNj
+XKsMcVfzh98=
+=RMv9
+-----END PGP SIGNATURE-----
+
+--OXfL5xGRrasGEqWY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="xntp3.config.patch"
+
+*** configure.in.orig Tue Mar 17 15:44:31 1998
+--- configure.in Tue Mar 17 23:50:20 1998
+***************
+*** 409,415 ****
+  esac
+  AC_CHECK_FUNCS(clock_settime daemon getbootfile getdtablesize getrusage)
+  AC_CHECK_FUNCS(gettimeofday getuid K_open kvm_open memcpy memmove memset)
+- AC_CHECK_FUNCS(mkstemp)
+  case "$target" in
+   *-*-irix*)
+      # Just stubs in Irix.  Idiots.
+--- 409,414 ----
+  esac
+  AC_CHECK_FUNCS(clock_settime daemon getbootfile getdtablesize getrusage)
+  AC_CHECK_FUNCS(gettimeofday getuid K_open kvm_open memcpy memmove memset)
+  case "$target" in
+   *-*-sco3.2v[45]*)
+      # Not present in SCO 3.2v5.0.0 dynamic libraries.
+***************
+*** 411,416 ****
+  AC_CHECK_FUNCS(gettimeofday getuid K_open kvm_open memcpy memmove memset)
+  AC_CHECK_FUNCS(mkstemp)
+  case "$target" in
+   *-*-irix*)
+      # Just stubs in Irix.  Idiots.
+      ;;
+--- 410,422 ----
+  AC_CHECK_FUNCS(clock_settime daemon getbootfile getdtablesize getrusage)
+  AC_CHECK_FUNCS(gettimeofday getuid K_open kvm_open memcpy memmove memset)
+  case "$target" in
++  *-*-sco3.2v[45]*)
++     # Not present in SCO 3.2v5.0.0 dynamic libraries.
++     ;;
++  *) AC_CHECK_FUNCS(mkstemp)
++     ;;
++ esac
++ case "$target" in
+   *-*-irix*)
+      # Just stubs in Irix.  Idiots.
+      ;;
+***************
+*** 413,418 ****
+  case "$target" in
+   *-*-irix*)
+      # Just stubs in Irix.  Idiots.
+      ;;
+   *) AC_CHECK_FUNCS(mlockall)
+      ;;
+--- 419,427 ----
+  case "$target" in
+   *-*-irix*)
+      # Just stubs in Irix.  Idiots.
++     ;;
++  *-*-sco3.2v[45]*)
++     # Just stubs in SCO.
+      ;;
+   *) AC_CHECK_FUNCS(mlockall)
+      ;;
+
+--OXfL5xGRrasGEqWY--

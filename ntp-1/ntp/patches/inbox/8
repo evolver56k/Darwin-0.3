@@ -1,0 +1,26 @@
+Replied: Thu, 19 Mar 1998 13:04:35 -0500
+Replied: "Garrett Wollman <wollman@khavrinen.lcs.mit.edu> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa17233;
+          19 Mar 1998 11:41 EST
+Received: (from wollman@localhost)
+	by khavrinen.lcs.mit.edu (8.8.8/8.8.8) id LAA16550;
+	Thu, 19 Mar 1998 11:41:31 -0500 (EST)
+	(envelope-from wollman)
+Date: Thu, 19 Mar 1998 11:41:31 -0500 (EST)
+From: Garrett Wollman <wollman@khavrinen.lcs.mit.edu>
+Message-Id: <199803191641.LAA16550@khavrinen.lcs.mit.edu>
+To: stenn@whimsy.udel.edu
+Subject: random numbers for ntp
+
+If you want a high-quality seed for random(3) et al, on recent values
+of FreeBSD you can use the srandomdev() function, which uses the
+random(4) interface to get a high-quality random number to use as a
+seed.
+
+-GAWollman
+
+--
+Garrett A. Wollman   | O Siem / We are all family / O Siem / We're all the same
+wollman@lcs.mit.edu  | O Siem / The fires of freedom 
+Opinions not those of| Dance in the burning flame
+MIT, LCS, CRS, or NSA|                     - Susan Aglukark and Chad Irschick

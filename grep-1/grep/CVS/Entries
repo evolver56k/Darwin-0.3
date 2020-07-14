@@ -1,0 +1,27 @@
+/ABOUT-NLS/1.1.1.1/Fri Apr 23 01:07:46 1999//Tgrep-1
+/AUTHORS/1.1.1.2/Fri Apr 23 01:08:04 1999//Tgrep-1
+/COPYING/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/ChangeLog/1.1.1.2/Fri Apr 23 01:08:04 1999//Tgrep-1
+/INSTALL/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/Makefile.am/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/Makefile.in/1.1.1.2/Fri Apr 23 01:08:04 1999//Tgrep-1
+/NEWS/1.1.1.2/Fri Apr 23 01:08:05 1999//Tgrep-1
+/README/1.1.1.2/Fri Apr 23 01:08:05 1999//Tgrep-1
+/THANKS/1.1.1.2/Fri Apr 23 01:08:05 1999//Tgrep-1
+/TODO/1.1.1.2/Fri Apr 23 01:08:05 1999//Tgrep-1
+/acconfig.h/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/aclocal.m4/1.1.1.2/Fri Apr 23 01:08:05 1999//Tgrep-1
+/config.guess/1.1.1.1/Fri Apr 23 01:08:05 1999//Tgrep-1
+/config.h.in/1.1.1.2/Fri Apr 23 01:08:05 1999//Tgrep-1
+/configure/1.1.1.2/Fri Apr 23 01:08:06 1999//Tgrep-1
+/configure.in/1.1.1.2/Fri Apr 23 01:08:06 1999//Tgrep-1
+/install-sh/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/missing/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/mkinstalldirs/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+/stamp-h.in/1.1.1.1/Fri Apr 23 01:07:47 1999//Tgrep-1
+D/djgpp////
+D/intl////
+D/po////
+D/src////
+D/tests////
+D/vms////

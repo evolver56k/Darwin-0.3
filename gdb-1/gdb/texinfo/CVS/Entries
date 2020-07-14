@@ -1,0 +1,39 @@
+/ABOUT-NLS/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/AUTHORS/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/COPYING/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/ChangeLog/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/INSTALL/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/INTRODUCTION/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/Makefile.am/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/Makefile.in/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/NEWS/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/README/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/TODO/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/acconfig.h/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/acinclude.m4/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/aclocal.m4/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/config.guess/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/config.h.in/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/config.sub/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/configure/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/configure.in/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/dir-example/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/dir.info-template/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/gen-info-dir/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/gpl.texinfo/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/install-sh/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/lgpl.texinfo/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/liblic.texi/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/license.texi/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/missing/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/mkinstalldirs/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/stamp-h.in/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+/texinfo.tex/1.1.1.1/Wed Aug  4 22:28:11 1999//Tgdb-1
+D/doc////
+D/info////
+D/intl////
+D/lib////
+D/makeinfo////
+D/po////
+D/testsuite////
+D/util////

@@ -1,0 +1,17 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:1204: Origin of test
+define(`foo', `Expansion one.')
+dnl @result{}
+foo
+dnl @result{}Expansion one.
+pushdef(`foo', `Expansion two.')
+dnl @result{}
+foo
+dnl @result{}Expansion two.
+popdef(`foo')
+dnl @result{}
+foo
+dnl @result{}Expansion one.
+popdef(`foo')
+dnl @result{}
+foo
+dnl @result{}foo

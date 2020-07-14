@@ -1,0 +1,16 @@
+/WINNT-README.html/1.1.1.1/Fri Apr 23 01:23:46 1999//Tntp-1
+/blddbg.bat/1.1.1.1/Fri Apr 23 01:23:46 1999//Tntp-1
+/bldrel.bat/1.1.1.1/Fri Apr 23 01:23:46 1999//Tntp-1
+/cleanup.bat/1.1.1.1/Fri Apr 23 01:23:46 1999//Tntp-1
+/ntp.dsp/1.1.1.1/Fri Apr 23 01:23:46 1999//Tntp-1
+/ntp.dsw/1.1.1.1/Fri Apr 23 01:23:46 1999//Tntp-1
+D/include////
+D/instsrv////
+D/libntp////
+D/ntpd////
+D/ntpdate////
+D/ntpdc////
+D/ntpq////
+D/ntptrace////
+D/package////
+D/scripts////

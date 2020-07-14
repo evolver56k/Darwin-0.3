@@ -1,0 +1,11 @@
+#!/bin/sh
+
+DIFFS=`find . -name \*.org -print`
+
+for FILE in $DIFFS
+do
+    echo $FILE
+    FILE2=`echo $FILE | sed 's/.org//g'`
+    diff $FILE $FILE2
+    echo " "
+done

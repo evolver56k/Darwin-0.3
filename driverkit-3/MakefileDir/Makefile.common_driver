@@ -1,0 +1,164 @@
+#
+# Common makefile fragment for use by driverkit-based driver projects.
+#
+
+#
+# OBJROOT and SYMROOT are overridden by RC tools for builds from read-only
+# source.
+#
+SRCROOT = .
+OBJROOT = .
+SYMROOT = .
+OFILE_DIR = $(OBJROOT)
+SYM_DIR = $(SYMROOT)/sym
+PRODUCT_ROOT = $(SYMROOT)
+TAR = /usr/bin/gnutar
+RM = /bin/rm
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+#
+# Macros used for compiling.
+#
+DRIVER_CFILES= $(COMMON_CFILES) $(OTHER_CFILES)
+DRIVER_MFILES= $(COMMON_MFILES) $(OTHER_MFILES)
+
+OFILES= 	$(DRIVER_CFILES:.c=.o) $(DRIVER_MFILES:.m=.o) $(OTHER_OFILES) $(INSTANCE_VAR).o
+
+#
+# For installsrc and tags.
+#
+COMMONSOURCE=  $(DRIVER_CFILES) $(DRIVER_MFILES) \
+	$(COMMON_PUBLIC_HFILES) $(COMMON_PRIVATE_HFILES) $(OTHER_SOURCE) 
+
+
+VPATH = $(PRODUCT_ROOT):$(OFILE_DIR):$(SYM_DIR):$(OPT_VPATH)
+
+all tool:: project tags always
+
+#
+# For building kern-loadable modules.
+#
+relocrelease: $(SYMROOT) $(OBJROOT) always
+	@echo '******** Building $(BUILD_NAME) ********';	\
+	if [ -n "$(ARCHS)" ]; then				\
+	    my_rc_cflags="";					\
+	    for i in "$(ARCHS)"; do				\
+	    	my_rc_cflags="$$my_rc_cflags -arch $$i";	\
+	    done;						\
+	else							\
+	    my_rc_cflags=$(RC_CFLAGS);				\
+	fi;							\
+	$(MAKE) $(BUILD_NAME)					\
+	    "OBJROOT=$(OBJROOT)"				\
+	    "SYMROOT=$(SYMROOT)"				\
+	    "PRODUCT_ROOT=$(PRODUCT_ROOT)"				\
+	    "OFILE_DIR=$(OFILE_DIR)/relocrelease"		\
+	    "SYM_DIR=$(SYM_DIR)"				\
+	    "LIBS=$(RELEASE_KERN_LIBS)"				\
+	    "LDFLAGS= $(KL_RELEASE_FLAGS) $$my_rc_cflags"	\
+	    "EXTRA_CFLAGS=$(RELEASE_CFLAGS) $$my_rc_cflags $(OTHER_CFLAGS)"
+
+#
+# For building debug versions of kern-loadable modules.
+#
+relocdebug: $(SYMROOT) $(OBJROOT) always
+	@echo '******** Building debug $(BUILD_NAME) ********';	\
+	if [ -n "$(ARCHS)" ]; then				\
+	    my_rc_cflags="";					\
+	    for i in "$(ARCHS)"; do				\
+	    	my_rc_cflags="$$my_rc_cflags -arch $$i";	\
+	    done;						\
+	else							\
+	    my_rc_cflags=$(RC_CFLAGS);				\
+	fi;							\
+	$(MAKE) $(BUILD_NAME)					\
+	    "OBJROOT=$(OBJROOT)"				\
+	    "SYMROOT=$(SYMROOT)"				\
+	    "PRODUCT_ROOT=$(PRODUCT_ROOT)"			\
+	    "OFILE_DIR=$(OFILE_DIR)/relocdebug"			\
+	    "SYM_DIR=$(SYM_DIR)"				\
+	    "LIBS=$(DEBUG_KERN_LIBS)"				\
+	    "LDFLAGS= $(KL_DEBUG_FLAGS) $$my_rc_cflags"		\
+	    "EXTRA_CFLAGS=$(DEBUG_CFLAGS) $$my_rc_cflags $(OTHER_CFLAGS)"
+
+project: relocrelease
+
+debug: relocdebug
+
+installsrc:: SRCROOT
+	@($(MAKE) copy "DEST=$(SRCROOT)")
+
+copy:: 	DEST $(DEST)
+	$(TAR) cf - $(COMMONSOURCE) | (cd $(DEST); $(TAR) xpBf -)
+	chown -Rf root.wheel $(DEST)	
+
+installhdrs::	DSTROOT $(DSTROOT)$(PUBLIC_INSTALL_HDR_DIR)
+	@if [ -n "${COMMON_PUBLIC_HFILES}" ]; 		\
+	then						\
+	    install -c -m 644 $(COMMON_PUBLIC_HFILES)	\
+	    	$(DSTROOT)$(PUBLIC_INSTALL_HDR_DIR);	\
+	fi
+	
+$(OFILE_DIR) $(PRODUCT_ROOT) $(DSTROOT)$(PUBLIC_INSTALL_HDR_DIR) \
+$(OBJROOT) $(SRCROOT) $(SYMROOT) $(DEST):
+	@$(MKDIRS) $@
+	
+tags:	$(OBJROOT) always
+	$(RM) -f tags
+	ctags -d -o $(OBJROOT)/tags $(COMMONSOURCE)
+
+always:
+
+depend::
+
+clean:
+	$(RM) -rf $(OFILE_DIR)/*relocdebug  $(OFILE_DIR)/*relocrelease \
+	    $(BUILD_NAME) $(SYM_DIR) *.d Makedep *~ tags	\
+	    $(OTHER_CLEAN_FILES) 
+
+#
+# Build kern-loadable relocatable.
+# Main Makefile Must define:
+#	SERVER_NAME
+#	INSTANCE_VAR
+#
+# May define:
+#	OTHER_DEPENDS (typically which will force a mig run). 
+#
+$(BUILD_NAME): $(PRODUCT_ROOT) $(OFILE_DIR) $(OFILES) \
+		$(LOAD_COMMAND_FILE) $(UNLOAD_COMMAND_FILE) $(OTHER_DEPENDS)
+	$(KL_LD) $(LDFLAGS) -o $(PRODUCT_ROOT)/$@ $(OFILES) $(LIBS)	\
+		-n $(SERVER_NAME) $(LOAD_COMMANDS) $(UNLOAD_COMMANDS) -i $(INSTANCE_VAR) 
+
+#
+# Make the global instance
+#
+$(INSTANCE_VAR).m:
+	@echo Creating $(INSTANCE_VAR).m; \
+	echo "#import <objc/Object.h>\n#import <kernserv/kern_server_types.h>\n\nkern_server_t $(INSTANCE_VAR);\n\n@interface $(SERVER_NAME)KernelServerInstance : Object\n{}\n+ (kern_server_t *)kernelServerInstance;\n@end\n\n@implementation $(SERVER_NAME)KernelServerInstance\n+ (kern_server_t *)kernelServerInstance\n{\n\treturn &$(INSTANCE_VAR);\n}\n@end\n" > $(OFILE_DIR)/$@
+
+strip::
+	@echo $(STRIP) $(RELOCATABLE_STRIP_OPTS)			\
+		$(DSTROOT)$(PARENT_DIR)/$(NAME);			\
+	$(STRIP) $(RELOCATABLE_STRIP_OPTS) 				\
+		$(DSTROOT)$(PARENT_DIR)/$(NAME)
+
+#
+# The additional -I here picks up possible header files which are
+# created in the build directory (say, by MIG).
+#
+.c.o .m.o:
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -c $< -I$(OFILE_DIR) \
+	    -o $(OFILE_DIR)/$@ -dependency-file $(OFILE_DIR)/$(*F).d
+
+SRCROOT DSTROOT DEST:
+	@if [ ! -n "${$@}" ];		\
+	then				\
+	    echo Must define $@;	\
+	    exit 1;			\
+	fi
+
+-include Makedep

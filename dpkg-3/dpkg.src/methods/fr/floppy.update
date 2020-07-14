@@ -1,0 +1,78 @@
+#!/bin/sh
+
+set -e
+vardir="$1"
+method=$2
+option=$3
+
+cd "$vardir/methods/floppy"
+
+mountpoint="$vardir/methods/mnt"
+
+. ./shvar.$option
+
+help () {
+	echo "
+J'ai d'abord besoin du ou des disque(s) contenant les fichiers
+'Packages' relatifs aux parties de la Debian que vous voudriez
+installer. Si vous voulez installer des paquets contenus dans
+les distributions 'contrib' et 'non-free' du site FTP, vous avez
+besoin pour chacun d'eux d'une disquette contenant un fichier
+'Packages', en plus du fichier 'Packages' relatif à la
+distribution Debian principale ('main'). Dans le cas contraire,
+vous n'avez besoin que d'un seul fichier 'Packages'."
+}
+
+help
+
+xit=1
+trap '
+	if [ -n "$umount" ]
+	then
+		umount "$umount"
+	fi
+	exit $xit
+' 0
+
+tryupdate () {
+	if [ $success = 1 ]; then return; fi
+	if [ ! -f "$mountpoint/Packages" ]; then
+		echo "$mountpoint/Packages n'existe pas.";
+		return
+	fi
+	if dpkg --merge-avail "$mountpoint/Packages"
+	then
+		success=1
+		echo "
+Vous pouvez maintenant incorporer un fichier 'Packages' d'un autre disque."
+	fi
+}
+
+while [ $xit = 1 ]
+do
+	echo -n "
+Insérez un disque contenant un fichier 'Packages', ou entrez q pour quitter."
+	read response
+	case "$response" in
+	[Qq] | [Qq][Uu][Ii][Tt][Ee] )
+		xit=0
+		;;
+	* )
+		umount="$defaultfloppy"
+		if mount -rt "$defaultfstype" "$defaultfloppy" "$mountpoint"
+		then
+			success=0
+			tryupdate Packages
+			tryupdate packages
+			tryupdate PACKAGES
+			umount "$defaultfloppy"
+		fi
+		umount=""
+		;;
+	esac
+done
+
+echo "
+OK, on continue l'installation."
+
+xit=0

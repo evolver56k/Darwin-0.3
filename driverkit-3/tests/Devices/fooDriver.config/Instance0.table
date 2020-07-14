@@ -1,0 +1,10 @@
+/* Config table for fooDriver */
+
+"Type" = "Network";
+"Driver Name" = "fooDriver";
+"Version" = "1.0";
+"DMA Channels" = "1 2 3";
+"IRQ Levels" = "8";
+"I/O Ports" = "0x280-0x28F";
+"Memory Maps" = "0x0D000-0x0F000";
+

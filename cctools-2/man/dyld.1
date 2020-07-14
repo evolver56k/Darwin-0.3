@@ -1,0 +1,169 @@
+.TH DYLD 1 "November 3, 1997" "Apple Computer, Inc."
+.SH NAME
+dyld \- the dynamic link editor
+.SH SYNOPSIS
+DYLD_FRAMEWORK_PATH
+.br
+DYLD_FALLBACK_FRAMEWORK_PATH
+.br
+DYLD_LIBRARY_PATH
+.br
+DYLD_FALLBACK_LIBRARY_PATH
+.br
+DYLD_INSERT_LIBRARIES
+.br
+DYLD_PRINT_LIBRARIES
+.br
+DYLD_MEM_PROTECT
+.br
+DYLD_EBADEXEC_ONLY
+.br
+DYLD_BIND_AT_LAUNCH
+.br
+DYLD_DEAD_LOCK_HANG
+.br
+DYLD_PREBIND_DEBUG
+.SH DESCRIPTION
+These environment variables are used by the dynamic link editor and when set
+effect programs that use the dynamic link editor.
+.TP
+.B DYLD_FRAMEWORK_PATH
+This is set to a colon separated list of directories to change which frameworks
+a program uses.
+Then for each library install name recorded in the executable, bundles and
+dependent libraries the program uses, if the install name ends in the form
+"Foo.framework/Versions/A/Foo" or "Foo.framework/Foo" (where the last component
+Foo is the framework name and the component A is any name) then
+"Foo.framework/Versions/A/Foo" or "Foo.framework/Foo" is appended with each of
+the directories in
+.SM DYLD_FRAMEWORK_PATH
+in turn.
+The first file that is found is then used for the library.  If none is found
+then
+.SM DYLD_LIBRARY_PATH
+is searched if set else the install name as recorded is used.
+If that recorded install name is not found then 
+.SM DYLD_FALLBACK_FRAMEWORK_PATH
+and
+.SM DYLD_FALLBACK_LIBRARY_PATH
+are searched.
+The default for
+.SM DYLD_FALLBACK_FRAMEWORK_PATH
+if it is not set is 
+$(HOME)/Library/Frameworks:/Local/Library/Frameworks:/Network/Library/Frameworks:/System/Library/Frameworks and
+the default for 
+.SM DYLD_FALLBACK_LIBRARY_PATH
+if it is not set is $(HOME)/lib:/usr/local/lib:/lib:/usr/lib.
+This allows such things as testing new versions of existing frameworks.
+The recorded library install name can be seen with the
+.B \-L
+option to
+.IR otool (1).
+.TP
+.B DYLD_LIBRARY_PATH
+This is set to a colon separated list of directories to change which libraries
+a program uses.
+Then for each library install name recorded in the executable, bundles and
+dependent libraries the program uses, the last component of the install name is
+appended with each of the directories in
+.SM DYLD_LIBRARY_PATH
+in turn.
+The first file that is found is then used for the library.  If none is found
+then the install name as recorded is used.
+If that recorded install name is not found then 
+.SM DYLD_FALLBACK_FRAMEWORK_PATH
+and
+.SM DYLD_FALLBACK_LIBRARY_PATH
+are searched.
+The default for
+.SM DYLD_FALLBACK_FRAMEWORK_PATH
+if it is not set is 
+$(HOME)/Library/Frameworks:/Local/Library/Frameworks:/Network/Library/Frameworks:/System/Library/Frameworks and
+the default for 
+.SM DYLD_FALLBACK_LIBRARY_PATH
+if it is not set is $(HOME)/lib:/usr/local/lib:/lib:/usr/lib.
+This allows such things as testing new versions of existing dynamic shared
+libraries.
+The recorded library install name can be seen with the
+.B \-L
+option to
+.IR otool (1).
+.TP
+.B DYLD_INSERT_LIBRARIES
+This is set to a colon separated list of dynamic library filenames to add
+additional libraries to a program when run.
+The libraries listed in the list are loaded before the libraries recorded in
+the executable, bundles and dependent libraries.
+This allows such things as testing new modules of existing dynamic shared
+libraries by creating a temporary dynamic shared library with just the new
+modules.
+.TP
+.B DYLD_PRINT_LIBRARIES
+When this is set the dynamic link editor writes to file descriptor 2 (normally
+standard error) the filenames of the libraries the program is using.
+This is useful to make sure that the use of
+.SM DYLD_LIBRARY_PATH
+is getting what you want.
+.TP
+.B DYLD_MEM_PROTECT
+When this is set it causes the dynamic link editor to change the protection of
+the memory it uses for its data structures when it is not operating on them.
+It is possible for an errant program to mistakenly write on the data structures
+of dynamic link editor.
+This is used to help track down the point the program does it's mistaken write.
+This will then cause the program to crash at the first occurrence of a write
+making the error easier to track down.  Unfortunately this can't be done in the
+debugger as the debugger's interface to the dynamic link editor will cause the
+dynamic link editor's memory to remain writable.
+But can produce a very useful core file.
+.TP
+.B DYLD_EBADEXEC_ONLY
+When this is set it causes the dynamic link editor to do all of the work needed
+to launch the program without launching it.
+This will either print the cause why the program could not be launch or print
+a message saying the program could be launched.
+This can be used a supplement to the program
+.IR ebadexec (1)
+to determine why a program can't be launched.
+For programs that should not have any undefined symbols when launched the
+.SM DYLD_BIND_AT_LAUNCH
+can also be set to check this (see below).
+.TP
+.B DYLD_BIND_AT_LAUNCH
+When this is set it causes the dynamic link editor to bind all undefined symbols
+the program needs at launch time.
+This includes function symbols that can are normally lazily bound at the time of
+their first call.
+.TP
+.B DYLD_DEAD_LOCK_HANG
+When this is set it causes the dynamic link editor to enter a loop that hangs
+the program if a thread doing a dynamic link editor operation attempts to start
+another dynamic link editor operation before completing the first.
+This allows a debugger to be attached to such processes instead of letting this
+error to cause the program to exit so the problem can be fixed.
+.TP
+.B DYLD_PREBIND_DEBUG
+When set it causes the dynamic link editor to print diagnostics as to the
+launching of programs and libraries build prebound.
+This allows determining why a program is not being launch prebound.
+The recorded library time stamps can be seen with the
+.B \-Lv
+option to
+.IR otool (1).
+.PP
+For secure programs that are UNIX set uid or set gid, the searching of libraries
+with the environment variable and the insertion of libraries will not be done,
+unless the program is run as the real user.
+For secure programs the dynamic link editor clears out the value of the dyld
+path and insertion environment variables.
+This is so that if a program is
+.IR exec (2)'ed
+from a secure program it too will not
+have it's libraries searched for.
+For staticly linked secure programs that
+.IR exec (2) 
+other programs that might being
+using the dynamic link editor they too should clear out the values of
+of the dyld path and insertion environment variables.
+.SH "SEE ALSO"
+libtool(1), ld(1), otool(1), redo_prebinding(1)

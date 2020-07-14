@@ -1,0 +1,51 @@
+Replied: Fri, 24 Apr 1998 02:29:12 -0400
+Replied: "Kamal A Mostafa <kamal@images.com> "
+Replied: Wed, 25 Mar 1998 16:25:18 -0500
+Replied: "Kamal A Mostafa <kamal@images.com> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa24834;
+          25 Mar 1998 15:28 EST
+Received: from green.images.com (green.images.com [198.207.178.4]) by orange.images.com (8.8.5/SCO5) with ESMTP id MAA10699 for <stenn@whimsy.udel.edu>; Wed, 25 Mar 1998 12:28:46 -0800 (PST)
+Received: (from kamal@localhost) by green.images.com (8.8.5/SCO5) id MAA02811; Wed, 25 Mar 1998 12:28:44 -0800 (PST)
+Message-ID: <19980325122844.33217@green>
+Date: Wed, 25 Mar 1998 12:28:44 -0800
+From: Kamal A Mostafa <kamal@images.com>
+To: stenn@whimsy.udel.edu
+Cc: Kamal A Mostafa <kamal@images.com>
+Subject: Re: AUTH FAILED message - forgot the patch!
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="P64Ggrk/fb43R8X7"
+X-Mailer: Mutt 0.89i
+
+
+--P64Ggrk/fb43R8X7
+Content-Type: text/plain; charset=us-ascii
+
+Ooops!  Forgot to attach the patch!  Here it is.
+
+ -k
+
+--P64Ggrk/fb43R8X7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="authfail.msg.patch"
+
+*** ntp_proto.c.orig Tue Mar 24 23:14:13 1998
+--- ntp_proto.c Tue Mar 24 23:32:49 1998
+***************
+*** 942,947 ****
+  		printf("invalid packet header %s 0x%02x %s %s\n",
+  		    ntoa(&peer->srcadr), peer->flash, fptoa(p_dist,6),
+  		    ufptoa(p_disp, 6));
+  #endif
+  
+  		return(0);
+--- 942,949 ----
+  		printf("invalid packet header %s 0x%02x %s %s\n",
+  		    ntoa(&peer->srcadr), peer->flash, fptoa(p_dist,6),
+  		    ufptoa(p_disp, 6));
++ 	    if (debug && (peer->flash&TEST5))
++ 		printf("AUTHENTICATION FAILED for %s\n", ntoa(&peer->srcadr));
+  #endif
+  
+  		return(0);
+
+--P64Ggrk/fb43R8X7--

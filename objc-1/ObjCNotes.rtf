@@ -1,0 +1,488 @@
+{\rtf0\ansi{\fonttbl\f4\fnil Times-Roman;\f6\ftech Symbol;\f1\fmodern Courier;\f5\fmodern Ohlfs;}
+\paperw13680
+\paperh13680
+\margl360
+\margr360
+{\colortbl;\red0\green0\blue0;}
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f4\b0\i0\ulnone\fs24\fc0\cf0 Copyright 
+\f6 ã
+\f4 1994 by NeXT Computer, Inc.  All Rights Reserved.\
+
+\pard\fs48\li1440\fc0\cf0 \
+Preliminary 4.0 Release Notes: \
+Objective-C Run-Time System (objc-142)\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fs28\li1440\fc0\cf0 \
+\
+\
+
+\pard\tx1800\li1440\fc0\cf0 This file contains information about the following topics:\
+\
+·	New features\
+·	Implementation changes\
+·	Incompatible changes\
+·	Organizational changes\
+\
+\
+
+\pard\b\fs36\fc0\cf0 Implementation Changes
+\fs28 \
+
+\pard\tx1800\b0\li1440\fc0\cf0 \
+
+\pard\b\li720\fc1\cf1 Method Caches
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+
+\pard\tx1800\li1440\fc0\cf0 The datastrucuture for the method cache has changed, from using pointers to objc_method strucutures, to being an array of objc_cache_bucket structures.  Programs depending on this subtle change deserve to break.\
+
+\pard\tx1800\li1440\fc0\cf0 \
+\
+\
+\
+
+\pard\b\fs36\fc1\cf1 Notes Specific to NEXTSTEP 3.0
+\fs28\fc0\cf0 \
+
+\fs36 New Features
+\fs28 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+
+\b0 The following are new features that have been added to the Objective-C common classes for release 3.0.\
+\
+<< New string classes are NeXT internal only! >>\
+\
+
+\pard\b\li720\fc1\cf1 String Classes
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+ New string classes:\
+\
+·	NXString\
+·	NXMutableString\
+·	NXSimpleReadOnlyString\
+·	NXReadOnlyString\
+·	NXReadOnlySubstring\
+·	NXReadWriteString\
+·	NXUniquedString\
+·	NXConstantString\
+\
+Also 
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 NXCharacterSet
+\pard\tx1800\li1440\fc1\cf1  and the header file 
+\f1\fs26 objc/unichar.h
+\f4\fs28 .\
+\
+The Objective-C runtime provides runtime support for literal NXConstantString objects statically allocated by the compiler. To create such a string, use
+\b  @""
+\b0 .\
+\
+In 3.0, the string classes are private and for internal use only.  They hold 8-bit characters, and the definition of 
+\i character
+\i0  in the API refers to these 8-bit quantities. In 4.0, the strings will store Unicode characters and the definition of  
+\i character
+\i0  in the API will refer to 16-bit unichars. Thus the character array argument to methods such as 
+\b initFromCharacters:length:
+\b0  will change between the two releases.\
+\
+Methods such as 
+\b initFromCString:
+\b0  and 
+\b initFromCString:length:
+\b0  will continue to take zero-terminated C-strings and counted C-strings, respectively. Thus if you are writing code that creates NXStrings from C-strings and the code will remain the same in 4.0, you should use these method rather than 
+\b initFromCharacters:length:
+\b0 . Methods such as 
+\b cStringLength
+\b0  and 
+\b getCString:
+\b0  (or, for convenience, 
+\b cStringCopy
+\b0 ) can be used to return C-strings back from NXString.  \
+\
+NXStrings written out to typedstreams (with 
+\b write:
+\b0 ) in 3.0 should read back correctly in 4.0. The 8-bit characters will be interpreted as a NeXTstep string and converted to Unicode. On systems using EUC, such as the 4.0 version of the current Japanese system, the 8-bit C-strings generated and used by NXString will be interpreted as EUC strings. Thus the 
+\b cStringLength
+\b0  method should be used when extracting C-strings from NXString.\
+\
+The more interesting string classes include:\
+\
+· NXString\
+The abstract superclass for read-only strings.  Subclassers need to define at least three methods (see header file) to create a fully usable string class of their own. API which accepts read-only strings will probably take the form:\
+	\
+	- setStringValue:(NXString *)aString\
+	\
+· NXReadOnlyString\
+Reference-counted concrete subclass of NXString. Used in most cases where read-only strings are needed. Reference counting works in conjunction with the 
+\b copy
+\b0  and 
+\b free
+\b0  methods; thus this class provides a very inexpensive copy operation.\
+	\
+· NXMutableString\
+Subclass of NXString and the abstract superclass for read-write strings. Subclassers need to define at least four methods (three of which are for NXString) to create a fully usable read-write string class of their own. API which wants read-write strings will probably text the form:\
+	\
+	changeStringToLowerCase (NXMutableString *aString)\
+	\
+· NXReadWriteString\
+Reference-counted concrete subclass of NXMutableString. Other subclasses of NXMutableString might be necessary if the array-based implementation of NXReadWriteString doesn't prove efficient enough for some tasks. Like NXReadOnlyString, the reference counting works in conjunction with the 
+\b copy
+\b0  and 
+\b free
+\b0  methods; editing the string exhibits copy on write behavior.\
+\
+\
+
+\fc0\cf0 << NXMapTable is NeXT internal only! >>\
+\
+
+\pard\b\li720\fc1\cf1 NXMapTable
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+NXMapTable is a another flavor of hashtable.  NXMapTable allows hashing of arbitrary associations.  Its API is modeled after that of NXHashTable.  Both modules allow manipulations of hash tables, and both grow automatically as the number of elements in the table grows.  However NXMapTable is easier to use for associations, while NXHashTable is easier to use for set operations.  Also, NXMapTable does not fragment memory, but performance degrades quickly when hashed elements collide.  NXHashTable on the other hand allocates a list per collision, and is therefore more memory intensive, but more resilient to collisions.\
+\
+\
+
+\pard\b\li720\fc1\cf1 New Classes Protocol and NXBundle
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+See << Where are these documented? >> for complete documentation of these new classes.\
+\
+\
+
+\pard\b\li720\fc1\cf1 New Runtime Functions
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+The function 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc1\cf1 objc_lookUpClass
+\pard\tx1800\li1440\fc1\cf1 (
+\b0 ) has been added to the Objective-C runtime functions.  Just like 
+\b objc_getClass()
+\b0 , this function returns the class for a given name.  However, if the class is not present, 
+\b objc_lookUpClass()
+\b0  returns 
+\b nil
+\b0  rather than considering this to be an error condition.\
+\
+The function 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc1\cf1 sel_registerName
+\pard\tx1800\li1440\fc1\cf1 (
+\b0 ) has also been added to allow new selectors to be registered with the Objective-C runtime.  Like 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc1\cf1 sel_getUid
+\pard\tx1800\li1440\fc1\cf1 ()
+\b0 , this function gets the selector associated with a given name.  However, if there is no selector for that name already present in the system, 
+\b sel_registerName(
+\b0 ) allocates a new selector rather than returning 
+\b nil
+\b0 .\
+\
+\
+
+\pard\b\li720\fc1\cf1 Thread-Safe Objective-C Runtime System
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+The Objective-C runtime has been made safe for use in multi-threaded programs.  Since complete thread-safety requires that a lock be acquired every time a message is sent (which increases the time required to send a message by a factor of approximately three), the thread safety features must be explicitly enabled using the new function 
+\b objc_setMultithreaded()
+\b0 .\
+\
+\
+
+\pard\b\li720\fc1\cf1 Thread-Safe Exception Handling
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+The exception handling system provided in 
+\f1\fs24 objc/error.h
+\f4\fs28  has been made unconditionally thread safe.\
+\
+\
+
+\pard\b\li720\fc1\cf1 Debugging Interface
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+The Object class now implements a method to assist in debugging when using 
+\b gdb
+\b0  (see 
+\b Debugger.rtf
+\b0  for information on how to use this feature from 
+\b gdb
+\b0 ).  The 
+\b printForDebugger:
+\b0  method in the Object class prints the name of the receiver's class and the address of the receiver.  Classes should override this method to print a more useful description of themselves for debugging purposes.\
+\
+\
+
+\pard\b\li720\fc1\cf1 Improved Detection of Messaging Freed Objects
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+The Objective-C runtime can now detect messages which are sent to objects which have been freed.  An error will be reported when this problem is detected.  Note that this detection is possible only in the interval between when the object is freed and when the freed space is reused for some new purpose.\
+\
+\
+\
+
+\pard\b\fs36\fc1\cf1 Notes Specific to NEXTSTEP 3.0
+\fs28\fc0\cf0 \
+
+\fs36 Implementation Changes
+\fs28 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+\
+
+\pard\li720\fc1\cf1 Copy Methods
+\b0 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+In release 2.0, Object's 
+\b copy
+\b0  and 
+\b copyFromZone:
+\b0  methods were implemented independently.  In order to support copying, an object had to implement both methods.  In release 3.0, Object's 
+\b copy
+\b0  method has been changed to call 
+\b copyFromZone:
+\b0  from the object's zone:\
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-360\li1800\fc1\cf1 \
+
+\f1\fs24 	- copy \
+	\{\
+	  return [self copyFromZone: [self zone]];\
+	\}\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 \
+
+\pard\tx1800\f4\fs28\li1440\fc1\cf1 With this change, an object need only implement the 
+\b copyFromZone:
+\b0  method to support copying using either method.\
+\
+The 
+\b copy
+\b0  methods of the List, Storage and HashTable classes have been removed since they were identical to the 
+\b copy
+\b0  method which they now inherit from Object.\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 \
+
+\pard\tx1800\b\li1440\fc0\cf0 \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li720\fc0\cf0 New Objective-C Keyword
+\b0\fc1\cf1 \
+
+\pard\tx1800\li1440\fc1\cf1 \
+The release 3.0 Objective-C compiler implements the type 
+\b id
+\b0  as a keyword of the language.  For this reason, 
+\f1\fs26 objc/objc.h
+\f4\fs28  no longer provides a typedef for 
+\b id
+\b0  when compiling Objective-C programs.  However, in order to allow 
+\f1\fs26 objc/objc.h
+\f4\fs28  to be included by C programs without parse errors, 
+\f1\fs26 objc/objc.h
+\f4\fs28  does still provide a typedef for 
+\b id
+\b0  when the macro 
+\b __OBJC__
+\b0  is not predefined by the compiler.\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 \
+\
+\
+
+\pard\b\fs36\fc1\cf1 Notes Specific to NEXTSTEP 3.0
+\fs28\fc0\cf0 \
+
+\fs36 Incompatible Changes
+\fs28 \
+
+\pard\tx1800\b0\li1440\fc0\cf0 \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\li720\fc0\cf0 Renamed
+\pard\li720\fc0\cf0  Methods
+\b0 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+The following methods in the Object class were renamed:\
+
+\fc1\cf1 \
+
+\f1\fs24 	+ 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 superClass
+\pard\tx1800\li1440\fc1\cf1 \
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 superClass
+\pard\tx1800\li1440\fc1\cf1 \
+	- isKindOfGivenName:\
+	- isMemberOfGivenName:\
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 methodDescFor:
+\pard\tx1800\li1440\fc1\cf1 \
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 instanceMethodDescFor
+\pard\tx1800\li1440\fc1\cf1 :\
+
+\f4\fs28 \
+The new names are:\
+\
+
+\f1\fs24 	+ 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 super
+\pard\tx1800\li1440\fc1\cf1 c
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 lass
+\pard\tx1800\li1440\fc1\cf1 \
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 super
+\pard\tx1800\li1440\fc1\cf1 c
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 lass
+\pard\tx1800\li1440\fc1\cf1 \
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 isKindOfClassNamed
+\pard\tx1800\li1440\fc1\cf1 :\
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 isMemberOfClassNamed
+\pard\tx1800\li1440\fc1\cf1 :\
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 descriptionForMethod:
+\pard\tx1800\li1440\fc1\cf1 \
+	- 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 descriptionForInstanceMethod
+\pard\tx1800\li1440\fc1\cf1 :\
+
+\f4\fs28\fc0\cf0 \
+These new names are more descriptive of the method's function.\
+\
+The following methods in the Storage class were renamed:\
+
+\fc1\cf1 \
+
+\f1\fs24 	- insert:(void *)anElement at:(unsigned)index\
+	- replace:(void *)anElement at:(unsigned)index\
+	- removeAt:(unsigned)index\
+
+\f4\fs28 \
+The new names are:\
+\
+
+\f1\fs24 	- insertElement:(void *)anElement at:(unsigned)index\
+	- replaceElementAt:(unsigned)index with:(void *)anElement\
+	- removeElementAt:(unsigned)index\
+
+\f4\fs28 \
+These new names are more compatible with the corresponding methods in the List class:\
+\
+
+\f1\fs24 	- 
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 insertObject:anObject at:(unsigned)index
+\pard\tx1800\li1440\fc1\cf1 \
+	- replaceObjectAt:(unsigned)index with:newObject\
+	- 
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 removeObjectAt:(unsigned)index
+\pard\tx1800\li1440\fc1\cf1 \
+
+\f4\fs28 \
+Existing programs which use the old methods will continue to work correctly, and source code will still compile (although with warnings).\
+
+\fc0\cf0 \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\li720\fc0\cf0 Renamed
+\pard\li720\fc0\cf0  
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li720\fc0\cf0 Functions
+\pard\b0\li720\fc0\cf0 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+The functions 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc1\cf1 class_addInstanceMethods
+\pard\tx1800\li1440\fc0\cf0 ()
+\b0  and 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc1\cf1 class_addClassMethods
+\pard\tx1800\li1440\fc0\cf0 ()
+\b0  have been replaced by the single function 
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc1\cf1 class_addMethods
+\pard\tx1800\li1440\fc0\cf0 ()
+\b0 , which better matches the single function 
+\b class_removeMethods()
+\b0 .\
+\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\li720\fc0\cf0 Objective-C Type Encoding Strings
+\pard\b0\li720\fc0\cf0 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+The Objective-C type encodings have been expanded to contain additional information for Distributed Objects.  One effect of these changes is that the type strings produced by 
+\b @encode
+\b0  are no longer compatible with typedstreams when the encoded type is a struct.  The new encoding for 
+\f1\fs24\fc1\cf1 struct foo \{int x, y;\};
+\f4\fs28\fc0\cf0  is 
+\f1\fs24\fc1\cf1 "\{foo=ii\}"
+\f4\fs28\fc0\cf0 , which is not recognized by typedstreams.  It expects simply 
+\f1\fs24\fc1\cf1 "\{ii\}"
+\f4\fs28\fc0\cf0 .\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc1\cf1 \
+\
+\
+
+\pard\b\fs36\fc1\cf1 Notes Specific to NEXTSTEP 3.0
+\fs28\fc0\cf0 \
+
+\fs36 Known Problems
+\fs28 \
+
+\pard\tx1800\b0\li1440\fc0\cf0 \
+\
+
+\b\fc1\cf1 Problems with NXAllocErrorData()
+\pard\li720\fc1\cf1 \
+
+\pard\tx1800\b0\li1440\fc0\cf0 \
+The data allocated by 
+\b\fc1\cf1 NXAllocErrorData()
+\b0\fc0\cf0  may be invalidated by subsequent calls to 
+\b\fc1\cf1 NXAllocErrorData()
+\b0\fc0\cf0 .  Do not rely on this data remaining valid across multiple calls.  It is safe to use 
+\b\fc1\cf1 NXAllocErrorData()
+\b0\fc0\cf0  so long as the data will only be used prior to the next call to 
+\b\fc1\cf1 NXAllocErrorData()
+\b0\fc0\cf0 .  If you need more complex allocation patterns, you should use 
+\b\fc1\cf1 malloc()
+\b0\fc0\cf0  to allocate the data and implement your own mechanism to free this data.  One possibility is to register the data to be freed in your main event loop.\
+
+\b\fc1\cf1 \
+\
+\
+
+\pard\fs36\fc1\cf1 Notes Specific to NEXTSTEP 3.0
+\fs28\fc0\cf0 \
+
+\fs36 Organizational Changes
+\fs28 \
+
+\pard\tx1800\b0\li1440\fc0\cf0 \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\li720\fc0\cf0 Moved Header Files
+\pard\b0\li720\fc0\cf0 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+The header file 
+\f1\fs26 zone.h
+\f4\fs28  has been moved to 
+\f1\fs26 objc/zone.h
+\f4\fs28 .\
+\
+
+}

@@ -1,0 +1,31 @@
+/MachineExceptions.h/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/OHCIDispatchTable.c/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/OHCIRootHub.c/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/OHCIRootHub.h/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/OHCIUIM.h/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/OSUtils.h/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/UIMrootHubSimulation.c/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/USB.h/1.1.1.2/Thu Jul 22 22:55:56 1999/-kb/Tkernel-7
+/USBpriv.h/1.1.1.2/Thu Jul 22 22:55:57 1999/-kb/Tkernel-7
+/conditionalmacros.h/1.1.1.2/Thu Jul 22 22:55:57 1999/-kb/Tkernel-7
+/devices.h/1.1.1.2/Thu Jul 22 22:55:57 1999/-kb/Tkernel-7
+/driverservices.c/1.1.1.2/Thu Jul 22 22:55:57 1999/-kb/Tkernel-7
+/driverservices.h/1.1.1.2/Thu Jul 22 22:55:58 1999/-kb/Tkernel-7
+/errors.h/1.1.1.2/Thu Jul 22 22:55:58 1999/-kb/Tkernel-7
+/files.h/1.1.1.2/Thu Jul 22 22:55:58 1999/-kb/Tkernel-7
+/interrupts.h/1.1.1.2/Thu Jul 22 22:55:58 1999/-kb/Tkernel-7
+/mactypes.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/nameregistry.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/ohciuim.c/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/pci.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/rhap_local.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/types.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/uimpriv.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/usbcmd.h/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/usbcmd.m/1.1.1.2/Thu Jul 22 22:55:59 1999/-kb/Tkernel-7
+/usbserviceslib.h/1.1.1.2/Thu Jul 22 22:56:00 1999/-kb/Tkernel-7
+D/CompositeClassDriver////
+D/HubClassDriver////
+D/Library////
+D/kbd////
+D/mouse////

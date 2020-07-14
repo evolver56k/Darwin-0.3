@@ -1,0 +1,6 @@
+#!/bin/sh -v
+
+   rldtest sarld /mach_kernel /usr/Devices/PPCAwacs.config/PPCAwacs_reloc
+   rldtest sarld b.out /usr/Devices/PPCAwacs.config/PPCAwacs_reloc
+   rldtest sarld kernel driver.o
+

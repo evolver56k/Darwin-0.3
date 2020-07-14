@@ -1,0 +1,3 @@
+OTHER_GENERATED_OFILES = $(VERS_OFILE)
+ETCDIR= /private/etc
+-include ../Makefile.include

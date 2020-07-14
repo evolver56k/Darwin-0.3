@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        Documentation = (ChangeLog); 
+        Headers = ("vms-conf.h", varargs.h, vms.h, unixlib.h, redirect.h, fcntl.h); 
+        Resources = ("posix-cc.sh"); 
+        SUBPROJECTS = (); 
+        Sources = (vms_cli.c, vms_fwrite.c, vms_popen.c, vms_args.c, vms_misc.c, vms_gawk.c); 
+    }; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = vms; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

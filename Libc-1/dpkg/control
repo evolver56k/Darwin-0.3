@@ -1,0 +1,6 @@
+Package: libc
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 78.8
+Description: C library
+Build-Depends: build-base, driverkit-hdrs

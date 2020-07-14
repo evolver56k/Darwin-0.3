@@ -1,0 +1,19 @@
+{
+    Allowable_SuperprojectTypes = (Aggregate, Application, Driver, Framework, Tool);
+    Allowable_SubprojectTypes = (Subproject);
+    AttributesInspector = SubprojectInspector;
+    DefaultExtension = lksproj;
+    DisplayName = "Kernel Server";
+    AliasNames = (KernelServer);
+    GeneratedFiles = (Makefile);
+    KeyForType = TOOLS;
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles";
+    MAKEFILE = kernelserver.make;
+    Other_Keys = (OTHER_SOURCES, OTHER_LIBS);
+    PBProjectTypeSubClass = "PBProjectType";
+    ProjectTypeDescription = "A kernel loadable server project, intended mainly for driver kit drivers.";
+    SOURCEMODE = 444;
+    Source_Keys = (CLASSES, H_FILES, OTHER_LINKED);
+    Subproj_Keys = (SUBPROJECTS);
+    Targets = (kernelserver, debug, install);
+}

@@ -1,0 +1,16 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_PREREQ(2.12.1)dnl
+AC_INIT(mmalloc.c)
+
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_CHECK_TOOL(AR, ar)
+AC_CHECK_TOOL(RANLIB, ranlib, :)
+
+ac_cv_func_mmap_fixed_mapped=yes;
+AC_FUNC_MMAP
+
+AC_CHECK_HEADERS(limits.h stddef.h)
+
+AC_CONFIG_HEADER(config.h:config.in)
+AC_OUTPUT(Makefile)

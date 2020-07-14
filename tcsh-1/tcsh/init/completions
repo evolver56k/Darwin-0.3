@@ -1,0 +1,196 @@
+##
+# TCSH Expanded C-Shell INITIALIZATION FILE
+# Completions file
+#
+# Wilfredo Sanchez Jr. | tritan@mit.edu
+# June 10, 1994
+#
+# MIT Project Athena
+#
+# Some of these are borrowed from complete.tcsh in the tcsh source tree
+# and from several other sources.
+##
+# Syntax:
+# <command>/<match-pattern>/<complete-action>/[<suffix>|/]
+#
+# Commands:
+# p   = position
+# n,N = next-word
+# c,C = current-word
+##
+
+# Directories
+complete {cd,chdir,popd,pushd}	'p/1/d/'
+complete {mkdir,rmdir}		'p/1/d/'
+complete {md,rd}		'p/1/d/'
+complete tree			'p/1/d/'
+
+# Commands
+complete man			'n/-M/d/' 'p/*/c/'
+complete {where,which}		'p/1/c/'
+complete exec			'p/1/c/'
+complete {trace,strace}		'p/1/c/'
+complete gdb			'n/-d/d/' 'n/*/c/'
+
+# Aliases
+complete alias			'p/1/a/' 'p/2/c/'
+complete unalias		'p/*/a/'
+
+# Jobs, Processes
+complete kill			'c/%/j/' 'c/-/S/' 'p/1/(% -)/'
+complete {fg,bg,stop}		'c/%/j/' 'p/1/(%)//'
+
+# Limits
+complete {limit,unlimit}	'c/-/(h)/' 'n/*/l/'
+
+# Variables
+complete printenv		'p/1/e/'
+complete set			'c/*=/f/' 'p/1/s/=' 'n/=/f/'
+complete unset			'p/*/s/'
+complete setenv			'p/1/e/'
+complete unsetenv		'p/*/e/'
+
+# Completions
+complete complete		'p/1/X/'
+complete uncomplete		'n/*/X/'
+
+# Bindings
+complete bindkey		'p/2/b/'
+
+# Files by extension
+complete {cat,less,more,m}		'p/*/f/'
+complete gunzip				'p/*/f:*.{gz,tgz}/'
+complete rm				'p/*/f/' 'c/-/(r f)/'
+complete source				'p/*/f/'
+complete {tar,gtar,gnutar}		'p/1/(xvf cvf tvf)//' 'p/2-/f/'
+complete {uncompress,zcat,gzcat}	'p/*/f:*.{Z,gz}/'
+complete unzip				'p/*/f:*.zip/'
+
+# Hosts
+complete {finger}		'c/*@/`list_all_hostnames`/' 'n/*/u/@'
+complete {ftp,ncftp,pftp}	'p/*/`list_all_hostnames`/'
+complete {telnet,ptelnet}	'p/*/`list_all_hostnames`/'
+complete {ping,traceroute}	'p/*/`list_all_hostnames`/'
+complete rlogin			'p/1/`list_all_hostnames`/' 'c/-/(l 8 e)/' 'n/-l/u/'
+complete rsh			'p/1/`list_all_hostnames`/' 'c/-/(l n)/' 'n/-l/u/' 'N/-l/c/' 'n/-/c/' 'p/2/c/' 'p/*/f/'
+
+# Override this with something smarter if you wish
+alias list_all_hostnames 'grep -v "^#" /etc/hosts'
+
+# Users and Groups
+complete chmod                  'p/1/(u g o a)//'		\
+				'n/-R/(u g o a)//'
+complete chgrp			'p/1/g/' 'n/-R/g/' 'p/*/f/'
+complete chown			'p/1/u/' 'n/-R/u/' 'p/*/f/'
+
+complete su			'c/-/(f l m K)/'
+
+complete zlocate		'c/-/(a d p 1)/' 'p/*/u/'
+complete zwrite			'c/-/(a o d v q n t u l c i O f s F m)/' 'p/*/u/'
+
+# Devices
+complete volcheck		'c/-/(n t v f l d L)/'		\
+				'n/-[lf]/f/' 'n/-d/d/'		\
+				'p/*/(floppy cdrom)/'
+
+# URL's
+complete {lynx,netscape} 	'p|1|(http:// ftp:// gopher:// wais:// mailto: news:)||'
+
+##
+# Misc
+##
+
+complete cvs								\
+	'p/1/(add admin checkin checkout commit diff export history	\
+	      import log rdiff release remove rtag status tag update)/'	\
+	'n@{checkout,co}@`cvs co -c`@'					\
+	'n@export@`cvs co -c`@'
+
+complete dd										\
+	'c/--/(help version)/'								\
+	'c/[io]f=/f/'									\
+	'c/conv=*,/(ascii ebcdic ibm block unblock lcase ucase swab noerror sync)/,'	\
+	'c/conv=/(ascii ebcdic ibm block unblock lcase ucase swab noerror sync)/,'	\
+	'c/*=/x:<number>/'								\
+	'n/*/(if of conv ibs obs bs cbs files skip file seek count)/='
+
+complete find							\
+	'n/-fstype/(nfs 4.2)/'					\
+	'n/-name/f/' 'n/-user/u/' 'n/-group/g/'			\
+	'n/-type/(c b d f p l s)/'				\
+	'n/-exec/c/'						\
+	'n/-ok/c/' 'n/-cpio/f/' 'n/-ncpio/f/' 'n/-newer/f/'	\
+	'c/-/(fstype name perm prune type user nouser group	\
+		nogroup size inum atime mtime ctime exec ok	\
+		print ls cpio ncpio newer xdev depth daystart	\
+		follow maxdepth mindepth noleaf version anewer	\
+		cnewer amin cmin mmin true false uid gid ilname	\
+		iname ipath iregex links lname empty path regex	\
+		used xtype fprint fprint0 fprintf print0 printf	\
+		not a and o or)/'				\
+	'n/*/d/'
+
+set framework_path = ()
+
+foreach dir (					\
+		~/Library/Frameworks		\
+		/Network/Library/Frameworks	\
+		/Local/Library/Frameworks	\
+		/System/Library/Frameworks	\
+		/LocalLibrary/Frameworks	\
+		/NextLibrary/Frameworks		\
+	    )
+    if ( -d $dir ) set framework_path = ( $framework_path $dir )
+end
+
+complete {gcc,cc}										\
+	'c/-[IL]/d/'										\
+	'c/-f/(caller-saves cse-follow-jumps delayed-branch elide-constructors			\
+		expensive-optimizations float-store force-addr force-mem inline			\
+		inline-functions keep-inline-functions memoize-lookups				\
+		no-default-inline no-defer-pop no-function-cse					\
+		omit-frame-pointer rerun-cse-after-loop schedule-insns				\
+		schedule-insns2 strength-reduce thread-jumps unroll-all-loops			\
+		unroll-loops syntax-only all-virtual cond-mismatch				\
+		dollars-in-identifiers enum-int-equiv no-asm no-builtin				\
+		no-strict-prototype signed-bitfields signed-char				\
+		this-is-variable unsigned-bitfields unsigned-char				\
+		writable-strings call-saved-reg call-used-reg fixed-reg				\
+		no-common no-gnu-binutils nonnull-objects pcc-struct-return pic			\
+		PIC shared-data short-enums short-double volatile ramework)/'			\
+	'c/-W/(all aggregate-return cast-align cast-qual comment conversion			\
+		enum-clash error format id-clash-len implicit					\
+		missing-prototypes no-parentheses pointer-arith return-type			\
+		shadow strict-prototypes switch uninitialized unused				\
+		write-strings)/'								\
+	'c/-m/(68000 68020 68881 bitfield fpa nobitfield rtd short c68000			\
+		c68020 soft-float g gnu unix fpu no-epilogue)/'					\
+	'c/-d/(D M N)/'										\
+	'c@-l@`ls -1 /usr/lib/lib* | sed s%^.\*/lib%%\;s%\\..\*\$%%`@'				\
+	'c/-/(f W vspec v vpath ansi traditional traditional-cpp trigraphs			\
+		pedantic x o l c g L I D U O O2 O3 C E H B b V M MD MM i			\
+		dynamic nodtdlib static nostdinc undef arch framework)/'			\
+	'n@-framework@`ls -1 ${framework_path} | egrep .framework\$ | sed 's/\\.framework//'`@'	\
+	'n/-arch/(ppc i386)/'									\
+	'n/*/f:*.{c,C,cc,m,o,a,s,i}/'
+
+complete javac	'n/*/f:*.java/'
+
+complete {configure,./configure}							\
+	'c@{--target=,--host=}@`cat /tmp/architectures`@'	\
+	'c/--/(help quiet silent version no-create					\
+		target= build= host=							\
+		prefix= exec-prefix= bindir= sbindir= libdir= libexecdir=		\
+		includedir= infodir= mandir= srcdir=					\
+		datadir= sysconfdir= sharedstatedir= localstatedir=			\
+		program-prefix= program-suffix= program-transform-name=			\
+		x-includes= x-libraries=						\
+		with-cc= with-ccopts= with-linker= with-ldopts= with-cppopts=		\
+		disable- enable- enable-shared with- without-)//'
+
+##
+# Read user's completions
+##
+if (-r ${tcsh_initdir}/completions.mine) then
+  source ${tcsh_initdir}/completions.mine
+endif

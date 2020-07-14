@@ -1,0 +1,6 @@
+Package: machkit
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 318.2
+Description: Mach Kit
+Build-Depends: build-base

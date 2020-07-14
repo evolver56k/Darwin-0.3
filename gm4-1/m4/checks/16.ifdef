@@ -1,0 +1,7 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:1343: Origin of test
+ifdef(`foo', ``foo' is defined', ``foo' is not defined')
+dnl @result{}foo is not defined
+define(`foo', `')
+dnl @result{}
+ifdef(`foo', ``foo' is defined', ``foo' is not defined')
+dnl @result{}foo is defined

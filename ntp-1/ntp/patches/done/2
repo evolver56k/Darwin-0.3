@@ -1,0 +1,157 @@
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa17195;
+          4 Dec 1997 19:42 EST
+Received: from seeker.compus.com (harlan@localhost [127.0.0.1])
+	by seeker.compus.com (8.8.8/8.8.8) with ESMTP id TAA22834
+	for <stenn@whimsy.udel.edu>; Thu, 4 Dec 1997 19:42:04 -0500 (EST)
+Prev-Resent: Thu, 04 Dec 1997 19:42:03 -0500
+Prev-Resent: "stenn@whimsy.udel.edu "
+Replied: Thu, 04 Dec 1997 19:41:16 -0500
+Replied: "Jan.Brittenson@eng.Sun.COM "
+Delivery-Date: Thu Dec  4 19:38 EST 199
+Received: from venus.Sun.COM (venus.Sun.COM [192.9.25.5])
+	by seeker.compus.com (8.8.8/8.8.8) with SMTP id TAA22804
+	for <harlan@compus.com>; Thu, 4 Dec 1997 19:38:28 -0500 (EST)
+Received: from sunmail1.Sun.COM ([129.145.1.2]) by venus.Sun.COM (SMI-8.6/mail.byaddr) with SMTP id QAA09060 for <harlan@compus.com>; Thu, 4 Dec 1997 16:37:57 -0800
+Received: from jurassic.eng.sun.com by sunmail1.Sun.COM (SMI-8.6/SMI-4.1)
+	id QAA23227; Thu, 4 Dec 1997 16:37:53 -0800
+Received: from bugmotel.eng.sun.com (bugmotel [129.146.86.102])
+	by jurassic.eng.sun.com (8.8.8+Sun.Beta.4/8.8.8) with SMTP id QAA13046
+	for <harlan@compus.com>; Thu, 4 Dec 1997 16:37:54 -0800 (PST)
+Received: by bugmotel.eng.sun.com (SMI-8.6/SMI-SVR4)
+	id QAA09584; Thu, 4 Dec 1997 16:37:54 -0800
+From: Jan.Brittenson@eng.Sun.COM
+Date: Thu, 4 Dec 1997 16:37:54 -0800
+Message-Id: <199712050037.QAA09584@bugmotel.eng.sun.com>
+To: harlan@compus.com
+In-reply-to: <22489.881274426@seeker.compus.com> (message from Harlan Stenn on
+	Thu, 04 Dec 1997 17:27:06 -0500)
+Subject: Re: xntpd and Solaris2.6 on an Ultra enterprise 2?
+Content-Type: text
+Resent-To: stenn@whimsy.udel.edu
+Resent-Date: Thu, 04 Dec 1997 19:42:03 -0500
+Resent-Message-ID: <22831.881282523@seeker.compus.com>
+Resent-From: Harlan Stenn <harlan@compus.com>
+
+Harlan,
+
+I've just seen this somewhere else.  The kernel shouldn't panic of
+course, which I'll fix; but there are changes required to xntpd to
+work with our PLL.  The reason is that we had to switch to scaled
+constants instead of shift counts, since we have a variable hz.  So we
+have to use multiplication and division instead of shifting; and
+consequently some constants have become scale factors instead of shift
+counts.  Most of the arithmetic is of course constant mul/div by
+powers of two, so the compiler will turn it into shifts.
+
+Another reason we wanted * and / instead of << and >> was that the
+former have clear semantics for signed quantities, which permitted
+some cleanups and generally more readable code.
+
+I'll take a closer look at what's going on later today or tomorrow...
+
+I know util/ntptime.c can stumble over this (I've included diffs
+against 3-5.90 below) but I wasn't aware xntpd was affected.  I
+suspect it (perhaps implicitly through bzero/memset/calloc) sets
+"constant" to 0 before it calls ntp_adjtime().  If this is the case,
+then with our PLL it needs to be 1 (0 should produce EINVAL).
+
+-Jan.
+
+*** xntp3-5.90-export.orig/./util/ntptime.c	Mon Mar 10 20:52:33 1997
+--- xntp3-5.90-export.new/./util/ntptime.c	Wed Apr  9 13:38:01 1997
+***************
+*** 69,74 ****
+--- 69,84 ----
+  char *sprintb		P((u_int, char *));
+  char *timex_state	P((int));
+  
++ /*
++  * Solaris 2.6 generally uses multiplication instead of shifting since it has
++  * a runtime-settable hz.  To avoid confusion, SHIFT_xxx are named SCALE_xxx.
++  */
++ #ifdef SCALE_USEC
++ #define	scaled_usec(F)  ((F) * SCALE_USEC)
++ #else
++ #define	scaled_usec(F)  ((F) << SHIFT_USEC)
++ #endif
++ 
+  #ifdef SIGSYS
+  void pll_trap		P((int));
+  
+***************
+*** 112,121 ****
+      break;
+    case 'f':
+      ntx.modes |= MOD_FREQUENCY;
+!     ntx.freq = (int) (atof(ntp_optarg) *
+! 		      (1 << SHIFT_USEC));
+!     if (ntx.freq < (-100 << SHIFT_USEC)
+! 	||  ntx.freq > ( 100 << SHIFT_USEC)) errflg++;
+      break;
+    case 'm':
+      ntx.modes |= MOD_MAXERROR;
+--- 122,130 ----
+      break;
+    case 'f':
+      ntx.modes |= MOD_FREQUENCY;
+!     ntx.freq = (int) (atof(ntp_optarg) * (float) scaled_usec(1));
+!     if (ntx.freq < scaled_usec(-100)  ||  ntx.freq > scaled_usec(100))
+!       errflg++;
+      break;
+    case 'm':
+      ntx.modes |= MOD_MAXERROR;
+***************
+*** 279,285 ****
+      printf("ntp_adjtime() returns code %d (%s)\n",
+  	   status, timex_state(status));
+      ftemp = ntx.freq;
+!     ftemp /= (1 << SHIFT_USEC);
+      printf("  modes %s,\n", sprintb(ntx.modes, TIMEX_MOD_BITS));
+      printf("  offset %ld us, frequency %.3f ppm, interval %d s,\n",
+  	   ntx.offset, ftemp, 1 << ntx.shift);
+--- 288,294 ----
+      printf("ntp_adjtime() returns code %d (%s)\n",
+  	   status, timex_state(status));
+      ftemp = ntx.freq;
+!     ftemp /= scaled_usec(1);
+      printf("  modes %s,\n", sprintb(ntx.modes, TIMEX_MOD_BITS));
+      printf("  offset %ld us, frequency %.3f ppm, interval %d s,\n",
+  	   ntx.offset, ftemp, 1 << ntx.shift);
+***************
+*** 286,292 ****
+      printf("  maximum error %ld us, estimated error %ld us,\n",
+  	   ntx.maxerror, ntx.esterror);
+      ftemp = ntx.tolerance;
+!     ftemp /= (1 << SHIFT_USEC);
+      printf("  status %s,\n", sprintb(ntx.status, TIMEX_STA_BITS));
+      printf("  time constant %ld, precision %ld us, tolerance %.0f ppm,\n",
+  	   ntx.constant, ntx.precision, ftemp);
+--- 295,301 ----
+      printf("  maximum error %ld us, estimated error %ld us,\n",
+  	   ntx.maxerror, ntx.esterror);
+      ftemp = ntx.tolerance;
+!     ftemp /= scaled_usec(1);
+      printf("  status %s,\n", sprintb(ntx.status, TIMEX_STA_BITS));
+      printf("  time constant %ld, precision %ld us, tolerance %.0f ppm,\n",
+  	   ntx.constant, ntx.precision, ftemp);
+***************
+*** 293,301 ****
+      if (ntx.shift == 0)
+        return;
+      ftemp = ntx.ppsfreq;
+!     ftemp /= (1 << SHIFT_USEC);
+      gtemp = ntx.stabil;
+!     gtemp /= (1 << SHIFT_USEC);
+      printf("  pps frequency %.3f ppm, stability %.3f ppm, jitter %ld us,\n",
+  	   ftemp, gtemp, ntx.jitter);
+      printf("  intervals %ld, jitter exceeded %ld, stability exceeded %ld, errors %ld.\n",
+--- 302,310 ----
+      if (ntx.shift == 0)
+        return;
+      ftemp = ntx.ppsfreq;
+!     ftemp /= scaled_usec(1);
+      gtemp = ntx.stabil;
+!     gtemp /= scaled_usec(1);
+      printf("  pps frequency %.3f ppm, stability %.3f ppm, jitter %ld us,\n",
+  	   ftemp, gtemp, ntx.jitter);
+      printf("  intervals %ld, jitter exceeded %ld, stability exceeded %ld, errors %ld.\n",

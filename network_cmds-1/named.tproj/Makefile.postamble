@@ -1,0 +1,61 @@
+# Until we start building natively
+#DATE = date
+DATE = ./fakedate
+
+HOSTNAMECMD = hostname || uname -n
+VER = LOCAL-`$(DATE) +%y%m%d.%H%M%S`
+
+# Don't want that -S flag
+INSTALL=install
+
+version.c: Version.c Makefile
+	(u=$${USER-root} d=`pwd` h=`${HOSTNAMECMD}` t=`date`; \
+	sed -e "s|%WHEN%|$${t}|" -e "s|%VERSION%|"${VER}"|" \
+	    -e "s|%WHOANDWHERE%|$${u}@$${h}:$${d}|" \
+	    < Version.c > $(SFILE_DIR)/version.c)
+
+version.o: version.c
+
+after_install:: $(DSTROOT)$(XFERDIR)
+	-${INSTALL} -c -s -o $(INSTALL_AS_USER) -g $(INSTALL_AS_GROUP) -m 555 \
+		$(SYMROOT)/named-xfer $(DSTROOT)$(XFERDIR)/named-xfer
+	-${INSTALL} -c -o $(INSTALL_AS_USER) -g $(INSTALL_AS_GROUP) -m 555 \
+		$(SYMROOT)/named.restart $(DSTROOT)$(INSTALLDIR)/named.restart
+	-${INSTALL} -c -o $(INSTALL_AS_USER) -g $(INSTALL_AS_GROUP) -m 555 \
+		$(SYMROOT)/named.reload $(DSTROOT)$(INSTALLDIR)/named.reload
+	-${INSTALL} -c -o $(INSTALL_AS_USER) -g $(INSTALL_AS_GROUP) -m 555 \
+		$(SYMROOT)/ndc $(DSTROOT)$(INSTALLDIR)/ndc
+
+named.reload: named.reload.sh
+	sed -e "s|%INDOT%||" \
+	    -e "s|%DESTSBIN%|$(INSTALLDIR)|" \
+	    < named.reload.sh > $(SYMROOT)/named.reload
+	chmod +x $(SYMROOT)/named.reload
+
+named.restart: named.restart.sh
+	sed -e "s|%INDOT%||" \
+	    -e "s|%DESTSBIN%|$(INSTALLDIR)|" \
+	    < named.restart.sh > $(SYMROOT)/named.restart
+	chmod +x $(SYMROOT)/named.restart
+
+ndc: ndc.sh
+	sed -e "s|%PIDDIR%|${PIDDIR}|" \
+	    -e "s|%INDOT%||" \
+	    -e "s|%PS%|ps|" \
+	    -e "s|%IOTPS%|IOT|" \
+	    -e "s|%DESTSBIN%|$(INSTALLDIR)|" \
+	    -e "s|%IOT%|IOT|" \
+	    < ndc.sh > $(SYMROOT)/ndc
+	chmod +x $(SYMROOT)/ndc
+
+named-xfer:	$(XFER_OFILES)
+	if [ "$(CODE_GEN_STYLE)" = "DYNAMIC" ]; then \
+		dyflag=-dynamic; \
+	else \
+		dyflag=-static; \
+	fi; \
+	$(CC) $$dyflag $(ALL_CFLAGS) $(OBJCFLAG) \
+		$(ALL_LDFLAGS) -o $(SYMROOT)/$@ $(XFER_OFILES) $(LIBS) $(OTHER_LIBS)
+
+$(DSTROOT)$(XFERDIR):
+	@mkdirs $@

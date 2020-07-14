@@ -1,0 +1,18 @@
+/Makefile.am/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/Makefile.in/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/bc.c/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/bc.h/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/bc.y/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/execute.c/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/fix-libmath_h/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/global.c/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/libmath.b/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/libmath.h/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/load.c/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/main.c/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/sbc.y/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/scan.c/1.1.1.1/Thu Apr 15 17:49:58 1999//Tbc-1
+/scan.l/1.1.1.1/Thu Apr 15 17:49:59 1999//Tbc-1
+/storage.c/1.1.1.1/Thu Apr 15 17:49:59 1999//Tbc-1
+/util.c/1.1.1.1/Thu Apr 15 17:49:59 1999//Tbc-1
+D

@@ -1,0 +1,398 @@
+This is Patch01 to Cron-3.0.  Please apply it.  Changes are:
+
+	Some of the documentation has been reformatted to fit in 80 char lines;
+	it has also been corrected on some NeXT system and general environment
+	variable details.
+
+	The EDITOR (or VISUAL) environment variable is now allowed to have
+	multiple tokens in it when running "crontab -e".
+
+	Some more code has been reformatted to the BSD style.
+
+	A bug was fixed in the way environment variables were searched.
+
+I do not expect to release another Cron patch for a long time.  I have finished
+everything I wanted to do for 3.0, and this patch represents the final touches
+on recently added features.
+
+*** /tmp/RCSA015433	Tue Jan 25 18:20:06 1994
+--- CHANGES	Tue Jan 25 17:59:31 1994
+***************
+*** 32,62 ****
+  V2, chances are good that V3 will fix your problems.
+  
+! About a dozen people have reminded me that I forgot to initialize "crontab_fd"
+! in database.c.  Keith Cantrell was the first, so he gets the point.
+  
+- Steve Simmons reminded me that once an account has been deleted from the system,
+- "crontab -u USER -d" will not work.  My solution is to suggest to all of you that
+- before you delete a user's account, you first delete that user's crontab file if
+- any.  From cron's point of view, usernames can never be treated as arbitrary
+- strings.  Either they are valid user names, or they are not.  I will not make
+- an exception for the "-d" case, for security reasons that I consider reasonable.
+- It is trivial for a root user to delete the entry by hand if necessary.
+- 
+- Dan O'Neil reminded me that I forgot to reset "log_fd" in misc.c.  A lot of others
+- also reminded me of this, but Dan gets the point.  I didn't fix it there, since the
+- real bug was that it should have been open in the parent.
+- 
+- Peter Kabal reminded me that I forgot to "#ifdef DEBUGGING" some code in misc.c.
+- Hans Trompert actually told me first, but Peter sent the patch so he gets the point.
+- 
+  Russell Nelson told me that I'd forgotten to "#include <syslog.h>" in misc.c,
+! which explains why a lot of other people complained that it wasn't using syslog
+! even when they configured it that way :-).  Steve Simmons told me first, though,
+! so he gets the point.
+! 
+! An interrim version of the daemon tried to "stat" every file before executing it;
+! this turned out to be a horribly bad idea since finding the name of a file from
+! a shell command is a hard job (that's why we have shells, right?)  I removed this
+! bogus code.  Dave Burgess gets the point.
+  
+  Dennis R. Conley sent a suggestion for MMDF systems, which I've added to the
+--- 32,65 ----
+  V2, chances are good that V3 will fix your problems.
+  
+! About a dozen people have reminded me that I forgot to initialize
+! "crontab_fd" in database.c.  Keith Cantrell was the first, so he gets the
+! point.
+! 
+! Steve Simmons reminded me that once an account has been deleted from the
+! system, "crontab -u USER -d" will not work.  My solution is to suggest to
+! all of you that before you delete a user's account, you first delete that
+! user's crontab file if any.  From cron's point of view, usernames can never
+! be treated as arbitrary strings.  Either they are valid user names, or they
+! are not.  I will not make an exception for the "-d" case, for security
+! reasons that I consider reasonable.  It is trivial for a root user to delete
+! the entry by hand if necessary.
+! 
+! Dan O'Neil reminded me that I forgot to reset "log_fd" in misc.c.  A lot of
+! others also reminded me of this, but Dan gets the point.  I didn't fix it
+! there, since the real bug was that it should have been open in the parent.
+! 
+! Peter Kabal reminded me that I forgot to "#ifdef DEBUGGING" some code in
+! misc.c.  Hans Trompert actually told me first, but Peter sent the patch so
+! he gets the point.
+  
+  Russell Nelson told me that I'd forgotten to "#include <syslog.h>" in misc.c,
+! which explains why a lot of other people complained that it wasn't using
+! syslog even when they configured it that way :-).  Steve Simmons told me
+! first, though, so he gets the point.
+! 
+! An interrim version of the daemon tried to "stat" every file before
+! executing it; this turned out to be a horribly bad idea since finding the
+! name of a file from a shell command is a hard job (that's why we have
+! shells, right?)  I removed this bogus code.  Dave Burgess gets the point.
+  
+  Dennis R. Conley sent a suggestion for MMDF systems, which I've added to the
+***************
+*** 63,80 ****
+  comments in cron.h.
+  
+! Mike Heisler noted that I use comments in the CONVERSION file which are documented
+! as illegal in the man pages.  Thanks, Mike.
+  
+! Irving Wolfe sent me some very cheerful changes for a NeXT system, but I consider
+! the system itself broken and I can't bring myself to #ifdef for something as screwed
+! up as this system seems to be.  Sorry, NeXT users -- pray for POSIX.  Irving also
+! asked for a per-job MAILTO, but the syntactic overkill that would require is more
+! than I'm willing to add.  Remember, on BSD4.2, cron was a 12K daemon.  My cron is
+! about ten times that size already.
+! 
+! Lots of folks complained that the autogenerated "Date:" header wasn't in ARPA format.
+! I didn't understand this -- either folks will use Sendmail and not generate a Date:
+! at all (since Sendmail will do it), or folks will use something other than Sendmail
+! which won't care about Date: formats.  But I've "fixed" it anyway...
+  
+  Several people suggested that "*" should be able to take a "/step".  One person
+--- 66,86 ----
+  comments in cron.h.
+  
+! Mike Heisler noted that I use comments in the CONVERSION file which are
+! documented as illegal in the man pages.  Thanks, Mike.
+  
+! Irving Wolfe sent me some very cheerful changes for a NeXT system, but I
+! consider the system itself broken and I can't bring myself to #ifdef for
+! something as screwed up as this system seems to be.  However, various others
+! did send me smaller patches which appear to have cause cron to build and run
+! correctly on (the latest) NeXT machines, with or without the "-posix" CFLAG.
+! Irving also asked for a per-job MAILTO, and this was finally added later when
+! I integrated the BSD/386 changes contributed by BSDi, and generalized some of
+! the parsing.
+! 
+! Lots of folks complained that the autogenerated "Date:" header wasn't in
+! ARPA format.  I didn't understand this -- either folks will use Sendmail and
+! not generate a Date:  at all (since Sendmail will do it), or folks will use
+! something other than Sendmail which won't care about Date: formats.  But
+! I've "fixed" it anyway...
+  
+  Several people suggested that "*" should be able to take a "/step".  One person
+*** /tmp/RCSA015433	Tue Jan 25 18:20:06 1994
+--- FEATURES	Tue Jan 25 17:56:29 1994
+***************
+*** 4,9 ****
+  
+  --	Environment variables can be set in each crontab.  SHELL, USER,
+! 	and HOME are set from the user's passwd entry; all except USER
+! 	can be changed in the crontab.  PATH is especially useful to
+  	set there.  TZ can be set, but cron ignores it other than passing
+  	it on through to the commands it runs.  Format is
+--- 4,9 ----
+  
+  --	Environment variables can be set in each crontab.  SHELL, USER,
+! 	LOGNAME, and HOME are set from the user's passwd entry; all except
+! 	USER can be changed in the crontab.  PATH is especially useful to
+  	set there.  TZ can be set, but cron ignores it other than passing
+  	it on through to the commands it runs.  Format is
+***************
+*** 19,31 ****
+  		FOOBAR = this is a long blanky example
+  
+! 	Above, FOOBAR would get `this is a long blanky example' as its value.
+  
+! 	SHELL and HOME will be examined when it's time to run a command; if
+! 	you don't change them, they default to your /etc/passwd entry.
+  
+- 	*DANGER*, WILL ROBINSON! This means that all 'uucp' logins should set
+- 	SHELL=/bin/sh or cron will try to use /usr/lib/uucp/uucico as the
+- 	shell.  This won't work.
+- 
+  	MAILTO, if set to the login name of a user on your system, will be the
+  	person that cron mails the output of commands in that crontab.  This is
+--- 19,28 ----
+  		FOOBAR = this is a long blanky example
+  
+! 	Above, FOOBAR would get "this is a long blanky example" as its value.
+  
+! 	SHELL and HOME will be used when it's time to run a command; if
+! 	you don't set them, HOME defaults to your /etc/passwd entry
+! 	and SHELL defaults to /bin/sh.
+  
+  	MAILTO, if set to the login name of a user on your system, will be the
+  	person that cron mails the output of commands in that crontab.  This is
+***************
+*** 33,40 ****
+  	doesn't know anything about aliasing.
+  
+- 	Setting SHELL=/bin/sh will in general speed up your commands since it
+- 	is a much smaller shell than the one you probably use normally (csh
+- 	or ksh) and has enough features to work non-interactively.
+- 
+  --	Weekdays can be specified by name.  Case is not significant, but only
+  	the first three letters should be specified.
+--- 30,33 ----
+***************
+*** 63,68 ****
+  	a '#' introduces the comment.
+  
+! --	(big win) If the `crontab' command changes anything in any crontab, it
+! 	tells the 'cron' daemon, who reloads all the tables before running the
+  	next iteration.  In some crons, you have to kill and restart the
+  	daemon whenever you change a crontab.  In other crons, the crontab
+--- 56,61 ----
+  	a '#' introduces the comment.
+  
+! --	(big win) If the `crontab' command changes anything in any crontab,
+! 	the 'cron' daemon will reload all the tables before running the
+  	next iteration.  In some crons, you have to kill and restart the
+  	daemon whenever you change a crontab.  In other crons, the crontab
+***************
+*** 86,88 ****
+  	is why we keep 'e->dow_star' and 'e->dom_star'.  I didn't think up
+  	this behaviour; it's how cron has always worked but the documentation
+! 	hasn't been very clear.
+--- 79,84 ----
+  	is why we keep 'e->dow_star' and 'e->dom_star'.  I didn't think up
+  	this behaviour; it's how cron has always worked but the documentation
+! 	hasn't been very clear.  I have been told that some AT&T crons do not
+! 	act this way and do the more reasonable thing, which is (IMHO) to "or"
+! 	the various field-matches together.  In that sense this cron may not
+! 	be completely similar to some AT&T crons.
+*** /tmp/RCSA015433	Tue Jan 25 18:20:07 1994
+--- crontab.5	Tue Jan 25 18:19:34 1994
+***************
+*** 18,22 ****
+  .\" $Id: Patch01,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $
+  .\" 
+! .TH CRONTAB 5 "7 January 1994"
+  .UC 4
+  .SH NAME
+--- 18,22 ----
+  .\" $Id: Patch01,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $
+  .\" 
+! .TH CRONTAB 5 "24 January 1994"
+  .UC 4
+  .SH NAME
+***************
+*** 78,81 ****
+--- 78,82 ----
+  The format of a cron command is very much the V7 standard, with a number of
+  upward-compatible extensions.  Each line has five time and date fields,
++ followed by a user name if this is the system crontab file,
+  followed by a command.  Commands are executed by
+  .IR cron (8)
+***************
+*** 130,134 ****
+  run.
+  The entire command portion of the line, up to a newline or %
+! character, will be executed by the user's login shell or by the shell
+  specified in the SHELL variable of the cronfile.
+  Percent-signs (%) in the command, unless escaped with backslash
+--- 131,135 ----
+  run.
+  The entire command portion of the line, up to a newline or %
+! character, will be executed by /bin/sh or by the shell
+  specified in the SHELL variable of the cronfile.
+  Percent-signs (%) in the command, unless escaped with backslash
+*** /tmp/RCSA015433	Tue Jan 25 18:20:07 1994
+--- crontab.c	Tue Jan 25 18:09:17 1994
+***************
+*** 405,409 ****
+  			exit(ERROR_EXIT);
+  		}
+! 		execlp(editor, editor, Filename, NULL);
+  		perror(editor);
+  		exit(ERROR_EXIT);
+--- 405,415 ----
+  			exit(ERROR_EXIT);
+  		}
+! 		if (strlen(editor) + strlen(Filename) + 2 >= MAX_TEMPSTR) {
+! 			fprintf(stderr, "%s: editor or filename too long\n",
+! 				ProgramName);
+! 			exit(ERROR_EXIT);
+! 		}
+! 		sprintf(q, "%s %s", editor, Filename);
+! 		execlp(_PATH_BSHELL, _PATH_BSHELL, "-c", q, NULL);
+  		perror(editor);
+  		exit(ERROR_EXIT);
+*** /tmp/RCSA017615	Tue Jan 25 20:00:53 1994
+--- env.c	Tue Jan 25 19:58:50 1994
+***************
+*** 17,21 ****
+  
+  #if !defined(lint) && !defined(LINT)
+! static char rcsid[] = "$Id: Patch01,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $";
+  #endif
+  
+--- 17,21 ----
+  
+  #if !defined(lint) && !defined(LINT)
+! static char rcsid[] = "$Id: Patch01,v 1.1.1.1 1997/10/13 18:58:46 wsanchez Exp $";
+  #endif
+  
+***************
+*** 30,34 ****
+  
+  	p[0] = NULL;
+! 	return p;
+  }
+  
+--- 30,34 ----
+  
+  	p[0] = NULL;
+! 	return (p);
+  }
+  
+***************
+*** 59,63 ****
+  		p[i] = strdup(envp[i]);
+  	p[count] = NULL;
+! 	return p;
+  }
+  
+--- 59,63 ----
+  		p[i] = strdup(envp[i]);
+  	p[count] = NULL;
+! 	return (p);
+  }
+  
+***************
+*** 89,93 ****
+  		free(envp[found]);
+  		envp[found] = strdup(envstr);
+! 		return envp;
+  	}
+  
+--- 89,93 ----
+  		free(envp[found]);
+  		envp[found] = strdup(envstr);
+! 		return (envp);
+  	}
+  
+***************
+*** 101,105 ****
+  	p[count] = p[count-1];
+  	p[count-1] = strdup(envstr);
+! 	return p;
+  }
+  
+--- 101,105 ----
+  	p[count] = p[count-1];
+  	p[count-1] = strdup(envstr);
+! 	return (p);
+  }
+  
+***************
+*** 123,127 ****
+  	skip_comments(f);
+  	if (EOF == get_string(envstr, MAX_ENVSTR, f, "\n"))
+! 		return ERR;
+  
+  	Debug(DPARS, ("load_env, read <%s>\n", envstr))
+--- 123,127 ----
+  	skip_comments(f);
+  	if (EOF == get_string(envstr, MAX_ENVSTR, f, "\n"))
+! 		return (ERR);
+  
+  	Debug(DPARS, ("load_env, read <%s>\n", envstr))
+***************
+*** 133,137 ****
+  		fseek(f, filepos, 0);
+  		Set_LineNum(fileline);
+! 		return FALSE;
+  	}
+  
+--- 133,137 ----
+  		fseek(f, filepos, 0);
+  		Set_LineNum(fileline);
+! 		return (FALSE);
+  	}
+  
+***************
+*** 157,161 ****
+  	(void) sprintf(envstr, "%s=%s", name, val);
+  	Debug(DPARS, ("load_env, <%s> <%s> -> <%s>\n", name, val, envstr))
+! 	return TRUE;
+  }
+  
+--- 157,161 ----
+  	(void) sprintf(envstr, "%s=%s", name, val);
+  	Debug(DPARS, ("load_env, <%s> <%s> -> <%s>\n", name, val, envstr))
+! 	return (TRUE);
+  }
+  
+***************
+*** 166,174 ****
+  	register char	**envp;
+  {
+! 	for (;  *envp;  envp++) {
+! 		register char	*p = strchr(*envp, '=');
+! 		if (p && !strncmp(*envp, name, p - *envp))
+! 			return p+1;
+  	}
+! 	return NULL;
+  }
+--- 166,178 ----
+  	register char	**envp;
+  {
+! 	register int	len = strlen(name);
+! 	register char	*p, *q;
+! 
+! 	while (p = *envp++) {
+! 		if (!(q = strchr(p, '=')))
+! 			continue;
+! 		if ((q - p) == len && !strncmp(p, name, len))
+! 			return (q+1);
+  	}
+! 	return (NULL);
+  }

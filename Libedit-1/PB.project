@@ -1,0 +1,79 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        FRAMEWORKSEARCH = (); 
+        HEADERSEARCH = (); 
+        H_FILES = (
+            chared.h, 
+            common.h, 
+            el.h, 
+            emacs.h, 
+            fcns.h, 
+            help.h, 
+            hist.h, 
+            histedit.h, 
+            key.h, 
+            map.h, 
+            parse.h, 
+            prompt.h, 
+            refresh.h, 
+            search.h, 
+            sig.h, 
+            sys.h, 
+            term.h, 
+            termcap.h, 
+            tokenizer.h, 
+            tty.h, 
+            vi.h
+        ); 
+        LIBRARYSEARCH = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (editline.c, history.c, tokenizer.c); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            README.NeXT, 
+            Makefile.dist, 
+            makelist, 
+            chared.c, 
+            common.c, 
+            el.c, 
+            emacs.c, 
+            hist.c, 
+            key.c, 
+            map.c, 
+            parse.c, 
+            prompt.c, 
+            read.c, 
+            refresh.c, 
+            search.c, 
+            sig.c, 
+            term.c, 
+            tty.c, 
+            vi.c, 
+            fcns.c, 
+            help.c
+        ); 
+        PUBLIC_HEADERS = (histedit.h); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-fno-builtin"; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_COMPILEROPTIONS = "-fno-builtin -nostdinc"; 
+    PDO_UNIX_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = libedit; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = /bin/gnumake; 
+    WINDOWS_COMPILEROPTIONS = "-fno-builtin -nostdinc"; 
+    WINDOWS_INSTALLDIR = /usr/local/lib; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

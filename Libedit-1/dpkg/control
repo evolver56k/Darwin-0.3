@@ -1,0 +1,6 @@
+Package: libedit
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 13
+Description: Editing library
+Build-Depends: build-base

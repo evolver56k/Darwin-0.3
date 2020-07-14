@@ -1,0 +1,165 @@
+##
+# Common setup for startup scripts.
+##
+# Wilfredo Sanchez | wsanchez@apple.com
+# Copyright 1998 Apple Computer, Inc.
+##
+
+#######################
+# Configure the shell #
+#######################
+
+##
+# Be strict
+##
+#set -e
+set -u
+
+##
+# Set command search path
+##
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/libexec; export PATH
+
+##
+# Set the terminal mode
+##
+if [ -x /usr/bin/tset ] && [ -f /usr/share/misc/termcap ]; then
+    TERM=$(tset - -Q); export TERM
+fi
+
+# Host architecture
+ARCH=$(/usr/bin/arch)
+
+####################
+# Useful functions #
+####################
+
+##
+# Print a message to the console and display it in the startup screen
+##
+ConsoleMessage()
+{
+    local Message="$*"
+
+    echo "${Message}"
+
+    if [ -z "${PercentBoot}" ]; then
+        fbshow -B -I "${Message}"
+    else
+        fbshow -B -I "${Message}" -z ${PercentBoot}
+    fi
+}
+
+##
+# Write out the network configuration for network interface $if based on $config,
+#  where $config contains VAR=VALUE pairs.
+# Results are stored in $NetConfigDir.
+##
+NetConfigDir="/tmp/.netconfig"
+
+SetNetConfig()
+{
+    local     if=$1; shift;
+    local config=$*;
+
+    if [ -z "${if}" ] || [ -z "${config}" ]; then return 22; fi
+
+    local configdir="${NetConfigDir}/${if}"
+
+    if [ ! -d "${configdir}" ]; then mkdir -p "${configdir}"; fi
+
+    (
+	eval ${config}
+
+	for variable in		\
+	  domain_name_server	\
+	  host_name 		\
+	  ip_address		\
+	  server_ip_address	\
+	  server_name		\
+	  subnet_mask		\
+	  router
+	do
+	    ConfigFile="${configdir}/${variable}"
+	         Count="$(eval echo \${${variable}_count})"
+	         Value="$(eval echo \${${variable}})"
+
+	    ##
+	    # Store values for $variable in $ConfigFile
+	    ##
+
+	    # If $ConfigFile exists, then we've already configured this variable
+	    if [ -f "${ConfigFile}" ]; then continue; fi
+
+	    # If $Count is set, we have multiple values to store, otherwise just one.
+	    if [ -z "${Count}" ]; then
+		if [ -n "${Value}" ]; then echo "${Value}" > "${ConfigFile}"; fi
+	    else
+		if [ -n "${Value}" ]; then echo "${Value}" > "${ConfigFile}"; fi
+
+		Which=2
+		while [ ${Which} -le ${Count} ]; do
+		    Value="$(eval echo \${${variable}${Which}})"
+		    if [ -n "${Value}" ]; then echo "${Value}" >> "${ConfigFile}"; fi
+		    Which=$((${Which} + 1))
+		done
+	    fi
+	done
+    )
+
+    return 0
+}
+
+DidConfigure()
+{
+    local if=$1
+
+    local configdir="${NetConfigDir}/${if}"
+
+    if [ -d "${configdir}" ]; then return 0; fi
+
+    return 1
+}
+
+GetNetConfig()
+{
+    local       if=$1
+    local variable=$2
+    local    count=$3
+
+    local  configdir="${NetConfigDir}/${if}"
+    local configfile="${configdir}/${variable}"
+
+    if [ ! -s "${configfile}" ]; then return 1; fi
+
+    if [ -n "${count}" ]; then
+	cat "${configfile}" | head "-${count}"
+    else
+	cat "${configfile}"
+    fi
+
+    return 0;
+}
+
+##
+# Determine if the network is up by looking for any non-loopback
+# internet network interfaces.
+##
+CheckForNetwork()
+{
+    local test
+
+    if [ -z "${NETWORKUP}" ]; then
+	test=$(ifconfig -a | sed -e '/127.0.0.1/d' | sed -e '/0.0.0.0/d' | sed -n '/inet/p' | wc -l)
+	if [ "${test}" -gt 0 ]; then
+	    NETWORKUP="-YES-"
+	else
+	    NETWORKUP="-NO-"
+	fi
+    fi
+}
+
+##########################
+# Get host configuration #
+##########################
+. /etc/hostconfig

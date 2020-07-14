@@ -1,0 +1,280 @@
+Replied: Wed, 06 Nov 1996 17:48:44 -0500
+Replied: "Jeffrey C Honig <jch@bsdi.com> Dave Mills <mills@udel.edu>"
+Received: from copland.udel.edu by huey.udel.edu id aa03253; 5 Nov 96 17:59 EST
+Received: from external.BSDI.COM (external.BSDI.COM [205.230.225.2]) by copland.udel.edu (8.7.6/8.7.3) with ESMTP id RAA04235 for <mills@udel.edu>; Tue, 5 Nov 1996 17:58:31 -0500 (EST)
+Received: from kismet.bsdi.com (root@kismet.BSDI.COM [207.16.111.10]) by external.BSDI.COM (8.8.2/8.8.2) with ESMTP id PAA09329 for <mills@udel.edu>; Tue, 5 Nov 1996 15:57:39 -0700 (MST)
+Received: from kismet.bsdi.com (jch@localhost.bsdi.com [127.0.0.1]) by kismet.bsdi.com (8.7.6/8.7.3) with ESMTP id RAA19292 for <mills@udel.edu>; Tue, 5 Nov 1996 17:57:37 -0500 (EST)
+Message-Id: <199611052257.RAA19292@kismet.bsdi.com>
+To: Dave Mills <mills@udel.edu>
+Subject: BSD/OS 3.0
+Organization: Berkeley Software Design, Inc.; Ithaca, NY  USA
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-ID: <19287.847234650.0@kismet.bsdi.com>
+Date: Tue, 05 Nov 1996 17:57:37 -0500
+From: Jeffrey C Honig <jch@bsdi.com>
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.1@kismet.bsdi.com>
+
+Here are the changes to 3.5f that I had to make for BSD/OS 3.0.  I
+realize that this will not be directly usable with your autoconfigure
+version, but it provides the basic info.  If I fall into a black hole
+(or other spacial anomaly) before working on your autoconfigure
+version the information will be available.
+
+The machines/bsdi3 file has a new flag, NO_STEPBACK.  This is
+currently only used by ntpdate in the default case (when none of -b or
+-B are used).
+
+For BSD/OS 3.1 (or whatever our next release will end up being called)
+we will work on a POSIX compatible time interface that works in
+nanoseconds and investigate your KERNEL_PLL changes.
+
+Thanks.
+
+Jeff
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.2@kismet.bsdi.com>
+Content-Description: machines/bsdi3
+
+RANLIB= ranlib
+DEFS= -DSYS_BSDI -DHAVE_TERMIOS -DADJTIME_IS_ACCURATE -DSLEWALWAYS -DNO_STEPBACK -DFORCE_NTPDATE_STEP
+CLOCKDEFS= -DLOCAL_CLOCK
+AUTHDEFS= -DDES -DMD5
+DAEMONLIBS= -lkvm
+RESLIB=
+COPTS= -g -O2
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.3@kismet.bsdi.com>
+Content-Description: compilers/bsdi3.shlicc2
+
+COMPILER= shlicc2 -Wall
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.4@kismet.bsdi.com>
+Content-Description: Context diff to scripts/Guess.sh
+
+Index: scripts/Guess.sh
+===================================================================
+RCS file: /master/contrib/xntp3.5f/scripts/Guess.sh,v
+retrieving revision 1.1.1.1
+diff -c -r1.1.1.1 Guess.sh
+*** Guess.sh	1996/10/24 17:15:51	1.1.1.1
+--- Guess.sh	1996/11/05 22:40:54
+***************
+*** 60,67 ****
+  			alpha) guess="decosf1" ;;
+  			esac
+  			;;
+! 		"bsd/386"|"bsd/os")
+  			guess="bsdi"
+  			;;
+  		"freebsd")
+  			guess="freebsd"
+--- 60,73 ----
+  			alpha) guess="decosf1" ;;
+  			esac
+  			;;
+! 		"bsd/386")
+  			guess="bsdi"
++ 			;;
++ 		"bsd/os")
++ 			case "$3" in
++ 			3*) guess="bsdi3" ;;
++ 			*) guess="bsdi" ;;
++ 			esac
+  			;;
+  		"freebsd")
+  			guess="freebsd"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.5@kismet.bsdi.com>
+Content-Description: Changes to support BSD/OS 3.0 getifaddrs syntax
+
+Allow for the different calling conventions for getifaddrs() for
+BSD/OS 3.0.
+
+Index: ntp_io.c
+===================================================================
+RCS file: /master/contrib/xntp3.5f/xntpd/ntp_io.c,v
+retrieving revision 1.1.1.1
+diff -c -c -r1.1.1.1 ntp_io.c
+*** ntp_io.c	1996/10/24 17:16:01	1.1.1.1
+--- ntp_io.c	1996/10/31 15:28:42
+***************
+*** 268,276 ****
+  	u_int port;
+  {
+  #if	_BSDI_VERSION >= 199510
+! 	int num_if, i, j;
+! 	struct ifaddrs *ifaddrs, *ifap, *lp;
+  	struct sockaddr_in resmask;
+  #else	/* _BSDI_VERSION >= 199510 */
+  #ifdef STREAMS_TLI
+  	struct strioctl	ioc;
+--- 268,280 ----
+  	u_int port;
+  {
+  #if	_BSDI_VERSION >= 199510
+! 	int i, j;
+! 	struct ifaddrs *ifaddrs, *ifap;
+  	struct sockaddr_in resmask;
++ #if	_BSDI_VERSION < 199608
++ 	struct ifaddrs *lp;
++ 	int num_if;
++ #endif	/* _BSDI_VERSION < 199608 */
+  #else	/* _BSDI_VERSION >= 199510 */
+  #ifdef STREAMS_TLI
+  	struct strioctl	ioc;
+***************
+*** 304,317 ****
+--- 308,329 ----
+  	inter_list[0].flags = INT_BROADCAST;
+  
+  #if	_BSDI_VERSION >= 199510
++ #if	_BSDI_VERSION < 199608
+  	if (getifaddrs(&ifaddrs, &num_if) < 0) {
++ #else	/* _BSDI_VERSION < 199608 */
++ 	if (getifaddrs(&ifaddrs) < 0) {
++ #endif	/* _BSDI_VERSION < 199608 */
+  		syslog(LOG_ERR, "getifaddrs: %m");
+  		exit(1);
+  	}
+  
+  	i = 1;
+  
++ #if	_BSDI_VERSION < 199608
+  	for (ifap = ifaddrs, lp = ifap + num_if; ifap < lp; ifap++) {
++ #else	/* _BSDI_VERSION < 199608 */
++ 	for (ifap = ifaddrs; ifap != NULL; ifap = ifap->ifa_next) {
++ #endif	/* _BSDI_VERSION < 199608 */
+  		struct sockaddr_in *sin;
+  
+  		if (ifap->ifa_addr->sa_family != AF_INET)
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.6@kismet.bsdi.com>
+Content-Description: Fix to interaction problem between signals and longjmp
+
+This patch fixes a problem with the interaction between longjmp and
+the signal handler.
+
+Index: xntpdc/ntpdc.c
+===================================================================
+RCS file: /master/contrib/xntp3.5f/xntpdc/ntpdc.c,v
+retrieving revision 1.1.1.1
+diff -c -c -r1.1.1.1 ntpdc.c
+*** ntpdc.c	1996/10/24 17:16:06	1.1.1.1
+--- ntpdc.c	1996/10/31 14:50:41
+***************
+*** 988,993 ****
+--- 988,994 ----
+  	} else {
+  		jump = 1;
+  		(xcmd->handler)(&pcmd, current_output);
++ 		jump = 0;
+  		if (i) (void) fclose(current_output);
+  	}
+  }
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.7@kismet.bsdi.com>
+Content-Description: Fix to ntpdate to always slew backwards if -b is not specified
+
+The Lite-2 based kernel in 3.0 won't set time backwards with
+settimeofday() if the security level is greater than zero.
+Thus we force xntpd to use adjtime() even for large adjustments.
+Since ntpdate usually runs from /etc/rc, we let it step.
+
+Index: ntpdate/ntpdate.c
+===================================================================
+RCS file: /master/contrib/xntp3.5f/ntpdate/ntpdate.c,v
+retrieving revision 1.1.1.1
+diff -c -c -r1.1.1.1 ntpdate.c
+*** ntpdate.c	1996/10/24 17:15:32	1.1.1.1
+--- ntpdate.c	1996/11/01 04:48:31
+***************
+*** 984,990 ****
+--- 984,992 ----
+  {
+  	register int i;
+  	register struct server *server;
++ #ifndef	NO_STEPBACK
+  	s_fp absoffset;
++ #endif	/* NO_STEPBACK */
+  	int dostep;
+  
+  	for (i = 0; i < sys_numservers; i++)
+***************
+*** 1007,1016 ****
+--- 1009,1022 ----
+  	} else if (never_step) {
+  		dostep = 0;
+  	} else {
++ #ifdef	NO_STEPBACK
++ 		dostep = (server->soffset >= NTPDATE_THRESHOLD);
++ #else	/* NO_STEPBACK */
+  		absoffset = server->soffset;
+  		if (absoffset < 0)
+  			absoffset = -absoffset;
+  		dostep = (absoffset >= NTPDATE_THRESHOLD);
++ #endif	/* NO_STEPBACK */
+  	}
+  
+  	if (dostep) {
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19287.847234650.8@kismet.bsdi.com>
+Content-Description: Fix to conflicit created by NTP's definition of syscall()
+
+Add a define around the definition of syscall() as it seems to
+only be needed when KERNEL_PLL is defined.  Also, use the 
+<unistd.h> definition of syscall() on BSD/OS.
+
+Index: ntp_request.c
+===================================================================
+RCS file: /master/contrib/xntp3.5f/xntpd/ntp_request.c,v
+retrieving revision 1.1.1.1
+diff -c -c -r1.1.1.1 ntp_request.c
+*** ntp_request.c	1996/10/24 17:16:01	1.1.1.1
+--- ntp_request.c	1996/10/31 15:22:35
+***************
+*** 201,211 ****
+  extern struct peer *peer_hash[];
+  extern struct peer *sys_peer;
+  
+  #ifndef NTP_SYSCALLS_LIBC
+! #ifndef SYS_NETBSD
+  extern int syscall      P((int, void *, ...));
+! #endif	/*SYS_NETBSD*/
+  #endif /* NTP_SYSCALLS_LIBC */
+  
+  /*
+   * A hack.  To keep the authentication module clear of xntp-ism's, we
+--- 201,213 ----
+  extern struct peer *peer_hash[];
+  extern struct peer *sys_peer;
+  
++ #ifdef	KERNEL_PLL
+  #ifndef NTP_SYSCALLS_LIBC
+! #if	!defined(SYS_NETBSD) && !defined(SYS_BSDI)
+  extern int syscall      P((int, void *, ...));
+! #endif	/* !defined(SYS_NETBSD) && !defined(SYS_BSDI) */
+  #endif /* NTP_SYSCALLS_LIBC */
++ #endif	/* KERNEL_PLL */
+  
+  /*
+   * A hack.  To keep the authentication module clear of xntp-ism's, we
+
+------- =_aaaaaaaaaa0--

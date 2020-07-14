@@ -1,0 +1,125 @@
+<html><head>
+<title>Debian packaging manual - Configuration file handling</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 9<br>
+Configuration file handling
+</h1>
+
+<kbd>dpkg</kbd> can do a certain amount of automatic handling of package
+configuration files.<P>
+
+Whether this mechanism is appropriate depends on a number of factors,
+but basically there are two approaches to any particular configuration
+file.<P>
+
+The easy method is to ship a best-effort configuration in the package,
+and use <kbd>dpkg</kbd>'s conffile mechanism to handle updates.  If the user
+is unlikely to want to edit the file, but you need them to be able to
+without losing their changes, and a new package with a changed version
+of the file is only released infrequently, this is a good approach.<P>
+
+The hard method is to build the configuration file from scratch in the
+<kbd>postinst</kbd> script, and to take the responsibility for fixing any
+mistakes made in earlier versions of the package automatically.  This
+will be appropriate if the file is likely to need to be different on
+each system.
+<hr>
+<h2><A name="s9.1">
+9.1 Automatic handling of configuration files by <kbd>dpkg</kbd>
+</A></h2>
+
+A package may contain a control area file called <code>conffiles</code>.  This
+file should be a list of filenames of configuration files needing
+automatic handling, separated by newlines.  The filenames should be
+absolute pathnames, and the files referred to should actually exist in
+the package.<P>
+
+When a package is upgraded <kbd>dpkg</kbd> will process the configuration
+files during the configuration stage, shortly before it runs the
+package's <kbd>postinst</kbd> script,<P>
+
+For each file it checks to see whether the version of the file
+included in the package is the same as the one that was included in
+the last version of the package (the one that is being upgraded
+from); it also compares the version currently installed on the system
+with the one shipped with the last version.<P>
+
+If neither the user nor the package maintainer has changed the file,
+it is left alone.  If one or the other has changed their version, then
+the changed version is preferred - ie, if the user edits their file,
+but the package maintainer doesn't ship a different version, the
+user's changes will stay, silently, but if the maintainer ships a new
+version and the user hasn't edited it the new version will be
+installed (with an informative message).  If both have changed their
+version the user is prompted about the problem and must resolve the
+differences themselves.<P>
+
+The comparisons are done by calculating the MD5 message digests of the
+files, and storing the MD5 of the file as it was included in the most
+recent version of the package.<P>
+
+When a package installs a conffile for the first time <kbd>dpkg</kbd> will
+install the file that comes with it, unless that would mean
+overwriting a file already on the filesystem.<P>
+
+However, note that <kbd>dpkg</kbd> will <em>not</em> replace a conffile that
+was removed by the user (or by a script).  This is necessary because
+with some programs a missing file produces an effect hard or
+impossible to achieve in another way, so that a missing file needs to
+be kept that way if the user did it.<P>
+
+Note that a package should <em>not</em> modify a <kbd>dpkg</kbd>-handled
+conffile in its maintainer scripts.  Doing this will lead to
+<kbd>dpkg</kbd> giving the user confusing and possibly dangerous options
+for conffile update when the package is upgraded.
+<hr>
+<h2><A name="s9.2">
+9.2 Fully-featured maintainer script configuration handling
+</A></h2>
+
+For files which contain site-specific information such as the hostname
+and networking details and so forth, it is better to create the file
+in the package's <kbd>postinst</kbd> script.<P>
+
+This will typically involve examining the state of the rest of the
+system to determine values and other information, and may involve
+prompting the user for some information which can't be obtained some
+other way.<P>
+
+When using this method there are a couple of important issues which
+should be considered:<P>
+
+If you discover a bug in the program which generates the configuration
+file, or if the format of the file changes from one version to the
+next, you will have to arrange for the postinst script to do something
+sensible - usually this will mean editing the installed configuration
+file to remove the problem or change the syntax.  You will have to do
+this very carefully, since the user may have changed the file, perhaps
+to fix the very problem that your script is trying to deal with - you
+will have to detect these situations and deal with them correctly.<P>
+
+If you do go down this route it's probably a good idea to make the
+program that generates the configuration file(s) a separate program in
+<code>/usr/sbin</code>, by convention called <code></code><var>package</var><code>config</code> and
+then run that if appropriate from the post-installation script.  The
+<code></code><var>package</var><code>config</code> program should not unquestioningly overwrite
+an existing configuration - if its mode of operation is geared towards
+setting up a package for the first time (rather than any arbitrary
+reconfiguration later) you should have it check whether the
+configuration already exists, and require a <code>--force</code> flag to
+overwrite it.
+
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-alternatives.html">next</A>; <A href="ch-relationships.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

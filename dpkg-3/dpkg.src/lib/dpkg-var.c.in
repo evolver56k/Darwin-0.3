@@ -1,0 +1,114 @@
+/*
+ * libdpkg - Debian packaging suite library routines
+ * dpkg.h - general header for Debian package handling
+ *
+ * Copyright (C) 1994,1995 Ian Jackson <iwj10@cus.cam.ac.uk>
+ *
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2,
+ * or (at your option) any later version.
+ *
+ * This is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with dpkg; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+#include "dpkg-var.h"
+#include "config.h"
+#include "version.h"
+
+const char *const ARCHIVEVERSION = "2.0";
+const char *const SPLITVERSION = "2.1";
+const char *const OLDARCHIVEVERSION = "0.939000";
+
+const char *const BUILDCONTROLDIR = "DEBIAN";
+const char *const EXTRACTCONTROLDIR = "DEBIAN";
+const char *const DEBEXT = ".deb";
+const char *const OLDDBEXT = "-old";
+const char *const NEWDBEXT = "-new";
+const char *const OLDOLDDEBDIR = ".DEBIAN";
+const char *const OLDDEBDIR = "DEBIAN";
+
+/* const char *const ARCHBINFMT = ""; */
+
+const char *const DPKG_VERSION_ARCH = DPKG_VERSION " (" ARCHITECTURE ARCHBINFMT ")";
+
+const char *const NEWCONFFILEFLAG = "newconffile";
+const char *const NONEXISTENTFLAG = "nonexistent";
+
+const char *const DPKGTEMPEXT = ".dpkg-tmp";
+const char *const DPKGNEWEXT = ".dpkg-new";
+const char *const DPKGOLDEXT = ".dpkg-old";
+const char *const DPKGDISTEXT = ".dpkg-dist";
+
+const char *const REMOVECONFFEXTS[] = 
+{ "~", ".bak", "%", 
+  ".dpkg-tmp", ".dpkg-new", ".dpkg-old", ".dpkg-dist", 0 };
+
+const char *const CONTROLFILE = "control";
+const char *const CONFFILESFILE = "conffiles";
+const char *const PREINSTFILE = "preinst";
+const char *const POSTINSTFILE = "postinst";
+const char *const PRERMFILE = "prerm";
+const char *const POSTRMFILE = "postrm";
+const char *const LISTFILE = "list";
+
+const char *const ADMINDIR = "/var/lib/dpkg";
+const char *const STATUSFILE = "status";
+const char *const AVAILFILE = "available";
+const char *const LOCKFILE = "lock";
+const char *const CMETHOPTFILE = "cmethopt";
+const char *const METHLOCKFILE = "methlock";
+const char *const DIVERSIONSFILE = "diversions";
+const char *const UPDATESDIR = "updates";
+const char *const INFODIR = "info";
+const char *const PARTSDIR = "parts";
+
+const char *const CONTROLDIRTMP = "tmp.ci/";
+const char *const IMPORTANTTMP = "tmp.i";
+const char *const REASSEMBLETMP = "reassemble.deb";
+const size_t IMPORTANTMAXLEN = 10;
+/* change => also change lib/database.c:cleanup_updates */
+const char *const IMPORTANTFMT = "%04d";
+const size_t MAXUPDATES = 50;
+
+const char *const LIBDIR = "/usr/lib/dpkg";
+const char *const LOCALLIBDIR = "/usr/local/lib/dpkg";
+const char *const METHODSDIR = "methods";
+
+const char *const COPYINGFILE = "";
+
+const char *const NOJOBCTRLSTOPENV = "DPKG_NO_TSTP";
+const char *const SHELLENV = "SHELL";
+const char *const DEFAULTSHELL = "sh";
+
+const char *const METHODOPTIONSFILE = "names";
+const char *const METHODSETUPSCRIPT = "setup";
+const char *const METHODUPDATESCRIPT = "update";
+const char *const METHODINSTALLSCRIPT = "install";
+const char *const OPTIONSDESCPFX = "desc.";
+
+const char *const ARCHIVE_FILENAME_PATTERN = "*.deb";
+
+const char *const BACKEND = "dpkg-deb";
+const char *const SPLITTER = "dpkg-split";
+const char *const MD5SUM = "md5sum";
+const char *const DSELECT = "dselect";
+const char *const DPKG = "dpkg";
+
+const char *const TAR = "gnutar";
+const char *const GZIP = "gzip";
+const char *const CAT = "cat";
+const char *const RM = "rm";
+const char *const FIND = "find";
+const char *const SHELL = "sh";
+
+const char *const SHELLENVIR = "SHELL";
+
+const char *const FIND_EXPRSTARTCHARS = "-(),!";

@@ -1,0 +1,32 @@
+{
+    FILESTABLE = {
+        CLASSES = (
+            ddmServer.m, 
+            debugging.m, 
+            generalFuncs.m, 
+            IOConfigTable.m, 
+            IOData.m, 
+            IODeviceMaster.m, 
+            NXConditionLock.m, 
+            NXLock.m, 
+            NXSpinLock.m, 
+            volDriver.m
+        ); 
+        C_FILES = (); 
+        H_FILES = (); 
+        OTHER_LINKED = (getDevPort.c); 
+        OTHER_SOURCES = (Makefile); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = User; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

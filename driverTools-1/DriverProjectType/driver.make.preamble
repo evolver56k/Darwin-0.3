@@ -1,0 +1,34 @@
+#
+# Always generate a version file.
+#
+ifndef VERSIONING_SYSTEM
+    VERSIONING_SYSTEM = next-sgs
+endif
+
+ifeq "" "$(findstring $(VERS_OFILE), $(OTHER_GENERATED_OFILES))"
+    OTHER_GENERATED_OFILES += $(VERS_OFILE)
+endif
+
+ifndef MOVEHELP
+    MOVEHELP = movehelp
+endif
+
+ifndef DRIVER_VERSION_EDIT
+    DRIVER_VERSION_EDIT = driver_version_edit
+endif
+
+#
+# Used as a flag to indicate to the movehelp: target that it should
+# generate the table of contents in the help directory.  Although it is
+# a flag now, for compatibility reasons it needs to use the convention
+# of "" for no generation and "gen_table_contents" for generation.
+#
+ifndef GEN_TABLE_CONTENTS
+    GEN_TABLE_CONTENTS = gen_table_contents
+endif
+
+ifndef GEN_PACKAGE_FILES
+    GEN_PACKAGE_FILES = gen_package_files
+endif
+
+AFTER_BUILD += version_tables $(MOVEHELP) $(DRIVER_VERSION_EDIT) $(GEN_PACKAGE_FILES)

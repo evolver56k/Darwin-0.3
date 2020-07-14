@@ -1,0 +1,10 @@
+* README.hackers added
+* PARSE driver is working again
+* Solaris 2.6 has nasty kernel bugs.  DO NOT enable pll!
+* DES is out of the distribution.
+(4.0.72)
+* K&R C compiling should work again.
+* IRIG patches.
+* MX4200 driver patches.
+* Jupiter driver added.
+* Palisade driver added.  Needs work (ANSI, ntoh/hton, sizeof double, ???)

@@ -1,0 +1,20 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        CLASSES = (); 
+        C_FILES = (); 
+        H_FILES = (extern.h, finger.h); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (finger.c, lprint.c, net.c, sprint.c, util.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, finger.1); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = finger; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+}

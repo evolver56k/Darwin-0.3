@@ -1,0 +1,26 @@
+/CHANGES/1.1.1.1/Fri Apr 23 01:27:58 1999//Tperl-1
+/COMPARE/1.1.1.1/Fri Apr 23 01:27:58 1999//Tperl-1
+/Makefile.PL/1.1.1.2/Fri Apr 23 01:32:07 1999//Tperl-1
+/README/1.1.1.1/Fri Apr 23 01:27:58 1999//Tperl-1
+/README.too/1.1.1.1/Fri Apr 23 01:27:58 1999//Tperl-1
+/biblio/1.1.1.1/Fri Apr 23 01:27:58 1999//Tperl-1
+/dba.c/1.1.1.2/Fri Apr 23 01:32:08 1999//Tperl-1
+/dbd.c/1.1.1.2/Fri Apr 23 01:32:08 1999//Tperl-1
+/dbe.1/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/dbe.c/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/dbm.c/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/dbm.h/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/dbu.c/1.1.1.2/Fri Apr 23 01:32:08 1999//Tperl-1
+/grind/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/hash.c/1.1.1.2/Fri Apr 23 01:32:09 1999//Tperl-1
+/linux.patches/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/makefile.sdbm/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/pair.c/1.1.1.2/Fri Apr 23 01:32:09 1999//Tperl-1
+/pair.h/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/readme.ms/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/sdbm.3/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/sdbm.c/1.1.1.2/Fri Apr 23 01:32:10 1999//Tperl-1
+/sdbm.h/1.1.1.2/Fri Apr 23 01:32:10 1999//Tperl-1
+/tune.h/1.1.1.1/Fri Apr 23 01:27:59 1999//Tperl-1
+/util.c/1.1.1.2/Fri Apr 23 01:32:10 1999//Tperl-1
+D

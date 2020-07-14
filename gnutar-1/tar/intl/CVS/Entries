@@ -1,0 +1,24 @@
+/ChangeLog/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/Makefile.in/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/VERSION/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/bindtextdom.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/cat-compat.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/dcgettext.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/dgettext.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/explodename.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/finddomain.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/gettext.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/gettext.h/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/gettextP.h/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/hash-string.h/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/intl-compat.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/l10nflist.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/libgettext.h/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/linux-msg.sed/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/loadinfo.h/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/loadmsgcat.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/localealias.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/po2tbl.sed.in/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/textdomain.c/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+/xopen-msg.sed/1.1.1.1/Fri Apr 23 00:34:53 1999//Tgnutar-1
+D

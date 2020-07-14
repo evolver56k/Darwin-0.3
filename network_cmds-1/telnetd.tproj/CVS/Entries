@@ -1,0 +1,19 @@
+/Makefile/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/Makefile.dist/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/Makefile.postamble/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/Makefile.preamble/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/PB.project/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/authenc.c/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/defs.h/1.1.1.1/Sun May  2 03:58:47 1999//Tnetwork_cmds-1
+/ext.h/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/global.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/pathnames.h/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/slc.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/state.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/sys_term.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/telnetd.8/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/telnetd.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/telnetd.h/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/termstat.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+/utility.c/1.1.1.1/Sun May  2 03:58:48 1999//Tnetwork_cmds-1
+D

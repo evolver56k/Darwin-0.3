@@ -1,0 +1,203 @@
+/* Configuration header file.
+   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+
+
+/* $Id: config.h.in,v 1.1.1.1 1999/04/23 02:05:54 wsanchez Exp $ */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/***
+ * User Configuration Section
+ *
+ * Most of these settings should work as they are, and you should fix
+ * them only if you wish to change the behaviour of the program, or to
+ * compile it on a particular system.
+ *
+ * Global settings like DEFAULT_MAXRECLEVEL or DEFAULT_NUMBER_OF_TRIES
+ * should be rather changed in the global wgetrc file than here.  But
+ * still -- you can do it.
+ ***/
+
+/* Define this as read timeout. */
+#define DEFAULT_TIMEOUT 900
+
+/* Define your own host and domain. */
+#undef MY_HOST
+#undef MY_DOMAIN
+
+#define DEFAULT_LOGFILE "wget-log"
+
+#define DEFAULT_NUMBER_OF_TRIES 20     /* modified with -t */
+
+#define DEFAULT_MAXRECLEVEL 5          /* modified with -l */
+
+#define DEFAULT_DIRMODE 0755           /* modified with dir_mode */
+
+#define DEFAULT_DIRPREFIX "."          /* modified with -P */
+
+/* Undef if you do not want debug support. */
+#define DEBUG
+
+/***********************************
+  End of user-configuration section
+  ***********************************/
+
+#ifndef DEBUG
+#  define NDEBUG /* To kill off assertions */
+#endif /* DEBUG */
+
+/* Define if on AIX 3.
+   System headers sometimes define this.
+   We just want to avoid a redefinition error message.  */
+#ifndef _ALL_SOURCE
+#undef _ALL_SOURCE
+#endif
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if the `S_IS*' macros in <sys/stat.h> do not work properly.  */
+#undef STAT_MACROS_BROKEN
+ 
+/* Define if you have sys/time.h header. */
+#undef HAVE_SYS_TIME_H
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if you have struct utimbuf.  */
+#undef HAVE_STRUCT_UTIMBUF
+
+/* Define if you have the getdomainname function.  */
+#undef HAVE_GETDOMAINNAME
+
+/* Define if you have the gethostname function.  */
+#undef HAVE_GETHOSTNAME
+
+/* Define if you have the select function.  */
+#undef HAVE_SELECT
+
+/* Define if you have the gettimeofday function.  */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define if you have the strdup function.  */
+#undef HAVE_STRDUP
+
+/* Define if you have the sys/utsname.h header. */
+#undef HAVE_SYS_UTSNAME_H
+
+/* Define if you have the sys/systeminfo.h header. */
+#undef HAVE_SYS_SYSTEMINFO_H
+
+/* Define if you have the sysinfo function.  */
+#undef HAVE_SYSINFO
+
+/* Define if you have the strerror function. */
+#undef HAVE_STRERROR
+
+/* Define if you have the strstr function. */
+#undef HAVE_STRSTR
+
+/* Define if you have the strcasecmp function. */
+#undef HAVE_STRCASECMP
+
+/* Define if you have the strncasecmp function. */
+#undef HAVE_STRNCASECMP
+
+/* Define if you have the strptime function. */
+#undef HAVE_STRPTIME
+
+/* Define if you have the mktime function. */
+#undef HAVE_MKTIME
+
+/* Define if you have the symlink function. */
+#undef HAVE_SYMLINK
+
+/* Define if you have the signal function. */
+#undef HAVE_SIGNAL
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the <utime.h> header file.  */
+#undef HAVE_UTIME_H
+
+/* Define if you have the <sys/utime.h> header file.  */
+#undef HAVE_SYS_UTIME_H
+
+/* Define if you have the <sys/select.h> header file.  */
+#undef HAVE_SYS_SELECT_H
+
+/* Define if you have the <pwd.h> header file.  */
+#undef HAVE_PWD_H
+
+/* Define if you have the <signal.h> header file.  */
+#undef HAVE_SIGNAL_H
+
+/* Define to be the name of the operating system.  */
+#undef OS_TYPE
+
+/* Define if you wish to compile with socks support.  */
+#undef HAVE_SOCKS
+
+/* Define to 1 if ANSI function prototypes are usable.  */
+#undef PROTOTYPES
+
+/* If the user has socks, use it.  */
+#ifdef HAVE_SOCKS
+#define connect Rconnect
+#define getsockname Rgetsockname
+#define bind Rbind
+#define accept Raccept
+#define listen Rlisten
+#define select Rselect
+#endif /* HAVE_SOCKS */
+
+/* SunOS brain damage... */
+#ifndef STDC_HEADERS
+char *strstr();
+char *strchr();
+char *strrchr();
+char *strtok();
+char *strdup();
+#ifdef HAVE_STRPTIME
+char *strptime();
+#endif /* HAVE_STRPTIME */
+void *memcpy();
+#endif /* STDC_HEADERS */
+
+#ifndef HAVE_STRERROR
+#  define mystrerror(x) (sys_errlist[x])
+extern char *sys_errlist[];
+#else /* not HAVE_STRERROR */
+#  define mystrerror(x) strerror(x)
+#endif /* HAVE_STRERROR */
+
+#endif /* CONFIG_H */

@@ -1,0 +1,64 @@
+<html><head>
+<title>Debian packaging manual - Introduction and scope of this manual</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 1<br>
+Introduction and scope of this manual
+</h1>
+
+<kbd>dpkg</kbd> is a suite of programs for creating binary package files
+and installing and removing them on Unix systems.<A href="footnotes.html#1" name="fr1">[1]</A><P>
+
+The binary packages are designed for the management of installed
+executable programs (usually compiled binaries) and their associated
+data, though source code examples and documentation are provided as
+part of some packages.<P>
+
+This manual describes the technical aspects of creating Debian binary
+packages (<code>.deb</code> files).  It documents the behaviour of the
+package management programs <kbd>dpkg</kbd>, <kbd>dselect</kbd> et al. and and the
+way they interact with packages.<P>
+
+It also documents the interaction between <kbd>dselect</kbd>'s core and the
+access method scripts it uses to actually install the selected
+packages, and describes how to create a new access method.<P>
+
+This manual does not go into detail about the options and usage of the
+package building and installation tools.  It should therefore be read
+in conjuction with those programs' manpages.<P>
+
+The utility programs which are provided with <kbd>dpkg</kbd> for managing
+various system configuration and similar issues, such as
+<kbd>update-rc.d</kbd> and <kbd>install-info</kbd>, are not described in
+detail here - please see their manpages.<P>
+
+It does <em>not</em> describe the policy requirements imposed on Debian
+packages, such as the permissions on files and directories,
+documentation requirements, upload procedure, and so on.  You should
+see the Debian packaging policy manual for these details.  (Many of
+them will probably turn out to be helpful even if you don't plan to
+upload your package and make it available as part of the
+distribution.)<P>
+
+It is assumed that the reader is reasonably familiar with the
+<kbd>dpkg</kbd> System Administrators' manual.  Unfortunately this manual
+does not yet exist.<P>
+
+The Debian version of the FSF's GNU hello program is provided as an
+example for people wishing to create Debian packages. The Debian
+<kbd>debmake</kbd> package is recommended as a very helpful tool in
+creating and maintaining Debian packages. However, while the tools and
+examples are helpful, they do not replace the need to read and follow
+the Policy and Programmer's Manual.
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-binarypkg.html">next</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

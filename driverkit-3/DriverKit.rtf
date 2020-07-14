@@ -1,0 +1,235 @@
+{\rtf0\ansi{\fonttbl\f0\fnil Times-Roman;\f1\ftech Symbol;\f2\fswiss Helvetica;\f3\fmodern Courier;}
+\paperw12200
+\paperh11260
+\margl360
+\margr540
+{\colortbl;\red0\green0\blue0;}
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f0\b0\i0\ulnone\fs24\fc0\cf0 Release 3.2 Copyright 
+\f1 ã
+\f0 1993 by NeXT Computer, Inc.  All Rights Reserved.\
+
+\pard\tx0\tx2520\tx2880\tx3240\fs48\li1440\fc0\cf0 \
+\
+
+\fs46\fc1\cf1 3.2 Release Notes: 
+\fs48\fc0\cf0  \
+
+\pard\li1440\fc0\cf0 Driver Kit
+\fs30 \
+
+\fs28 \
+\
+\
+
+\pard\tx1800\li1440\fc0\cf0 This file contains release notes for the Driver Kit.  Items specific to each of the minor releases (Release 3.2, Release 3.1, and so on) are listed in separate sections, starting with the latest one. 
+\pard\li1440\fc0\cf0 \
+\
+\
+
+\b\fs36\li0 Notes Specific to Release 3.2\
+
+\b0\fs28\li1440 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc1\cf1 New Features\
+
+\pard\b0\li1440\fc0\cf0 \
+
+\pard\tx1800\li1440\fc0\cf0 The following new features have been added to the Driver Kit since Release 3.1.\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-360\li1800\fc0\cf0 ·	Writing SVGA drivers is now supported.  See the IOSVGADisplay class specification for information.\
+\
+·	Writing Token Ring drivers is now supported.  See the IOTokenRing class specification for information.\
+\
+·	Writing sound drivers is now supported.  See the IOAudio class specification for information.\
+\
+·	Loading drivers at boot time is now supported.\
+\
+·	Standard makefiles now exist.  Converting existing drivers to use the standard makefiles is described in the 
+\b README.rtf
+\b0  file under 
+\b /NextLibrary/Documentation/NextDev/Examples/DriverKit/TestDriver
+\b0 .\
+\
+·	Many classes have changed slightly.  Some of these changes are described under "Incompatible Changes," below.\
+
+\fi0\li1440 \
+
+\fi-360\li1800 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc1\cf1 Known Problems 
+\pard\b0\li1440\fc0\cf0 \
+\
+
+\pard\tx0\tx1800\tx2160\tx2540\tx2880\tx7920\fi-360\li1800\fc1\cf1 The Configure application has this restriction:\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx2680\tx2880\tx2880\tx3600\tx4320\f2\fs18\fi-1200\li2680\fc0\cf0 Reference:
+\f0\fs28 	37886\
+\
+
+\f2\fs18 Problem:
+\f0\fs28 	Accessory views for custom inspectors must not exceed 80  pixels in height.\
+\
+
+\f2\fs18 Description:
+\f0\fs28 	
+\fc1\cf1 If you create an accessory view for a custom driver inspector used in Configure, your view must not exceed 80 pixels in height.  \
+
+\fc0\cf0 \
+
+\f2\fs18 \
+Workaround:
+\f0\fs28 	
+\fc1\cf1 You can check the size using Interface Builder's Size inspector.  Also, make sure the view is not resizable, that is, none of the springs are sprung in the inspector in Interface Builder
+\fc0\cf0 .
+\b \
+
+\pard\li720\fc0\cf0 \
+\
+Incompatible Changes\
+
+\b0\li1440 \
+
+\pard\tx0\tx1800\tx2160\tx2540\tx2880\tx7920\fi-360\li1800\fc1\cf1 The following incompatible changes have appeared since Release 3.1.\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx0\tx1800\tx2160\tx2540\tx2880\tx7920\b\fi-360\li1800\fc1\cf1 ·	
+\b0 You must recompile all Driver Kit drivers under 3.2.  3.1 drivers will not load into 3.2 systems.
+\pard\li1440\fc0\cf0 \
+\
+
+\pard\tx0\tx1800\tx2160\tx2540\tx2880\tx7920\b\fi-360\li1800\fc1\cf1 ·	
+\b0  IOEthernet drivers need several changes before you can recompile them.  These changes are described below.\
+\
+
+\b \
+IOEthernet Changes\
+\
+
+\b0 To convert a 3.1 Ethernet driver to a 3.2 Ethernet driver:\
+\
+1.	Add 2 instance variables to the subclass of IOEthernet\
+	\
+
+\f3\fs24\fi0 #import <bsd/net/etherdefs.h>\
+	\
+@interface MyEthernetDriver:IOEthernet\
+\{\
+    enet_addr_t  myAddress;\
+    IONetwork   *network;\
+    \
+
+\i     /* Old \
+     * instance\
+     * variable \
+     * list */\
+
+\i0 \}\
+
+\f0\fs28\fi-360 \
+\
+2.	Change the driver's 
+\b initFromDeviceDescription:
+\b0  implementation to match the following:\
+\
+
+\f3\fs24\fi0 - initFromDeviceDescription:(IODeviceDescription *)devDesc\
+\{\
+    /* After this call, you should use [self name] to identify \
+     * the driver in any IOLog calls.*/\
+    if ([super initFromDeviceDescription:devDesc] == nil)\
+		return nil;\
+    \
+
+\i     /* Initialize instance variables */\
+
+\i0 \
+
+\i     /* Perform any cold-start driver initialization, which should \
+     * include setting myAddress to the proper value.*/\
+
+\i0 \
+    IOLog("MyEthernetAdaptor at port %x irq %d\\n",ioBase,irq);\
+\
+    /* Perform warm-start driver initialization. */\
+    [self resetAndEnable:NO];\
+    \
+    /* Inform my superclass of my address and cache the id of the \
+     * IONetwork object it creates for me.  myAddress must be set \
+     * to the hardware address before this call is made. */\
+    network = [super attachToNetworkWithAddress:myAddress];\
+\
+    return self;\
+\}\
+
+\f0\fs28\fi-360 \
+3.	Remove all references to IOEthernet's 
+\b netif
+\b0  instance variable, which is no longer accessible.  You should now use your own network instance variable and set it to the value returned by the 
+\b attachToNetworkWithAddress:
+\b0  method.\
+\
+4.	Remove all references to IOEthernet's 
+\b ethernetAddress
+\b0  instance variable, which is no longer accessible.  You should now use your own 
+\b myAddress
+\b0  instance variable instead.\
+
+\b \
+
+\b0 5.	Implement 
+\b resetAndEnable:
+\b0  to perform warm-start initialization for your driver.  For 3.2, you'll need to call 
+\b setRunning:
+\b0  inside your 
+\b resetAndEnable:
+\b0  method. \
+
+\b \
+
+\b0 6.	See the IOEthernet documentation for a description of the new API for implementing multicast addresses and promiscuous mode.\
+
+\pard\li1440\fc0\cf0 \
+\
+\
+
+\b\fs36\li0 Notes Specific to Release 3.1\
+
+\b0\fs28\li1440 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc1\cf1 New Features  \
+
+\pard\tx1800\tx2160\tx2520\b0\li1440\fc0\cf0 \
+Release 3.1 is the first release to contain the Driver Kit.  Using the Driver Kit, you can write drivers for Intel-based computers running NeXTSTEP.\
+\
+
+\b Note:
+\b0   Driver Kit isn't supported for 680x0-based systems.\
+\
+Documentation for the Driver Kit is available in 
+\b /NextLibrary/Documentation/NextDev/OperatingSystem/Part3_DriverKit
+\b0 .  A simple example of building, loading, and debugging a Driver Kit driver is under 
+\b /NextLibrary/Documentation/NextDev/Examples/DriverKit
+\b0 .\
+\
+The 
+\b Concepts
+\b0  directory under 
+\b OperatingSystem/Part3_DriverKit
+\b0  contains information about the Driver Kit as a whole (Chapter 1), as well as some preliminary details on driver writing issues (Chapter 2).  It also contains some information on building and configuring drivers (Chapter 4).  Chapter 3 is missing; in the future, it'll contain information about writing specific types of drivers, such as drivers for ethernet cards and drivers for graphics cards.\
+\
+The 
+\b Reference
+\b0  directory has documentation for most of the core Driver Kit classes, protocols, and functions.  The classes and protocols that aren't documented (many of which currently have header files under 
+\b bsd/dev
+\b0  and 
+\b bsd/if
+\b0 ) are likely to have API changes (for example, class and method names are likely to change).
+\pard\tx2160\tx2520\tx2880\fi-380\li1800\fc0\cf0 \
+\
+
+}

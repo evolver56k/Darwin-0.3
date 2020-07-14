@@ -1,0 +1,20 @@
+##
+# bc
+##
+
+Title		bc calculator
+BuildDiskTitle	bc calculator
+Version		1.04
+Description	This package contains bc, an arbitrary precision numeric processing language.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		bc #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

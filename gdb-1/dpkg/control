@@ -1,0 +1,6 @@
+Package: gdb
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple
+Version: 142
+Description: The GNU Debugger
+Build-Depends: build-base, flex, bison, gnudiff, perl

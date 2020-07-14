@@ -1,0 +1,88 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        FRAMEWORKS = (); 
+        H_FILES = (
+            BTreeScanner.h, 
+            BTreesInternal.h, 
+            BTreesPrivate.h, 
+            CatalogPrivate.h, 
+            ConditionalMacros.h, 
+            DFALowMem.h, 
+            Errors.h, 
+            FileMgrInternal.h, 
+            globals.h, 
+            HFSBTreesPriv.h, 
+            HFSDefs.h, 
+            HFSInstrumentation.h, 
+            HFSUnicodeWrappers.h, 
+            HFSVolumesPriv.h, 
+            Instrumentation.h, 
+            MacOSStubs.h, 
+            MacOSTypes.h, 
+            Math64.h, 
+            myFiles.h, 
+            Prototypes.h, 
+            ScavDefs.h, 
+            UCStringCompareData.h, 
+            UCStringComparePriv.h
+        ); 
+        OTHER_LINKED = (
+            Attributes.c, 
+            BTreeAllocate.c, 
+            BTree.c, 
+            BTreeMiscOps.c, 
+            BTreeNodeOps.c, 
+            BTreeScanner.c, 
+            BTreeTreeOps.c, 
+            BTreeWrapper.c, 
+            Catalog.c, 
+            CatalogIterators.c, 
+            CatalogUtilities.c, 
+            DFACache.c, 
+            DFALowMem.c, 
+            FileExtentMapping.c, 
+            fsck_hfs.c, 
+            fsck_hfs_stubs.c, 
+            GenericMRUCache.c, 
+            HFSGlue.c, 
+            HFSVolumeInit.c, 
+            memory.c, 
+            SControl.c, 
+            SRepair.c, 
+            SUtils.c, 
+            SVerify1.c, 
+            SVerify2.c, 
+            UCSimpleStringCompare.c, 
+            UnicodeWrappers.c, 
+            VolumeAllocation.c, 
+            VolumeRequests.c
+        ); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            m.template, 
+            h.template, 
+            README_FILE
+        ); 
+    }; 
+    LANGUAGE = English; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = /tmp/BUILD; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-Dpowerc=1 -DTARGET_OS_RHAPSODY=1 -Dpascal=  -DFORDISKFIRSTAID=1 -fpascal-strings"; 
+    NEXTSTEP_INSTALLDIR = /sbin; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = fsck_hfs; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_INSTALLDIR = "$(LOCAL_DEVELOPER_DIR)/Executables"; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

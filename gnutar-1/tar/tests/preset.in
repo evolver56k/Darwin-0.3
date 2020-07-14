@@ -1,0 +1,17 @@
+#! /bin/sh
+# Set the testing environment.
+
+PACKAGE=@PACKAGE@
+VERSION=@VERSION@
+top_srcdir=@top_srcdir@
+srcdir=@srcdir@
+
+echo_n='@ECHO_N@'
+echo_c='@ECHO_C@'
+
+export LANGUAGE
+LANGUAGE=
+export LANG
+LANG=
+export LC_MESSAGES
+LC_MESSAGES=

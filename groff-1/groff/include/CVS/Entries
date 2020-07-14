@@ -1,0 +1,21 @@
+/Makefile.sub/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/assert.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/cmap.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/cset.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/device.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/driver.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/errarg.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/error.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/font.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/index.h/1.1.1.1/Fri Apr 23 01:12:16 1999//Tgroff-1
+/lib.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/macropath.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/posix.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/printer.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/ptable.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/refid.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/search.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/searchpath.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/stringclass.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+/unix.h/1.1.1.1/Fri Apr 23 01:12:17 1999//Tgroff-1
+D

@@ -1,0 +1,16 @@
+/DynaLoader.pm/1.1.1.1/Fri Apr 23 01:27:54 1999//Tperl-1
+/DynaLoader_pm.PL/1.1.1.1/Fri Apr 23 01:31:54 1999//Tperl-1
+/Makefile.PL/1.1.1.2/Fri Apr 23 01:31:54 1999//Tperl-1
+/README/1.1.1.1/Fri Apr 23 01:27:54 1999//Tperl-1
+/dl_aix.xs/1.1.1.2/Fri Apr 23 01:31:54 1999//Tperl-1
+/dl_cygwin32.xs/1.1.1.1/Fri Apr 23 01:27:54 1999//Tperl-1
+/dl_dld.xs/1.1.1.2/Fri Apr 23 01:31:55 1999//Tperl-1
+/dl_dlopen.xs/1.1.1.2/Fri Apr 23 01:31:55 1999//Tperl-1
+/dl_hpux.xs/1.1.1.2/Fri Apr 23 01:31:55 1999//Tperl-1
+/dl_mpeix.xs/1.1.1.1/Fri Apr 23 01:31:56 1999//Tperl-1
+/dl_next.xs/1.1.1.2/Fri Apr 23 01:31:56 1999//Tperl-1
+/dl_none.xs/1.1.1.1/Fri Apr 23 01:27:54 1999//Tperl-1
+/dl_rhapsody.xs/1.1.1.1/Fri Apr 23 01:31:56 1999//Tperl-1
+/dl_vms.xs/1.1.1.2/Fri Apr 23 01:31:56 1999//Tperl-1
+/dlutils.c/1.1.1.2/Fri Apr 23 01:31:56 1999//Tperl-1
+D

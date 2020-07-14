@@ -1,0 +1,21 @@
+{
+    BUILDDIR = ""; 
+    BUILDTOOL = /bin/make; 
+    COMPILEROPTIONS = "-DTERMCAP -DSRCRT -DKLUDGELINEMODE -DUSE_TERMIO -DTN3270"; 
+    FILESTABLE = {
+	C_FILES = (); 
+	H_FILES = (); 
+	M_FILES = (); 
+	OTHER_LIBS = (curses, termcap, telnet); 
+	OTHER_LINKED = (); 
+	OTHER_SOURCES = (Makefile.dist, Makefile.preamble, tn3270.1, Makefile.postamble); 
+	SUBPROJECTS = (); 
+    }; 
+    INSTALLDIR = ""; 
+    LANGUAGE = English; 
+    LINKEROPTIONS = ""; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = tn3270; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.0; 
+}

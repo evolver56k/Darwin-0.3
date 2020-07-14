@@ -1,0 +1,91 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            acconfig.h, 
+            "arm-opc.h", 
+            "h8500-opc.h", 
+            "m32r-opc.h", 
+            "pic-opc.h", 
+            "sh-opc.h", 
+            sysdep.h, 
+            "w65-opc.h", 
+            "z8k-opc.h"
+        ); 
+        OTHER_LINKED = (
+            "a29k-dis.c", 
+            "alpha-dis.c", 
+            "alpha-opc.c", 
+            "arc-dis.c", 
+            "arc-opc.c", 
+            "arm-dis.c", 
+            "cgen-asm.c", 
+            "cgen-dis.c", 
+            "cgen-opc.c", 
+            "d10v-dis.c", 
+            "d10v-opc.c", 
+            "dis-buf.c", 
+            disassemble.c, 
+            "h8300-dis.c", 
+            "h8500-dis.c", 
+            "hppa-dis.c", 
+            "i386-dis.c", 
+            "i960-dis.c", 
+            "m10200-dis.c", 
+            "m10200-opc.c", 
+            "m10300-dis.c", 
+            "m10300-opc.c", 
+            "m32r-asm.c", 
+            "m32r-dis.c", 
+            "m32r-opc.c", 
+            "m68k-dis.c", 
+            "m68k-opc.c", 
+            "m88k-dis.c", 
+            "mips-dis.c", 
+            "mips-opc.c", 
+            "mips16-opc.c", 
+            "ns32k-dis.c", 
+            "pic-dis.c", 
+            "ppc-dis.c", 
+            "ppc-opc.c", 
+            "sh-dis.c", 
+            "sparc-dis.c", 
+            "sparc-opc.c", 
+            "tic30-dis.c", 
+            "v850-dis.c", 
+            "v850-opc.c", 
+            "w65-dis.c", 
+            "z8k-dis.c", 
+            z8kgen.c
+        ); 
+        OTHER_SOURCES = (
+            ChangeLog, 
+            Makefile.am, 
+            Makefile.in, 
+            acinclude.m4, 
+            aclocal.m4, 
+            config.in, 
+            configure, 
+            configure.bat, 
+            configure.in, 
+            "dep-in.sed", 
+            makefile.vms, 
+            "mpw-config.in", 
+            "mpw-make.sed", 
+            "stamp-h.in"
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = opcodes; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

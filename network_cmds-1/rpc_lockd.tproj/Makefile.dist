@@ -1,0 +1,36 @@
+#
+# @(#)Makefile	1.4 90/07/23 NFSSRC4.1  1.14 88/02/07 Copyright Sun Micro 1986
+#
+# Makefile for rpc.lockd - the network lock manager
+
+BINS = rpc.lockd
+
+SRCS= prot_main.c prot_lock.c prot_pklm.c prot_pnlm.c prot_msg.c \
+	prot_proc.c prot_libr.c prot_alloc.c prot_priv.c \
+	tcp.c udp.c xdr_nlm.c xdr_klm.c sm_monitor.c \
+	prot_share.c prot_freeall.c hash.c svc_udp.c ufs_lockf.c
+
+OBJS= prot_main.o prot_lock.o prot_pklm.o prot_pnlm.o prot_msg.o \
+	prot_proc.o prot_libr.o prot_alloc.o prot_priv.o \
+	tcp.o udp.o xdr_nlm.o xdr_klm.o sm_monitor.o \
+	prot_share.o prot_freeall.o hash.o svc_udp.o ufs_lockf.o
+
+HDRS= prot_lock.h prot_time.h sm_res.h priv_prot.h \
+	lockf.h klm_prot.h \
+	nlm_prot.h lockmgr.h
+
+LOCAL_LIBS= -lrpcsvc -I.
+CFLAGS= -O -DVAX_PORT
+
+all: $(BINS)
+
+$(BINS): $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LOCAL_LIBS)
+
+install: $(BINS)
+	install -s $(BINS) $(DESTDIR)/usr/etc
+
+clean:
+	rm -f $(BINS) $(OBJS)
+lint:
+	/usr/bin/lint -h -x -a -c -p $(SRCS)

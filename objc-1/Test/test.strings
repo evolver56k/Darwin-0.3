@@ -1,0 +1,5 @@
+"hello world";
+"\'\"\?\\\a\b\f\n\r\t\v";
+"\1234q\123q\12q\1q";
+"\xffq\xfq";
+"\q\8q";	/* error cases */

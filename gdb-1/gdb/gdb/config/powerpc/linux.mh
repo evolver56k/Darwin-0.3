@@ -1,0 +1,31 @@
+# Host: Motorola PPC running Linux
+
+XM_FILE= xm-linux.h
+XDEPFILES= ser-tcp.o
+
+# Needed for frexp() in libiberty for older a.out based systems and should be
+# harmless to include for newer linux systems.
+XM_CLIBS= -lm
+
+NAT_FILE= nm-linux.h
+NATDEPFILES= infptrace.o solib.o inftarg.o fork-child.o corelow.o core-aout.o core-regset.o ppclinux-nat.o
+
+GDBSERVER_DEPFILES= low-linux.o
+
+# [kev's note 6/11/97] On either linux-pmac or mklinux with shared libraries,
+# the dynamic loader mechanism picks calloc from the system library,
+# but malloc from the mmalloc library.  The result is that the mmalloc
+# library reports a memory corruption error very early on.  There isn't
+# really a problems (with memory corruption), it's just an artifact of
+# two different malloc packages attempting (and failing) to work together.
+# IMO, the bug is in the dynamic linker.
+# FIXME: When the dynamic linker gets fixed, restore these to the normal
+# gdb defaults.
+MMALLOC_DIR = 
+MMALLOC_SRC = $(srcdir)/$(MMALLOC_DIR)
+MMALLOC = 
+# To use your system malloc, uncomment MMALLOC_DISABLE.
+MMALLOC_DISABLE = -DNO_MMALLOC
+# To use mmalloc but disable corruption checking, uncomment MMALLOC_CHECK
+MMALLOC_CHECK = 
+MMALLOC_CFLAGS = -I$(MMALLOC_SRC) $(MMALLOC_CHECK) $(MMALLOC_DISABLE)

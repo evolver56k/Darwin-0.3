@@ -1,0 +1,6 @@
+Package: basic-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 25
+Description: Basic user commands.
+Build-Depends: build-base, libcompat, yacc, libedit-hdrs

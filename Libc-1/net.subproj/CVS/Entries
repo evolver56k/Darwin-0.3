@@ -1,0 +1,16 @@
+/Makefile/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/inet_addr.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/inet_lnaof.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/inet_makeaddr.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/inet_netof.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/inet_network.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/inet_ntoa.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/iso_addr.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/linkaddr.c/1.1.1.1/Wed Apr 14 23:19:17 1999//TLibc-1
+/ns_addr.c/1.1.1.1/Wed Apr 14 23:19:18 1999//TLibc-1
+/ns_ntoa.c/1.1.1.1/Wed Apr 14 23:19:18 1999//TLibc-1
+/recv.c/1.1.1.1/Wed Apr 14 23:19:18 1999//TLibc-1
+D

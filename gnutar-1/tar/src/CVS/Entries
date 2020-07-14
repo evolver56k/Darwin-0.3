@@ -1,0 +1,27 @@
+/ChangeLog/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/Makefile.am/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/Makefile.in/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/ansi2knr.1/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/ansi2knr.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/arith.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/arith.h/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/buffer.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/common.h/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/compare.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/create.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/delete.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/extract.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/incremen.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/list.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/mangle.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/misc.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/names.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/open3.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/rmt.c/1.1.1.1/Fri Apr 23 00:34:55 1999//Tgnutar-1
+/rmt.h/1.1.1.1/Fri Apr 23 00:34:56 1999//Tgnutar-1
+/rtapelib.c/1.1.1.1/Fri Apr 23 00:34:56 1999//Tgnutar-1
+/system.h/1.1.1.1/Fri Apr 23 00:34:56 1999//Tgnutar-1
+/tar.c/1.1.1.1/Fri Apr 23 00:34:56 1999//Tgnutar-1
+/tar.h/1.1.1.1/Fri Apr 23 00:34:56 1999//Tgnutar-1
+/update.c/1.1.1.1/Fri Apr 23 00:34:56 1999//Tgnutar-1
+D

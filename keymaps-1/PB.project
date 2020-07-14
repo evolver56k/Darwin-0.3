@@ -1,0 +1,10 @@
+{
+    FILESTABLE = {OTHER_SOURCES = (Makefile,Keymaps.rtf); SUBPROJECTS = (keyboards, keymappings); }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    PROJECTNAME = keymaps; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.6; 
+}

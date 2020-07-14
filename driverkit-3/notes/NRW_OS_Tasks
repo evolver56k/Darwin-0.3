@@ -1,0 +1,62 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fmodern Courier;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl\red0\green0\blue0;}
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\f0\b0\i0\ul0\fs24 			 NRW OS Tasks TBD\
+			last rev 08-Aug-91\
+\
+Need by first hardware:\
+\
+* Interrupts:\
+  * dispatch (msg_send) \
+  * registration (kern_intr_map(), kern_intr_unmap(), kern_intr_enable(),\
+    etc. per prototypes in 
+\fc0 kern_dev_regs
+.h.\
+* Integrate kern_dev server into kernel, probably using Jim's .defs file\
+  and other kernel mods. (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )\
+* Frame Buffer Driver\
+  * Kernel (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )
+\
+  * User (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )
+\
+* ADB Driver\
+  * Kernel (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )
+\
+  * User (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )
+\
+* Kernel printf()/gets() mods for monitor I/F (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )
+\
+* Kernel console driver (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )\
+\
+Need eventually:\
+\
+* Printer driver (
+\f1\b\fs28 dmitch
+\f0\b0\fs24 )\
+* ISDN driver (
+\f1\b\fs28 mmeyer
+\f0\b0\fs24 )\
+* Token ring driver (
+\f1\b\fs28 joel
+\f0\b0\fs24 )\
+* Sound driver (
+\f1\b\fs28 ?
+\f0\b0\fs24 )
+}

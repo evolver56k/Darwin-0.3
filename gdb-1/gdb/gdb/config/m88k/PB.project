@@ -1,0 +1,42 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-cxux.h", 
+            "nm-delta88v4.h", 
+            "nm-m88k.h", 
+            "tm-cxux.h", 
+            "tm-delta88.h", 
+            "tm-delta88v4.h", 
+            "tm-m88k.h", 
+            "xm-cxux.h", 
+            "xm-delta88.h", 
+            "xm-delta88v4.h", 
+            "xm-dgux.h", 
+            "xm-m88k.h"
+        ); 
+        OTHER_SOURCES = (
+            cxux.mh, 
+            cxux.mt, 
+            delta88.mh, 
+            delta88.mt, 
+            delta88v4.mh, 
+            delta88v4.mt, 
+            m88k.mh, 
+            m88k.mt
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = m88k; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

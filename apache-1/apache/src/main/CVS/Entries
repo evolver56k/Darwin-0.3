@@ -1,0 +1,24 @@
+/.indent.pro/1.1.1.1/Wed Apr 14 19:20:46 1999//Tapache-1
+/Makefile.tmpl/1.1.1.1/Wed Apr 14 19:20:46 1999//Tapache-1
+/alloc.c/1.1.1.1/Wed Apr 14 19:20:46 1999//Tapache-1
+/buff.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/gen_test_char.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/gen_test_char.dsp/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/gen_test_char.mak/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/gen_uri_delims.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/gen_uri_delims.dsp/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/gen_uri_delims.mak/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/http_config.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/http_core.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/http_log.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/http_main.c/1.1.1.1/Wed Apr 14 19:20:47 1999//Tapache-1
+/http_protocol.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/http_request.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/http_vhost.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/rfc1413.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/util.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/util_date.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/util_md5.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/util_script.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+/util_uri.c/1.1.1.1/Wed Apr 14 19:20:48 1999//Tapache-1
+D

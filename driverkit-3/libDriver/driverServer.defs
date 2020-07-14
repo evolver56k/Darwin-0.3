@@ -1,0 +1,433 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+/*
+ * File:	libDriver/driverServer.defs
+ *
+ * HISTORY
+ * 19980312	gvdl@apple.com
+ *		Removed CreateMachPort and added IOServerConnect.
+ * 13-Jan-98	Martin Minow at Apple
+ *	Added createMachPort
+ */
+subsystem
+#if	KERNEL_SERVER && defined(MACH_IPC_FLAVOR)
+	  KernelServer
+#endif	KERNEL_SERVER
+			driverServer 2700; 
+serverprefix	kern;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+#ifndef	MACH_IPC_FLAVOR
+type unsigned			= int;
+#endif
+type u_char			= char;
+type IOChannelCommand		= unsigned;
+type IOChannelEnqueueOption	= unsigned;
+type IOChannelDequeueOption	= unsigned;
+type IODMADirection		= unsigned;
+type IODescriptorCommand	= char;
+type IODMAStatus		= int;
+type IOUserStatus		= char;
+type IODeviceNumber		= unsigned;
+type IOObjectNumber		= unsigned;
+type IOSlotId			= unsigned;
+type IODeviceType		= unsigned;
+type BOOL			= char;
+type IOString			= array[80] of char;
+type IOParameterName		= array[64] of char;
+type IOIntParameter		= array[*:512] of int;
+type IOCharParameter		= array[*:512] of char;
+type IOByteParameter		= array[*:2048] of char;
+type IOCache			= int;
+type IOConfigData		= array[*:4096] of char;
+
+/*
+ * This type is needed to allow intran function of device ports.
+ */
+type IODevicePort = port_t
+		intran: kernDevice_p convert_port_to_dev(IODevicePort)
+		;
+		
+import <driverkit/driverTypes.h>;
+import <driverkit/driverTypesPrivate.h>;
+simport <driverkit/driverServerXXX.h>;
+
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+skip;
+
+/*
+ * Lookup device by IOObjectNumber.
+ */
+routine _IOLookupByObjectNumber(
+                device_master	       	: host_t;
+	in	objectNumber		: IOObjectNumber;
+	out	deviceKind		: IOString;
+	out	deviceName		: IOString);
+
+/*
+ * Lookup device by IOUnitName.
+ */
+routine _IOLookupByDeviceName(
+		device_master		: host_t;
+	in	deviceName		: IOString;
+	out	objectNumber		: IOObjectNumber;
+	out	deviceKind		: IOString);
+	
+/*
+ * Get/set parameter RPCs.
+ */
+
+routine _IOGetIntValues(
+                device_master          	: host_t;
+	in	objectNumber		: IOObjectNumber;
+	in	parameterName		: IOParameterName;
+	in	maxCount		: unsigned;
+	out	parameterArray		: IOIntParameter);
+	
+routine _IOGetCharValues(
+                device_master          	: host_t;
+	in	objectNumber		: IOObjectNumber;
+	in	parameterName		: IOParameterName;
+	in	maxCount		: unsigned;
+	out	parameterArray		: IOCharParameter);
+	
+routine _IOSetIntValues(
+                device_master          	: host_priv_t;
+	in	objectNumber		: IOObjectNumber;
+	in	parameterName		: IOParameterName;
+	in	parameterArray		: IOIntParameter);
+	
+routine _IOSetCharValues(
+                device_master          	: host_priv_t;
+	in	objectNumber		: IOObjectNumber;
+	in	parameterName		: IOParameterName;
+	in	parameterArray		: IOCharParameter);
+
+#if	defined(ppc)
+
+type IOPPCMemoryRange		= struct[2] of int;	/* IORange */
+type IOPPCMemoryMap		= array[*:4] of IOPPCMemoryRange;
+type IOPPCInterruptList	= array[*:7] of int;
+
+/*
+** Return the configuration information for the device.
+*/
+routine _IOGetDeviceConfig(
+		device			: IODevicePort;
+	out	intr_conf		: IOPPCInterruptList;		
+	out	mem_conf		: IOPPCMemoryMap);
+
+skip;		/* was _IOMapLockShmem */
+skip;		/* was _IOUnMapLockShmem */
+
+/*
+** Map the indicated device memory mapped region into the task address space.
+** The phys parameter is the physical address of the region.
+** To unmap, use vm_deallocate().
+*/
+routine _IOMapDeviceMemory(
+		device			: IODevicePort;
+	in	target_task		: task_t;
+	in	phys			: vm_offset_t;
+	in	length			: vm_size_t;
+	inout	addr			: vm_offset_t;
+	in	anywhere		: BOOL;
+	in	cache			: IOCache);
+
+#elif	defined(i386)
+/*
+ * These are EISA specific calls.
+ */
+ 
+type IOEISAPortRange		= struct[2] of int;
+type IOEISAMemoryRange		= struct[2] of int;
+type IOEISAInterrupt		= struct[1] of int;
+type IOEISADMAChannel		= struct[1] of int;
+
+type IOEISAPortMap		= array[*:20] of IOEISAPortRange;
+type IOEISAMemoryMap		= array[*:9] of IOEISAMemoryRange;
+type IOEISAInterruptList	= array[*:7] of IOEISAInterrupt;
+type IOEISADMAChannelList	= array[*:4] of IOEISADMAChannel;
+
+/*
+ * Return the EISA configuration
+ * information for the device.
+ */
+
+routine _IOGetEISADeviceConfig(
+		device			: IODevicePort;
+	out	intr_conf		: IOEISAInterruptList;
+	out	dma_conf		: IOEISADMAChannelList;
+	out	io_conf			: IOEISAPortMap;
+	out	phys_conf		: IOEISAMemoryMap);
+
+/*
+ * Enable *ALL* of the IO registers
+ * for the device so that the thread
+ * can access (read and write) them.
+ */
+
+routine _IOMapEISADevicePorts(
+		device			: IODevicePort;
+	in	thread			: thread_t);
+
+/*
+ * Revoke access to the IO registers
+ * for the device so that the thread
+ * can no longer access them.  Note:
+ * destroying a thread accomplishes this
+ * automatically.
+ */
+
+routine _IOUnMapEISADevicePorts(
+		device			: IODevicePort;
+	in	thread			: thread_t);
+
+/*
+ * Map the indicated device memory mapped
+ * region into the task address space.  The
+ * phys parameter is the physical address of
+ * the region.  To unmap, use vm_deallocate().
+ */
+
+routine _IOMapEISADeviceMemory(
+		device			: IODevicePort;
+	in	target_task		: task_t;
+	in	phys			: vm_offset_t;
+	in	length			: vm_size_t;
+	inout	addr			: vm_offset_t;
+	in	anywhere		: BOOL;
+	in	cache			: IOCache);
+
+#elif	defined(hppa)
+
+type IOHPPAMemoryRange		= struct[2] of int;	/* IORange */
+type IOHPPAMemoryMap		= array[*:4] of IOHPPAMemoryRange;
+type IOHPPAInterruptList	= array[*:7] of int;
+
+/*
+** Return the configuration information for the device.
+*/
+routine _IOGetDeviceConfig(
+		device			: IODevicePort;
+	out	intr_conf		: IOHPPAInterruptList;		
+	out	mem_conf		: IOHPPAMemoryMap);
+
+routine _IOMapLockShmem(
+                device          	: IODevicePort;
+	in	task			: task_t;
+	in	size			: vm_size_t;
+	inout	addr			: vm_offset_t );
+
+routine _IOUnMapLockShmem(
+                device          	: IODevicePort;
+	in	task			: task_t;
+	in	size			: vm_size_t;
+	in	addr			: vm_offset_t );
+
+/*
+** Map the indicated device memory mapped region into the task address space.
+** The phys parameter is the physical address of the region.
+** To unmap, use vm_deallocate().
+*/
+routine _IOMapDeviceMemory(
+		device			: IODevicePort;
+	in	target_task		: task_t;
+	in	phys			: vm_offset_t;
+	in	length			: vm_size_t;
+	inout	addr			: vm_offset_t;
+	in	anywhere		: BOOL;
+	in	cache			: IOCache);
+
+#elif	defined(sparc)
+
+type IOSPARCMemoryRange		= struct[2] of int;	/* IORange */
+type IOSPARCMemoryMap		= array[*:4] of IOSPARCMemoryRange;
+type IOSPARCInterruptList	= array[*:7] of int;
+
+/*
+** Return the configuration information for the device.
+*/
+routine _IOGetDeviceConfig(
+		device			: IODevicePort;
+	out	intr_conf		: IOSPARCInterruptList;		
+	out	mem_conf		: IOSPARCMemoryMap);
+
+routine _IOMapLockShmem(
+                device          	: IODevicePort;
+	in	task			: task_t;
+	in	size			: vm_size_t;
+	inout	addr			: vm_offset_t );
+
+routine _IOUnMapLockShmem(
+                device          	: IODevicePort;
+	in	task			: task_t;
+	in	size			: vm_size_t;
+	in	addr			: vm_offset_t );
+
+/*
+** Map the indicated device memory mapped region into the task address space.
+** The phys parameter is the physical address of the region.
+** To unmap, use vm_deallocate().
+*/
+routine _IOMapSparcDeviceMemory(
+		device			: IODevicePort;
+	in	target_task		: task_t;
+	in	phys			: vm_offset_t;
+	in	length			: vm_size_t;
+	inout	addr			: vm_offset_t;
+	in	anywhere		: BOOL;
+	in	cache			: IOCache);
+
+
+#else
+skip;
+skip;
+skip;
+skip;
+#endif
+
+skip;
+skip;
+
+/*
+ * Create an IODeviceDescription for the config table data passed in
+ * configData, and probe the appropriate device class. Returns IO_R_SUCCESS
+ * if a driver was successfully instantiated, else returns IO_R_NO_DEVICE.
+ */
+routine _IOProbeDriver(
+		device_master		: host_t;
+	in	configTable		: IOConfigData);
+
+/*
+ * Obtain the current system config table data.
+ */
+routine _IOGetSystemConfig(
+		device_master		: host_t;
+	in	maxDataSize		: unsigned;
+	out	configTable		: IOConfigData);
+
+/*
+ * Unload a driver.
+ */
+routine _IOUnloadDriver(
+		device_master		: host_t;
+	in	configTable		: IOConfigData);
+
+/*
+ * Get the current config table for driver 'n'.
+ */
+routine _IOGetDriverConfig(
+		device_master		: host_t;
+	in	driverNum		: unsigned;
+	in	maxDataSize		: unsigned;
+	out	configTable		: IOConfigData);
+
+type PMReturn		= int;
+type PMDeviceID		= struct [2] of short;
+type PMPowerState	= int;
+type PMPowerEvent	= int;
+type PMPowerStatus	= struct [3] of int;
+type PMPowerManagementState = int;
+
+import	<kern/power.h>;
+
+/*
+ * Set the power state of a device or the entire computer.
+ */
+
+routine _PMSetPowerState(
+                host	          	: host_t;
+	in	device			: PMDeviceID;
+	in	state			: PMPowerState);
+
+routine _PMGetPowerEvent(
+		host			: host_t;
+	out	event			: PMPowerEvent);
+
+routine _PMGetPowerStatus(
+		host			: host_t;
+	out	status			: PMPowerStatus);
+	
+routine _PMSetPowerManagement(
+		host			: host_t;
+		device			: PMDeviceID;
+		state			: PMPowerManagementState);
+							
+routine  _PMRestoreDefaults(
+		host			: host_t);
+
+routine _IOCallDeviceMethod(
+                device_master          	: host_priv_t;
+	in	objectNumber		: IOObjectNumber;
+	in	parameterName		: IOString;
+	in	inputParams		: IOByteParameter;
+	inout	maxOutput		: unsigned;
+        out	outputParams		: IOByteParameter);
+
+routine _IOServerConnect(
+		device_master		: host_t;
+	in	objectNumber		: IOObjectNumber;
+	in	clientTask		: port_t;
+	out	serverPort		: port_t);
+
+routine _IOLookUpByStringPropertyList (
+		device_master		: host_t;
+	in	values			: IOByteParameter;
+	out	results			: IOByteParameter;
+	in	maxLength		: unsigned);
+
+routine _IOGetStringPropertyList (
+		device_master		: host_t;
+	in	objectNumber		: IOObjectNumber;
+	in	names			: IOByteParameter;
+	out	results			: IOByteParameter;
+	in	maxLength		: unsigned);
+
+routine _IOGetByteProperty (
+		device_master		: host_t;
+	in	objectNumber		: IOObjectNumber;
+	in	name			: IOByteParameter;
+	out	results			: IOByteParameter;
+	in	maxLength		: unsigned);
+
+

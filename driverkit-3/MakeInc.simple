@@ -1,0 +1,274 @@
+#
+# Makefile include file for simple commands
+# Copyright NeXT, Inc.  1992.  All rights reserved.
+#
+
+#
+# TOOLS
+#
+MD= md
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+#
+# Default type(s) to build
+#
+TYPES= STD
+
+#
+# Sources for tags
+#
+SRCS= $(HFILES) $(YFILES) $(CFILES) $(MFILES) $(SFILES) $(EXTRA_SRCS)
+
+#
+# Build list of object modules from source files
+# Trick is to strip off any path prefix
+#
+XCOBJS= $(CFILES:.c=.o)
+COBJS= $(XCOBJS:t)
+
+XMOBJS= $(MFILES:.m=.o)
+MOBJS= $(XMOBJS:t)
+
+XYOBJS= $(YFILES:.y=.o)
+YOBJS= $(XYOBJS:t)
+
+XSOBJS= $(SFILES:.s=.o)
+SOBJS= $(XSOBJS:t)
+
+#
+# Make the first SOBJ be the first module loaded.  Simplifies
+# getting crt0.s in the right place for programs that need it first.
+#
+OBJS= $(SOBJS) $(YOBJS) $(COBJS) $(MOBJS) $(EXTRA_OBJS)
+
+#
+# PROGRAM_PATH is the directory underneath OBJROOT and SYMROOT where
+# we do our actual building.
+#
+PROGRAM_PATH=$(PROGRAM)
+
+#
+# This makefile actually does builds in $(OBJROOT).  Set-up vpath so
+# sources may be found.
+#
+STD_VPATH=$(SRCDIR)
+PROF_VPATH=$(SRCDIR)
+DBG_VPATH=$(SRCDIR)
+
+#
+# *_NAME's are used by vers_string so that it's apparent which
+# binary type you have (debug, prof, etc) by looking at the vers_string
+#
+STD_NAME=
+PROF_NAME=_PROF
+DBG_NAME=_DBG
+
+#
+# These commands are executed whenever make exits, they clean-up
+# any crud left about.
+#
+STD_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+PROF_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+DBG_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+
+#
+# Indirection used to get appropriate options for the TYPE of build
+# being done.
+#
+COPTS= ${$(TYPE)_COPTS}
+LDOPTS= ${$(TYPE)_LDOPTS}
+XLIBS= ${$(TYPE)_LIBS}
+
+NAME=${$(TYPE)_NAME}
+VPATH=${$(TYPE)_VPATH}
+EXIT=${$(TYPE)_EXIT}
+
+#
+# This is completely untested!
+#
+CMD_FLAGS= "RC_FLAGS=$(RC_FLAGS)" "RC_ARCH=$(RC_ARCH)"
+
+#
+# Cause .c file to be built from yacc file
+#
+XYFILES= $(YFILES:t)
+$(XYFILES:.y=.c): $$(@:.c=.y)
+
+#
+# CCFLAGS are for command line use
+# e.g. make CCFLAGS="-I/foo/bar/include"
+#
+# RC_CFLAGS are for Release Control use.
+#
+.c.o:
+	$(CC) -MD $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) -c -o $@ $<
+	$(MD) -d -u Makedep $(*F).d
+
+.m.o:
+	$(CC) -MD $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) -c -o $@ $<
+	$(MD) -d -u Makedep $(*F).d
+
+.s.o:
+	$(CC) -MD $(SFLAGS) $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) \
+	  -c -o $@ $<
+	$(MD) -d -u Makedep $(*F).d
+
+.l.o:
+	$(LEX) $(LFLAGS) $<
+	$(CC) $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) -c lex.yy.c
+	$(RM) $(RMFLAGS) lex.yy.c
+	$(MV) $(MVFLAGS) lex.yy.o $@
+
+.y.o:
+	$(YACC) $(YFLAGS) $<
+	$(CC) $(CFLAGS) $(COPTS) $(RC_CFLAGS) $(CCFLAGS) -c y.tab.c
+	$(RM) $(RMFLAGS) y.tab.c
+	$(MV) $(MVFLAGS) y.tab.o $@
+
+#
+# Standard clean-up on exit
+#
+.EXIT:
+	-$(EXIT)
+
+#
+# Standard targets
+# All executed in "source" directory
+#
+.DEFTARGET:	all
+
+all:	$(TYPES)
+
+remake:	clean all
+
+
+STD_GARBAGE= errs [Mm]ake.out *~ *.o *.d TAGS tags vers.c Makedep
+
+#
+# Initial rule for handling:
+#	STD (release)
+#	PROF (profiling)
+#	DBG (debugging)
+# builds.
+#
+# "make DBG" builds a debugging version.  Objects are placed
+# DBG_OBJS.
+#
+# Main trick here is to convert (possibly relative) pathnames to
+# absolute paths via pwd.  Then reinvoke make with appropriate
+# macros defined.
+#
+STD PROF DBG:	$(SYMROOT)/$(PROGRAM_PATH)/$$@_OBJS \
+ $(OBJROOT)/$(PROGRAM_PATH)/$$@_OBJS ALWAYS
+	@echo cd $(OBJROOT)/$(PROGRAM_PATH)/$@_OBJS
+	@SRCDIR=`pwd`; cd $(SYMROOT); SYMDIR=`pwd`; cd $$SRCDIR; \
+	cd $(OBJROOT)/$(PROGRAM_PATH)/$@_OBJS; \
+	SRCDIR=`relpath -d $$SRCDIR . $$SRCDIR`; \
+	SYMDIR=`relpath -d $$SRCDIR . $$SYMDIR`; \
+	$(MAKE) -f $$SRCDIR/Makefile TYPE="$@" \
+	 SRCDIR=$$SRCDIR SYMROOT=$$SYMDIR $(CMD_FLAGS) \
+	 $$SYMDIR/$(PROGRAM_PATH)/$@_OBJS/$(PROGRAM)
+
+install:: DSTROOT $(DSTDIRS) STD installhdrs
+	install $(IFLAGS) \
+		$(SYMROOT)/$(PROGRAM_PATH)/STD_OBJS/$(PROGRAM) \
+		$(DSTROOT)$(BINDIR)/$(PROGRAM)
+
+install:: install_extra ALWAYS
+
+reinstall: clean install
+
+clean::	ALWAYS
+	-$(RM) $(RMFLAGS) $(STD_GARBAGE) $(GARBAGE)
+	-$(RM) -rf $(OBJROOT)/$(PROGRAM_PATH)
+#	-$(RM) -rf $(OBJROOT)/$(PROGRAM_PATH)/*_OBJS
+	@-if [ $(SYMROOT) != $(OBJROOT) ]; \
+	then \
+		echo $(RM) -rf $(SYMROOT)/$(PROGRAM_PATH)/*_OBJS; \
+		$(RM) -rf $(SYMROOT)/$(PROGRAM_PATH)/*_OBJS; \
+	fi
+
+tags:	ALWAYS tags_link
+	$(RM) -f TAGS tags
+	etags -et $(SRCS)
+	ctags -w $(SRCS)
+
+#
+# Internal targets
+# All targets below are executed in "source" directory
+#
+
+DSTROOT:ALWAYS
+	@if [ -n "$($@)" ]; \
+	then \
+		exit 0; \
+	else \
+		echo Must define $@; \
+		exit 1; \
+	fi
+
+$(DSTDIRS):
+	$(MKDIRS) $@
+
+$(OBJROOT)/$(PROGRAM_PATH)/DBG_OBJS \
+ $(OBJROOT)/$(PROGRAM_PATH)/PROF_OBJS \
+ $(OBJROOT)/$(PROGRAM_PATH)/STD_OBJS \
+ $(SYMROOT)/$(PROGRAM_PATH)/DBG_OBJS \
+ $(SYMROOT)/$(PROGRAM_PATH)/PROF_OBJS \
+ $(SYMROOT)/$(PROGRAM_PATH)/STD_OBJS:
+	$(MKDIRS) $@
+
+#
+# "Internal" target to building the command
+# Executed in $(OBJROOT)/$(PROGRAM_PATH)/$(TYPE)_OBJS
+#
+# This makefile when invoked in the OBJROOT will have the following
+# macros defined:
+#	SRCDIR -- path to the directory containing this Makefile
+#	SYMROOT -- path to the directory that is to contain the result
+#		of this build
+#
+
+$(SYMROOT)/$(PROGRAM_PATH)/$(TYPE)_OBJS/$(PROGRAM): \
+ $(OBJS) vers.o $(SRCDIR)/Makefile
+	$(CC) $(LDFLAGS) $(LDOPTS) $(RC_CFLAGS) \
+		-o $@ $(OBJS) vers.o $(XLIBS) $(LIBS)
+	
+vers.c: $(OBJS)
+	@$(RM) -f $@
+	@CWD=`pwd`;						\
+	cd $(SRCDIR);						\
+	echo vers_string -c $(PROGRAM)$(NAME) \> $$CWD/$@;	\
+	vers_string -c $(PROGRAM)$(NAME) > $$CWD/$@
+
+ALWAYS:
+
+#
+# This must be designed to work in the context of
+# $(OBJROOT)/$(PROGRAM_PATH)/$(TYPE)_OBJS.  Since include
+# files are found relative to the Makefile, this should
+# do the trick.
+#
+-include $(OBJROOT)/$(PROGRAM_PATH)/$(TYPE)_OBJS/Makedep
+
+#
+# Added 26-Jun-92 dmitch for driverkit project...
+#
+installsrc: 	SRCROOT $(SRCROOT)
+	gnutar cf - $(SRCS) Makefile | (cd $(SRCROOT); gnutar xpf -)	
+
+$(SRCROOT):
+	$(MKDIRS) $@
+
+SRCROOT:
+	@if [ -n "${$@}" ]; 		\
+	then 				\
+		exit 0; 		\
+	else 				\
+		echo Must define $@; 	\
+		exit 1; 		\
+	fi

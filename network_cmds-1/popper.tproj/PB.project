@@ -1,0 +1,65 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (popper.h, version.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (
+            pop_dele.c, 
+            pop_dropcopy.c, 
+            pop_dropinfo.c, 
+            pop_get_command.c, 
+            pop_get_subcommand.c, 
+            pop_head.c, 
+            pop_init.c, 
+            pop_last.c, 
+            pop_list.c, 
+            pop_log.c, 
+            pop_lower.c, 
+            pop_msg.c, 
+            pop_parse.c, 
+            pop_pass.c, 
+            pop_quit.c, 
+            pop_rset.c, 
+            pop_send.c, 
+            pop_stat.c, 
+            pop_updt.c, 
+            pop_user.c, 
+            pop_xmit.c, 
+            pop_xtnd.c, 
+            popper.c
+        ); 
+        OTHER_SOURCES = (
+            Makefile.dist, 
+            Makefile.preamble, 
+            PB.project, 
+            README, 
+            README.NeXT, 
+            inetd.conf.popper, 
+            pop3.rfc1081, 
+            pop3e.rfc1082, 
+            popper.8, 
+            services.pop
+        ); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    NEXTSTEP_COMPILEROPTIONS = "-DBIND43 -DHAVE_VSPRINTF -DDEBUG"; 
+    NEXTSTEP_INSTALLDIR = /usr/libexec; 
+    NEXTSTEP_LINKEROPTIONS = ""; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = "-DBIND43 -DHAVE_VSPRINTF -DDEBUG"; 
+    PDO_UNIX_INSTALLDIR = /usr/libexec; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = popper; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_COMPILEROPTIONS = "-DBIND43 -DHAVE_VSPRINTF -DDEBUG"; 
+    WINDOWS_INSTALLDIR = /usr/libexec; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

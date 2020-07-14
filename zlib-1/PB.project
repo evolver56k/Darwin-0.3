@@ -1,0 +1,67 @@
+{
+    CURRENTLY_ACTIVE_VERSION = YES; 
+    DEPLOY_WITH_VERSION_NAME = A; 
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        DOCUMENTATION = (README, FAQ, algorithm.txt, example.c, minigzip.c); 
+        FRAMEWORKS = (); 
+        H_FILES = (
+            deflate.h, 
+            infblock.h, 
+            infcodes.h, 
+            inffast.h, 
+            inffixed.h, 
+            inftrees.h, 
+            infutil.h, 
+            trees.h, 
+            zconf.h, 
+            zlib.h, 
+            zutil.h
+        ); 
+        OTHER_LINKED = (
+            adler32.c, 
+            compress.c, 
+            crc32.c, 
+            deflate.c, 
+            gzio.c, 
+            infblock.c, 
+            infcodes.c, 
+            inffast.c, 
+            inflate.c, 
+            inftrees.c, 
+            infutil.c, 
+            trees.c, 
+            uncompr.c, 
+            zutil.c
+        ); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            ChangeLog, 
+            INDEX, 
+            maketree.c, 
+            zlib.3
+        ); 
+        PUBLIC_HEADERS = (zlib.h, zconf.h); 
+    }; 
+    LANGUAGE = English; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/tmp/$(NAME)"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = /System/Library/Frameworks; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_LINKEROPTIONS = "-seg1addr 0x69e00000"; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_INSTALLDIR = /Library/Frameworks; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = Zip; 
+    PROJECTTYPE = Framework; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_INSTALLDIR = /Library/Frameworks; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

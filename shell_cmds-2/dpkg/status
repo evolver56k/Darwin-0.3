@@ -1,0 +1,3 @@
+<p><code>machine</code> is disabled in favor of <code>arch</code> (in <code>cctools</code>), which installs a link to itself as <code>machine</code>.</p>
+
+<p><code>w/fmt.c</code> is copied from <code>ps/fmt.c</code>. We aren't doing the CVS trick of checking out that code from <code>ps</code>, because we don't use BSD <code>ps</code>; <code>ps</code> is a Mach client. This may change in Mac OS X, at which point we should fix this.</p>

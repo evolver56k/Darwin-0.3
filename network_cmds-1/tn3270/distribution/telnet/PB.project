@@ -1,0 +1,14 @@
+{
+    FILESTABLE = {
+	C_FILES = (); 
+	H_FILES = (); 
+	M_FILES = (); 
+	OTHER_LINKED = (); 
+	OTHER_SOURCES = (Makefile.preamble, Makefile_ultrix); 
+	SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    PROJECTNAME = telnet; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.0; 
+}

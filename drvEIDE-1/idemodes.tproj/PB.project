@@ -1,0 +1,17 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        HEADERSEARCH = (../EIDE.drvproj/EIDE.lksproj); 
+        OTHER_LINKED = (idemodes.c); 
+        OTHER_SOURCES = (Makefile, Makefile.preamble); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-DDRIVER_PRIVATE"; 
+    NEXTSTEP_INSTALLDIR = /usr/sbin; 
+    PROJECTNAME = idemodes; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+}

@@ -1,0 +1,7 @@
+Package: file-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: NetBSD Foundation
+Version: 1998.10.06
+URL: http://www.netbsd.org/
+Description: File commands
+Build-Depends: build-base

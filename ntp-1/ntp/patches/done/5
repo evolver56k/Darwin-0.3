@@ -1,0 +1,16 @@
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa28049;
+          19 Dec 1997 09:40 EST
+Date:     Fri, 19 Dec 1997 09:31:24 EST
+From:     Dave Mills <mills@huey.udel.edu>
+To:       stenn@whimsy.udel.edu
+cc:       stenn@whimsy.udel.edu
+Subject:  Re:  ntp-4.0.70a fix
+Message-ID:  <199712190931.aa05154@huey.udel.edu>
+
+Harlan,
+
+The first glob was intentional. The new clock discipline does things
+differently. The second glob was unnoticed - I don't know who did that.
+In any case, I made both of your changes.
+
+Dave

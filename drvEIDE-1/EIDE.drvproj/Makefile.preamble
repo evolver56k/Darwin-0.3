@@ -1,0 +1,2 @@
+INCLUDED_ARCHS = i386
+OTHER_CFLAGS = -I./EIDE.lksproj

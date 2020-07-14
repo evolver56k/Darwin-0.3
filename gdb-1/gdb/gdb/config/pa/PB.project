@@ -1,0 +1,50 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-hppab.h", 
+            "nm-hppah-pdo.h", 
+            "nm-hppah.h", 
+            "nm-hppao.h", 
+            "tm-hppa.h", 
+            "tm-hppab.h", 
+            "tm-hppah-pdo.h", 
+            "tm-hppah.h", 
+            "tm-hppao.h", 
+            "tm-pro.h", 
+            "xm-hppab.h", 
+            "xm-hppah-pdo.h", 
+            "xm-hppah.h", 
+            "xm-pa-next.h", 
+            "xm-pa.h"
+        ); 
+        OTHER_SOURCES = (
+            hppabsd.mh, 
+            hppabsd.mt, 
+            hppahpux.mh, 
+            hppahpux.mt, 
+            hppaosf.mh, 
+            hppaosf.mt, 
+            hppapro.mt, 
+            nextstep.mh, 
+            nextstep.mt, 
+            nextstep4.mh, 
+            nextstep4.mt, 
+            pdo.mh, 
+            pdo.mt
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = pa; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

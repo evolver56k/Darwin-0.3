@@ -1,0 +1,385 @@
+#
+#	Makefile include file for simple commands
+#	(c) 1989, 1990, 1991 NeXT Computer, Inc.  All Rights Reserved
+#
+SRCS= $(HFILES) $(YFILES) $(CFILES) $(SFILES) $(EXTRA_SRCS)
+OBJS= $(CFILES:.c=.o) $(YFILES:.y=.o) $(SFILES:.s=.o) $(EXTRA_OBJS)
+
+#
+# OBJROOT and SYMROOT are overridden by RC tools for builds from read-only
+# source. OBJDIR is where libraries are built. .o files are placed in
+# OBJROOT/xxx, where xxx is something like 68kDebug or i386Release.
+# 
+#
+OBJROOT=$(OBJROOT)/obj
+SYMROOT=$(SYMROOT)/sym
+
+include $(MAKEFILEDIR)/commands-$(OS).make
+
+include $(MAKEFILEDIR)/flags.make
+include $(MAKEFILEDIR)/recursion.make
+include $(MAKEFILEDIR)/implicitrules.make
+include $(MAKEFILEDIR)/depend.make
+
+MACHINE=i386
+MACHINE_LIST=i386 ppc
+
+TYPE=STD
+
+#
+# This makefile actually does builds in $(OBJROOT).  Set-up vpath so
+# sources may be found.
+#
+STD_VPATH=.:$(SRCDIR)
+PROF_VPATH=.:$(SRCDIR)
+DBG_VPATH=.:$(SRCDIR)
+
+#
+# *_NAME's are used by vers_string so that it's apparent which
+# binary type you have (debug, prof, etc) by looking at the vers_string
+#
+STD_NAME=
+PROF_NAME=_PROF
+DBG_NAME=_DBG
+
+#
+# These commands are executed whenever make exits, they clean-up
+# any crud left about.
+#
+STD_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+PROF_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+DBG_EXIT= $(RM) $(RMFLAGS) $(DERIVED) *.d
+
+#
+# Indirection used to get appropriate options for the TYPE of build
+# being done.
+#
+COPTS= ${$(TYPE)_CFLAGS}
+LDOPTS= ${$(TYPE)_LDFLAGS}
+XLIBS= ${$(TYPE)_LIBS}
+
+NAME=${$(TYPE)_NAME}
+VPATH=${$(TYPE)_VPATH}
+EXIT=${$(EXIT_TYPE)_EXIT}
+
+#
+# Cause .c file to be built from yacc file
+#
+$(YFILES:.y=.c): $$(@:.c=.y)
+
+#
+# CCFLAGS are for command line use
+# e.g. make CCFLAGS="-I/foo/bar/include"
+#
+#
+.c.o:
+	$(CC) -MD $(CFLAGS) $(COPTS) $(CCFLAGS) -c -o $@ $<
+	md -d -u Makedep $*.d
+
+.s.o:
+	$(CC) -MD $(CFLAGS) $(COPTS) $(CCFLAGS) -c -o $@ $<
+	md -d -u Makedep $*.d
+
+#
+# Standard clean-up on exit
+#
+.EXIT:
+	-$(EXIT)
+
+#
+# Standard targets
+# All executed in "source" directory
+#
+.DEFTARGET:	all
+
+
+remake:	clean all
+
+#
+# Recursive rules to invoke various target builds.
+#
+# $(MACHINE) must resolve to exactly one of {m68k,i386,hppa,sparc,ppc} 
+# at this time.
+#
+#
+#
+# Initial rule for handling:
+#	STD (release)
+#	PROF (profiling)
+#	DBG (debugging)
+# builds.
+#
+# "make DBG" builds a debugging version.  Objects are placed
+# DBG_OBJS_programName.
+#
+# Main trick here is to convert (possibly relative) pathnames to
+# absolute paths via pwd.  Then reinvoke make with appropriate
+# macros defined.
+#
+STD DBG PROF: always
+	@SRCDIR=`pwd`; cd $(SYMROOT); SYMDIR=`pwd`; cd $$SRCDIR; \
+	if [ -n "$(RC_ARCHS)" ]; then					\
+	    machines="$(RC_ARCHS)";						\
+	elif [ -n "$(MACHINE_LIST)" ]; then				\
+	    machines="$(MACHINE_LIST)";					\
+	elif [ -n "$(MACHINE)" ]; then					\
+	    machines="$(MACHINE)";						\
+	else											\
+	    echo no machine list found;					\
+	    exit 1;										\
+	fi; \
+	for machine in $$machines; do					\
+		$(MAKE) makeit  -f $$SRCDIR/Makefile \
+				TYPE="$@"  \
+				EXIT_TYPE="$@" \
+				"SRCDIR=$$SRCDIR" \
+				"SYMROOT=$$SYMDIR" \
+				"OBJROOT=$(OBJROOT)" \
+				"MACHINE=$$machine"; \
+	done
+
+i386 ppc:
+	@SRCDIR=`pwd`; cd $(SYMROOT); SYMDIR=`pwd`; cd $$SRCDIR; \
+	$(MAKE) makeit  -f $$SRCDIR/Makefile	 		\
+			TYPE="STD" 								\
+			EXIT_TYPE="STD" 						\
+			"SRCDIR=$$SRCDIR" 						\
+			"SYMROOT=$$SYMDIR" 						\
+			"OBJROOT=$(OBJROOT)" 					\
+			"MACHINE=$@";							\
+	$(MAKE) makeit  -f $$SRCDIR/Makefile	 		\
+			TYPE="DBG" 								\
+			EXIT_TYPE="DBG" 						\
+			"SRCDIR=$$SRCDIR" 						\
+			"SYMROOT=$$SYMDIR" 						\
+			"OBJROOT=$(OBJROOT)" 					\
+			"MACHINE=$@"
+				
+				
+
+makeit:	$(SYMROOT)/hfs/$(MACHINE)/$(TYPE)_$(PROJECT) $(OBJROOT)/hfs/$(MACHINE)/$(TYPE)_$(PROJECT) always
+	@echo '********** Building $(PROJECT) for $(MACHINE) using $(TYPE) **********'
+	@echo cd $(OBJROOT)/hfs/$(MACHINE)/$(TYPE)_$(PROJECT)
+	@cd $(OBJROOT)/hfs/$(MACHINE)/$(TYPE)_$(PROJECT); \
+	$(MAKE) -f $(SRCDIR)/Makefile \
+		$(TARGET) \
+		"TYPE=$(TYPE)" \
+		"SRCDIR=$(SRCDIR)" 	\
+	  	"OBJROOT=$(OBJROOT)" \
+		"SYMROOT=$(SYMROOT)" \
+		"MACHINE=$(MACHINE)"
+	
+
+clobber: clean
+	-$(RM) $(RMFLAGS) *.o *.d TAGS tags vers.c Makedep
+	-$(RM) $(RMFLAGS) $(GARBAGE)
+
+
+clean: 	FORCE
+	@-if [ -n "$(RC_ARCHS)" ]; then					\
+	    machines="$(RC_ARCHS)";						\
+	elif [ -n "$(MACHINE_LIST)" ]; then				\
+	   machines="$(MACHINE_LIST)";					\
+	elif [ -n "$(MACHINE)" ]; then					\
+	    machines="$(MACHINE)";						\
+	else											\
+	    echo clean: no machine list found;			\
+	    exit 1;										\
+	fi;												\
+	for machine in $$machines;						\
+	do					\
+		echo $(RM) -r $(OBJROOT)/hfs/$$machine/*_$(PROJECT); 		\
+		$(RM) -r $(OBJROOT)/hfs/$$machine/*_$(PROJECT) $(YFILES:.y=.c);	\
+		if [ $(SYMROOT) != $(OBJROOT) ]; then								\
+			echo $(RM) -r $(SYMROOT)/hfs/$$machine/*_$(PROJECT); 		\
+			$(RM) -r $(SYMROOT)/hfs/$$machine/*_$(PROJECT); 			\
+		fi; 																	\
+	done
+	-$(RM) $(OBJROOT)/hfs/$(PRODUCT)
+	
+print:	always
+	for i in $(PRINTFILES); \
+	do \
+		expand -$(TABSIZE) $$i >/tmp/$$i; \
+	done; \
+	cd /tmp; enscript $(ENSCRIPTFLAGS) $(PRINTFILES); \
+	$(RM) $(RMFLAGS) $(PRINTFILES); \
+	touch PrintDate.$(USER)
+
+update:	PrintDate.$(USER)
+
+tags:	always
+	-$(RM) tags
+	-ctags -d $(HFILES) $(YFILES) $(CFILES)
+	-etags $(HFILES) $(YFILES) $(CFILES)
+	
+vgrind:	always
+	touch index
+	vgrind $(HFILES) $(CFILES)
+	vgrind -x
+
+#
+# Internal targets
+# All targets below are executed in "source" directory
+#
+PrintDate.$(USER): $(PRINTFILES)
+	for i in $?; \
+	do \
+		expand -$(TABSIZE) $$i >/tmp/$$i; \
+	done; \
+	cd /tmp; \
+	enscript $(ENSCRIPTFLAGS) $(PRINTFILES); \
+	$(RM) $(RMFLAGS) $(PRINTFILES)
+	touch PrintDate.$(USER)
+
+DSTROOT SRCROOT:always
+	@if [ -n "$($@)" ]; \
+	then \
+		exit 0; \
+	else \
+		echo Must define $@; \
+		exit 1; \
+	fi
+
+$(DSTROOT) $(DSTDIRS) $(SRCROOT):
+	mkdir -p $@
+
+$(OBJROOT)/hfs/$(MACHINE)/STD_$(PROJECT) \
+ $(OBJROOT)/hfs/$(MACHINE)/DBG_$(PROJECT) \
+ $(OBJROOT)/hfs/$(MACHINE)/PROF_$(PROJECT):
+	mkdir -p $@
+
+$(SYMROOT)/hfs/$(MACHINE)/STD_$(PROJECT) \
+ $(SYMROOT)/hfs/$(MACHINE)/DBG_$(PROJECT) \
+ $(SYMROOT)/hfs/$(MACHINE)/PROF_$(PROJECT):
+	mkdir -p $@
+
+reinstall: clean install
+
+
+#
+#
+#
+install:	DSTROOT $(DSTDIRS) platforms lipoize  install_extra install_only always
+	if [ "$(PRODUCT)" != "" ]; \
+	then \
+		install $(IFLAGS) $(OBJROOT)/hfs/$(PRODUCT) \
+			$(DSTDIRS)/$(PRODUCT); \
+	fi
+
+installsrc:	SRCROOT $(SRCROOT) always
+	tar cf - $(SRCS) | (cd ${SRCROOT}; tar xpf -)
+
+
+#
+# Target to just install, not build. Fat libraries must exist; this doesn't
+# build them.
+#
+# FIXME - strip the archives on the way out to DSTROOT.
+#
+install_only:	installhdrs DSTROOT $(DSTROOT) always
+
+#
+# Now our binaries. 
+#
+
+#
+# Build all of the individual archives as appropriate.
+#
+platforms: 	always 
+	@SRCDIR=`pwd`; cd $(SYMROOT); SYMDIR=`pwd`; cd $$SRCDIR; \
+	if [ -n "$(RC_ARCHS)" ]; then					\
+	    machines="$(RC_ARCHS)";						\
+	elif [ -n "$(MACHINE_LIST)" ]; then				\
+	    machines="$(MACHINE_LIST)";					\
+	elif [ -n "$(MACHINE)" ]; then					\
+	    machines="$(MACHINE)";						\
+	else											\
+	    echo no machine list found;					\
+	    exit 1;										\
+	fi;												\
+	echo ; \
+	echo Building architecture-specific libraries for $$machines...; \
+	echo ; \
+	for machine in $$machines; do					\
+		$(MAKE) makeit  -f $$SRCDIR/Makefile	 								\
+				TYPE="STD" 								\
+				EXIT_TYPE="STD" \
+				"SRCDIR=$$SRCDIR" 						\
+				"SYMROOT=$$SYMDIR" 						\
+				"OBJROOT=$(OBJROOT)" 					\
+				"DSTROOT=$(DSTROOT)"					\
+				"MACHINE=$$machine"; \
+	done
+
+#
+# Lipo the libraries for the various architectures together. This target
+# assumes that the constituent libraries have already been built.
+#
+lipoize: $(DSTROOT)$(BINDIR)	always
+	@if [ "$(PRODUCT)" != "" ]; \
+	then \
+		if [ -n "$(RC_ARCHS)" ]; then					    \
+			machines="$(RC_ARCHS)";					    \
+		elif [ -n "$(MACHINE_LIST)" ]; then				    \
+			machines="$(MACHINE_LIST)";					    \
+		elif [ -n "$(MACHINE)" ]; then					    \
+			machines="$(MACHINE)";					    \
+		else								    \
+			echo no machine list found;					    \
+			exit 1;							    \
+		fi;								    \
+		echo Building fat user archives...;				    \
+		args="";						    	    \
+		libname=$(OBJROOT)/hfs/$(PRODUCT);			    	    \
+		for machine in $$machines; do			    \
+			args="$$args $(SYMROOT)/hfs/$$machine/STD_$(PROJECT)/$(PRODUCT)";   	    \
+		done;						    \
+		lipo -create -o $$libname $$args;				    \
+		echo touch $$libname;					    \
+		touch $$libname;						\
+	fi
+	
+#
+# "Internal" target to building the command
+# Executed in $(OBJROOT)/$(TYPE)_OBJS_$(PROJECT)
+#
+$(PROGRAM):	$(PROJECT) vers.o Makefile program_extra
+	if [ "$(PROGRAM)" != "" ]; \
+	then \
+		$(CC) $(LDFLAGS) $(LDOPTS) \
+			-o $(SYMROOT)/hfs/$(MACHINE)/$(TYPE)_$(PROJECT)/$@ \
+			$(OBJS) vers.o $(XLIBS) $(LIBS); \
+	fi
+
+$(PRODUCT):	$(PROJECT) Makefile product_extra
+
+$(PROJECT):	project_first $(OBJS) project_extra
+
+
+vers.c: $(OBJS)
+	@rm -f $@
+	vers_string -c $(PROJECT)$(NAME) > $@
+
+
+
+always:
+
+
+FORCE:
+#
+#	A bunch of hacking for Makedeps ?? They don't work
+#
+#	@echo including $(OBJROOT)/$(TYPE)_OBJS_$(PROJECT)/Makedep
+#
+#
+# This must be designed to work in the context of
+# $(OBJROOT)/$(TYPE)_OBJS_$(PROJECT).  Since include
+# files are found relative to the Makefile, this should
+# do the trick.
+#
+#
+#	The line below does not work ??  The variables aren't set right 
+#	(esp. $(TYPE))
+#
+#-include $(OBJROOT)/hfs/$(MACHINE)/$(TYPE)_$(PROJECT)/Makedep

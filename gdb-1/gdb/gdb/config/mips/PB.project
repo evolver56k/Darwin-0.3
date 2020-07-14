@@ -1,0 +1,83 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-irix3.h", 
+            "nm-irix4.h", 
+            "nm-irix5.h", 
+            "nm-mips.h", 
+            "nm-news-mips.h", 
+            "nm-riscos.h", 
+            "tm-bigmips.h", 
+            "tm-bigmips64.h", 
+            "tm-embed.h", 
+            "tm-embed64.h", 
+            "tm-embedl.h", 
+            "tm-embedl64.h", 
+            "tm-irix3.h", 
+            "tm-irix5.h", 
+            "tm-mips.h", 
+            "tm-mips64.h", 
+            "tm-mipsm3.h", 
+            "tm-mipsv4.h", 
+            "tm-tx39.h", 
+            "tm-tx39l.h", 
+            "tm-vr4300.h", 
+            "tm-vr4300el.h", 
+            "tm-vr5000.h", 
+            "tm-vr5000el.h", 
+            "tm-vxmips.h", 
+            "xm-irix3.h", 
+            "xm-irix4.h", 
+            "xm-irix5.h", 
+            "xm-mips.h", 
+            "xm-mipsm3.h", 
+            "xm-mipsv4.h", 
+            "xm-news-mips.h", 
+            "xm-riscos.h"
+        ); 
+        OTHER_SOURCES = (
+            bigmips.mt, 
+            bigmips64.mt, 
+            decstation.mh, 
+            decstation.mt, 
+            embed.mt, 
+            embed64.mt, 
+            embedl.mt, 
+            embedl64.mt, 
+            irix3.mh, 
+            irix3.mt, 
+            irix4.mh, 
+            irix5.mh, 
+            irix5.mt, 
+            littlemips.mh, 
+            littlemips.mt, 
+            mipsm3.mh, 
+            mipsm3.mt, 
+            mipsv4.mh, 
+            mipsv4.mt, 
+            "news-mips.mh", 
+            riscos.mh, 
+            tx39.mt, 
+            tx39l.mt, 
+            vr4300.mt, 
+            vr4300el.mt, 
+            vr5000.mt, 
+            vr5000el.mt, 
+            vxmips.mt
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = mips; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

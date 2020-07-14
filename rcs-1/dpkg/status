@@ -1,0 +1,1 @@
+<p><code>conf.sh</code> does not work when cross-compiling, because it compiles and runs test programs. <code>configure</code> seems to work.</p>

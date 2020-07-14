@@ -1,0 +1,20 @@
+##
+# gzip
+##
+
+Title		GNU Zip
+BuildDiskTitle	GNU Zip
+Version		1.2.4
+Description	This package contains gzip, the GNU Zip compression utility. Includes: gzip, zdiff, zgrep, zmore, znew, zforce, gzexe, zcmp, gunzip, gzcat.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		gzip #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

@@ -1,0 +1,55 @@
+struct device_slot {
+	dev_num
+	slot_id
+	dev_type
+	link
+}
+
+config_scan(
+	boolean_t all_devices,
+	slot_id_t slot_id,
+	dev_type_t dev_type) 
+{
+	dev_num = 0;
+	
+	/*
+	 * Scan hardware
+	 */
+	do {
+		get_dev_type(dev_num);
+		if error
+			continue;
+		if all_devices or dev_type and slot_id match our args
+			make a new device_slot, add to dev_slot_list;	
+	} while drtn != no more devices;
+	
+	/*
+	 * Create new dev_entry's
+	 */
+	for each entry in dev_slot_list {
+		if get_driver_entry(dev_num) != NULL
+			continue;		// already have it
+		if(fid = get_driver_file(device_slot) != NULL) {
+			if(get_driver_entry(fid) != NULL) {
+				create_dev_entry(driver_entry, dev_num,
+					dev_type, slot_id);
+			}
+			else {
+				driver_entry = create_driver_entry(fid,
+					filename);
+				create_dev_entry(driver_entry, dev_num,
+					dev_type, slot_id);
+			}
+		}
+		else log no driver for this device;
+	}
+	
+	/*
+	 * exec new drivers. have to do after last loop complete so each 
+	 * driver sees all of its dev_ports.
+	 */
+	for each entry in driver_list {
+		if(!running)
+			exec_driver(driver_entry);
+	}
+}

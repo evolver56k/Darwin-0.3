@@ -1,0 +1,685 @@
+# Dpkg --- the Debian GNU/Linux package maintenance system.
+#
+# Copyright (C) 1994,1995,1996 Ian Jackson <ian@chiark.chu.cam.ac.uk>
+# Copyright (C) 1995,1996 Erick Branderhorst <branderhorst@heel.fgg.eur.nl>
+# Copyright (C) 1996 Miquel van Smoorenburg <miquels@cistron.nl>
+# Copyright (C) 1996 Kim-Minh Kaplan <kkaplan@cdfhp3.in2p3.fr>
+# Copyright (C) 1996 Michael Shields <shields@crosslink.net>
+# Copyright (C) 1995 Bruce Perens <bruce@pixar.com>
+# Copyright (C) 1994 Carl Streeter <streeter@cae.wisc.edu>
+# Copyright (C) 1994 Matt Welsh <mdw@sunsite.unc.edu>
+# Copyright (C) 1994 Ian Murdock <imurdock@debian.org>
+# Parts written by Colin Plumb and Branko Lankester in 1993.
+#
+# Messages français pour dpkg (Linux/GNU Debian) :
+# Copyright (C) 1997 Yann Dirson <dirson@debian.org>.
+# Copyright (C) 1997 Christophe Le Bars <clebars@debian.org>.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dpkg 1.4.0.21\n"
+"POT-Creation-Date: 1998-03-02 16:26-0800\n"
+"PO-Revision-Date: 1997-05-13 22:07 EDT\n"
+"Last-Translator: Yann Dirson <dirson@debian.org>\n"
+"Language-Team: French <dpkg@packages.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#. supermsg: checkversion 1
+#: dpkg-deb/build.c:56
+#, c-format
+msgid "dpkg-deb - error: %s (`%s') doesn't contain any digits\n"
+msgstr "dpkg-deb: erreur: %s ('%s') ne contient pas de chiffres\n"
+
+#: dpkg-deb/build.c:78
+msgid "--build needs a directory argument"
+msgstr "--build a besoin d'un répertoire en paramètre"
+
+#: dpkg-deb/build.c:81
+msgid "--build takes at most two arguments"
+msgstr "--build prend au plus deux paramètres"
+
+#: dpkg-deb/build.c:85
+#, c-format
+msgid "unable to check for existence of archive `%.250s'"
+msgstr "impossible de vérifier l'existence de l'archive '%.250s'"
+
+#: dpkg-deb/build.c:98
+msgid "target is directory - cannot skip control file check"
+msgstr ""
+"la cible est un répertoire -\n"
+" impossible d'ignorer la vérification du fichier de contrôle"
+
+#: dpkg-deb/build.c:99
+#, c-format
+msgid ""
+"dpkg-deb: warning, not checking contents of control area.\n"
+"dpkg-deb: building an unknown package in `%s'.\n"
+msgstr ""
+"dpkg-deb: avertissement: pas de vérification du contenu de la zone de "
+"contrôle.\n"
+"dpkg-deb: construction d'un paquet inconnu dans '%s'.\n"
+
+#: dpkg-deb/build.c:119
+msgid "package name has characters that aren't lowercase alphanums or `-+.'"
+msgstr ""
+"le nom de paquet contient d'autres caractères que des minuscules,\n"
+" chiffres ou '-+.'"
+
+#: dpkg-deb/build.c:121
+#, c-format
+msgid "warning, `%s' contains user-defined Priority value `%s'\n"
+msgstr ""
+"attention : '%s' contient une valeur de priorité (Priority) non standard "
+"'%s'\n"
+
+#: dpkg-deb/build.c:126
+#, c-format
+msgid "warning, `%s' contains user-defined field `%s'\n"
+msgstr "attention : '%s' contient le champ non standard '%s'\n"
+
+#. submsg: checkversion
+#: dpkg-deb/build.c:131
+msgid "(upstream) version"
+msgstr ""
+
+#. submsg: checkversion
+#: dpkg-deb/build.c:133
+#, fuzzy
+msgid "Debian revision"
+msgstr "Debian Linux `"
+
+#: dpkg-deb/build.c:134
+#, c-format
+msgid "%d errors in control file"
+msgstr "%d erreurs dans le fichier de contrôle"
+
+#: dpkg-deb/build.c:145
+#, c-format
+msgid "dpkg-deb: building package `%s' in `%s'.\n"
+msgstr "dpkg-deb: construction du paquet '%s' dans '%s'.\n"
+
+#: dpkg-deb/build.c:151
+#, fuzzy
+msgid "unable to stat control directory"
+msgstr "impossible d'ouvrir le répertoire de contrôle temporaire"
+
+#: dpkg-deb/build.c:152
+#, fuzzy
+msgid "control directory is not a directory"
+msgstr "je ne peut pas lire le répertoire d'info"
+
+#: dpkg-deb/build.c:154
+#, c-format
+msgid "control directory has bad permissions %03lo (must be >=0755 and <=0775)"
+msgstr ""
+"le répertoire de contrôle a des mauvais droits d'accès\n"
+" (%03lo ; devrait être entre 0755 et 0775)"
+
+#: dpkg-deb/build.c:167
+#, c-format
+msgid "maintainer script `%.50s' is not a plain file or symlink"
+msgstr "le script de maintenance '%.50s' n'est ni un vrai fichier ni un lien"
+
+#: dpkg-deb/build.c:169
+#, c-format
+msgid ""
+"maintainer script `%.50s' has bad permissions %03lo (must be >=0555 and "
+"<=0775)"
+msgstr ""
+"le script de maintenance '%.50s' a des mauvais droits d'accès\n"
+" (%03lo ; devrait être entre 0755 et 0775)"
+
+#: dpkg-deb/build.c:173
+#, c-format
+msgid "maintainer script `%.50s' is not stattable"
+msgstr "le script de maintenance '%.50s' n'est pas observable avec 'stat(2)'"
+
+#: dpkg-deb/build.c:181
+msgid "empty string from fgets reading conffiles"
+msgstr ""
+"'fgets' renvoie une chaine vide en lisant les fichiers de configuration"
+
+#: dpkg-deb/build.c:183
+#, c-format
+msgid "warning, conffile name `%.50s...' is too long"
+msgstr ""
+"attention : le nom du fichier de configuration '%.50s...' est trop long"
+
+#: dpkg-deb/build.c:194
+#, c-format
+msgid "conffile `%.250s' does not appear in package"
+msgstr "le fichier de configuration '%.250s' n'apparaît pas dans le paquet"
+
+#: dpkg-deb/build.c:196
+#, c-format
+msgid "conffile `%.250s' is not stattable"
+msgstr ""
+"le fichier de configuration '%.250s' n'est pas observable avec 'stat(2)'"
+
+#: dpkg-deb/build.c:198
+#, c-format
+msgid "warning, conffile `%s' is not a plain file\n"
+msgstr ""
+"attention : le fichier de configuration '%s' n'est pas un vrai fichier\n"
+
+#: dpkg-deb/build.c:203
+msgid "error reading conffiles file"
+msgstr "erreur de lecture d'un fichier de configuration"
+
+#: dpkg-deb/build.c:206
+msgid "error opening conffiles file"
+msgstr "erreur d'ouverture d'un fichier de configuration"
+
+#: dpkg-deb/build.c:209
+#, c-format
+msgid "dpkg-deb: ignoring %d warnings about the control file(s)\n"
+msgstr "dpkg-deb: %d avertissements ignorés sur les fichiers de contrôle\n"
+
+#: dpkg-deb/build.c:215
+#, c-format
+msgid "unable to create `%.255s'"
+msgstr "impossible de créer '%.255s'"
+
+#: dpkg-deb/build.c:216
+#, c-format
+msgid "unable to unbuffer `%.255s'"
+msgstr "impossible de supprimer le tampon de '%.255s'"
+
+#: dpkg-deb/build.c:220 dpkg-deb/build.c:269
+#, c-format
+msgid "failed to chdir to `%.255s'"
+msgstr "impossible de changer de répertoire vers '%.255s'"
+
+#: dpkg-deb/build.c:221
+msgid "failed to chdir to .../DEBIAN"
+msgstr "impossible de changer de répertoire vers .../DEBIAN"
+
+#: dpkg-deb/build.c:222
+msgid "failed to exec tar -cf"
+msgstr "impossible d'exécuter «tar -cf»"
+
+#: dpkg-deb/build.c:225
+msgid "failed to make tmpfile (control)"
+msgstr "impossible de créer un fichier temporaire (contrôle)"
+
+#: dpkg-deb/build.c:228
+msgid "failed to exec gzip -9c"
+msgstr "impossible d'exécuter «gzip -9c»"
+
+#: dpkg-deb/build.c:233
+msgid "failed to fstat tmpfile (control)"
+msgstr "impossible d'observable le statut d'un fichier temporaire (contrôle)"
+
+#: dpkg-deb/build.c:255
+msgid "failed to rewind tmpfile (control)"
+msgstr "impossible de rembobiner un fichier temporaire (contrôle)"
+
+#: dpkg-deb/build.c:258
+msgid "failed to exec cat (control)"
+msgstr "impossible d'exécuter «cat» (contrôle)"
+
+#: dpkg-deb/build.c:260
+#, fuzzy
+msgid "cat (control)"
+msgstr "impossible d'exécuter «cat» (contrôle)"
+
+#: dpkg-deb/build.c:264
+msgid "failed to make tmpfile (data)"
+msgstr "impossible de créer un fichier temporaire (données)"
+
+#: dpkg-deb/build.c:271
+msgid "failed to exec tar --exclude"
+msgstr "impossible d'exécuter «tar --exclude»"
+
+#: dpkg-deb/build.c:278
+msgid "failed to exec gzip -9c from tar --exclude"
+msgstr "impossible d'exécuter «gzip -9c» de «tar --exclude»"
+
+#: dpkg-deb/build.c:281
+#, fuzzy
+msgid "gzip -9c from tar --exclude"
+msgstr "impossible d'exécuter «gzip -9c» de «tar --exclude»"
+
+#: dpkg-deb/build.c:293
+msgid "failed to rewind tmpfile (data)"
+msgstr "impossible de rembobiner un fichier temporaire (données)"
+
+#: dpkg-deb/build.c:296
+msgid "failed to exec cat (data)"
+msgstr "impossible d'exécuter «cat» (données)"
+
+#: dpkg-deb/build.c:298
+msgid "cat (data)"
+msgstr ""
+
+#: dpkg-deb/extract.c:51
+msgid "failed to exec sh -c mv foo/* &c"
+msgstr "impossible d'exécuter «sh -c mv foo/* &c»"
+
+#. supermsg: readfail
+#: dpkg-deb/extract.c:59
+#, c-format
+msgid "error reading %s from %.255s"
+msgstr "erreur de lecture dans : %s de %.255s"
+
+#. supermsg: readfail
+#: dpkg-deb/extract.c:62
+#, c-format
+msgid "unexpected end of file in %s in %.255s"
+msgstr "EOF inattendue dans : %s de %.255s"
+
+#: dpkg-deb/extract.c:73
+#, fuzzy, c-format
+msgid "file `%.250s' is corrupt - %.250s length contains nulls"
+msgstr ""
+"le fichier '%.250s' est corrompu -\n"
+" longueur(%.250s) contient des caractères nuls"
+
+#: dpkg-deb/extract.c:80
+#, c-format
+msgid "file `%.250s' is corrupt - bad digit (code %d) in %s"
+msgstr ""
+"le fichier '%.250s' est corrompu -\n"
+" mauvais chiffre (code %d) dans %s"
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:90
+#, fuzzy
+msgid "skipped member data"
+msgstr "données d'un membre \"skippé\""
+
+#: dpkg-deb/extract.c:112
+#, c-format
+msgid "failed to read archive `%.255s'"
+msgstr "impossible de lire l'archive '%.255s'"
+
+#: dpkg-deb/extract.c:113
+msgid "failed to fstat archive"
+msgstr "impossible d'obtenir le statut de l'archive"
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:115
+msgid "version number"
+msgstr "numéro de version"
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:125
+msgid "between members"
+msgstr "entre membres"
+
+#: dpkg-deb/extract.c:127
+#, c-format
+msgid "file `%.250s' is corrupt - bad magic at end of first header"
+msgstr ""
+"le fichier '%.250s' est corrompu -\n"
+" mauvais \"magic\" à la fin du premier en-tête"
+
+#: dpkg-deb/extract.c:129
+msgid "member length"
+msgstr ""
+
+#: dpkg-deb/extract.c:131
+#, c-format
+msgid "file `%.250s' is corrupt - negative member length %ld"
+msgstr ""
+"le fichier '%.250s' est corrompu -\n"
+"longueur de membre négative (%ld)"
+
+#: dpkg-deb/extract.c:134
+#, c-format
+msgid "file `%.250s' is not a debian binary archive (try dpkg-split?)"
+msgstr "le fichier '%.250s' n'est pas une archive debian (essayer dpkg-split?)"
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:138
+msgid "header info member"
+msgstr ""
+
+#: dpkg-deb/extract.c:141
+msgid "archive has no newlines in header"
+msgstr "l'archive n'a pas de sauts de lignes dans l'en-tête"
+
+#: dpkg-deb/extract.c:144
+msgid "archive has no dot in version number"
+msgstr "l'archive n'a pas de point dans le numéro de version"
+
+#: dpkg-deb/extract.c:147
+#, c-format
+msgid "archive version %.250s not understood, get newer dpkg-deb"
+msgstr ""
+"version de l'archive (%.250s) incomprise,\n"
+" récupérez un 'dpkg-deb' plus récent"
+
+#: dpkg-deb/extract.c:163
+#, c-format
+msgid "file `%.250s' contains ununderstood data member %.*s, giving up"
+msgstr ""
+"le fichier '%.250s' contient un membre données incompris (%.*s) ; abandon"
+
+#: dpkg-deb/extract.c:168
+#, c-format
+msgid "file `%.250s' contains two control members, giving up"
+msgstr "le fichier '%.250s' contient deux membres ; abandon"
+
+#: dpkg-deb/extract.c:180
+#, c-format
+msgid ""
+" new debian package, version %s.\n"
+" size %ld bytes: control archive= %ld bytes.\n"
+msgstr ""
+" nouveau paquet debian, version %s.\n"
+" taille %ld octets ; archive de contrôle : %ld octets.\n"
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:193
+msgid "ctrl information length"
+msgstr "longueur des infos de contrôle"
+
+#: dpkg-deb/extract.c:195
+#, c-format
+msgid "archive has malformatted ctrl len `%s'"
+msgstr "l'archive possède une longueur de contrôle mal-formée (%s)"
+
+#: dpkg-deb/extract.c:198
+#, c-format
+msgid ""
+" old debian package, version %s.\n"
+" size %ld bytes: control archive= %ld, main archive= %ld.\n"
+msgstr ""
+" vieux paquet debian, version %s.\n"
+" taille %ld octets ; archive de contrôle : %ld, archive principale : %ld.\n"
+
+#: dpkg-deb/extract.c:204
+msgid "malloc ctrlarea failed"
+msgstr ""
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:208
+#, fuzzy
+msgid "ctrlarea"
+msgstr "infos de contrôle"
+
+#: dpkg-deb/extract.c:214
+msgid ""
+"dpkg-deb: file looks like it might be an archive which has been\n"
+"dpkg-deb:    corrupted by being downloaded in ASCII mode\n"
+msgstr ""
+"dpkg-deb: le fichier ressemble à une archive ayant été corrompue\n"
+"dpkg-deb:    par un téléchargement en mode ASCII\n"
+
+#: dpkg-deb/extract.c:219
+#, c-format
+msgid "`%.255s' is not a debian format archive"
+msgstr "'%.255s' n'est pas une archive au format debian"
+
+#: dpkg-deb/extract.c:229
+msgid "failed to fdopen p1 in paste"
+msgstr "impossible de \"fd-ouvrir\" p1 dans «paste»"
+
+#: dpkg-deb/extract.c:231
+msgid "failed to write to gzip -dc"
+msgstr "impossible d'écrire dans le tube de «gzip -dc»"
+
+#: dpkg-deb/extract.c:232
+msgid "failed to close gzip -dc"
+msgstr "impossible de fermer le tube de «gzip -dc»"
+
+#: dpkg-deb/extract.c:239
+msgid "failed to syscall lseek to files archive portion"
+msgstr "impossible de se déplacer vers la portion archive des fichiers"
+
+#: dpkg-deb/extract.c:247
+msgid "failed to fdopen p1 in copy"
+msgstr "impossible de \"fd-ouvrir\" p1 dans «copy»"
+
+#. submsg: readfail
+#: dpkg-deb/extract.c:250
+msgid "member data"
+msgstr "données d'un membre"
+
+#: dpkg-deb/extract.c:251
+msgid "failed to write to pipe in copy"
+msgstr "impossible d'écrire dans le tube dans «copy»"
+
+#: dpkg-deb/extract.c:254
+msgid "failed to close pipe in copy"
+msgstr "impossible de fermer le tube dans «copy»"
+
+#: dpkg-deb/extract.c:267
+msgid "failed to exec gzip -dc"
+msgstr "impossible d exécuter «gzip -dc»"
+
+#: dpkg-deb/extract.c:275
+msgid "failed to create directory"
+msgstr "impossible de créer le répertoire"
+
+#: dpkg-deb/extract.c:276
+msgid "failed to chdir to directory after creating it"
+msgstr "impossible d'aller dans le répertoire juste créé"
+
+#: dpkg-deb/extract.c:278
+msgid "failed to chdir to directory"
+msgstr "impossible d'aller dans le répertoire"
+
+#: dpkg-deb/extract.c:291
+msgid "failed to exec tar"
+msgstr "impossible d exécuter «tar»"
+
+#: dpkg-deb/extract.c:314 dpkg-deb/extract.c:329 dpkg-deb/info.c:74
+#, c-format
+msgid "--%s needs a .deb filename argument"
+msgstr "--%s a besoin d'un fichier .deb comme paramètre"
+
+#: dpkg-deb/extract.c:317
+#, c-format
+msgid ""
+"--%s needs a target directory.\n"
+"Perhaps you should be using dpkg --install ?"
+msgstr ""
+"--%s a besoin d'un répertoire cible.\n"
+"Peut-être devriez-vous utiliser dpkg --install ?"
+
+#: dpkg-deb/extract.c:320
+#, c-format
+msgid "--%s takes at most two arguments (.deb and directory"
+msgstr "--%s prend au plus deux paramètres (.deb et répertoire)"
+
+#: dpkg-deb/extract.c:331
+#, c-format
+msgid "--%s takes only one argument (.deb filename)"
+msgstr "--%s prend un seul argument (un nom de fichier .deb)"
+
+#: dpkg-deb/info.c:55
+msgid "failed to chdir to `/' for cleanup"
+msgstr "impossible d'aller dans le répertoire '/' pour nettoyage"
+
+#: dpkg-deb/info.c:57
+msgid "failed to fork for cleanup"
+msgstr "échec du 'fork' pour nettoyage"
+
+#: dpkg-deb/info.c:60
+msgid "failed to exec rm for cleanup"
+msgstr "échec d'exécution de 'rm' pour nettoyage"
+
+#: dpkg-deb/info.c:62
+msgid "failed to wait for rm cleanup"
+msgstr "échec de l'attente du nettoyage par «rm»"
+
+#: dpkg-deb/info.c:63
+#, c-format
+msgid "rm cleanup failed, code %d\n"
+msgstr "échec du nettoyage par «rm», code %d\n"
+
+#: dpkg-deb/info.c:75
+msgid "failed to make temporary filename"
+msgstr "impossible de construire un nom de fichier temporaire"
+
+#: dpkg-deb/info.c:79
+msgid "failed to exec rm -rf"
+msgstr "impossible d'exécuter «rm -rf»"
+
+#: dpkg-deb/info.c:102
+msgid "failed to exec cat component"
+msgstr "impossible d'exécuter «cat <composant>»"
+
+#: dpkg-deb/info.c:104
+msgid "cat component"
+msgstr "cat <composant>"
+
+#: dpkg-deb/info.c:106
+#, c-format
+msgid "dpkg-deb: `%.255s' contains no control component `%.255s'\n"
+msgstr "dpkg-deb: '%.255s' ne contient pas de composant de contrôle '%.255s'\n"
+
+#: dpkg-deb/info.c:110
+#, c-format
+msgid "open component `%.255s' (in %.255s) failed in an unexpected way"
+msgstr ""
+"échec de l'ouverture du composant '%.255s' (dans %.255s), d'une manière "
+"inattendue"
+
+#: dpkg-deb/info.c:114
+msgid "at least one requested control component missing"
+msgstr "au moins l'un des composant de contrôle demandés manque"
+
+#: dpkg-deb/info.c:127
+#, c-format
+msgid "cannot scan directory `%.255s'"
+msgstr "impossible de parcourir le répertoire '%.255s'"
+
+#: dpkg-deb/info.c:132
+#, c-format
+msgid "cannot stat `%.255s' (in `%.255s')"
+msgstr "impossible d'obtenir le statut de '%.255s' (dans '%.255s')"
+
+#: dpkg-deb/info.c:135
+#, c-format
+msgid "cannot open `%.255s' (in `%.255s')"
+msgstr "impossible d'ouvrir '%.255s' (dans '%.255s')"
+
+#: dpkg-deb/info.c:149
+#, c-format
+msgid "failed to read `%.255s' (in `%.255s')"
+msgstr "impossible de lire '%.255s' (dans '%.255s')"
+
+# HERE
+#: dpkg-deb/info.c:152
+#, c-format
+msgid " %7ld bytes, %5d lines   %c  %-20.127s %.127s\n"
+msgstr " %7ld octets, %5d lignes   %c  %-20.127s %.127s\n"
+
+#: dpkg-deb/info.c:158
+#, c-format
+msgid "     not a plain file          %.255s\n"
+msgstr "     pas un vrai fichier          %.255s\n"
+
+#: dpkg-deb/info.c:163
+#, c-format
+msgid "failed to read `control' (in `%.255s')"
+msgstr "impossible d lire `control' (dans `%.255s')"
+
+#: dpkg-deb/info.c:164
+msgid "(no `control' file in control archive!)\n"
+msgstr "(pas de fichier `control' dans l'archive de contrôle!)\n"
+
+#: dpkg-deb/info.c:184
+msgid "could not open the `control' component"
+msgstr "ne peut pas ouvrir le composant `control'"
+
+#: dpkg-deb/info.c:214
+msgid "failed during read of `control' component"
+msgstr "échec pendant la lecture du composant `control'"
+
+#: dpkg-deb/info.c:246
+msgid "--contents takes exactly one argument"
+msgstr "--contents prend exactement un argument"
+
+#: dpkg-deb/main.c:49
+#, fuzzy, c-format
+msgid ""
+"Debian GNU/Linux `%s' package archive backend version %s.\n"
+"Copyright (C) 1994-1996 Ian Jackson.  This is free software; see the\n"
+"GNU General Public Licence version 2 or later for copying conditions.\n"
+"There is NO warranty.  See `%s --licence' for details.\n"
+msgstr ""
+"Copyright (C) 1994-1996 Ian Jackson.  Ceci est un logiciel libre;\n"
+"consultez la GNU General Public Licence version 2 ou supérieure pour les "
+"conditions\n"
+"de reproduction.  Il n'y a AUCUNE garantie. Consultez dpkg-split --licence "
+"pour les détails.\n"
+
+#: dpkg-deb/main.c:62
+#, fuzzy, c-format
+msgid ""
+"Usage: %s -b|--build <directory> [<deb>]    Build an archive.\n"
+"       %s -c|--contents <deb>               List contents.\n"
+"       %s -I|--info <deb> [<cfile>...]      Show info to stdout.\n"
+"       %s -f|--field <deb> [<cfield>...]    Show field(s) to stdout.\n"
+"       %s -e|--control <deb> [<directory>]  Extract control info.\n"
+"       %s -x|--extract <deb> <directory>    Extract files.\n"
+"       %s -X|--vextract <deb> <directory>   Extract & list files.\n"
+"       %s --fsys-tarfile <deb>              Output filesystem tarfile.\n"
+"       %s -h|--help                         Display this message.\n"
+"       %s --version | --licence             Show version/licence.\n"
+"\n"
+"<deb> is the filename of a Debian format archive.\n"
+"<cfile> is the name of an administrative file component.\n"
+"<cfield> is the name of a field in the main `control' file.\n"
+"Options:  -D for debugging output; --old or --new controls archive format;\n"
+"--no-check to suppress control file check (build bad package).\n"
+"\n"
+"Use `dpkg' to install and remove packages from your system, or\n"
+"`dselect' for user-friendly package management.  Packages unpacked\n"
+"using `%s --extract' will be incorrectly installed!\n"
+msgstr ""
+"Syntaxe:\n"
+"       dpkg-deb -b|--build <répertoire> [<deb>]   Construit une archive.\n"
+"       dpkg-deb -c|--contents <deb>               Liste le contenu.\n"
+"       dpkg-deb -I|--info <deb> [<cfile>...]      Affiche les informations "
+"sur la sortie standard.\n"
+"       dpkg-deb -f|--field <deb> [<cfield>...]    Affiche le(s) champ(s) sur "
+"la sortie standard.\n"
+"       dpkg-deb -e|--control <deb> [<répertoire>] Extrait l'information de "
+"contrôle.\n"
+"       dpkg-deb -x|--extract <deb> <répertoire>   Extrait les fichiers.\n"
+"       dpkg-deb -X|--vextract <deb> <répertoire>  Extrait et liste les "
+"fichiers.\n"
+"       dpkg-deb --fsys-tarfile <deb>              Sort le système de "
+"fichiers du fichier tar.\n"
+"       dpkg-deb -h|--help                         Affiche ce message.\n"
+"       dpkg-deb --version | --licence             Affiche la "
+"version/licence.\n"
+"<deb> est le nom de fichier d'une archive au format debian.\n"
+"<cfile> est le nom d'un composant fichier administratif.\n"
+"<cfield> est le nom d'un champ dans le fichier `control' principal.\n"
+"Options:  -D pour sortie de débogage; --old ou --new contrôle le format "
+"d'archive;\n"
+"          --no-check pour supprimer la vérification du fichier control "
+"(construit de mauvais paquet).\n"
+"\n"
+"Utiliser `dpkg' pour installer et supprimer des paquets de votre système, "
+"ou\n"
+"`dselect' pour une gestion des paquets conviviale.  Les paquets dépaquetés "
+"en\n"
+"utilisant `dpkg-deb --extract' seront incorrectement installés !\n"
+
+#: dpkg-deb/main.c:90
+msgid ""
+"Type dpkg-deb --help for help about manipulating *.deb files;\n"
+"Type dpkg --help for help about installing and deinstalling packages."
+msgstr ""
+"Taper dpkg-deb --help pour une aide à propos de la manipulation des fichiers "
+"*.deb;\n"
+"Taper dpkg --help pour une aide sur l'installation et la désinstallation des "
+"paquets."
+
+#: dpkg-deb/main.c:149
+#, c-format
+msgid "conflicting actions --%s and --%s"
+msgstr "actions conflictuelles (--%s et --%s)"
+
+#: dpkg-deb/main.c:175
+msgid "need an action option"
+msgstr "manque une action à exécuter"

@@ -1,0 +1,104 @@
+{
+    DOCICONFILES = (); 
+    DYNAMIC_CODE_GEN = NO; 
+    FILESTABLE = {
+        CLASSES = (
+            HashTable.m, 
+            hashtable.m, 
+            List.m, 
+            maptable.m, 
+            NXBundle.m, 
+            NXCharacterSet.m, 
+            NXConstantString.m, 
+            NXMutableString.m, 
+            NXPropertyList.m, 
+            NXReadOnlyString.m, 
+            NXReadOnlySubstring.m, 
+            NXReadWriteString.m, 
+            NXSimpleReadOnlyString.m, 
+            NXString.m, 
+            NXStringTable.m, 
+            NXUniquedString.m, 
+            "objc-class.m", 
+            "objc-errors.m", 
+            "objc-globaldata.m", 
+            "objc-globaltext.m", 
+            "objc-load.m", 
+            "objc-runtime.m", 
+            "objc-sel.m", 
+            Object.m, 
+            Protocol.m, 
+            Storage.m, 
+            StreamTable.m, 
+            typedstream.m
+        ); 
+        C_FILES = (); 
+        HEADERSEARCH = (., /System/Library/Frameworks/System.framework/PrivateHeaders); 
+        H_FILES = (
+            error.h, 
+            HashTable.h, 
+            hashtable.h, 
+            List.h, 
+            maptable.h, 
+            NXBundle.h, 
+            NXBundlePrivate.h, 
+            NXCharacterSet.h, 
+            NXPropertyList.h, 
+            NXString.h, 
+            NXStringPrivate.h, 
+            NXStringTable.h, 
+            "objc-class.h", 
+            "objc-dispatch.h", 
+            "objc-load.h", 
+            "objc-private.h", 
+            "objc-runtime.h", 
+            objc.h, 
+            Object.h, 
+            Protocol.h, 
+            Storage.h, 
+            StreamTable.h, 
+            typedstream.h, 
+            typedstreamprivate.h, 
+            unichar.h, 
+            vectors.h, 
+            "objc-config.h"
+        ); 
+        OTHER_LINKED = ("objc-msg.s", cplus_init.c, except.c, "objc-moninit.c"); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            m.template, 
+            h.template, 
+            "objc-msg-hppa-copycache-lock.s", 
+            "objc-msg-m68k-copycache-lock.s", 
+            "objc-msg-hppa-lock.s", 
+            "objc-msg-m68k-lock.s", 
+            "objc-msg-hppa-nolock.s", 
+            "objc-msg-m68k-nolock.s", 
+            "objc-msg-i386-copycache-lock.s", 
+            "objc-msg-i386-lock.s", 
+            "objc-msg-ppc.s", 
+            "objc-msg-i386-nolock.s", 
+            "objc-msg-sparc.s", 
+            PB.project
+        ); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/project"; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-pipe"; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = "-pipe"; 
+    PROJECTNAME = objc; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.6; 
+    TARGETS = (all, kernel, library, profile, shlib, build); 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_COMPILEROPTIONS = "-pipe"; 
+}

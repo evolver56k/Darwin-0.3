@@ -1,0 +1,173 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f2\fmodern Courier;}
+\paperw13040
+\paperh9940
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\f0\b0\i0\ulnone\fs24\fc0\cf0 Here's a proposal for the mechanism by which drivers which have just been loaded into the kernel will be connected with the appropriate direct and/or indirect devices which already exist in the kernel. This proposal does NOT cover the means by which drivers are actually loaded into the kernel. That may very well be an MD solution. The mechanism proposed here is indeed machine independent and I will write it if people think it will be useful.\
+\
+Problem: You load in a new indirect device driver - for example, a new SCSI indirect device like a scanner. Once it's loaded into the kernel, you want to give the class a chance to connect with each instance of SCSIController which currently is running in the system. Or: you load in a new direct device - say, a new SCSIController object. Once it's loaded and initialized, you want to give all of the SCSI indirect devices in the system a chance to connect to this new controller. The kernel's standard SCSIDisk object will want to see if there are any disk drivers connected to the controller attached to this new driver. \
+\
+Solution: \
+\
+* All IODevices must implement this factory method:\
+\
+
+\f2\fc1\cf1 	+ (IODeviceStyle)
+\b deviceStyle
+\b0 ;\
+
+\f0\fc0\cf0 \
+...which returns one of these: \
+\
+
+\f2\fc1\cf1 	typedef enum \{\
+		IO_STYLE_DIRECT,\
+		IO_STYLE_INDIRECT,\
+		IO_STYLE_PSEUDO\
+	\} 
+\b IODeviceStyle
+\b0 ;\
+
+\f0\fc0\cf0 \
+I am certainly open for suggestion for the name of this property. Seems like they're all used up (type, name, class, etc.). Anyway, it's pretty self-explanatory - it answers the question "Is this device a direct device, an indirect device, or a pseudo device?"\
+\
+* All devices to which an indirect device can be connected must declare their exported interface as an ObjC protocol. (For example, SCSIControllerPublic or FloppyControllerPublic.)\
+\
+* Indirect devices have a factory method, which returns a (Protocol **), and which is a list of protocols the class requires.\
+\
+* Remember that a list of running IODevice objects in the kernel is maintained by IODevice. A driver instance adds itself to this list at -registerDevice time. Let's call this list deviceList for now.\
+\
+* A list of IODevice leaf subclasses (i.e., not abstract superclasses) in the system will be maintained by IODevice. Each IODevice leaf subclass must call this method on self or super at class +initialize time:\
+\
+	+ 
+\f2\b\fc1\cf1 registerClass
+\f0\b0\fc0\cf0 ;\
+	\
+Let's call the resulting list, which will be maintained by IODevice, the classList for now.\
+\
+* There is a new kernel function - which may be private, let's see if we need to export it:\
+\
+
+\f2\fc1\cf1 	IOReturn 
+\b IOAddLoadedDevice
+\b0 (\
+		id newClass,\
+		id deviceDescription);\
+
+\f0\fc0\cf0 		\
+This function is responsible for probing the newly added class, and possibly other classes in the system, as appropriate. \
+\
+The deviceDescription argument passed to this function is an IODeviceDescription or a subclass of same. It contains a valid _deviceMaster and _devicePort if the driver being loaded is a direct device. (Where these data come from is beyond the scope of this proposal.) It also contains whatever machine-dependent or device-dependent configuration info is appropriate to the loaded device. The newClass argument is simply the id of the new class which has been loaded.\
+\
+Here's some pseudocode which illustrates what this function does:\
+\
+
+\f2\fc1\cf1 IOReturn IOAddLoadedDevice(\
+    id newClass,\
+    id deviceDescription)\
+\{\
+    switch([newClass deviceStyle]) \{\
+    case IO_STYLE_INDIRECT:\
+   	/* \
+	 * First probe this class once for all other running objects\
+	 * which export the protocol(s) required by this indirect device. \
+	 * Note all deviceStyles can export a protocol, not just direct \
+	 * devices.\
+	 */\
+	get protocols needed for newClass;\
+	for each object in deviceList \{\
+	    for each protocol needed by newClass \{\
+		if found object doesn't support it \{\
+		    continue to next object in device list;\
+		\}\
+	    \}\
+	    cons up an IODeviceDescription with \
+	    	_directDevice = the object we just found;\
+	    newObject = [newClass probe:IODeviceDescription];\
+	    if(newObject) \{\
+	    	/*\
+		 * See if any other indirect devices in the system want \
+		 * to connect to this new object.\
+		 */\
+		connectToIndirectDevices(newObject);\
+	    \}\
+	\}\
+	break;\
+\
+    case IO_STYLE_DIRECT:\
+    case IO_STYLE_PSEUDO:\
+   	newObject = [newClass probe:deviceDescription];\
+	if(newObject) \{\
+	    /*\
+	     * See if any other indirect devices in the system want \
+	     * to connect to this new object.\
+	     */\
+	    connectToIndirectDevices(newObject);\
+	\}\
+	break;\
+    \}\
+    return error if we did not create any new devices;\
+\
+	\
+/*\
+ * Probe for any indirect device classes in the system which are \
+ * interested in connecting to a newly instantiated device of any kind.\
+ * (private, only used by IOAddLoadedDevice().)\
+ */\
+void connectToIndirectDevices(id newObject)\
+\{\
+    for each indirect device class in classList \{\
+	for each protocol needed by newObject \{\
+	    if newObject doesn't support this protocol \{\
+		continue to next indirect device;\
+	    \}\
+	\}	\
+	cons up an IODeviceDescription with \
+	    _directDevice = newObject;\
+	probe indirect device with this IODeviceDescription;\
+    \}	\
+    return;\
+\}\
+
+\f0\fc0\cf0     \
+[\
+\
+
+\fc1\cf1 addenda 14 Jan 93\
+\
+I think connectToIndirectDevices() should be called from registerDevice.\
+Initial autoconfig would work like this:\
+\
+for each indirect device in statis indirect device list \{\
+	registerClass:indirectDevice\
+\}\
+\
+for each device in pseudoDevice list \{\
+	probe it (may result in instantiations, registerDevice, and \
+		indirect probes via connectToIndirectDevices)\
+\}\
+\
+start up direct devices;\
+\
+...simplifies things immensely, probe: doesn't return anything (except maybe\
+"yes, I started up something"\
+\
+Also, addLoadedDevice doesn't need to call connectToIndirectDevices!\
+\
+end addenda \
+]\
+\
+
+\fc0\cf0 One thing I'm not sure a
+\fc1\cf1 bout is connectToIndirectDevices() - we may actually want to export some form of this in case some driver's probe: method creates multiple instances of the device and if these newly created instances also export a protocol for use by indirect devices. This seems pretty far-fetched, but you never know...\
+\
+
+\fc0\cf0 I think that about does it. Should be pretty straightforward. Comments?\
+\
+--dpm\
+\
+......\
+file - driverkit/notes/loadingDrivers.rtf\
+
+}

@@ -1,0 +1,68 @@
+This is Info file wget.info, produced by Makeinfo version 1.67 from the
+input file wget.texi.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.  Permission is granted to copy and distribute
+modified versions of this manual under the conditions for verbatim
+copying, provided also that the sections entitled "Copying" and "GNU
+General Public License" are included exactly as in the original, and
+provided that the entire resulting derived work is distributed under
+the terms of a permission notice identical to this one.
+
+
+Indirect:
+wget.info-1: 637
+wget.info-2: 46702
+wget.info-3: 79055
+
+Tag Table:
+(Indirect)
+Node: Top637
+Node: Overview1506
+Node: Invoking4652
+Node: URL Format5602
+Node: Option Syntax7412
+Node: Basic Options8825
+Node: Advanced Options11738
+Node: Recursive Retrieval24714
+Node: Following Links27003
+Node: Relative Links28035
+Node: Host Checking28549
+Node: Domain Acceptance30619
+Node: All Hosts32289
+Node: Types of Files32716
+Node: Directory-Based Limits35166
+Node: FTP Links37806
+Node: Time-Stamping38676
+Node: Time-Stamping Usage40313
+Node: HTTP Time-Stamping Internals41882
+Node: FTP Time-Stamping Internals43091
+Node: Startup File44299
+Node: Wgetrc Location45172
+Node: Wgetrc Syntax45987
+Node: Wgetrc Commands46702
+Node: Sample Wgetrc53160
+Node: Examples57452
+Node: Simple Usage58059
+Node: Advanced Usage60325
+Node: Guru Usage63078
+Node: Various64740
+Node: Distribution65214
+Node: Mailing List66056
+Node: Reporting Bugs66732
+Node: Portability68141
+Node: Signals68868
+Node: Appendices69522
+Node: Robots69937
+Node: Introduction to RES71086
+Node: RES Format72983
+Node: User-Agent Field74087
+Node: Disallow Field74851
+Node: Norobots Examples75462
+Node: Security Considerations76416
+Node: Contributors77487
+Node: Copying79055
+Node: Concept Index98218
+
+End Tag Table

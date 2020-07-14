@@ -1,0 +1,22 @@
+/Makefile.in/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/PB.project/1.1.1.1/Thu Apr 15 17:31:44 1999//Tbash-1
+/README/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/basename.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/cat.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/dirname.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/finfo.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/getconf.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/head.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/hello.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/logname.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/necho.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/pathchk.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/print.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/pushd.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/rmdir.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/sleep.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/sprintf.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/tee.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+/truefalse.c/1.1.1.1/Thu Apr 15 17:29:44 1999//Tbash-1
+/tty.c/1.1.1.1/Thu Apr 15 17:29:45 1999//Tbash-1
+D

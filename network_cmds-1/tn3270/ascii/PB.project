@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (map3270.c, mset.c, termin.c); 
+        H_FILES = (map3270.h, state.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble, PB.project, default.map); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = ascii; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

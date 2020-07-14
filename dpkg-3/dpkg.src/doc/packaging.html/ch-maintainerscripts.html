@@ -1,0 +1,273 @@
+<html><head>
+<title>Debian packaging manual - Package maintainer scripts
+and installation procedure</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 6<br>
+Package maintainer scripts
+and installation procedure
+</h1>
+<hr>
+<h2><A name="s6.1">
+6.1 Introduction to package maintainer scripts
+</A></h2>
+
+It is possible supply scripts as part of a package which <kbd>dpkg</kbd>
+will run for you when your package is installed, upgraded or removed.<P>
+
+These scripts should be the files <code>preinst</code>, <code>postinst</code>,
+<code>prerm</code> and <code>postrm</code> in the control area of the package.  They
+must be proper exectuable files; if they are scripts (which is
+recommended) they must start with the usual <code>#!</code> convention.  They
+should be readable and executable to anyone, and not world-writeable.<P>
+
+<kbd>dpkg</kbd> looks at the exit status from these scripts.  It is
+important that they exit with a non-zero status if there is an error,
+so that <kbd>dpkg</kbd> can stop its processing.  For shell scripts this
+means that you <em>almost always</em> need to use <code>set -e</code> (this is
+usually true when writing shell scripts, in fact).  It is also
+important, of course, that they don't exit with a non-zero status if
+everything went well.<P>
+
+It is necessary for the error recovery procedures that the scripts be
+idempotent: ie, invoking the same script several times in the same
+situation should do no harm.  If the first call failed, or aborted
+half way through for some reason, the second call should merely do the
+things that were left undone the first time, if any, and exit with a
+success status.<P>
+
+When a package is upgraded a combination of the scripts from the old
+and new packages is called in amongst the other steps of the upgrade
+procedure.  If your scripts are going to be at all complicated you
+need to be aware of this, and may need to check the arguments to your
+scripts.<P>
+
+Broadly speaking the <kbd>preinst</kbd> is called before (a particular
+version of) a package is installed, and the <kbd>postinst</kbd> afterwards;
+the <kbd>prerm</kbd> before (a version of) a package is removed and the
+<kbd>postrm</kbd> afterwards.<P>
+ 
+
+Programs called from maintainer scripts should not normally have a
+path prepended to them. Before installation is started <kbd>dpkg</kbd>
+checks to see if the programs <kbd>ldconfig</kbd>,
+<kbd>start-stop-daemon</kbd>, <kbd>install-info</kbd>, and <kbd>update-rc.d</kbd>
+can be found via the <code>PATH</code> environment variable. Those programs,
+and any other program that one would expect to on the <code>PATH</code>,
+should thus be invoked without an absolute pathname. Maintainer
+scripts should also not reset the <code>PATH</code>, though they might choose
+to modify it by pre- or appending package-specific directories. These
+considerations really apply to all shell scripts.
+<hr>
+<h2><A name="s-mscriptsinstact">
+6.2 Summary of ways maintainer scripts are called
+</A></h2>
+
+<ul compact>
+<li><var>new-preinst</var> <code>install</code><li><var>new-preinst</var> <code>install</code> <var>old-version</var><li><var>new-preinst</var> <code>upgrade</code> <var>old-version</var><li><var>old-preinst</var> <code>abort-upgrade</code> <var>new-version</var></ul>
+<P>
+
+<ul compact>
+<li><var>postinst</var> <code>configure</code> <var>most-recently-configured-version</var><li><var>old-postinst</var> <code>abort-upgrade</code> <var>new version</var><li><var>conflictor's-postinst</var> <code>abort-remove</code>
+    <code>in-favour</code> <var>package</var> <var>new-version</var><li><var>deconfigured's-postinst</var> <code>abort-deconfigure</code>
+    <code>in-favour</code> <var>failed-install-package</var> <var>version</var>
+    <code>removing</code> <var>conflicting-package</var> <var>version</var></ul>
+<P>
+
+<ul compact>
+<li><var>prerm</var> <code>remove</code><li><var>old-prerm</var> <code>upgrade</code> <var>new-version</var><li><var>new-prerm</var> <code>failed-upgrade</code> <var>old-version</var><li><var>conflictor's-prerm</var> <code>remove</code> <code>in-favour</code>
+    <var>package</var> <var>new-version</var><li><var>deconfigured's-prerm</var> <code>deconfigure</code>
+    <code>in-favour</code> <var>package-being-installed</var> <var>version</var>
+    <code>removing</code> <var>conflicting-package</var> <var>version</var></ul>
+<P>
+
+<ul compact>
+<li><var>postrm</var> <code>remove</code><li><var>postrm</var> <code>purge</code><li><var>old-postrm</var> <code>upgrade</code> <var>new-version</var><li><var>new-postrm</var> <code>failed-upgrade</code> <var>old-version</var><li><var>new-postrm</var> <code>abort-install</code><li><var>new-postrm</var> <code>abort-install</code> <var>old-version</var><li><var>new-postrm</var> <code>abort-upgrade</code> <var>old-version</var><li><var>disappearer's-postrm</var> <code>disappear</code> <var>overwriter</var> <var>new-version</var></ul>
+
+
+<hr>
+<h2><A name="s-unpackphase">
+6.3 Details of unpack phase of installation or upgrade
+</A></h2>
+
+The procedure on installation/upgrade/overwrite/disappear (ie, when
+running <code>dpkg --unpack</code>, or the unpack stage of <code>dpkg
+--install</code>) is as follows.  In each case if an error occurs the
+actions in are general run backwards - this means that the maintainer
+scripts are run with different arguments in reverse order.  These are
+the `error unwind' calls listed below.
+
+<ol>
+<li><ol>
+<li>If a version the package is already
+installed, call
+<pre><var>old-prerm</var> upgrade <var>new-version</var></pre>
+<p><li>If this gives an error (ie, a non-zero exit status), dpkg will
+attempt instead:
+<pre><var>new-prerm</var> failed-upgrade <var>old-version</var></pre>
+Error unwind, for both the above cases:
+<pre><var>old-postinst</var> abort-upgrade <var>new-version</var></pre>
+<p></ol>
+
+<p><li>If a `conflicting' package is being removed at the same time:
+<ol>
+<li>If any packages depended on that conflicting package and
+<code>--auto-deconfigure</code> is specified, call, for each such package:
+<pre><var>deconfigured's-prerm</var> deconfigure \
+    in-favour <var>package-being-installed</var> <var>version</var> \
+    removing <var>conflicting-package</var> <var>version</var></pre>
+Error unwind:
+<pre><var>deconfigured's-postinst</var> abort-deconfigure \
+    in-favour <var>package-being-installed-but-failed</var> <var>version</var> \
+    removing <var>conflicting-package</var> <var>version</var></pre>
+The deconfigured packages are marked as requiring configuration, so
+that if <code>--install</code> is used they will be configured again if
+possible.
+<p><li>To prepare for removal of the conflicting package, call:
+<pre><var>conflictor's-prerm</var> remove in-favour <var>package</var> <var>new-version</var></pre>
+Error unwind:
+<pre><var>conflictor's-postinst</var> abort-remove \
+    in-favour <var>package</var> <var>new-version</var></pre>
+<p></ol>
+
+<p><li><ol>
+<li>If the package is being upgraded, call:
+<pre><var>new-preinst</var> upgrade <var>old-version</var></pre>
+<p><li>Otherwise, if the package had some configuration files from a previous
+version installed (ie, it is in the `configuration files only' state):
+<pre><var>new-preinst</var> install <var>old-version</var></pre>
+<p><li>Otherwise (ie, the package was completely purged):
+<pre><var>new-preinst</var> install</pre>
+Error unwind versions, respectively:
+<pre><var>new-postrm</var> abort-upgrade <var>old-version</var>
+<var>new-postrm</var> abort-install <var>old-version</var>
+<var>new-postrm</var> abort-install</pre>
+<p></ol>
+
+<p><li>The new package's files are unpacked, overwriting any that may be on
+the system already, for example any from the old version of the same
+package or from another package (backups of the old files are left
+around, and if anything goes wrong dpkg will attempt to put them back
+as part of the error unwind).<P>
+
+It is an error for a package to contains files which are on the system
+in another package, unless <code>Replaces</code> is used (see
+<A href="ch-relationships.html#s-replaces"><code>Replaces</code> - overwriting files and replacing packages, section 8.5</A>).  Currently the <code>--force-overwrite</code> flag is
+enabled, downgrading it to a warning, but this may not always be the
+case.<P>
+
+It is a more serious error for a package to contain a plain file or
+other kind of nondirectory where another package has a directory
+(again, unless <code>Replaces</code> is used).  This error can be overridden
+if desired using <code>--force-overwrite-dir</code>, but this is not advisable.<P>
+
+Packages which overwrite each other's files produce behaviour which
+though deterministic is hard for the system administrator to
+understand.  It can easily lead to `missing' programs if, for example,
+a package is installed which overwrites a file from another package,
+and is then removed again.<A href="footnotes.html#19" name="fr19">[19]</A><P>
+
+A directory will never be replaced by a symbolic links to a directory
+or vice versa; instead, the existing state (symlink or not) will be
+left alone and <kbd>dpkg</kbd> will follow the symlink if there is one.
+<p><li><ol>
+<li>If the package is being upgraded, call
+<pre><var>old-postrm</var> upgrade <var>new-version</var></pre>
+<p><li>If this fails, <kbd>dpkg</kbd> will attempt:
+<pre><var>new-postrm</var> failed-upgrade <var>old-version</var></pre>
+Error unwind, for both cases:
+<pre><var>old-preinst</var> abort-upgrade <var>new-version</var></pre>
+<p></ol>
+
+
+This is the point of no return - if <kbd>dpkg</kbd> gets this far, it won't
+back off past this point if an error occurs.  This will leave the
+package in a fairly bad state, which will require a successful
+reinstallation to clear up, but it's when <kbd>dpkg</kbd> starts doing
+things that are irreversible.
+<p><li>Any files which were in the old version of the package but not in the
+new are removed.
+<p><li>The new file list replaces the old.
+<p><li>The new maintainer scripts replace the old.
+<p><li>Any packages all of whose files have been overwritten during the
+installation, and which aren't required for dependencies, are considered
+to have been removed.  For each such package,
+
+<ol>
+<li><kbd>dpkg</kbd> calls:
+<pre><var>disappearer's-postrm</var> disappear \
+    <var>overwriter</var> <var>overwriter-version</var></pre>
+<p><li>The package's maintainer scripts are removed.
+<p><li>It is noted in the status database as being in a sane state, namely
+not installed (any conffiles it may have are ignored, rather than
+being removed by <kbd>dpkg</kbd>).  Note that disappearing packages do not
+have their prerm called, because <kbd>dpkg</kbd> doesn't know in advance
+that the package is going to vanish.
+<p></ol>
+
+<p><li>Any files in the package we're unpacking that are also listed in the
+file lists of other packages are removed from those lists.  (This will
+lobotomise the file list of the `conflicting' package if there is one.)
+<p><li>The backup files made during installation, above, are deleted.
+<p><li>The new package's status is now sane, and recorded as `unpacked'.  Here
+is another point of no return - if the conflicting package's removal
+fails we do not unwind the rest of the installation; the conflicting
+package is left in a half-removed limbo.
+<p><li>If there was a conflicting package we go and do the removal actions
+(described below), starting with the removal of the conflicting
+package's files (any that are also in the package being installed
+have already been removed from the conflicting package's file list,
+and so do not get removed now).
+<p></ol>
+
+<hr>
+<h2><A name="s6.4">
+6.4 Details of configuration
+</A></h2>
+
+When we configure a package (this happens with <code>dpkg --install</code>, or
+with <code>--configure</code>), we first update the conffiles and then call:
+<pre><var>postinst</var> configure <var>most-recently-configured-version</var></pre><P>
+
+No attempt is made to unwind after errors during configuration.<P>
+
+If there is no most recently configured version <kbd>dpkg</kbd> will pass a
+null argument; older versions of dpkg may pass
+<code>&lt;unknown&gt;</code> (including the angle brackets) in this case.
+Even older ones do not pass a second argument at all, under any
+circumstances.
+<hr>
+<h2><A name="s6.5">
+6.5 Details of removal and/or configuration purging
+</A></h2>
+
+<ol>
+<li><pre><var>prerm</var> remove</pre>
+<p><li>The package's files are removed (except conffiles).
+<p><li><pre><var>postrm</var> remove</pre>
+<p><li>All the maintainer scripts except the postrm are removed.<P>
+
+If we aren't purging the package we stop here.  Note that packages
+which have no postrm and no conffiles are automatically purged when
+removed, as there is no difference except for the <kbd>dpkg</kbd> status.
+<p><li>The conffiles and any backup files (<code>~</code>-files, <code>#*#</code> files,
+<code>%</code>-files, <code>.dpkg-{old,new,tmp}</code>, etc.) are removed.
+<p><li><pre><var>postrm</var> purge</pre>
+<p><li>The package's file list is removed.
+<p></ol>
+
+
+No attempt is made to unwind after errors during removal.
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-descriptions.html">next</A>; <A href="ch-versions.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

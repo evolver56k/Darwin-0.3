@@ -1,0 +1,7 @@
+Project		: tcsh
+Description	: Turbo C-Shell
+Distribution	: 6.08.00
+Source		: Christos Zoulas
+Location	: ftp://ftp.gw.com/pub/unix/tcsh/tcsh-6.08.tar.gz
+Owner		: wsanchez
+Dependancies	: 

@@ -1,0 +1,91 @@
+.TH DYLD 3 "April 13, 1997" "Apple Computer, Inc."
+.SH NAME
+dyld \- programatic interface to the dynamic link editor
+.SH SYNOPSIS
+.nf
+\fB#include <mach-o/dyld.h>\fR
+.PP
+unsigned long \fB_dyld_present\fR(void);
+.br
+unsigned long \fB_dyld_image_count\fR(void);
+.br
+struct mach_header *\fB_dyld_get_image_header\fR(unsigned long \fIimage_index\fR);
+.br
+unsigned long \fB_dyld_get_image_vmaddr_slide\fR(unsigned long \fIimage_index\fR);
+.br
+char *\fB_dyld_get_image_name\fR(unsigned long \fIimage_index\fR);
+.br
+void \fB_dyld_lookup_and_bind\fR(char *\fIsymbol_name,\fR unsigned long *\fIaddress\fR, void **\fImodule\fR);
+.br
+void \fB_dyld_lookup_and_bind_fully\fR(char *\fIsymbol_name,\fR unsigned long *\fIaddress\fR, void **\fImodule\fR);
+.br
+enum bool \fB_dyld_bind_fully_image_containing_address\fR(unsigned long *\fIaddress\fR);
+.br
+enum bool \fB_dyld_image_containing_address\fR(unsigned long \fIaddress\fR);
+.br
+enum bool \fB_dyld_launched_prebound\fR(void);
+.br
+int \fB_dyld_func_lookup\fR(char *\fIdyld_func_name,\fR unsigned long *\fIaddress\fR);
+.fi
+.SH DESCRIPTION
+These routines are the programatic interface to the dynamic link editor.
+.PP
+.I _dyld_present returns non-zero if the dynamic linker is being used in the
+program and zero otherwise.  If this returns zero this rest of these functions
+should not be called and most likely crash the program if called.
+.PP
+.I _dyld_image_count
+returns the current number of images mapped in by the dynamic link editor.
+.PP
+.I _dyld_get_image_header
+returns the mach header of the image indexed by image_index.  If image_index is
+out of range NULL is returned.
+.PP
+.I _dyld_get_image_vmaddr_slide
+returns the virtural memory address slide amount of the image indexed by
+.I image_index.
+If image_index is out of range zero is returned.
+.PP
+.I _dyld_get_image_name
+returns the name of the image indexed by
+.I image_index.
+If image_index is out of range NULL is returned.
+.PP
+.I _dyld_lookup_and_bind
+looks up the
+.I symbol_name
+and binds it into the program.  It indirectly returns the
+.I address
+and and a pointer to the
+.I module
+that defined the symbol.
+.PP
+.I _dyld_lookup_and_bind_fully
+looks up the
+.I symbol_name
+and binds it and all of its references into the program.  It indirectly returns
+the
+.I address
+and and a pointer to the
+.I module
+that defined the symbol.
+.PP
+.I _dyld_bind_fully_image_containing_address
+fully binds the image containing the specified address.  It returns TRUE if the
+address is contained in a loaded image and FALSE otherwise.
+.PP
+.I _dyld_image_containing_address
+It returns TRUE if the address is contained an image dyld loaded and FALSE
+otherwise.
+.PP
+.I _dyld_launched_prebound
+returns TRUE if the program was launched using the prebound state and FALSE
+otherwise.
+.PP
+.I _dyld_func_lookup
+is passed a name,
+.I dyld_func_name,
+of a dynamic link editor function and returns the
+.I address
+of the function indirectly.  It returns non-zero if the function is found
+and zero otherwise.

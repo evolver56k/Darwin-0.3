@@ -1,0 +1,11 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:2252: Origin of test
+divert(1)
+This text is diverted.
+divert
+dnl @result{}
+This text is not diverted.
+dnl @result{}This text is not diverted.
+undivert(1)
+dnl @result{}
+dnl @result{}This text is diverted.
+dnl @result{}

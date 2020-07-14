@@ -1,0 +1,44 @@
+/Bootstrap.strings/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/Makefile/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/afpovertcp.cfg/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/bootstrap.conf/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/changelist/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/crontab/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/crontab.local/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/daily/1.1.1.1/Sun May  2 03:04:04 1999/-kb/Tfiles-5
+/fstab.hd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/fstab.rd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/fstab.sd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/ftpusers/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/gettytab/1.2/Thu Aug  5 12:30:44 1999/-kb/Tfiles-5
+/group/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/hostconfig/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/hosts/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/hosts.lpd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/iftab/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/inetd.conf/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/kern_loader.conf/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/master.passwd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/monthly/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/motd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/netgroup/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/networks/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/passwd/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/phones/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/printcap/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/protocols/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/rbootd.conf/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/rc/1.2/Thu Aug  5 01:17:25 1999/-kb/Tfiles-5
+/rc.boot/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/rc.common/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/remote/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/rpc/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/services/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/shells/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/syslog.conf/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/ttys/1.2/Mon May 10 01:32:52 1999/-kb/Tfiles-5
+/ttys.installer/1.1.1.1/Sun May  2 03:04:05 1999/-kb/Tfiles-5
+/weekly/1.1.1.1/Sun May  2 03:04:06 1999/-kb/Tfiles-5
+D/mtree////
+D/netinfo////
+D/startup////

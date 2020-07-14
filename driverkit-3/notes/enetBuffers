@@ -1,0 +1,101 @@
+		      m88k ethernet buffer notes	
+		      
+
+/*
+ * This is exactly 2k bytes, aligned to a 2k byte boundary. The actual
+ * DMA data is inside of here, aligned for proper enet DMA.
+ *
+ * An enetBuf as associated with a netbuf_t at getbuf time via the 
+ * freefunc and freefuncarg mechanism, and at RX DMA enqueue time by 
+ * setting dma_id = netbuf.
+ *
+ * We keep separate pools of TX and RX ebetBufs. For now, a fixed number 
+ * of TX and RX enetBufs are allocated at init time; no more are 
+ * allocated after that.
+ */
+typedef struct {
+	enetBuf_t *next;
+	id owner;
+	boolean_t Rx;
+	char filler[to align dmaData for DMA];
+	char dmaData[max packet size];
+	char filler[to fill out to 2048 bytes];
+} enetBuf_t;
+
+boot {
+  	create a list of empty enetBuf_t's, enqueue on RxBufList and 
+		TxBufList;
+	rxDmaQCount = 0;
+	do {
+		get an enetBuf from RxBufList;
+		netbuf = nb_alloc_wrapper(&enetBuf->dmaData,
+			size of DMA Data,
+			&enetBufFree(),
+			&enetBuf);
+		/*
+		 * Our record of netbuf is via dma_id!
+		 */
+		dma_enqueue(data = &enetBuf.dmaData,
+			dma_id = netbuf, 
+			length = sizeof DMA data);
+		rxDmaQCount++;
+	} for each buf in RxBufList;
+}
+  
+getbuf {
+  	get a free enetBuf from TxBufList;
+	return NULL if list empty;
+	return(nb_alloc_wrapper(&enetBuf->dmaData,
+		size of DMA Data,
+		&enetBufFree(),
+		&enetBuf));
+}
+  
+output {
+	dma_enqueue(data = nb_map(netbuf), 
+		dma_id = netbuf, 
+		length = nb_size(netbuf));
+}
+
+TX DMA complete {
+	do {
+		dma_id = chan_dma_dequeue(COMPLETED);
+		nb_free((netbuf_t)dma_id);
+	} for all frames;
+}
+
+RX DMA complete {
+	do {
+		dma_id = chan_dma_dequeue(COMPLETED);
+		if_handle_input(netif, (netbuf_t)dma_id, NULL);
+	} for all frames;
+	do {
+		get an enetBuf from RxBufList;
+		netbuf = nb_alloc_wrapper(&enetBuf->dmaData,
+			size of DMA Data,
+			&enetBufFree(),
+			&enetBuf);
+		dma_enqueue(data = &enetBuf.dmaData,
+			dma_id = netbuf, 
+			length = sizeof DMA data);
+		rxDmaQCount++;
+	
+	} for each buf in RxBufList; 
+}
+
+/*
+ * Called out from nb_free(), as freefunc(freefunc_arg).
+ */
+enetBufFree(enetBuf_t *enetBuf) {
+  	enqueue this on TxBufList or RxBufList;
+}
+
+Notes
+-----
+
+* Memory throttle is via getbuf returning NULL. Joel has a limit of 10 RX and
+  10 TX buffers in the Token Ring driver. Current 68k enet driver has no 
+  limit. Brad and Joel say that it should not cause problems for the
+  driver to return NULL on getbuf()...Brad will help track down problems
+  in this area.
+  

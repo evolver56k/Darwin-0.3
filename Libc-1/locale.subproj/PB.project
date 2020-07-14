@@ -1,0 +1,39 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        OTHER_LINKED = (
+            ansi.c, 
+            ctype.c, 
+            euc.c, 
+            frune.c, 
+            isctype.c, 
+            lconv.c, 
+            localeconv.c, 
+            mbrune.c, 
+            none.c, 
+            rune.c, 
+            setlocale.c, 
+            utf2.c, 
+            runetable.c
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = locale; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

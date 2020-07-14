@@ -1,0 +1,242 @@
+# rc.cdrom.x86
+#
+# Copyright (C) 1998-1999 by Apple Computer, Inc.  All rights reserved.
+#
+# This script is invoked automatically when booted from a CD-ROM.
+# Trying to run it directly will probably not do what you expect.
+#
+# pmb 1998
+
+use strict;
+package main;
+
+###########################################################################
+# FindInstallTarget_x86()
+#
+sub FindInstallTarget_x86 {
+
+	my $reply = "";
+	my $numdisks = 255;
+	
+	while (!$reply) {
+		ClearScreen();
+		ConsoleMessage('BOOT_DISK');
+		BlankLine();
+
+		system($tool{'pickdisk'}, "0");
+		$numdisks = $?;
+		AbortInstall('INSTALLFAILED') if ($numdisks == 255);
+
+		BlankLine();
+		ConsoleMessage('WHICH_DISK');
+		$reply = Ask("--> ");
+		$reply =~ s/[^0-9]//g;
+		$reply = "" unless ($reply == 1 || $reply == 2);
+	}
+	
+	if ($reply == 2)
+	{
+		$reply = "";
+		while (!$reply) {
+			ClearScreen();
+			ConsoleMessage('AVAILABLE_DISKS');
+			BlankLine();
+			system( $tool{'pickdisk'} );
+			$numdisks = $?;
+			AbortInstall('INSTALLFAILED') if ($numdisks == 255);
+			
+			BlankLine();
+			ConsoleMessage('ALL_DISKS');
+			$reply = Ask("--> ");
+			$reply =~ s/[^0-9]//g;
+			$reply = "" unless ($reply >= 1 && $reply <= $numdisks);
+		}
+	}
+
+	$target{'disknum'}	= $reply;
+	chomp($target{'diskie'}	= `$tool{'pickdisk'} $reply`);
+	$target{'rawdisk'}	= "/dev/r$target{'diskie'}";
+	$target{'livedisk'}	= "/dev/r$target{'diskie'}";
+	$target{'livedisk'} =~ s/a$/h/;
+	
+	$target{'LooksLike sd0a'}		= $target{'diskie'};
+	$target{'LooksLike /dev/rsd0a'}	= $target{'rawdisk'};
+	$target{'LooksLike /dev/rsd0h'}	= $target{'livedisk'};
+	$target{'valid'}				= "true";
+
+}
+
+
+###########################################################################
+# Partition_x86()
+#
+sub Partition_x86 {
+	
+	use vars qw ($diskSize $currentNum $currentSize);
+	use vars qw ($freeSize $freeNum $choices);
+
+	my ($reply, $isPartitioned);
+	my ($eNum, $eSize, $newSize);
+	my ($fdiskDisk, $FDISK_FLAGS, $reply2);
+	
+	$fdiskDisk = "$tool{'fdisk'} $target{'LooksLike /dev/rsd0h'}";
+	$reply = "";
+	
+	MENU:
+	while (!$reply) {
+		chomp ($isPartitioned = `$fdiskDisk -isDiskPartitioned`);
+		chomp ($diskSize = `$fdiskDisk -diskSize`);
+		
+		if ($isPartitioned eq "Yes") {
+			 chomp ($currentSize = `$fdiskDisk -installSize`);
+			 chomp ($freeSize = `$fdiskDisk -freeSpace`);
+			 chomp ($eSize = `$fdiskDisk -sizeofExtended`);
+		} else {
+			$currentSize = $freeSize = $eSize = 0;
+		}
+		
+		$choices = 2;
+		$currentNum = 0;
+		$freeNum = 0;
+		$eNum = 0;
+		
+		if ( ($currentSize >= $info{'minsize'}) && ($currentSize != $diskSize) ) {
+			$choices++;
+			$currentNum = $choices;
+		}
+
+		if ( (!$currentNum) && ($freeSize >= $info{'minsize'}) && ($freeSize != $diskSize) ) {
+			$choices++;
+			$freeNum = $choices
+		}
+
+	#	if ( (!$currentNum) && ($eSize >= $info{'minsize'}) ) {
+	#		$choices++;
+	#		$eNum = $choices
+	#	}
+
+		$choices++;
+		ClearScreen();
+		
+		ConsoleMessage('FDISK_MENU1');
+		ConsoleMessage('FDISK_MENU2');
+		ConsoleMessage('FDISK_MENU3') if $currentNum;
+		ConsoleMessage('FDISK_MENU4') if $freeNum;
+	#	ConsoleMessage('FDISK_MENU5') if $eNum;
+		ConsoleMessage('FDISK_MENU6');
+		
+		$reply = Ask('--> ');
+		$reply =~ s/[^0-9]//g;
+		
+		next MENU unless ($reply > 0 && $reply <= $choices);
+		
+		SWITCH: {
+			# use entire disk
+			if ($reply == 1) {
+				$FDISK_FLAGS = '-removePartitioning';
+				last SWITCH;
+			}
+			
+			# use entire disk, split into DOS and UFS
+			if ($reply == 2) {
+				ConsoleMessage('HOW_MUCH');
+				$reply2 = Ask('--> ');
+				$reply2 =~ s/[^0-9]//g;
+				if (!$reply2) {
+					$reply ='';
+					last SWITCH;
+				}
+								
+				$newSize = $diskSize - $reply2;
+				
+				if ($newSize < $info{'minsize'}) {
+					ConsoleMessage('TOO_SMALL');
+					$reply ="";
+					last SWITCH;
+				}
+				
+				$FDISK_FLAGS = "-dosPlusUFS $reply2";
+				last SWITCH;
+			}
+			
+			# use partition N
+			if ($reply == $currentNum) {
+				$FDISK_FLAGS = "";
+				last SWITCH;
+			}
+			
+			# use free space
+			if ($reply == $freeNum) {
+				$FDISK_FLAGS = "-setAvailableToUFS";
+				last SWITCH;
+			}
+			
+	#		# use entire extended
+	#		if ($reply == $eNum) {
+	#			chomp ($eSize = `$fdiskDisk -sizeofExtended`);
+	#			
+	#			if ($eSize > $info{'minsize'}) {
+	#				$FDISK_FLAGS = "-setExtendedToUFS";
+	#			} else {
+	#				ConsoleMessage('TOO_SMALL');
+	#				$reply ="";
+	#			}
+	#			last SWITCH;
+	#		}
+			
+			# run fdisk for user interaction
+			if ($reply == $choices) {
+			
+				ClearScreen();
+				ConsoleMessage('FDISK_HINTS');
+				BlankLine();
+				ConsoleMessage('FDISK_WARNING');
+				BlankLine();
+				system ($fdiskDisk);	# launch fdisk and let user play
+				$reply ="";
+				last SWITCH;
+			}
+			
+			$reply ="";
+		}
+		
+		next MENU unless $reply;
+		
+		system ("$fdiskDisk $FDISK_FLAGS") if $FDISK_FLAGS;
+		chomp ($currentSize = `$fdiskDisk -installSize`);
+
+		if ((!$currentSize) || ($currentSize < $info{'minsize'})) {
+			ConsoleMessage('TOO_SMALL');
+			$reply = "";
+		}
+	}
+	$target{'FDISK_FLAGS'} = $FDISK_FLAGS;
+	return $reply;
+}
+
+
+###########################################################################
+# WarnUser_x86()
+#
+sub WarnUser_x86 {
+	my $reply = "";
+	
+	ClearScreen();
+	ConsoleMessage('WARN_i386_MSG');
+
+    while (!$reply) {
+		$reply = Ask("--> ");
+		$reply =~ s/[^0-9]//g;
+		SWITCH: {
+			if ($reply == 1) { last SWITCH; }
+			if ($reply == 2) { AbortInstall('QUITTING'); }
+			$reply = "";
+		}
+	}
+}
+
+
+1; #return true to indicate ok load
+
+
+__END__

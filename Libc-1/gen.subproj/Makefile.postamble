@@ -1,0 +1,24 @@
+#########################################################################
+# Put rules to extend the behavior of the standard Makefiles here.  "Official" 
+# user-defined rules are:
+#   * before_install
+#   * after_install
+#   * after_installhdrs
+# You should avoid redefining things like "install" or "app", as they are
+# owned by the top-level Makefile API and no context has been set up for where 
+# derived files should go.
+
+FLOAT_CFLAGS = $(filter-out -msoft-float, $(ALL_CFLAGS))
+PROFILE_CFLAGS = $(filter-out -DPROFILE, $(filter-out -pg, $(FLOAT_CFLAGS)))
+gmon.o: gmon.c
+	$(CC) $(PROFILE_CFLAGS) $(LOCAL_DIR_INCLUDE_DIRECTIVE) -c gmon.c -o $(OFILE_DIR)/gmon.o
+
+difftime.o: difftime.c
+	$(CC) $(FLOAT_CFLAGS) $(LOCAL_DIR_INCLUDE_DIRECTIVE) -c difftime.c -o $(OFILE_DIR)/difftime.o
+
+getloadavg.o: getloadavg.c
+	$(CC) $(FLOAT_CFLAGS) $(LOCAL_DIR_INCLUDE_DIRECTIVE) -c getloadavg.c -o $(OFILE_DIR)/getloadavg.o
+
+isnan.o: isnan.c
+	$(CC) $(FLOAT_CFLAGS) $(LOCAL_DIR_INCLUDE_DIRECTIVE) -c isnan.c -o $(OFILE_DIR)/isnan.o
+

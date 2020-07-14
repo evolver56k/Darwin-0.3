@@ -1,0 +1,10 @@
+
+Possible Objective-C Performance Optimizations:
+
+· Adjust the selector hashtable sizes dynamically.  Both the freeze-dried and regular selector hashtables are fixed sizes.  We could possibly decrease memory usage by sizing these more carefully.  We know the number of selectors in the freeze-dried hashtable, but we would need to change the data structure to write out the size of the table.  We could also adjust the regular hashtable size using a heuristic based on the size of the Objective-C string section, for example.
+
+· Compress the freeze-dried hashtable by changing how chaining is done.  This would reduce the bucketsize from 8 bytes to 4, and would save approximately 10K of read-only data for libNeXT.  The main disadvantage is that this change would increase the differences between the regular and the freeze-dried hashtable which would complicate otherwise simple code.
+
+· Consider a 1 deep cache for objc_getClass().  The is somewhat dangerous, since it relies on the ponter equality for strings.  It is possible for someone to allocate a buffer of bytes, write strings in, and call objc_getClass() with the same pointer several times.  This is not be a problem for compiler generated code.  This cache would be effective about 30% of the time when launching Draw.
+
+· Implement class references to avoid calls to objc_getClass().

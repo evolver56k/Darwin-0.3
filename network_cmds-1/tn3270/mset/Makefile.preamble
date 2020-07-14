@@ -1,0 +1,6 @@
+VPATH_PREAMBLE = ../api:../ascii:
+
+KBD=	unix.kbd
+OTHER_OFILES = astosc.o map3270.o mset.o
+
+-include ../../Makefile.include

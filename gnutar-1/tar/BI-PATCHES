@@ -1,0 +1,73 @@
+diff -ur bison-1.25-ref/bison.simple bison-1.25/bison.simple
+--- bison-1.25-ref/bison.simple	Sat May 11 15:13:26 1996
++++ bison-1.25/bison.simple	Thu Apr 24 08:14:35 1997
+@@ -38,13 +38,18 @@
+  #pragma alloca
+ #else /* not MSDOS, __TURBOC__, or _AIX */
+ #ifdef __hpux
++#include <sys/types.h>
++#ifdef _ULONG_T /* defined in <sys/types.h> on HP-UX 10 */
++#include <alloca.h>
++#else /* earlier HP-UX versions have alloca as a library function */
+ #ifdef __cplusplus
+ extern "C" {
+ void *alloca (unsigned int);
+ };
+ #else /* not __cplusplus */
+-void *alloca ();
++#define alloca __builtin_alloca
+ #endif /* not __cplusplus */
++#endif /* HP-UX <= 9 */
+ #endif /* __hpux */
+ #endif /* not _AIX */
+ #endif /* not MSDOS, or __TURBOC__ */
+@@ -153,6 +158,11 @@
+ int yyparse (void);
+ #endif
+ 
++/* Define __yy_memcpy.  Note that the size argument
++   should be passed with type unsigned int, because that is what the non-GCC
++   definitions require.  With GCC, __builtin_memcpy takes an arg
++   of type size_t, but it can handle unsigned int.  */
++
+ #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
+ #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
+ #else				/* not GNU C or C++ */
+@@ -164,7 +174,7 @@
+ __yy_memcpy (to, from, count)
+      char *to;
+      char *from;
+-     int count;
++     unsigned int count;
+ {
+   register char *f = from;
+   register char *t = to;
+@@ -179,7 +189,7 @@
+ /* This is the most reliable way to avoid incompatibilities
+    in available built-in functions on various systems.  */
+ static void
+-__yy_memcpy (char *to, char *from, int count)
++__yy_memcpy (char *to, char *from, unsigned int count)
+ {
+   register char *f = from;
+   register char *t = to;
+@@ -331,12 +341,15 @@
+       if (yystacksize > YYMAXDEPTH)
+ 	yystacksize = YYMAXDEPTH;
+       yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
+-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
++      __yy_memcpy ((char *)yyss, (char *)yyss1,
++		   (unsigned int) size * sizeof (*yyssp));
+       yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
+-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
++      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
++		   (unsigned int) size * sizeof (*yyvsp));
+ #ifdef YYLSP_NEEDED
+       yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
+-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
++      __yy_memcpy ((char *)yyls, (char *)yyls1,
++		   (unsigned int) size * sizeof (*yylsp));
+ #endif
+ #endif /* no yyoverflow */
+ 
+--

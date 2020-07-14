@@ -1,0 +1,1 @@
+<p>This project is obsolete. When DriverKit (which is objc's only client) is replaced by IOKit, objc will no longer be needed.</p>

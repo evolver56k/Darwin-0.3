@@ -1,0 +1,6 @@
+Package: bootstrap-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 13.2
+Description: Developer commands needed to bootstrap the OS
+Build-Depends: build-base, yacc, flex

@@ -1,0 +1,21 @@
+/ChangeLog/1.1.1.1/Fri Apr 23 00:38:37 1999//Tcvs-1
+/Makefile.in/1.1.1.1/Fri Apr 23 00:38:37 1999//Tcvs-1
+/analyze.c/1.1.1.1/Fri Apr 23 00:38:37 1999//Tcvs-1
+/build_diff.com/1.1.1.1/Fri Apr 23 00:38:37 1999//Tcvs-1
+/cmpbuf.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/cmpbuf.h/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/context.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/diff.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/diff.h/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/diff3.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/diffrun.h/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/dir.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/ed.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/ifdef.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/io.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/normal.c/1.1.1.1/Fri Apr 23 00:38:38 1999//Tcvs-1
+/side.c/1.1.1.1/Fri Apr 23 00:38:39 1999//Tcvs-1
+/system.h/1.1.1.1/Fri Apr 23 00:38:39 1999//Tcvs-1
+/util.c/1.1.1.1/Fri Apr 23 00:38:39 1999//Tcvs-1
+/version.c/1.1.1.1/Fri Apr 23 00:38:39 1999//Tcvs-1
+D

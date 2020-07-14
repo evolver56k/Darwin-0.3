@@ -1,0 +1,127 @@
+Replied: Sat, 02 May 1998 12:39:33 -0400
+Replied: "John Hay <jhay@mikom.csir.co.za> mills@udel.edu"
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa20764;
+          2 May 1998 12:21 EDT
+Received: (from jhay@localhost)
+	by zibbi.mikom.csir.co.za (8.9.0.Beta5/8.9.0.Beta5) id SAA18113;
+	Sat, 2 May 1998 18:21:29 +0200 (SAT)
+From: John Hay <jhay@mikom.csir.co.za>
+Message-Id: <199805021621.SAA18113@zibbi.mikom.csir.co.za>
+Subject: Some patches to ntp-4.0.72h
+To: Harlan Stenn <stenn@whimsy.udel.edu>, mills@udel.edu
+Date: Sat, 2 May 1998 18:21:29 +0200 (SAT)
+X-Mailer: ELM [version 2.4ME+ PL32 (25)]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+Hi Dave and Harlan,
+
+Here are some patches against ntp-4.0.72h (the second one I think). :-)
+
+The change to global.h is just to get rid of the compiler warning
+about nested /* characters.
+
+I'm not sure what the best is for machine.c This way works on FreeBSD.
+Like it was, it did not compile on FreeBSD-current because it have both
+clock_settime() and settimeofday(), so trying to create your own
+settimeofday() creates clashes with the FreeBSD system call. Which one
+do you prefer to use? This patch makes it use settimeofday().
+
+The changes to refclock_msfees.c is so that it will compile if PPS is
+defined and there is no STREAM support. I looked at some of the other
+drivers to see how they did it. It does compile but I don't know if it
+will work on a non STREAM machine. It might be better to make it not
+compile by deafault on a non STREAM system.
+
+Then lastly, I added PPS support to ntp_refclock.c in the case where
+ppsclock is part of the kernel and don't have the STREAM stuff. I have
+preliminary ppsclock support for FreeBSD and with these changes the
+ATOM driver works with it. 
+
+Something I have been wondering about. On xntpd3 I get a dispersion
+of 0.00002, while on the same machine ntp4 only gives me about 0.00087.
+Should it be like that or is it calculated differently?
+
+John
+-- 
+John Hay -- John.Hay@mikom.csir.co.za
+
+--- ./include/global.h.org	Fri Apr 24 06:41:38 1998
++++ ./include/global.h	Fri May  1 18:28:34 1998
+@@ -1,6 +1,6 @@
+ /* GLOBAL.H - RSAREF types and constants
+ 
+-/* Copyright (C) RSA Laboratories, a division of RSA Data Security,
++   Copyright (C) RSA Laboratories, a division of RSA Data Security,
+      Inc., created 1991. All rights reserved.
+  */
+ 
+--- ./libntp/machines.c.org	Thu Apr 30 04:10:46 1998
++++ ./libntp/machines.c	Fri May  1 17:49:48 1998
+@@ -118,7 +118,7 @@
+ }
+ #endif /* SYS_PTX */
+ 
+-# ifdef HAVE_CLOCK_SETTIME
++# if defined(HAVE_CLOCK_SETTIME) && !defined(HAVE_SETTIMEOFDAY)
+ const char *set_tod_using = "clock_settime";
+ 
+ int
+--- ./ntpd/refclock_msfees.c.org	Sat Mar  7 11:53:58 1998
++++ ./ntpd/refclock_msfees.c	Fri May  1 18:13:28 1998
+@@ -25,8 +25,12 @@
+ #if defined(HAVE_SYSV_TTYS)
+ #include <termio.h>
+ #endif /* HAVE_SYSV_TTYS */
++#if defined(HAVE_TERMIOS)
+ #include <termios.h>
++#endif /* HAVE_TERMIOS */
++#if defined(STREAM)
+ #include <stropts.h>
++#endif /* STREAM */
+ 
+ #ifdef PPS
+ #include <sys/ppsclock.h>
+@@ -513,7 +517,7 @@
+ 	 * loaded) STREAMS module, and give it to the I/O code to start
+ 	 * receiving stuff.
+ 	 */
+-
++#ifdef STREAM
+ 	{
+ 		int rc1;
+ 		/* Pop any existing onews first ... */
+@@ -534,6 +538,7 @@
+ 			ees->ttytype |= T_PPS;
+ 		}
+ 	}
++#endif /* STREAM */
+ 
+ 	/* Add the clock */
+ 	if (!io_addclock(&ees->io)) {
+--- ./ntpd/ntp_refclock.c.org	Fri Apr 10 18:53:23 1998
++++ ./ntpd/ntp_refclock.c	Fri May  1 20:45:41 1998
+@@ -1049,6 +1049,22 @@
+ 		(void)tcflush(fd, TCIOFLUSH);
+ 	}
+ #endif /* TTYCLK */
++#ifdef PPS
++	/*
++	 * The PPS option provides timestamping at the driver level.
++	 * It uses a 1-pps signal and level converter (gadget box) and
++	 * requires ppsclock compiled into the kernel on non STREAMS
++	 * systems.
++	 */
++	if (flags & LDISC_PPS) {
++		if (fdpps > 0) {
++			msyslog(LOG_ERR,
++			    "refclock_ioctl: ppsclock already configured");
++			return (0);
++		}
++		fdpps = fd;
++	}
++#endif /* PPS */
+ #endif /* HAVE_TERMIOS */
+ 
+ #ifdef HAVE_BSD_TTYS

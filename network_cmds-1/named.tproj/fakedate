@@ -1,0 +1,28 @@
+#!/bin/sh
+
+fakearg="+%y%m%d.%H%M%S"
+
+if [ "$1" != "+%y%m%d.%H%M%S" ]; then
+    echo "usage: $0 $fakearg" >&2
+    exit 1
+fi
+
+echo "warning: fakedate should be replaced with real BSD4.4 date" >&2
+
+set `date`
+m=`grep $2 << EOF
+Jan01
+Feb02
+Mar03
+Apr04
+May05
+Jun06
+Jul07
+Aug08
+Sep09
+Oct10
+Nov11
+Dec12
+EOF`
+set `date`
+echo "$6$m$3.$4" | sed -e 's/^19//' -e 's/://g' -e 's/[A-Z][a-z]*//g'

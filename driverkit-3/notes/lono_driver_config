@@ -1,0 +1,135 @@
+		lono driver config internals
+		
+* IODeviceDescription has new ivar, IOConfigTable *configTable.
+
+* In kernel, IOConfigTable's _private ivar merely points to a char array
+  which consists of the contents of a device instance file. 
+  
+* kern_dev.dconf, a dev_conf_t, will become a pointer to IODeviceDescription.
+  (Note that nrw should probably do this too). For now, kern_dev will 
+  have both.
+  
+* Kernel IOConfigTable will use the routines in config_table.c to parse 
+  the config table text.
+  
+* There's a static copy of the *current system config table" in 
+  KERNBOOTSTRUCT. That's what is returned in _IOGetSystemConfig().
+  
+* boot sequence
+{
+  	booter writes KERNBOOTSTRUCT to ??somewhere??
+  	kernel comes up, eventually calls:
+ 	autoconf() {
+		registerIndirClasses();	// registers SCSIDisk, etc. 
+		probeNativeDevices();	// see below
+		probeHardware(); 	// nop on i386
+		probeDirectDevices();	// nop on i386
+		probePseudoDevices();	// starts up EventDriver, etc.
+	}
+  
+	/* 
+	 * At this time, kernel can access boot device (at least).
+	 * rc starts running; driverLoader starts up and does the rest of this.
+	 */
+	for each device in System config's "Boot Drivers" list {
+		for each instance > 0 {
+			/*
+			 * Booter only loads in instance 0.
+			 */
+	   		IOLoadDevice();
+		}
+	}
+     
+	for each driver in System config's "Active Drivers" list {
+		if there's a .o {
+			kern_load it;
+		}
+		for each instance {
+			IOLoadDevice();
+		}
+	}
+}
+
+/*
+ * This is the kernel's routine which configures and probes the boot 
+ * device and possibly additional drivers which either the booter passes 
+ * in config table info for, or which have statically declared config 
+ * tables.
+ */
+probeNativeDevices() {
+  	for each config table passed in from booter {
+		create an IODeviceDescription;
+		probe the associated driver;
+	}
+	for each statically configured device {
+		/*
+		 * This is temporary, for internal development only 
+		 */
+		create an IODeviceDescription;
+		probe the associated driver;
+	}
+}
+
+.......................
+
+call graph in autoconfg_i386
+
+IOProbeDriver
+	configureThread
+		configureDriver
+			configTableToClassName (config_table.c)
+			configureDriverClass
+			
+probeNativeDevices
+	configureDriver
+		configDataToClassName()	(config_table.c)
+		configureDriverClass
+
+probePseudoDevices
+	probeClass
+		configureDriverClass
+		
+configureDriverClass
+	configDataToDev()	(config_table.c)
+	[IOEISADeviceDescription _initFromKernDev:]
+	[devDesc setConfigTable:]
+	[devDesc setDevicePort:];
+	[devDesc setDeviceMaster:];
+	[IODevice addLoadedClass];
+	
+.....................
+functions to keep in autoconf_i386
+
+/* called by MI probePseudoDevices() */
+BOOL probeClass(port_name_t deviceMasterUport,
+	IODeviceNumber devNum,
+	const char *className,
+	IODeviceDescription **deviceDescP);	
+
+/* 
+ * Called from MD probeNativeDevices() and from configureThread(), the
+ * IOTask version of IOProbeDriver().
+ */
+static BOOL configureDriver(const char *configData, port_t deviceMaster);
+
+/*
+ * Given a class name and an IOConfigTable,
+ * create a kern_dev and an IODeviceDescription and probe the class. 
+ * This is used both at boot time - for the boot device and (temporarily) 
+ * any native drivers with static config tables - and by IOProbeDriver().
+ */
+static BOOL configureDriverClass(const char *className, 
+	IOConfigTable *configData, 
+	port_t deviceMaster);
+
+
+
+......................
+to do (2 Feb 93)
+
+* add pointer to IODeviceDescription to kern_dev_t. DONE
+* when creating kern_dev, also create IODeviceDescription if valid 
+  IOConfigTable exists. DONE
+* Move relevant stuff from configTable.c to IOEISADeviceDescription.
+* configureDriverClass() should take an (IOConfigTable *) instead of
+  char *configData. 

@@ -1,0 +1,123 @@
+			Ethernet error handling
+			
+Transmit errors
+
+* All errors: we don't know which buffer caused error, due to the design 
+  of the TE. In all cases we have to dequeue everything and throw them 
+  all away.
+  
+* channel errorInterrupt, busError
+  -- action:
+  	reset, dequeue and discard all frames
+	 
+  << the rest of these are in etxAddlInt_t >>
+  
+* Late collision
+  -- Disables channel
+  -- action:
+  	reset, dequeue and discard all frames
+  
+* underrun
+  -- Disables channel
+  -- action:
+  	reset, dequeue and discard all frames
+	
+* No Heart beat
+  -- Only useful for TPE; mask off for thin wire
+  -- Channel not disabled
+  -- action:
+    	reset, dequeue and discard all frames;
+        enJam();
+	
+* > 15 retries
+  -- Disables channel
+  -- action:
+    	reset, dequeue and discard all frames;
+        enJam();
+		
+Receive errors
+
+* descriptor chan_status errors
+  * short packet - should never happen
+  * alignment error
+  * CRC error 
+  * collided packet
+  -- Action:
+  	drop packet on floor.
+	
+* channel errorInterrupt, busError
+  -- Disables channel (maybe...)
+  -- action:
+  	dmaAbort (to be sure);
+  	dequeue completed frames and restart;
+	
+* overrun
+  -- Disables channel
+  -- action:
+  	dequeue completed frames and restart;
+	
+* CRC error - mask this interrupt; detected in descriptor chan_status
+
+* Alignment error - mask this interrupt; detected in descriptor user status
+
+Net Jammed errors
+
+* detected:
+  -- > 15 retries, s/w retry count exceeded
+  -- No heart beat, s/w retry count exceeded
+  -- timeout on TX interrupt 
+  
+* Action:
+  
+m68k en_jam() {
+  	if TPE selected {
+		if link integrity OK
+			return good;
+		else {
+			select Thin wire;
+			enable LoopBack (??);
+			return error;
+		}
+			
+	}
+	else (thin wire selected) {	
+		if link integrity of TPE OK {
+			select TPE;
+			Enable loopback (??);
+			return GOOD;
+		}
+		else {
+			log "Net Jammed" message if we haven't already done so;
+			set ENF_JAMMED flag;
+			if_down();
+			timeout(antijam); // clears ENF_JAMMED flag after 10 
+					  //   seconds
+			return error;
+		}
+	}
+}
+  
+m88k enJam() {
+
+   	if (++retry_count < max) 
+		return good;
+
+	remember current I/F mode (TPE or thin);
+	select TPE;
+	wait some h/w delay for Link Integrity to settle down;
+	if link integrity good {
+		return good;
+	}
+	else if (mode was TPE on entry) {
+		select Thin wire;
+		return good;
+	}
+	
+	/* 
+	 * Net down.
+	 */
+	dequeue and free all frames;
+	set net_down flag; set timeout to clear it in 10 seconds;
+	if_down();
+	return bad;
+}

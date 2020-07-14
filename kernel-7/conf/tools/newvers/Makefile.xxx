@@ -1,0 +1,81 @@
+##
+# Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+#
+# @APPLE_LICENSE_HEADER_START@
+# 
+# Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+# Reserved.  This file contains Original Code and/or Modifications of
+# Original Code as defined in and that are subject to the Apple Public
+# Source License Version 1.1 (the "License").  You may not use this file
+# except in compliance with the License.  Please obtain a copy of the
+# License at http://www.apple.com/publicsource and read it before using
+# this file.
+# 
+# The Original Code and all software distributed under the License are
+# distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+# INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+# License for the specific language governing rights and limitations
+# under the License.
+# 
+# @APPLE_LICENSE_HEADER_END@
+##
+
+
+.SUFFIXES: .csh .sh .c .x .install
+
+DESTDIR=
+CFLAGS=	-O
+INSTALL=install -m 755
+DDIR=	${DESTDIR}../conf
+
+BASEDIR=
+
+SUBDIR=	config
+ISUBDIR= config.install
+
+ALL=
+IALL=	doconf.install newvers.install
+
+all install: ${IALL} ${ISUBDIR}
+
+${SUBDIR}: FRC
+	cd $@; make ${MFLAGS}
+
+${ISUBDIR}: FRC
+	cd $*; make ${MFLAGS} DESTDIR=${DESTDIR} install
+
+FRC:
+
+.c.x:	$*.c
+	${CC} ${CFLAGS} -o $*.x $*.c
+
+.csh.install: $*.csh
+	-rm -f $(DDIR)/$*
+	${INSTALL} $*.csh ${DDIR}/$*
+
+.sh.install: $*.sh
+	-rm -f $(DDIR)/$*
+	${INSTALL} $*.sh ${DDIR}/$*
+
+.x.install: $*.x
+	-rm -f ${DDIR}/$*
+	${INSTALL} -s $*.x ${DDIR}/$*
+
+lclean:
+	rm -f *.o *.x
+	rm -f ../bin/config
+
+clean: lclean
+	@for i in ${SUBDIR}; do echo "[ $$i ]";(cd $$i; make clean); done
+
+
+#  Display any newly modified source files (e.g. for archive)
+
+NEWSRC=.
+
+NEWSRC: ${NEWSRC}
+
+${NEWSRC}: Makefile *.csh
+	@echo $?

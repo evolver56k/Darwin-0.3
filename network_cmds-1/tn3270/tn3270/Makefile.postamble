@@ -1,0 +1,22 @@
+KBD = unix.kbd
+
+astosc.o: astosc.out
+astosc.out: ../ctlr/hostctlr.h ../ctlr/function.h
+astosc.out: ../ctlr/${KBD} $(SYMROOT)/mkastosc/mkastosc
+	$(SYMROOT)/mkastosc/mkastosc \
+	    ../ctlr/hostctlr.h \
+	    ../ctlr/function.h < ../ctlr/${KBD} \
+	    > $(SYMROOT)/$@
+
+disp_asc.o: asc_disp.out disp_asc.out
+asc_disp.out: $(SYMROOT)/mkastods/mkastods
+	$(SYMROOT)/mkastods/mkastods > $(SYMROOT)/$@
+
+disp_asc.out: $(SYMROOT)/mkdstoas/mkdstoas
+	$(SYMROOT)//mkdstoas/mkdstoas > $(SYMROOT)/$@
+
+kbd.out: ../ctlr/hostctlr.h ../ctlr/${KBD}
+kbd.out: $(SYMROOT)/mkhits/mkhits
+	${CC} ${CFLAGS} -E ../ctlr/function.c > $(SYMROOT)/TMPfunc.out
+	$(SYMROOT)/mkhits/mkhits ../ctlr/hostctlr.h \
+	    $(SYMROOT)/TMPfunc.out < ../ctlr/${KBD} > $(SYMROOT)/$@

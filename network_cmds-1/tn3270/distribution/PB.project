@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble, README, makefile_4.2, ultrix.curses); 
+        SUBPROJECTS = (arpa, sys_dos, telnet, utilities); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = distribution; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

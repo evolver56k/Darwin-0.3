@@ -1,0 +1,8 @@
+Project		: tcp_wrappers
+Description	: TCP Wrappers
+Distribution	: 7.6
+Source		: Eindhoven University of Technology
+Location	: ftp://ftp.win.tue.nl/pub/security/tcp_wrappers-7.6.tar.gz
+Owner		: ddavidso, wsanchez
+Dependancies	: 
+

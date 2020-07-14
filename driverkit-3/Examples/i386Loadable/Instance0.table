@@ -1,0 +1,11 @@
+/* Config table for NullDriver */
+
+"Type" = "Other";
+"Instance" = "0";
+"Driver Name" = "NullDriver";
+"Version" = "1.0";
+"DMA Channels" = "1";
+"IRQ Levels" = "9";
+"I/O Ports" = "0x280-0x28F";
+"Memory Maps" = "0x0D000-0x0F000";
+

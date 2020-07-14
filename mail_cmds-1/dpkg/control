@@ -1,0 +1,7 @@
+Package: mail-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: NetBSD Foundation
+Version: 1998.10.07
+URL: http://www.netbsd.org/
+Description: Mail commands
+Build-Depends: build-base, libcurses-hdrs

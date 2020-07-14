@@ -1,0 +1,54 @@
+/COPYRIGHT/1.1.1.2/Fri Apr 23 01:22:24 1999//Tntp-1
+/ChangeLog/1.1.1.2/Fri Apr 23 01:22:25 1999//Tntp-1
+/INSTALL/1.1.1.1/Fri Apr 23 01:20:32 1999//Tntp-1
+/Makefile.am/1.1.1.2/Fri Apr 23 01:22:25 1999//Tntp-1
+/Makefile.in/1.1.1.2/Fri Apr 23 01:22:25 1999//Tntp-1
+/NEWS/1.1.1.2/Fri Apr 23 01:22:26 1999//Tntp-1
+/README/1.1.1.2/Fri Apr 23 01:22:26 1999//Tntp-1
+/README.des/1.1.1.1/Fri Apr 23 01:20:32 1999//Tntp-1
+/README.hackers/1.1.1.1/Fri Apr 23 01:22:26 1999//Tntp-1
+/TODO/1.1.1.1/Fri Apr 23 01:20:32 1999//Tntp-1
+/WHERE-TO-START/1.1.1.2/Fri Apr 23 01:22:26 1999//Tntp-1
+/WINNT-README.html/1.1.1.1/Fri Apr 23 01:20:33 1999//Tntp-1
+/acconfig.h/1.1.1.2/Fri Apr 23 01:22:26 1999//Tntp-1
+/aclocal.m4/1.1.1.1/Fri Apr 23 01:20:33 1999//Tntp-1
+/ansi2knr.1/1.1.1.1/Fri Apr 23 01:20:33 1999//Tntp-1
+/ansi2knr.c/1.1.1.1/Fri Apr 23 01:20:33 1999//Tntp-1
+/autoconf-2.12.patches/1.1.1.1/Fri Apr 23 01:20:34 1999//Tntp-1
+/automake-1.2d.patches/1.1.1.1/Fri Apr 23 01:20:34 1999//Tntp-1
+/blddbg.bat/1.1.1.1/Fri Apr 23 01:20:34 1999//Tntp-1
+/bldrel.bat/1.1.1.1/Fri Apr 23 01:20:34 1999//Tntp-1
+/build/1.1.1.1/Fri Apr 23 01:22:27 1999//Tntp-1
+/config.guess/1.1.1.2/Fri Apr 23 01:22:27 1999//Tntp-1
+/config.h.in/1.1.1.2/Fri Apr 23 01:22:28 1999//Tntp-1
+/config.sub/1.1.1.2/Fri Apr 23 01:22:28 1999//Tntp-1
+/configure/1.1.1.2/Fri Apr 23 01:22:29 1999//Tntp-1
+/configure.in/1.1.1.2/Fri Apr 23 01:22:30 1999//Tntp-1
+/dot.emacs/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/excludes/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/install-sh/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/missing/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/mkdist.bat/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/mkinstalldirs/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/mksrc.bat/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/ntpmake/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+/stamp-h.in/1.1.1.1/Fri Apr 23 01:20:35 1999//Tntp-1
+D/adjtimed////
+D/authstuff////
+D/clockstuff////
+D/conf////
+D/html////
+D/include////
+D/kernel////
+D/libntp////
+D/libparse////
+D/ntpd////
+D/ntpdate////
+D/ntpdc////
+D/ntpq////
+D/ntptrace////
+D/parseutil////
+D/patches////
+D/ports////
+D/scripts////
+D/util////

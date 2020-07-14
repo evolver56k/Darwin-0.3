@@ -1,0 +1,23 @@
+/Makefile/1.1.1.2/Fri Apr 23 02:33:43 1999//Tdeveloper_cmds-1
+/Makefile.postamble/1.1.1.1/Fri Apr 23 02:33:43 1999//Tdeveloper_cmds-1
+/Makefile.preamble/1.1.1.1/Fri Apr 23 02:33:43 1999//Tdeveloper_cmds-1
+/PB.project/1.1.1.1/Fri Apr 23 02:33:43 1999//Tdeveloper_cmds-1
+/cgram.y/1.1.1.1/Fri Apr 23 02:33:02 1999//Tdeveloper_cmds-1
+/decl.c/1.1.1.1/Fri Apr 23 02:33:02 1999//Tdeveloper_cmds-1
+/emit.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/emit1.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/err.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/externs.h/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/externs1.h/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/func.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/init.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/lint.h/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/lint1.h/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/main1.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/mem.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/mem1.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/op.h/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/param.h/1.1.1.2/Fri Apr 23 02:33:45 1999//Tdeveloper_cmds-1
+/scan.l/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+/tree.c/1.1.1.1/Fri Apr 23 02:33:03 1999//Tdeveloper_cmds-1
+D

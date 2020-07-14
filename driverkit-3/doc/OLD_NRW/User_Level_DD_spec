@@ -1,0 +1,923 @@
+{\rtf0\ansi{\fonttbl\f2\fswiss Helvetica;\f0\fmodern Ohlfs;}
+\paperw10800
+\paperh9280
+\margl40
+\margr0
+{\colortbl\red0\green0\blue0;}
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\f2\b\i0\ul0\fs30             Kernel interface for user-level device driver support\
+                               
+\fs26 Last Revision 24-Jun-91 dmitch
+\fs30 \
+
+\b0\fs24 \
+
+\b\fs30 Device Ports\
+
+\b0\fs24 \
+Rights to access a device's registers, to program its dma channel, and receive interrupt notification are conveyed by a task holding send rights to a per-device port referred to here as the 
+\i dev_port
+\i0 .  The kernel responds to requests sent on the dev_port in order to provide these services to the requesting task.  
+\i dev_port
+\i0 's are created early in system initialization and passed out to the appropriate device drivers by a process that is not described here.\
+\
+
+\b\fs30 Register Mapping\
+\
+
+\b0\fs24 This interface provides various mechanisms for device drivers to map the physical register space associated with their devices into their local address space. Which mechanism(s) can be used by a particular device driver are determined by the machine architecture, whether the device is a native device or a NextBus device, and the Slot ID in which the device lives. \
+\
+For the purposes of the following discussion, an 
+\b NRW DMA Device
+\b0  is defined 
+\fc0 as a device in an m88k machine which resides in a slot with whose NextBus slot Id bits 9 through 7 are '111'.  A 
+\b native device
+\b0  is a device which is an integral part of an m68k-based CPU.\
+
+\b\fs30 \
+
+\b0\fs24 There are three kinds of device register space which can be mapped in to a device driver's local address space:\
+\
+
+\pard\tx180\tx760\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760 *	
+\b Register Space
+\b0  consists of one page (the size of which is machine dependent but can for now be assumed to be 8k bytes) consisting of device-specific registers. For m88k devices, the format of a device page is defined in the NRW system spec, section 5.2.8.2. For m68k devices, a device page is the physical memory region comprising all of the registers in one native device; the start of the register space may not be page-aligned in this case.\
+\
+	
+\i m88k devices:
+\i0 \
+	\
+	
+\fc0 A driver can map in a register page if and only if it is associated with an NRW DMA Device. \
+	\
+	
+\i m68k devices:
+\i0 \
+	\
+	A driver can map in a register page if and only if it is associated with a native device. \
+	\
+
+\pard\tx180\tx740\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760\fc0 *	
+\b Slot Space
+\b0  consists of up to 16 MB of memory, starting at 0xfs000000. \
+
+\pard\tx180\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-400\li760\fc0 \
+
+\pard\tx180\tx760\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760\fc0 	
+\i m88k devices
+\i0 :\
+	\
+	An  NRW DMA device driver can map in the first 0xf00000 (15 M) bytes of its associated slot space, or a portion thereof. A non-NRW DMA device driver can map in all 16 MB of its slot space, or a portion thereof.\
+	\
+	
+\i m68k devices:
+\i0 \
+	\
+	Only drivers associated with non-native devices can map in slot space; native device drivers have no slot space associated with them.\
+	\
+* 	
+\b Board space
+\b0  consists of up to 256 MB, starting at 0xs000000. \
+
+\pard\tx180\tx680\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760\fc0 \
+
+\pard\tx180\tx760\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760\fc0 	
+\i m88k devices:
+\b\i0 \
+
+\pard\tx180\tx680\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760\fc0 	\
+
+\pard\tx180\tx740\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx11520\fi-400\li760\fc0 	
+\b0 Drivers associated with devices in slots 13 and 14 are allowed to map in all or part of their board space. Other drivers can not map in any board space.\
+	\
+	
+\i m68k devices:
+\i0 \
+	\
+	Only drivers associated with non-native devices can map in board space.\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560 \
+\
+
+\b\fs30 Initialization RPC's\
+
+\b0\fs24 \
+Operations are performed upon device ports by a combination of kernel rpc's, and for performance reasons, a set of kernel traps.  Kernel rpc's control access to the device and its registers.\
+\
+	
+\b dev_return_t
+\b0 \
+	
+\b dev_intr_attach(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		port_t 
+\b0\i intr_port
+\b\i0 );\
+	
+\b0 \
+		
+\b dev_intr_attach
+\b0\i  
+\i0 requests that interrupt notification messages for\
+		the device represented by 
+\i dev_port
+\i0  be sent to the port 
+\i intr_port
+\i0 .\
+\
+		Only a single port may be attached for device interrupts at any point in time.\
+		(A policy decision, more than functional requirement.)\
+		\
+		In NRW, this request also binds a device interrupt with an interrupt request\
+		bit.\
+			\
+		
+\i dev_port 
+\i0 is the port representing the device access capability.\
+		\
+		
+\i intr_port
+\i0  is the port to which interrupt notification messages will be sent.\
+		
+\fc0 			\
+\
+	
+\b dev_return_t
+\b0 \
+	
+\b dev_intr_detach(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		port_t  
+\b0\i intr_port
+\b\i0 );\
+	
+\b0 \
+		
+\b dev_intr_detach
+\b0\i  
+\i0 disassociates interrupt notification messages for\
+		the device represented by 
+\i dev_port 
+\i0 from being sent to
+\i  intr_port.\
+
+\i0 \
+	
+\b dev_return_t
+\b0 \
+	
+\b dev
+\b0 _
+\b chan_attach(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		int 
+\b0\i chan_num,\
+		
+\b\i0 boolean_t 
+\b0\i stream_mode,\
+		
+\b\i0 int
+\b0\i  buffer_size
+\b\i0 );\
+	
+\b0 \
+
+\b\li2100 dev_chan_attach
+\b0\i  
+\i0 associates a system-wide logical dma channel with the physical device-specific channel 
+\i chan_num
+\i0  of the device represented by 
+\i dev_port
+\i0 .\
+
+\li0 \
+		A 
+\b dev_chan_attach
+\b0  must be performed for each physical dma channel\
+		to be used with the device. \
+		\
+		
+\i dev_port 
+\i0 is the port representing the device access capability.\
+		\
+		
+\i chan_num
+\i0  is the device physical channel number that should\
+			be bound with a logical dma channel.\
+		\
+		
+\i stream_mode
+\i0  specifies whether or not the device-specific hardware\
+		is capable of generating an End Of Record signal on input. See the\
+		description for chan_dma_enqueue for more information on streaming\
+		mode channels.\
+		\
+		
+\i buffer_size
+\i0  is the device-specific DMA buffer size. The kernel needs \
+		this information when performing DMA dequeue operations; it is also\
+		used in verifying correct DMA alignment.\
+\
+	
+\b dev_return_t
+\b0 \
+	
+\b dev
+\b0 _
+\b chan_detach(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		int 
+\b0\i chan_num
+\b\i0 );\
+	
+\b0 \
+		
+\b dev_chan_detach
+\b0\i  
+\i0 disassociates the dma channel 
+\i chan_num\
+		
+\i0 of the device represented by 
+\i dev_port
+\i0  from the task represented\
+		by 
+\i target_task
+\i0 .\
+\
+	
+\b dev_return_t
+\b0 \
+
+\b 	dev_reg_map(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 vm_task_t
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  
+\b0\i target_task
+\b\i0 ,\
+		vm_offset_t *
+\b0\i addr
+\b ,	/* in/out */\
+		
+\i0 boolean_t
+\i  
+\b0 anywhere
+\b\i0 );\
+
+\b0 \
+
+\fi-20\li2100 	
+\b dev_reg_map
+\b0\i  
+\i0 maps the device register page of the device associated with 
+\i dev_port
+\i0  into the target task at addr.  This RPC is invalid for m88k devices which are not NRW DMA devices and for non-native m68k devices.\
+
+\fi0\li0 			\
+		
+\i dev_port 
+\i0 is the kernel provided handle for the device.\
+						\
+		
+\i target_task
+\i0  represents the address space into which the device\
+			page should be mapped.\
+			\
+		
+\i addr
+\i0  is the address in target_task where the device page should\
+			be mapped.\
+		\
+		
+\i anywhere
+\i0  is a boolean, if true, indicates the kernel may pick any\
+			unused address to map the device page.\
+\
+	
+\b dev_return_t
+\b0 \
+
+\b 	dev_reg_unmap(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 vm_task_t
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  
+\b0\i target_task
+\b ,\
+		
+\i0 vm_offset_t
+\b0\i  addr
+\b\i0 );
+\b0 \
+\
+		
+\b dev_reg_unmap
+\b0\i  
+\i0 unmaps the device register page of the device\
+		associated with 
+\i dev_port
+\i0 .\
+		\
+\
+	
+\b dev_return_t
+\b0 \
+
+\b 	dev_slot_map(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 vm_task_t
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  
+\b0\i target_task
+\b\i0 ,\
+		vm_offset_t 
+\b0\i offset
+\b\i0 ,\
+
+\i 		
+\i0 vm_size_t
+\b0\i  len
+\b\i0 ,\
+		vm_offset_t *
+\b0\i addr
+\b ,	/* in/out */\
+
+\i0 		boolean_t 
+\b0\i anywhere
+\b\i0 );\
+
+\b0 \
+
+\b\fi-20\li2100 dev_slot_map
+\b0\i  
+\i0 maps the slot space of the NeXTbus  device associated with dev_port into the target task at addr. This RPC is illegal for native m68k devices.\
+
+\fi0\li0 			\
+		
+\i dev_port 
+\i0 is the kernel provided handle for the device.\
+						\
+		
+\i target_task
+\i0  represents the address space into which the device\
+			page should be mapped.\
+\
+		
+\i offset
+\i0  is an offset within the device's slot space at which mapping\
+			should begin.\
+\
+		
+\i addr
+\i0  is the address in target_task where the slot space should\
+			be mapped.\
+\
+
+\i\fi-1100\li3180 len
+\i0  is the length in bytes of the region to be mapped.  The maximum value for 
+\i (offset + len)
+\i0  is 0xf00000 (15M) for NRW DMA devices and 0x1000000 (16 M) for other devices.\
+
+\fi0\li0 		\
+		
+\i anywhere
+\i0  is a boolean, if true, indicates the kernel may pick any\
+			unused address to map the slot space.\
+\
+\
+	
+\b dev_return_t
+\b0 \
+
+\b 	dev_slot_unmap(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 vm_task_t
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  
+\b0\i target_task
+\b\i0 ,\
+		vm_offset_t 
+\b0\i addr
+\b ,\
+		
+\i0 vm_size_t
+\b0\i  len
+\b\i0 );\
+
+\b0 \
+		
+\b dev_slot_map
+\b0\i  
+\i0 unmaps the slot space of the NeXTbus \
+		device associated with 
+\i dev_port. addr  
+\i0 and 
+\i len 
+\i0 must match similar \
+		fields from a previous call to 
+\b dev_slot_map
+\b0 .\
+\
+
+\b 	dev_return_t
+\b0 \
+
+\b 	dev_board_map(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 vm_task_t
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  
+\b0\i target_task
+\b\i0 ,\
+		vm_offset_t 
+\b0\i offset
+\b\i0 ,\
+
+\i 		
+\i0 vm_size_t
+\b0\i  len
+\b\i0 ,\
+		vm_offset_t *
+\b0\i addr
+\b ,	/* in/out */\
+
+\i0 		boolean_t 
+\b0\i anywhere
+\b\i0 );\
+
+\b0 \
+		
+\b dev_board_map
+\b0\i  
+\i0 maps the board space of the NeXTbus \
+		device associated with dev_port into the target task at addr.\
+			\
+		
+\i dev_port 
+\i0 is the kernel provided handle for the device.\
+						\
+		
+\i target_task
+\i0  represents the address space into which the device\
+			page should be mapped.\
+\
+		
+\i offset
+\i0  is an offset within the device's board space at which mapping\
+			should begin.\
+\
+		
+\i addr
+\i0  is the address in target_task where the board space should\
+			be mapped.\
+\
+
+\pard\tx0\tx1040\tx3140\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\i\fi-1060\li3140\fc0 len
+\i0  is the length in bytes of the region to be mapped.  The maximum value for 
+\i (offset + len)
+\i0  is 0x10000000 (256M).\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0 		\
+		
+\i anywhere
+\i0  is a boolean, if true, indicates the kernel may pick any\
+			unused address to map the board space.\
+\
+\
+	
+\b dev_return_t
+\b0 \
+
+\b 	dev_board_unmap(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 vm_task_t
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0  
+\b0\i target_task
+\b\i0 ,\
+		vm_offset_t 
+\b0\i addr
+\b ,\
+		
+\i0 vm_size_t
+\b0\i  len
+\b\i0 );\
+
+\b0 \
+		
+\b dev_slot_map
+\b0\i  
+\i0 unmaps the board space of the NeXTbus \
+		device associated with 
+\i dev_port. addr  
+\i0 and 
+\i len 
+\i0 must match similar \
+		fields from a previous call to 
+\b dev_board_map
+\b0 .\
+\
+\
+
+\b\fs30 Operational RPC's\
+
+\b0\fs24 \
+\
+	
+\b chan_return_t\
+	chan_command(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		int 
+\b0\i chan_num
+\b\i0 ,\
+		chan_command_t 
+\b0\i command
+\b\i0 );
+\b0 \
+\
+
+\b\li2100 chan_command
+\b0  is used to issue commands on the dma channel identified by dev_id and chan_num.  CHAN_NONE can be specified for chan_num if no channels are attached; in this case the only legal chan_command_t bits are CC_INTR_ENABLE and INTR_DISABLE. Otherwise it is an error it the device or channel is not attached.\
+
+\li0 			\
+		
+\i dev_port 
+\i0 is the kernel provided handle for the device.\
+		\
+		
+\i chan_num
+\i0  is a logical channel number.\
+\
+		
+\i command
+\i0  is the command for the channel to execute:\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CC_START_READ
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- enable read dma (68K only)\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CC_START_WRITE
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- enable write dma (68K only)\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CC_ABORT
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- abort current dma (disables channel) (68K only)\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CC_INTR_ENABLE
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- enable interrupts on the channel\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CC_INTR_DISABLE
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- disable interrupts on the channel\
+			\
+		All commands may be or'ed with 
+\b intr_enable
+\b0  or 
+\b intr_disable
+\b0 \
+		to form compound commands (e.g. 
+\b abort | intr_disable
+\b0  or\
+		
+\b start_read | intr_enable
+\b0 ).  Note than on NRW, start_read, start_write, and\
+		abort are done by the driver by directly accessing the channel\
+		command register.\
+
+\b \
+
+\b0 \
+
+\b\fs30 Operational Traps
+\fs26 \
+
+\b0\fs24 \
+	
+\b chan_return_t\
+	chan_dma_enqueue(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		int  
+\b0\i chan_num
+\b\i0 ,\
+		task_t 
+\b0\i task_port
+\b\i0 ,\
+		vm_offset_t 
+\b0\i addr
+\b\i0 ,\
+		vm_size_t 
+\b0\i len
+\b\i0 ,\
+		direction_t 
+\b0\i rw
+\b\i0 ,\
+		chan_desc_cmd_t 
+\b0\i cmd
+\b\i0 ,\
+		unsigned char 
+\b0\i index
+\i0 ,
+\b \
+		chan_enqueue_opts_t 
+\b0\i opts
+\b\i0 ,\
+
+\i 		
+\i0 unsigned 
+\b0\i dma_id
+\b ,
+\b0 \
+		
+\b\i0 boolean_t
+\i  
+\i0 *
+\b0\i running
+\b\i0 );
+\b0 \
+\
+
+\b\li2100 chan_dma_enqueue
+\b0   builds and enqueues a list of dma descriptors describing a block of memory.  This block of memory is referred to as a 
+\b frame
+\b0 . The frame may cross page boundaries in most cases. The exception is for channels which have been configured as "streaming mode" channels per dev_chan_attach(). Frames for DMA read operations (device to memory) for streaming mode channels must not cross page boundaries. The reason for this restriction is that when the device-specific logic signals "End of record", the DMA hardware will advance to the next buffer descriptor, not the next frame. There is no way for the hardware to advance to the next frame; frames are a software construct. Therefor for such channels, we force one frame to consist of exactly one DMA descriptor.\
+
+\fi2100\li0 		\
+
+\fi0\li2100 There are system dependent limits to the amount of memory that may be queued with 
+\b chan_dma_enqueue
+\b0 ; exceeding this limit will return an error and the data will not be enqueued.\
+
+\li0 		\
+
+\i\li2100 addr
+\i0  must be aligned to the size of the device buffer.  On m68K machines, 
+\i len
+\i0  must be a multiple of the device buffer length for all descriptors with 
+\b eor
+\b0  not set in the 
+\i opts
+\i0  argument. On m88k machines, len must be a multiple of the device buffer length for DMA read operations.\
+
+\li0 			\
+		Chains of DMA frames will be limited to some length by the kernel.\
+			\
+		
+\i dev_port 
+\i0 is the kernel provided handle for the device.\
+		\
+		
+\i chan_num
+\i0  is a per-device logical channel number.\
+		\
+		
+\i task_port
+\i0  is the task where dma will be done to/from.\
+\
+		
+\i addr
+\i0  is the address in the current task where the dma should\
+			begin.\
+\
+		
+\i len 
+\i0 is the length of the dma in the target tasks address space.\
+		\
+		
+\i rw
+\i0  is the direction of the dma, either 
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 DMA_DIR_READ
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  (from the device\
+			to memory) or 
+\b DMA_DIR_WRITE
+\b0  (from memory to the device).\
+\
+		
+\i cmd 
+\i0 is a NRW channel descriptor command (m88k only)\
+		\
+
+\fi-3140\li3140 		
+\i index
+\i0   contains the region and register index to which 
+\i cmd
+\i0  will be written (m88k only).\
+
+\fi0\li0 		
+\i opts
+\i0  are channel options that should apply to the frame being\
+			enqueued.  These include:\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fi-1060\li4200\fc0 CEO_EOR
+\b0  -- the last descriptor in the frame should be indicated as the end-of-record.\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0 			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CEO_DESC_INTR
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- interrupt when this frame is completed.\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CEO_ENABLE_INTR
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- enable interrupt msgs\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fi-1060\li4200\fc0 CEO_ENABLE_CHAN
+\b0  -- enable dma channel after enqueue (m68k only).\
+
+\pard\tx1040\tx2100\tx3160\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fi-4160\li4160\fc0 			
+\b CEO_DESC_CMD
+\b0  -- enable channel descriptor command (m88k only)\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0 			\
+		
+\i dma_id
+\i0  is an integer, uninterpreted by the kernel, whose sole purpose\
+			is to identify this frame when 
+\b chan_dma_dequeue
+\b0 'd. \
+			
+\i dma_id
+\i0  must not be equal to DMA_ID_NULL.\
+			\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\i\fi-1080\li3180\fc0 running
+\i0  is returned; on the m68k this indicates whether the channel was enabled at the time of the enqueue (if not, a channel enable will be required). On the m88k, a FALSE value for 
+\i running
+\i0  indicates that a chaining update did not occur in time and that the DMA channel needs to be restarted; the frame will still be enqueued in this case.\
+
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\fc0 		\
+\
+	
+\b chan_return_t\
+	chan_dma_dequeue(\
+		port_t 
+\b0\i dev_port
+\b\i0 ,\
+		int 
+\b0\i chan_num
+\b\i0 ,\
+		chan_dequeue_opt_t 
+\b0\i opts
+\b\i0 ,\
+		vm_size_t *
+\b0\i bcount
+\b\i0 ,\
+		chan_status_t *
+\b0\i chan_status
+\b\i0 ,\
+		dma_status_t *
+\b0\i dma_status
+\b\i0 ,\
+		boolean_t *
+\b0\i eor
+\b\i0 ,\
+		unsigned *
+\b0\i dma_id
+\b\i0 );
+\b0 \
+\
+
+\b\li2100 chan_dma_dequeue
+\b0  dequeues a single dma frame which was enqueued by chan_dma_enqueue.  It 
+\li0 will only dequeue 
+\li2100 frames
+\li0  that meet the criteria 
+\li2100 spe
+\li0 cified	in 
+\i\li2100 opts
+\i0\li0 .\
+		\
+		It unlocks the associated memory.\
+		\
+		It returns an indication if more descriptors are available to dequeue\
+		by the criteria specified in 
+\i opts
+\i0 .\
+		\
+		chan_dma_dequeue will return an error (CR_BUSY) if the \
+		dequeue_all option is specified, the channel is running , and \
+		no completed frames are available. In other words, it is \
+		not possible to dequeue non-completed descriptors while the\
+		channel is running.\
+			\
+		
+\i dev_port 
+\i0 is the kernel provided handle for the device.\
+		\
+		
+\i chan_num
+\i0  is a logical channel number.\
+			\
+		
+\i opts
+\i0  are options to dma_dequeue, these include:\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CDO_DONE
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- dequeue only completed frames.\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CDO_ALL
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- dequeue all frames.\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CDO_ENABLE_INTR
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- enable interrupt msgs.\
+			
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0 CDO_EI_IF_MT
+\pard\tx1040\tx2100\tx3160\tx4220\tx5280\tx6320\tx7380\tx8440\tx9500\tx10560\b0\fc0  -- reenables device interrupts\
+				for the device if  no more frames may be dequeued.\
+				\
+		The flags may be or'ed together.\
+\
+		
+\i bcount 
+\i0 is the byte count of actually transferred data.  It is only valid\
+			for transfer from the device into memory (i.e. reads).  Zero\
+			returned on writes.\
+\
+		
+\i chan_status 
+\i0 is the channel descriptor status (only valid for m88k).  \
+			It is only valid for transfer from the device into memory (i.e. \
+			reads).  Zero returned on writes.\
+		\
+		
+\i dma_status
+\i0  is machine-independent and indicates the current state of\
+			the channel (e.g., running, idle, underrun). Only valid for\
+			m68k.\
+			\
+		
+\i eor 
+\i0 is an end of record indication (only valid for certain device and\
+			only valid on "read" transactions).  False returned on writes.\
+			\
+		
+\i dma_id
+\i0  is an integer, uninterpreted by the kernel, whose sole purpose\
+			is to identify this frame to the device driver. If 
+\i dma_id
+\i0 \
+			is DMA_ID_NULL, no descriptors are available for dequeueing.\
+	\
+\
+
+\b\fs30 Revision History
+\b0\fs24 \
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 \
+	18-Jul-91   Doug Mitchell\
+		Added 
+\i buffer_size
+\i0  argument to dev_chan_attach().\
+		\
+	08-Jul-91   Doug Mitchell\
+		Changed 
+\i chan_status
+\i0  and 
+\i desc_status
+\i0  to 
+\i dma_status
+\i0  and 
+\i chan_status
+\i0 \
+			in chan_dma_dequeue().\
+		Clarified limits of 
+\i offset
+\i0  and 
+\i len
+\i0  in dev_lot_map() and dev_board_map().\
+		\
+	27-Jul-91   Doug Mitchell\
+		Refined definition of 
+\i running
+\i0  return value in chan_dma_enqueue().\
+		Deleted CC_FORCE_BUF_ADV option from chan_command.\
+		\
+	25-Jun-91  Doug Mitchell\
+
+\pard\tx1620\tx2260\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-380\li2660\fc0 Added index argument to chan_dma_enqueue().\
+Added CEO_DESC_CMD bit to Channel enable options.\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 		\
+	24-Jun-91	  Doug Mitchell\
+
+\pard\tx1620\tx2260\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-380\li2660\fc0 Added section on register mapping. Added dev_board_map() and dev_board_unmpap() RPCs.\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 		Fixed some typos.\
+		
+}

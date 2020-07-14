@@ -1,0 +1,46 @@
+#!/bin/sh
+
+##
+# Configure drivers
+##
+
+. /etc/rc.common
+
+ConsoleMessage "Configuring devices"
+
+case "${ARCH}" in
+  ppc)
+    driverLoader D=PPCAwacs
+    if [ $? != 0 ]; then
+	driverLoader D=drvPPCBurgundy
+    fi
+    driverLoader D=Floppy
+    driverLoader D=BPF
+    driverLoader D=DEC21x4Ethernet
+    driverLoader D=drvPPCGem
+    driverLoader D=SCSITape
+    driverLoader D=PPCSerialPort
+    driverLoader D=PortServer	# Must be after all SerialDevices
+    driverLoader D=SCSIServer
+    ;;
+  *)
+    driverLoader a
+    ;;
+esac
+
+##
+# Set tape block sizes
+##
+#echo -n "Setting tape block sizes:"
+#for i in /dev/nrst*; do
+#    if [ -c "${i}" ]; then
+#	echo -n " ${i}"
+#	stblocksize "${i}"
+#    fi
+#done
+#echo ""
+
+##
+# Create /var/run/dev.db
+##
+dev_mkdb

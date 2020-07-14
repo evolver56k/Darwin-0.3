@@ -1,0 +1,25 @@
+/APPLE_LICENSE/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/Makefile/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/Makefile.postamble/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/Makefile.preamble/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/PB.project/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/auth-proto.h/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/auth.c/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/auth.h/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/enc-proto.h/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/enc_des.c/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/encrypt.c/1.1.1.1/Tue May  4 20:11:07 1999//TLibtelnet-1
+/encrypt.h/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/genget.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/getent.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/kerberos.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/kerberos5.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/key-proto.h/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/krb4encpwd.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/misc-proto.h/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/misc.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/misc.h/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/read_password.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/rsaencpwd.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+/spx.c/1.1.1.1/Tue May  4 20:11:08 1999//TLibtelnet-1
+D/dpkg////

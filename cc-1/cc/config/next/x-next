@@ -1,0 +1,38 @@
+# Make assignments for compiling on NeXT with their compiler version.
+CC = cc -traditional-cpp
+X_CPPFLAGS = -DAPPLE_CC=`cd $(srcdir); vers_string -f cc \
+	       | sed -e 's/[-A-Za-z_]*//' | sed -e 's/\.[0-9.]*//'`
+
+GCC_FOR_TARGET = ./xgcc -B./ -traditional-cpp
+
+GCC_CFLAGS = $(INTERNAL_CFLAGS) $(X_CFLAGS) $(T_CFLAGS) $(CFLAGS) -I./include -traditional-cpp
+
+BISON = /usr/local/bin/bison
+
+# There is no need to run fixproto.
+STMP_FIXPROTO =
+
+LIMITS_H_TEST = [ -f /usr/include/ansi/limits.h \
+-o -f $${NEXT_ROOT}/NextLibrary/Frameworks/System.framework/Headers/bsd/limits.h -o \
+-f $${NEXT_ROOT}/System/Library/Frameworks/System.framework/Headers/bsd/limits.h ]
+
+# When gcc is running on a NeXT, we want the make interaction in it.
+
+COMMON_OBJS = makeUser.o make-support.o next-version.o
+
+makeUser.o: config/next/makeUser.c config/next/make.h
+	$(CC) -c $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) \
+	  $(srcdir)/config/next/makeUser.c
+
+config/next/makeUser.c config/next/make.h: config/next/make.defs
+	cd config/next; mig make.defs
+
+make-support.o: config/next/make-support.c config/next/make.h
+	$(CC) -c $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) \
+	  $(srcdir)/config/next/make-support.c
+
+next-version.o:	next-version.c
+next-version.c:
+	echo "const char *next_version = "\"`cd $(srcdir);vers_string -f cc`\" ";" > \
+		$@
+

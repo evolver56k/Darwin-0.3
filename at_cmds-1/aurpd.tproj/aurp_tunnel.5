@@ -1,0 +1,61 @@
+NAME
+aurp_tunnel.cfg - format of the AURP configuration file
+
+DESCRIPTION
+The file aurp_tunnel.cfg provides configuration information for the
+'aurpd(8)' command.  This file sets up the following information:
+	local IP address for the local tunnel end-point
+	remote IP addresses for remote tunnel end-points
+	hidden network numbers
+	advertised network numbers
+
+The 'local' keyword specifies the IP address for the local end of all
+AURP tunnels on this host.
+
+The 'remote' keyword, which may be repeated, specifies the remote end
+of one AURP tunnel.
+
+The 'port' keyword specifies the UDP port number for local and remote
+endpoints (this is for testing purposes only; the default, 387, should
+normally be used).
+
+The 'hide' keyword, which may be repeated, specifies an AppleTalk
+network number that is not to be advertised in routing information
+exchanges through the tunnel.
+
+The 'export' keyword, which may be repeated, specifies an AppleTalk
+network number that is to be advertised in routing information
+exchanges through the tunnel.
+
+The 'hide' and 'export' keywords are mutually exclusive.  'aurpd' will
+complain and exit if both are specified.  If neither are specified,
+all locally accessible network numbers will be advertised through the
+tunnels.  If 'export' is specified, only those numbers in 'export'
+statements will be advertised.  If 'hide' is specified, all locally
+accessible network numbers *except* for those in 'hide' statements
+will be advertised through the tunnels.
+
+EXAMPLE
+# CONFIGURATION FILE FOR AURP PROTOCOL
+#  Tunneling through IP
+#
+# @(#) aurp_tunnel.cfg
+#
+# Keywords:
+#       local: IP address for this end of all tunnels
+#       remote: IP address for remote end of next tunnel
+#       hide: AppleTalk network number to be hidden from remote internet
+#       export: AppleTalk network number to explicitly advertise to
+#               remote internet
+# Any number of 'remote', 'hide', and 'export' keywords are permitted.
+# Only the first 'local' keyword is accepted.
+#
+# local IP address
+local 192.168.24.137
+# remote IP address of peer #1
+remote 192.168.24.128
+# Don't let anyone know about this network number:
+hide 35281
+
+SEE ALSO
+aurpd(8), appletalk(8)

@@ -1,0 +1,84 @@
+#!/bin/sh
+
+##
+# Multi-user startup script.
+#
+# Customize system startup by adding scripts to the startup 
+# directory, rather than editing this file.
+##
+
+##
+# Set shell to ignore Control-C, etc.
+# Prevent lusers from shooting themselves in the foot.
+##
+stty intr  undef
+stty kill  undef
+stty quit  undef
+stty susp  undef
+stty start undef
+stty stop  undef
+stty dsusp undef
+
+. /etc/rc.common
+
+stty status '^T'
+
+##
+# Record $1 as BootType for the benefit of any scripts that need to know.
+##
+BootType=${1-Multiuser}
+
+##
+# Display a startup message.
+##
+
+PercentBoot=0
+
+echo ""
+
+ConsoleMessage "Initializing system"
+
+if  [ "$1" = "autoboot" ]; then
+    ConsoleMessage "Automatic reboot in progress"
+    MESSAGE="Reboot"
+else
+    ConsoleMessage "Multiuser startup in progress"
+    MESSAGE="Startup"
+fi
+
+##
+# Are we booting from a CD-ROM?  If so, switch over to /etc/rc.cdrom.
+##
+if [ -d /System/Installation ] && [ -f /etc/rc.cdrom ]; then
+    /etc/rc.cdrom $1
+    ConsoleMessage "CD-ROM boot procedure complete."
+    halt
+    exit 0
+fi
+
+##
+# Run each script in the startup directory.
+#
+# NOTE: scripts with names containing "#" or "~" characters
+# are not executed (they are likely to be editor backup files).
+##
+StartupDir=/etc/startup
+#Scripts=$(echo 'g/^[^#].*[^~]$/p' | ed "!ls ${StartupDir}")
+Scripts=$(ls ${StartupDir} | sed -n '/^[^#].*[^~]$/p')
+TotalCount=$(echo ${Scripts} | wc -w)
+Count=100
+
+for Script in ${Scripts} ; do
+    PercentBoot=$((${Count} / ${TotalCount})); export PercentBoot
+    Count=$((${Count} + 100))
+    ${StartupDir}/${Script}
+done
+
+##
+# Startup complete
+##
+PercentBoot=100 ConsoleMessage "Startup complete"
+
+/System/Installation/CDIS/popconsole
+
+exit 0

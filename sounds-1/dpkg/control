@@ -1,0 +1,6 @@
+Package: sounds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 15
+Description: System sounds
+Build-Depends: build-base

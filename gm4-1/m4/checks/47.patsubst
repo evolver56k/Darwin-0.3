@@ -1,0 +1,11 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:2604: Origin of test
+patsubst(`GNUs not Unix', `^', `OBS: ')
+dnl @result{}OBS: GNUs not Unix
+patsubst(`GNUs not Unix', `\<', `OBS: ')
+dnl @result{}OBS: GNUs OBS: not OBS: Unix
+patsubst(`GNUs not Unix', `\w*', `(\&)')
+dnl @result{}(GNUs)() (not)() (Unix)
+patsubst(`GNUs not Unix', `\w+', `(\&)')
+dnl @result{}(GNUs) (not) (Unix)
+patsubst(`GNUs not Unix', `[A-Z][a-z]+')
+dnl @result{}GN not 

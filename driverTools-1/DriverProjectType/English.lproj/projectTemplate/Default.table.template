@@ -1,0 +1,14 @@
+"Title" = "$PROJECTNAME$";
+"Family" = "";
+"Location" = "";
+"Bus Type" = "";
+"Auto Detect IDs" = "";
+"Instance" = "0";
+"Post-Load" = "PostLoad";
+"Pre-Load" = "PreLoad";
+"Driver Name" = "$PROJECTNAME$";
+"DMA Channels" = "";
+"IRQ Levels" = "";
+"Memory Maps" = "";
+"I/O Ports" = "";
+"Class Names" = "";

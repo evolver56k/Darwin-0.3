@@ -1,0 +1,132 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Courier;\f1\fmodern Ohlfs;}
+\paperw13040
+\paperh9540
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\f0\b\i0\ulnone\fs24\fc0\cf0 General Information
+\b0 \
+\
+The purpose of this example is to illustrate the technique of starting up a kernel-level driver using the user-level device configuration mechanism. The operation of this example is as follows:\
+\
+
+\pard\tx720\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-720\li720\fc0\cf0 1) 	The user-level device configuration utility, Config, starts up a user level program called myDriver, implemented in this example in the User/ subdirectory. The myDriver program is not the actual device driver; it's merely an agent which facilitates loading the kernel-level driver into the kernel and passing the device port obtained from Config down to the kernel-level driver. (Normally, Config starts up user-level drivers early in the boot process. For running this example, the configutil utility may be used to force this driver startup action to happen interactively. This procedure is described below.)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0\cf0 \
+
+\pard\tx720\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-720\li720\fc0\cf0 2) 	The myDriver executable obtains its device port from Config in the normal manner. \
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0\cf0 \
+
+\pard\tx720\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-720\li720\fc0\cf0 3)	MyDriver then loads the loadable kernel server (LKS) called myHandler_reloc, implemented in the Kernel/ subdirectory of this example, into the kernel. myHandler_reloc contains two parts: one is myHandler, which is a standard loadable kernel "handler" module. The other is myDevice, which is the actual IODevice-style driver which will perform I/O to/from this device.\
+\
+4)	MyDriver uses RPCs to pass the device port down to myHandler and to cause basic device driver initialization. \
+\
+5)	MyHandler, since it is running in its own kernel-level task (
+\b not
+\b0  the driverkit's I/O task), uses the convertPortToIOTask() function to convert the device port obtained from myDriver into an I/O task port. The result of this is passed to myDevice, the actual IODevice-style driver. \
+\
+6) 	The initDevice() RPC is sent from myDriver (in user space) down to the myHandler, which calls myDevice's -init method. At this time, myDevice has a valid devicePort and can map in its device page and perform actual I/O. \
+\
+
+\b Usage notes\
+\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0\cf0 [This section is highly dependent on system type, hardware configuration, and whether or not the target system contains a NeXT Laser Printer driver.]\
+
+\pard\tx720\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-720\li720\fc0\cf0 \
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b0\fc1\cf1 To run this example, do the following:\
+\
+
+\pard\tx720\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fi-720\li720\fc0\cf0 1)	Compile the whole example by typing 'make' in the directory containing this README file. \
+\
+2) 	Place a symlink in /usr/Devices called devr_0003_0100_myDriver which points to the executable of myDriver in this example. This executable is in User/m88kdebug/myDriver relative to the directory containing this README. This symlink overrides the existing printer driver. \
+\
+3)	Use the configutil program to instruct Config to delete its knowledge of the printer driver. Type the following command as root:\
+\
+
+\fs20\fc1\cf1 	# /usr/bin/configutil t ffff0001 30000\
+
+\fs24\fc0\cf0 	\
+4)	Kill the printer driver if it is currently running. Use ps to find the printer driver's PID, like this:\
+\
+
+\fs20\fc1\cf1 	# ps auxw | grep printer\
+
+\fc0\cf0 	root       246   1.8  0.3 1.89M  216K p2 S     0:00 grep printer\
+
+\fc1\cf1 	root       189   0.0  1.0 3.41M  656K p3 S     0:02 /usr/Devices/devr_0003_0001_printerDriver\
+
+\fs24\fc0\cf0 \
+	Then kill the printer driver.\
+	\
+
+\fs20\fc1\cf1 	# kill 189\
+
+\fs24\fc0\cf0 	\
+5)	Use the configutil program to instruct Config to rescan for new devices. \
+\
+
+\fs20\fc1\cf1 	# /usr/bin/configutil s\
+
+\fs24\fc0\cf0 \
+	This will cause Config to attempt to restart a driver for the printer device. Since the symlink created in step 2 has a higher revision number (0100) than the original printer device, our example driver will be started instead of the standard printer driver. \
+	\
+	This will cause the entire mechanism described above (under "General Information" to execute. \
+	\
+	\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\b\fc0\cf0 Files
+\b0 \
+\
+user/\
+\
+    myDriver.c: Simple program which is started up by Config. This program loads\
+    	in the actual driver into the kernel, obtains a device port from Config,\
+	and passes the device port down to the kernel-level driver.\
+	\
+    km_com.[mh]: Interface to libkernload, which simplifies the mechanism of loading\
+    	an LKS into the kernel from a C program.\
+	\
+    m88kdebug/myHandler.h:\
+    	Generated by MIG. Defines C interface to public RPCs in myHandler.m.\
+\
+    m88kdebug/myHandlerUser.c:\
+    	The actual C code generated by MIG to convert function calls made by \
+	myDriver.c into mach RPCs which go to the loadable kernel server.\
+	\
+	\
+kernel/\
+\
+    myDevice.[mh]: Trivial IODevice which is to eventually perform all of the\
+    	"work" associated with this device.\
+	\
+    myHandler.m: a loadable kernel "handler" module. This accepts RPCs from \
+    	user level and passes along method calls to myDevice. The code in this \
+	module runs as part of the loadable kernel server task. \
+	\
+    myHandler.defs: MIG specification file which defines the RPC interface to\
+    	myHandler.m.\
+	\
+    Load_Commands.sect:\
+    Load_Commands.sect:\
+    	Section commands for the kl_ld utility. These define entry and exit \
+		operations for the loadable kernel module.\
+		\
+    m88krelocdebug/myHandler.h:\
+    	Generated by MIG. Defines C interface to public myHandler.m RPCs.\
+	\
+    m88krelocdebug/myHandlerHandler.h:\
+    	Generated by MIG. Among other things, defines the myHandler_t struct, which\
+	is used by MIG code to vector from an incoming message out to one of the\
+	public routines in myHandler.m.\
+	\
+    m88krelocdebug/myHandlerHandler.c:\
+    	The actual C code generated by MIG to parse incoming messsages and to \
+	convert them into function calls to myHandler.m.\
+	\
+    m88krelocdebug/myHandler_reloc:\
+    	The relocatable module which is loaded into a running kernel.\
+	
+}

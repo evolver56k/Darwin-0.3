@@ -1,0 +1,6 @@
+Package: kernload
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 60
+Description: Kernel loader
+Build-Depends: build-base, adv-cmds, kernload-hdrs, libstreams-hdrs, driverkit-hdrs

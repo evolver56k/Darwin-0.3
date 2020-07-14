@@ -1,0 +1,14 @@
+{
+    DYNAMIC_CODE_GEN = NO; 
+    FILESTABLE = {
+	OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, m.template, h.template, Load_Commands.sect); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-Wno-format";
+    PROJECTNAME = $PRODUCTNAME$; 
+    PROJECTTYPE = KernelServer; 
+    PROJECTVERSION = 2.6; 
+}

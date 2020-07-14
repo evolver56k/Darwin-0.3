@@ -1,0 +1,630 @@
+# Makefile.in generated automatically by automake 1.3 from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DISTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+CATALOGS = @CATALOGS@
+CATOBJEXT = @CATOBJEXT@
+CC = @CC@
+CWARNS = @CWARNS@
+CXX = @CXX@
+DATADIRNAME = @DATADIRNAME@
+EMACS = @EMACS@
+GENCAT = @GENCAT@
+GMOFILES = @GMOFILES@
+GMSGFMT = @GMSGFMT@
+GT_NO = @GT_NO@
+GT_YES = @GT_YES@
+INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
+INSTOBJEXT = @INSTOBJEXT@
+INTLDEPS = @INTLDEPS@
+INTLLIBS = @INTLLIBS@
+INTLOBJS = @INTLOBJS@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MKINSTALLDIRS = @MKINSTALLDIRS@
+MSGFMT = @MSGFMT@
+NM = @NM@
+OPTCFLAGS = @OPTCFLAGS@
+PACKAGE = @PACKAGE@
+POFILES = @POFILES@
+POSUB = @POSUB@
+RANLIB = @RANLIB@
+USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
+USE_NLS = @USE_NLS@
+VERSION = @VERSION@
+dselect_SUBDIRS = @dselect_SUBDIRS@
+l = @l@
+lispdir = @lispdir@
+perlpath = @perlpath@
+
+AUTOMAKE_OPTIONS	= 1.1 foreign
+
+pkglibdir		= $(libdir)/@PACKAGE@
+pkglocalstatedir	= $(sharedstatedir)/@PACKAGE@
+
+parsechangelogdir	= $(pkglibdir)/parsechangelog
+altssysconfdir		= $(pkgsysconfdir)/alternatives
+altslocalstatedir	= $(pkglocalstatedir)/alternatives
+
+# This should be $(pkgsysconfdir), but uses $(sysconfdir) for backwards compatibility.
+altssysconfdir		= $(sysconfdir)/alternatives
+
+INCLUDES		= -I$(top_srcdir)/include -I$(top_srcdir)/libiberty-include \
+			  -I$(top_srcdir) -I$(srcdir) \
+			  -I$(top_builddir) -I$(top_builddir)/include -I. \
+			  -I$(top_srcdir)/intl -I$(top_builddir)/intl
+DEFS			= @DEFS@
+
+bin_SCRIPTS		= dpkg-name dpkg-source dpkg-genchanges dpkg-gencontrol \
+			  dpkg-shlibdeps dpkg-buildpackage dpkg-parsechangelog \
+			  dpkg-distaddfile 822-date dpkg-scanpackages
+
+sbin_PROGRAMS		= start-stop-daemon
+start_stop_daemon_SOURCES	= start-stop-daemon.c
+start_stop_daemon_LDADD = ../libiberty/libiberty.a
+sbin_SCRIPTS		= update-rc.d update-alternatives \
+			  install-info dpkg-divert
+
+pkglib_SCRIPTS		= controllib.pl
+
+lisp_LISP		= debian-changelog-mode.el
+ELCFILES		= debian-changelog-mode.elc
+
+man_MANS		= dpkg-name.1 dpkg-source.1 822-date.1 update-rc.d.8 \
+			  start-stop-daemon.8 update-alternatives.8 \
+			  install-info.8 dpkg-scanpackages.8
+
+EXTRA_DIST		= update-rc.d.pl \
+			  dpkg-name.sh dpkg-source.pl dpkg-genchanges.pl \
+			  dpkg-gencontrol.pl dpkg-shlibdeps.pl \
+			  dpkg-buildpackage.sh dpkg-parsechangelog.pl \
+			  dpkg-distaddfile.pl 822-date.pl dpkg-scanpackages.pl \
+			  update-alternatives.pl install-info.pl dpkg-divert.pl \
+			  controllib.pl debian-changelog-mode.el \
+			  cl-debian.pl \
+			  $(man_MANS)
+
+noinst_SCRIPTS		= cl-debian
+
+LSMANL			= dpkg-gencontrol dpkg-genchanges dpkg-buildpackage \
+			  dpkg-distaddfile dpkg-parsechangelog dpkg-shlibdeps
+
+CLEANFILES		= $(bin_SCRIPTS) $(sbin_SCRIPTS) $(noinst_DATA) $(ELCFILES)
+MAINTAINERCLEANFILES	= $(srcdir)/Makefile.in $(srcdir)/elisp-comp
+
+SUFFIXES = .pl .sh
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+PROGRAMS =  $(sbin_PROGRAMS)
+
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+start_stop_daemon_OBJECTS =  start-stop-daemon.o
+start_stop_daemon_DEPENDENCIES =  ../libiberty/libiberty.a
+start_stop_daemon_LDFLAGS = 
+SCRIPTS =  $(bin_SCRIPTS) $(noinst_SCRIPTS) $(pkglib_SCRIPTS) \
+$(sbin_SCRIPTS)
+
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+LISP =  $(lisp_LISP)
+
+man1dir = $(mandir)/man1
+man8dir = $(mandir)/man8
+MANS = $(man_MANS)
+
+NROFF = nroff
+DIST_COMMON =  Makefile.am Makefile.in elisp-comp
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+DEP_FILES =  .deps/start-stop-daemon.P
+SOURCES = $(start_stop_daemon_SOURCES)
+OBJECTS = $(start_stop_daemon_OBJECTS)
+
+all: Makefile $(PROGRAMS) $(SCRIPTS) $(LISP) $(ELCFILES) $(MANS)
+
+.SUFFIXES:
+.SUFFIXES: .S .c .el .elc .lo .o .pl .s .sh
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign scripts/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-sbinPROGRAMS:
+
+clean-sbinPROGRAMS:
+	-test -z "$(sbin_PROGRAMS)" || rm -f $(sbin_PROGRAMS)
+
+distclean-sbinPROGRAMS:
+
+maintainer-clean-sbinPROGRAMS:
+
+install-sbinPROGRAMS: $(sbin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(sbindir)
+	@list='$(sbin_PROGRAMS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; \
+	done
+
+uninstall-sbinPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(sbin_PROGRAMS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  rm -f $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+start-stop-daemon: $(start_stop_daemon_OBJECTS) $(start_stop_daemon_DEPENDENCIES)
+	@rm -f start-stop-daemon
+	$(LINK) $(start_stop_daemon_LDFLAGS) $(start_stop_daemon_OBJECTS) $(start_stop_daemon_LDADD) $(LIBS)
+
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
+	done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+install-pkglibSCRIPTS: $(pkglib_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(pkglibdir)
+	@list='$(pkglib_SCRIPTS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(pkglibdir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(pkglibdir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(pkglibdir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(pkglibdir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
+	done
+
+uninstall-pkglibSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	list='$(pkglib_SCRIPTS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  rm -f $(DESTDIR)$(pkglibdir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+install-sbinSCRIPTS: $(sbin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(sbindir)
+	@list='$(sbin_SCRIPTS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
+	done
+
+uninstall-sbinSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	list='$(sbin_SCRIPTS)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  rm -f $(DESTDIR)$(sbindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+install-lispLISP: $(lisp_LISP) $(ELCFILES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(lispdir)
+	@list='$(lisp_LISP)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(lispdir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(lispdir)/$$p; \
+	  if test -f $${p}c; then \
+	    echo " $(INSTALL_DATA) $${p}c $(DESTDIR)$(lispdir)/$${p}c"; \
+	    $(INSTALL_DATA) $${p}c $(DESTDIR)$(lispdir)/$${p}c; \
+	  else : ; fi; \
+	done
+
+uninstall-lispLISP:
+	@$(NORMAL_UNINSTALL)
+	list='$(lisp_LISP)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  rm -f $(lispdir)/$$p $(DESTDIR)$(lispdir)/$${p}c; \
+	done
+.el.elc:
+	@echo 'WARNING: Warnings can be ignored. :-)'
+	if test $(EMACS) != no; then \
+	  EMACS=$(EMACS) $(SHELL) $(srcdir)/elisp-comp $<; \
+	fi
+
+mostlyclean-lisp:
+
+clean-lisp:
+	-test -z "$(ELCFILES)" || rm -f $(ELCFILES)
+
+distclean-lisp:
+
+maintainer-clean-lisp:
+
+install-man1:
+	$(mkinstalldirs) $(DESTDIR)$(man1dir)
+	@list='$(man1_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst; \
+	done
+
+uninstall-man1:
+	@list='$(man1_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man1dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man1dir)/$$inst; \
+	done
+
+install-man8:
+	$(mkinstalldirs) $(DESTDIR)$(man8dir)
+	@list='$(man8_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.8*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man8dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man8dir)/$$inst; \
+	done
+
+uninstall-man8:
+	@list='$(man8_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.8*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man8dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man8dir)/$$inst; \
+	done
+install-man: $(MANS)
+	@$(NORMAL_INSTALL)
+	$(MAKE) install-man1 install-man8
+uninstall-man:
+	@$(NORMAL_UNINSTALL)
+	$(MAKE) uninstall-man1 uninstall-man8
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $(SOURCES) $(HEADERS) $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = scripts
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign scripts/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	-rm -rf .deps
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).P -c $<
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).p -c $<
+	@-sed -e 's/^\([^:]*\)\.o:/\1.lo \1.o:/' \
+	  < .deps/$(*F).p > .deps/$(*F).P
+	@-rm -f .deps/$(*F).p
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: install-sbinPROGRAMS install-binSCRIPTS install-pkglibSCRIPTS install-sbinSCRIPTS
+	@$(NORMAL_INSTALL)
+
+install-data: install-lispLISP install-man install-data-local
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: uninstall-sbinPROGRAMS uninstall-binSCRIPTS uninstall-pkglibSCRIPTS uninstall-sbinSCRIPTS uninstall-lispLISP uninstall-man uninstall-local
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs:
+	$(mkinstalldirs)  $(DATADIR)$(sbindir) $(DATADIR)$(bindir) \
+		$(DATADIR)$(pkglibdir) $(DATADIR)$(sbindir) \
+		$(DATADIR)$(lispdir) $(DESTDIR)$(mandir)/man1 \
+		$(DESTDIR)$(mandir)/man8
+
+
+mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(DISTCLEANFILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-sbinPROGRAMS mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-lisp mostlyclean-tags \
+		mostlyclean-depend mostlyclean-generic
+
+clean:  clean-sbinPROGRAMS clean-compile clean-libtool clean-lisp \
+		clean-tags clean-depend clean-generic mostlyclean
+
+distclean:  distclean-sbinPROGRAMS distclean-compile distclean-libtool \
+		distclean-lisp distclean-tags distclean-depend \
+		distclean-generic clean
+	-rm -f config.status
+	-rm -f libtool
+
+maintainer-clean:  maintainer-clean-sbinPROGRAMS \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-lisp maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: mostlyclean-sbinPROGRAMS distclean-sbinPROGRAMS \
+clean-sbinPROGRAMS maintainer-clean-sbinPROGRAMS uninstall-sbinPROGRAMS \
+install-sbinPROGRAMS mostlyclean-compile distclean-compile \
+clean-compile maintainer-clean-compile mostlyclean-libtool \
+distclean-libtool clean-libtool maintainer-clean-libtool \
+uninstall-binSCRIPTS install-binSCRIPTS uninstall-pkglibSCRIPTS \
+install-pkglibSCRIPTS uninstall-sbinSCRIPTS install-sbinSCRIPTS \
+uninstall-lispLISP install-lispLISP mostlyclean-lisp distclean-lisp \
+clean-lisp maintainer-clean-lisp install-man1 uninstall-man1 \
+install-man8 uninstall-man8 install-man uninstall-man tags \
+mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
+distdir mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info dvi installcheck install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
+
+
+.PHONY: install-data-local uninstall-local
+
+%: %.pl
+	sed -e "s:^#\![ 	]*/usr/bin/perl:#\! $(perlpath):; \
+		s:\$$dpkglibdir[ 	]*=[ 	]*['\"][^'\"]*['\"]:\$$dpkglibdir=\"$(pkglibdir)\":; \
+		s:\$$version[ 	]*=[ 	]*['\"][^'\"]*['\"]:\$$version=\"$(VERSION)\":" \
+		< $< > $@.dest
+	sed -e "s:^#\![ 	]*/usr/bin/perl:#\! $(perlpath):; \
+		s:\$$dpkglibdir[ 	]*=[ 	]*['\"][^'\"]*['\"]:\$$dpkglibdir=\"./scripts\":; \
+		s:\$$version[ 	]*=[ 	]*['\"][^'\"]*['\"]:\$$version=\"$(VERSION)\":" \
+		< $< > $@.build
+	chmod 755 $@.build $@.dest
+	if test "$@" = "cl-debian"; then \
+	  (mkdir parsechangelog || true); \
+	  cp -p $@.build parsechangelog/debian; \
+	  ln -sf $(srcdir)/controllib.pl controllib.pl; \
+	fi
+	mv $@.dest $@
+
+%: %.sh 
+	sed -e "s:version=\"[^\"]*\":version=\"$(VERSION)\":" \
+		< $< > $@.dest
+	sed -e "s:version=\"[^\"]*\":version=\"$(VERSION)\":" \
+		< $< > $@.build
+	chmod 755 $@.build $@.dest
+	mv $@.build $@
+
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign scripts/Makefile
+	perl -ni -e \
+		'print; if (/p in \$$\$$list\; do/) { print "\t  p=`basename \$$\$$p`; \\\n"; }' \
+		$(srcdir)/Makefile.in
+
+install-data-local: cl-debian
+	$(mkinstalldirs) $(altslocalstatedir) $(altssysconfdir)
+	set -e; for f in $(LSMANL); do ln -sf dpkg-source.1 $(mandir)/man1/$$f.1; done
+	$(mkinstalldirs) $(parsechangelogdir)
+	$(INSTALL_PROGRAM) cl-debian $(parsechangelogdir)/debian
+
+uninstall-local:
+	$(RM) $(parsechangelogdir)/debian
+	-[ -e $(parsechangelogdir) ] && rmdir $(parsechangelogdir)
+	set -e; for f in $(LSMANL); do $(RM) $(mandir)/man1/$$f.1; done
+	-[ -e $(altssysconfdir) ] && rmdir $(altssysconfdir)
+	-[ -e $(altslocalstatedir) ] && rmdir $(altslocalstatedir)
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

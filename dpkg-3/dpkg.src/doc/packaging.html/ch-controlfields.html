@@ -1,0 +1,488 @@
+<html><head>
+<title>Debian packaging manual - Control files and their fields</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 4<br>
+Control files and their fields
+</h1>
+
+Many of the tools in the <kbd>dpkg</kbd> suite manipulate data in a common
+format, known as control files.  Binary and source packages have
+control data as do the <code>.changes</code> files which control the
+installation of uploaded files, and <kbd>dpkg</kbd>'s internal databases
+are in a similar format.
+<hr>
+<h2><A name="s4.1">
+4.1 Syntax of control files
+</A></h2>
+
+A file consists of one or more paragraphs of fields.  The paragraphs
+are separated by blank lines.  Some control files only allow one
+paragraph; others allow several, in which case each paragraph often
+refers to a different package.<P>
+
+Each paragraph is a series of fields and values; each field consists
+of a name, followed by a colon and the value.  It ends at the end of
+the line.  Horizontal whitespace (spaces and tabs) may occur before or
+after the value and is ignored there; it is conventional to put a
+single space after the colon.<P>
+
+Some fields' values may span several lines; in this case each
+continuation line <em>must</em> start with a space or tab.  Any trailing
+spaces or tabs at the end of individual lines of a field value are
+ignored.<P>
+
+Except where otherwise stated only a single line of data is allowed
+and whitespace is not significant in a field body.  Whitespace may
+never appear inside names (of packages, architectures, files or
+anything else), version numbers or in between the characters of
+multi-character version relationships.<P>
+
+Field names are not case-sensitive, but it is usual to capitalise the
+fields using mixed case as shown below.<P>
+
+Blank lines, or lines consisting only of spaces and tabs, are not
+allowed within field values or between fields - that would mean a new
+paragraph.<P>
+
+It is important to note that there are several fields which are
+optional as far as <kbd>dpkg</kbd> and the related tools are concerned,
+but which must appear in every Debian package, or whose omission may
+cause problems.  When writing the control files for Debian packages
+you <em>must</em> read the Debian policy manual in conjuction with the
+details below and the list of fields for the particular file.
+<hr>
+<h2><A name="s4.2">
+4.2 List of fields
+
+</A></h2>
+<hr>
+<h3><A name="s-f-Package">
+4.2.1 <code>Package</code>
+</A></h3>
+
+The name of the binary package.  Package names consist of the
+alphanumerics and <code>+</code> <code>-</code> <code>.</code> (plus, minus and full
+stop).<A href="footnotes.html#13" name="fr13">[13]</A><P>
+
+They must be at least two characters and must start with an
+alphanumeric.  In current versions of dpkg they are sort of
+case-sensitive<A href="footnotes.html#14" name="fr14">[14]</A>; use lowercase
+package names unless the package you're building (or referring to, in
+other fields) is already using uppercase.
+<hr>
+<h3><A name="s-f-Version">
+4.2.2 <code>Version</code>
+</A></h3>
+
+This lists the source or binary package's version number - see <A href="ch-versions.html">Version numbering, chapter 5</A>.
+<hr>
+<h3><A name="s-f-Architecture">
+4.2.3 <code>Architecture</code>
+</A></h3>
+
+This is the architecture string; it is a single word for the CPU
+architecture.<P>
+
+<kbd>dpkg</kbd> will check the declared architecture of a binary package
+against its own compiled-in value before it installs it.<P>
+
+The special value <code>all</code> indicates that the package is
+architecture-independent.<P>
+
+In the main <code>debian/control</code> file in the source package, or in
+the source package control file <code>.dsc</code>, a list of architectures
+(separated by spaces) is also allowed, as is the special value
+<code>any</code>.  A list indicates that the source will build an
+architecture-dependent package, and will only work correctly on the
+listed architectures.  <code>any</code> indicates that though the source
+package isn't dependent on any particular architecture and should
+compile fine on any one, the binary package(s) produced are not
+architecture-independent but will instead be specific to whatever the
+current build architecture is.<P>
+
+In a <code>.changes</code> file the <code>Architecture</code> field lists the
+architecture(s) of the package(s) currently being uploaded.  This will
+be a list; if the source for the package is being uploaded too the
+special entry <code>source</code> is also present.<P>
+
+The current build architecture can be determined using <code>dpkg
+--print-architecture</code>.<A href="footnotes.html#15" name="fr15">[15]</A>
+This value is automatically used by <kbd>dpkg-gencontrol</kbd> when
+building the control file for a binary package for which the source
+control information doesn't specify architecture <code>all</code>.<P>
+
+There is a separate option, <code>--print-installation-architecture</code>,
+for finding out what architecture <kbd>dpkg</kbd> is willing to install.
+This information is also in the output of <code>dpkg --version</code>.
+<hr>
+<h3><A name="s-f-Maintainer">
+4.2.4 <code>Maintainer</code>
+</A></h3>
+
+The package maintainer's name and email address.  The name should come
+first, then the email address inside angle brackets <code>&lt;&gt;</code> (in
+RFC822 format).<P>
+
+If the maintainer's name contains a full stop then the whole field
+will not work directly as an email address due to a misfeature in the
+syntax specified in RFC822; a program using this field as an address
+must check for this and correct the problem if necessary (for example
+by putting the name in round brackets and moving it to the end, and
+bringing the email address forward).<P>
+
+In a <code>.changes</code> file or parsed changelog data this contains the
+name and email address of the person responsible for the particular
+version in question - this may not be the package's usual maintainer.<P>
+
+This field is usually optional in as far as the <kbd>dpkg</kbd> are
+concerned, but its absence when building packages usually generates a
+warning.
+<hr>
+<h3><A name="s-f-Source">
+4.2.5 <code>Source</code>
+</A></h3>
+
+This field identifies the source package name.<P>
+
+In a main source control information or a <code>.changes</code> or <code>.dsc</code>
+file or parsed changelog data this may contain only the name of the
+source package.<P>
+
+In the control file of a binary package (or in a <code>Packages</code> file)
+it may be followed by a version number in parentheses.<A href="footnotes.html#16" name="fr16">[16]</A> This version number may be omitted (and is, by
+<kbd>dpkg-gencontrol</kbd>) if it has the same value as the <code>Version</code>
+field of the binary package in question.  The field itself may be
+omitted from a binary package control file when the source package has
+the same name and version as the binary package.
+<hr>
+<h3><A name="s4.2.6">
+4.2.6 Package interrelationship fields:
+<code>Depends</code>, <code>Pre-Depends</code>, <code>Recommends</code>
+<code>Suggests</code>, <code>Conflicts</code>, <code>Provides</code>, <code>Replaces</code>
+</A></h3>
+
+These fields describe the package's relationships with other packages.
+Their syntax and semantics are described in <A href="ch-relationships.html">Declaring relationships between packages, chapter 8</A>.
+<hr>
+<h3><A name="s-f-Description">
+4.2.7 <code>Description</code>
+</A></h3>
+
+In a binary package <code>Packages</code> file or main source control file
+this field contains a description of the binary package, in a special
+format.  See <A href="ch-descriptions.html">Descriptions of packages - the
+<code>Description</code> field, chapter 7</A> for details.<P>
+
+In a <code>.changes</code> file it contains a summary of the descriptions for
+the packages being uploaded.  The part of the field before the first
+newline is empty; thereafter each line has the name of a binary
+package and the summary description line from that binary package.
+Each line is indented by one space.
+<hr>
+<h3><A name="s-f-Essential">
+4.2.8 <code>Essential</code>
+</A></h3>
+
+This is a boolean field which may occur only in the control file of a
+binary package (or in the <code>Packages</code> file) or in a per-package
+fields paragraph of a main source control data file.<P>
+
+If set to <code>yes</code> then <kbd>dpkg</kbd> and <kbd>dselect</kbd> will refuse to
+remove the package (though it can be upgraded and/or replaced).  The
+other possible value is <code>no</code>, which is the same as not having the
+field at all.
+<hr>
+<h3><A name="s-f-classification">
+4.2.9 <code>Section</code> and <code>Priority</code>
+</A></h3>
+
+These two fields classify the package.  The <code>Priority</code> represents
+how important that it is that the user have it installed; the
+<code>Section</code> represents an application area into which the package has
+been classified.<P>
+
+When they appear in the <code>debian/control</code> file these fields give
+values for the section and priority subfields of the <code>Files</code> field
+of the <code>.changes</code> file, and give defaults for the section and
+priority of the binary packages.<P>
+
+The section and priority are represented, though not as separate
+fields, in the information for each file in the <A href="#s-f-Files"><code>Files</code></A> field of a <code>.changes</code> file.  The
+section value in a <code>.changes</code> file is used to decide where to
+install a package in the FTP archive.<P>
+
+These fields are not used by by <kbd>dpkg</kbd> proper, but by
+<kbd>dselect</kbd> when it sorts packages and selects defaults.  See the
+Debian policy manual for the priorities in use and the criteria for
+selecting the priority for a Debian package, and look at the Debian
+FTP archive for a list of currently in-use priorities.<P>
+
+These fields may appear in binary package control files, in which case
+they provide a default value in case the <code>Packages</code> files are
+missing the information.  <kbd>dpkg</kbd> and <kbd>dselect</kbd> will only use
+the value from a <code>.deb</code> file if they have no other information; a
+value listed in a <code>Packages</code> file will always take precedence.  By
+default <kbd>dpkg-genchanges</kbd> does not include the section and
+priority in the control file of a binary package - use the <code>-isp</code>,
+<code>-is</code> or <code>-ip</code> options to achieve this effect.
+<hr>
+<h3><A name="s-f-Binary">
+4.2.10 <code>Binary</code>
+</A></h3>
+
+This field is a list of binary packages.<P>
+
+When it appears in the <code>.dsc</code> file it is the list of binary
+packages which a source package can produce.  It does not necessarily
+produce all of these binary packages for every architecture.  The
+source control file doesn't contain details of which architectures are
+appropriate for which of the binary packages.<P>
+
+When it appears in a <code>.changes</code> file it lists the names of the
+binary packages actually being uploaded.<P>
+
+The syntax is a list of binary packages separated by
+commas.<A href="footnotes.html#17" name="fr17">[17]</A>
+Currently the packages must be separated using only spaces in the
+<code>.changes</code> file.
+<hr>
+<h3><A name="s-f-Installed-Size">
+4.2.11 <code>Installed-Size</code>
+</A></h3>
+
+This field appears in the control files of binary packages, and in the
+<code>Packages</code> files.  It gives the total amount of disk space
+required to install the named package.<P>
+
+The disk space is represented in kilobytes as a simple decimal number.
+<hr>
+<h3><A name="s-f-Files">
+4.2.12 <code>Files</code>
+</A></h3>
+
+This field contains a list of files with information about each one.
+The exact information and syntax varies with the context.  In all
+cases the the part of the field contents on the same line as the field
+name is empty.  The remainder of the field is one line per file, each
+line being indented by one space and containing a number of sub-fields
+separated by spaces.<P>
+
+In the <code>.dsc</code> (Debian source control) file each line contains the
+MD5 checksum, size and filename of the tarfile and (if applicable)
+diff file which make up the remainder of the source
+package.<A href="footnotes.html#18" name="fr18">[18]</A> The exact forms of the filenames are described
+in <A href="ch-sourcepkg.html#s-sourcearchives">Source packages as archives, section 3.3</A>.<P>
+
+In the <code>.changes</code> file this contains one line per file being
+uploaded.  Each line contains the MD5 checksum, size, section and
+priority and the filename.  The section and priority are the values of
+the corresponding fields in the main source control file - see <A href="#s-f-classification"><code>Section</code> and <code>Priority</code>, subsection 4.2.9</A>.  If no section or priority is specified then
+<code>-</code> should be used, though section and priority values must be
+specified for new packages to be installed properly.<P>
+
+The special value <code>byhand</code> for the section in a <code>.changes</code> file
+indicates that the file in question is not an ordinary package file
+and must by installed by hand by the distribution maintainers.  If the
+section is <code>byhand</code> the priority should be <code>-</code>.<P>
+
+If a new Debian revision of a package is being shipped and no new
+original source archive is being distributed the <code>.dsc</code> must still
+contain the <code>Files</code> field entry for the original source archive
+<code></code><var>package</var><code>-</code><var>upstream-version</var><code>.orig.tar.gz</code>, but the
+<code>.changes</code> file should leave it out.  In this case the original
+source archive on the distribution site must match exactly,
+byte-for-byte, the original source archive which was used to generate
+the <code>.dsc</code> file and diff which are being uploaded.
+
+<hr>
+<h3><A name="s-f-Standards-Version">
+4.2.13 <code>Standards-Version</code>
+</A></h3>
+
+The most recent version of the standards (the <kbd>dpkg</kbd> programmers'
+and policy manuals and associated texts) with which the package
+complies.  This is updated manually when editing the source package to
+conform to newer standards; it can sometimes be used to tell when a
+package needs attention.<P>
+
+Its format is the same as that of a version number except that no
+epoch or Debian revision is allowed - see <A href="ch-versions.html">Version numbering, chapter 5</A>.
+
+<hr>
+<h3><A name="s-f-Distribution">
+4.2.14 <code>Distribution</code>
+</A></h3>
+
+In a <code>.changes</code> file or parsed changelog output this contains the
+(space-separated) name(s) of the distribution(s) where this version of
+the package should be or was installed.  Distribution names follow the
+rules for package names.  (See <A href="#s-f-Package"><code>Package</code>, subsection 4.2.1</A>).<P>
+
+Current distribution values are:
+<dl>
+<dt><em>stable</em><dd>This is the current `released' version of Debian GNU/Linux.  A new
+version is released approximately every 3 months after the
+<em>development</em> code has been <em>frozen</em> for a month of testing.
+Once the distribution is <em>stable</em> only major bug fixes are
+allowed. When changes are made to this distribution, the minor version
+number is increased (for example: 1.2 becomes 1.2.1 then 1.2.2, etc).
+<p><dt><em>unstable</em><dd>This distribution value refers to the <em>developmental</em> part of the Debian
+distribution tree. New packages, new upstream versions of packages and
+bug fixes go into the <em>unstable</em> directory tree. Download
+from this distribution at your own risk.
+<p><dt><em>contrib</em><dd>The packages with this distribution value do not meet the criteria for
+inclusion in the main Debian distribution as defined by the Policy
+Manual, but meet the criteria for the <em>contrib</em> Distribution. There
+is currently no distinction between stable and unstable packages in
+the <em>contrib</em> or <em>non-free</em> distributions. Use your best
+judgement in downloading from this Distribution.
+<p><dt><em>non-free</em><dd>Like the packages in the <em>contrib</em> seciton, the packages in
+<em>non-free</em> do not meet the criteria for inclusion in the main
+Debian distribution as defined by the Policy Manual. Again, use your
+best judgement in downloading from this Distribution.
+<p><dt><em>experimental</em><dd>The packages with this distribution value are deemed by their
+maintainers to be high risk. Oftentimes they represent early beta or
+developmental packages from various sources that the maintainers want
+people to try, but are not ready to be a part of the other parts of
+the Debian distribution tree. Download at your own risk.
+<p><dt><em>frozen</em><dd>From time to time, (currently, every 3 months) the <em>unstable</em>
+distribution enters a state of `code-freeze' in anticipation of
+release as a <em>stable</em> version. During this period of testing
+(usually 4 weeks) only fixes for existing or newly-discovered bugs
+will be allowed.
+<p></dl>
+<P>
+You should list <em>all</em> distributions that the package should be
+installed into. Except in unusual circumstances, installations to
+<em>stable</em> should also go into <em>frozen</em> (if it exists) and
+<em>unstable</em>. Likewise, installations into <em>frozen</em> should also go
+into <em>unstable</em>.
+<hr>
+<h3><A name="s-f-Urgency">
+4.2.15 <code>Urgency</code>
+</A></h3>
+
+This is a description of how important it is to upgrade to this
+version from previous ones.  It consists of a single keyword usually
+taking one of the values <code>LOW</code>, <code>MEDIUM</code> or <code>HIGH</code>) followed
+by an optional commentary (separated by a space) which is usually in
+parentheses.  For example:
+<pre>Urgency: LOW (HIGH for diversions users)</pre><P>
+
+This field appears in the <code>.changes</code> file and in parsed changelogs;
+its value appears as the value of the <code>urgency</code> attribute in a
+<kbd>dpkg</kbd>-style changelog (see <A href="ch-sourcepkg.html#s-dpkgchangelog"><code>debian/changelog</code>, subsection 3.2.3</A>).<P>
+
+Urgency keywords are not case-sensitive.
+<hr>
+<h3><A name="s-f-Date">
+4.2.16 <code>Date</code>
+</A></h3>
+
+In <code>.changes</code> files and parsed changelogs, this gives the date the
+package was built or last edited.
+<hr>
+<h3><A name="s-f-Format">
+4.2.17 <code>Format</code>
+</A></h3>
+
+This field occurs in <code>.changes</code> files, and specifies a format
+revision for the file.  The format described here is version <code>1.5</code>.
+The syntax of the format value is the same as that of a package
+version number except that no epoch or Debian revision is allowed -
+see <A href="ch-versions.html">Version numbering, chapter 5</A>.
+<hr>
+<h3><A name="s-f-Changes">
+4.2.18 <code>Changes</code>
+</A></h3>
+
+In a <code>.changes</code> file or parsed changelog this field contains the
+human-readable changes data, describing the differences between the
+last version and the current one.<P>
+
+There should be nothing in this field before the first newline; all
+the subsequent lines must be indented by at least one space; blank
+lines must be represented by a line consiting only of a space and a
+full stop.<P>
+
+Each version's change information should be preceded by a `title' line
+giving at least the version, distribution(s) and urgency, in a
+human-readable way.<P>
+
+If data from several versions is being returned the entry for the most
+recent version should be returned first, and entries should be
+separated by the representation of a blank line (the `title' line may
+also be followed by the representation of blank line).
+<hr>
+<h3><A name="s-f-Filename">
+4.2.19 <code>Filename</code> and <code>MSDOS-Filename</code>
+</A></h3>
+
+These fields in <code>Packages</code> files give the filename(s) of (the parts
+of) a package in the distribution directories, relative to the root of
+the Debian hierarchy.  If the package has been split into several
+parts the parts are all listed in order, separated by spaces.
+<hr>
+<h3><A name="s-f-Size">
+4.2.20 <code>Size</code> and <code>MD5sum</code>
+</A></h3>
+
+These fields in <code>Packages</code> files give the size (in bytes, expressed
+in decimal) and MD5 checksum of the file(s) which make(s) up a binary
+package in the distribution.  If the package is split into several
+parts the values for the parts are listed in order, separated by
+spaces.
+<hr>
+<h3><A name="s-f-Status">
+4.2.21 <code>Status</code>
+</A></h3>
+
+This field in <kbd>dpkg</kbd>'s status file records whether the user wants a
+package installed, removed or left alone, whether it is broken
+(requiring reinstallation) or not and what its current state on the
+system is.  Each of these pieces of information is a single word.
+<hr>
+<h3><A name="s-f-Config-Version">
+4.2.22 <code>Config-Version</code>
+</A></h3>
+
+If a package is not installed or not configured, this field in
+<kbd>dpkg</kbd>'s status file records the last version of the package which
+was successfully configured.
+<hr>
+<h3><A name="s-f-Conffiles">
+4.2.23 <code>Conffiles</code>
+</A></h3>
+
+This field in <kbd>dpkg</kbd>'s status file contains information about the
+automatically-managed configuration files held by a package.  This
+field should <em>not</em> appear anywhere in a package!
+<hr>
+<h3><A name="s4.2.24">
+4.2.24 Obsolete fields
+</A></h3>
+
+These are still recognised by <kbd>dpkg</kbd> but should not appear anywhere
+any more.
+
+<dl compact>
+<dt><code>Revision</code><dt><code>Package-Revision</code><dt><code>Package_Revision</code><dd>The Debian revision part of the package version was at one point in a
+separate control file field.  This field went through several names.
+<dt><code>Recommended</code><dd>Old name for <code>Recommends</code>
+<dt><code>Optional</code><dd>Old name for <code>Suggests</code>.
+<dt><code>Class</code><dd>Old name for <code>Priority</code>.
+</dl>
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-versions.html">next</A>; <A href="ch-sourcepkg.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

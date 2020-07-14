@@ -1,0 +1,76 @@
+#!/bin/sh
+
+set -e
+vardir="$1"
+method=$2
+option=$3
+
+cd "$vardir/methods/floppy"
+
+mountpoint="$vardir/methods/mnt"
+
+. ./shvar.$option
+
+help () {
+	echo '
+最初に、インストールできるようにしたいアーカイブの部分の Packages
+ファイルを含んだディスクが必要です。FTP サイトの non-free または
+contrib エリアのパッケージをインストールしたい場合には、メインの
+Debian distribution 用のメイン Packages ファイルに加えて、それぞ
+れの Packages ファイルを含んだフロッピーが必要です。これらをイン
+ストールしない場合は、メインの Packages ファイルだけが必要です。'
+}
+
+help
+
+xit=1
+trap '
+	if [ -n "$umount" ]
+	then
+		umount "$umount"
+	fi
+	exit $xit
+' 0
+
+tryupdate () {
+	if [ $success = 1 ]; then return; fi
+	if [ ! -f "$mountpoint/Packages" ]; then
+		echo "$mountpoint/Packages がありません。";
+		return
+	fi
+	if dpkg --merge-avail "$mountpoint/Packages"
+	then
+		success=1
+		echo '
+必要ならば他のフロッピーに他の Packages ファイルを入れておいて下さい。'
+	fi
+}
+
+while [ $xit = 1 ]
+do
+	echo -n '
+Packages ファイルを含むフロッピーディスクを入れるか、[q] で終了して下さい。'
+	read response
+	case "$response" in
+	[Qq] | [Qq][Uu][Ii][Tt] )
+		xit=0
+		;;
+	* )
+		umount="$defaultfloppy"
+		if mount -rt "$defaultfstype" "$defaultfloppy" "$mountpoint"
+		then
+			success=0
+			tryupdate Packages
+			tryupdate packages
+			tryupdate PACKAGES
+			umount "$defaultfloppy"
+		fi
+		umount=""
+		;;
+	esac
+done
+
+echo '
+OK, インストールを継続しています。'
+
+xit=0

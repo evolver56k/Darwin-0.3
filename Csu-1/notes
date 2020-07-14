@@ -1,0 +1,4 @@
+Changes for the 5.0 release (the Csu-9 release):
+- Added support for PowerPC.
+- Change the project to just a handful of files with ifdef's instead of a bunch
+  of subprojects and factored out common code.

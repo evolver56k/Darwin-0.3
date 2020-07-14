@@ -1,0 +1,20 @@
+##
+# autoconf
+##
+
+Title		GNU Autoconf
+BuildDiskTitle	GNU Autoconf
+Version		2.12
+Description	This package contains Autoconf, the GNU source configuration tool.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		autoconf #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

@@ -1,0 +1,47 @@
+/Makefile/1.1.1.1/Fri Apr 23 02:47:17 1999//Tshell_cmds-2
+/Makefile.postamble/1.1.1.1/Fri Apr 23 02:47:17 1999//Tshell_cmds-2
+/Makefile.preamble/1.1.1.1/Fri Apr 23 02:47:17 1999//Tshell_cmds-2
+/PB.project/1.1.1.1/Fri Apr 23 02:47:18 1999//Tshell_cmds-2
+D/apply////
+D/basename////
+D/chroot////
+D/date////
+D/dirname////
+D/dpkg////
+D/echo////
+D/env////
+D/expr////
+D/false////
+D/find////
+D/getopt////
+D/hostname////
+D/id////
+D/jot////
+D/kill////
+D/lastcomm////
+D/locate////
+D/logname////
+D/machine////
+D/nice////
+D/nohup////
+D/printenv////
+D/printf////
+D/pwd////
+D/renice////
+D/script////
+D/shlock////
+D/sleep////
+D/su////
+D/tee////
+D/test////
+D/time////
+D/true////
+D/uname////
+D/users////
+D/w////
+D/whereis////
+D/which////
+D/who////
+D/window////
+D/xargs////
+D/yes////

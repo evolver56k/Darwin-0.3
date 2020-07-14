@@ -1,0 +1,43 @@
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa04817;
+          29 Apr 1998 20:13 EDT
+Received: from mailq1.ncal.verio.com by huey.udel.edu id aa16562;
+          29 Apr 1998 20:12 EDT
+Received: from Sun-E3000.ChampUSA.COM (root@sun-e3000.ChampUSA.COM [207.21.123.4])
+	by mailq1.ncal.verio.com (8.8.7/8.8.7) with ESMTP id RAA09842
+	for <mills@huey.udel.edu>; Wed, 29 Apr 1998 17:12:38 -0700 (PDT)
+Received: from ChampUSA.COM (monstars.ChampUSA.COM [207.21.123.8])
+	by Sun-E3000.ChampUSA.COM (8.8.8/8.8.8) with ESMTP id RAA29601;
+	Wed, 29 Apr 1998 17:12:37 -0700 (PDT)
+Message-ID: <3547C1F4.58670DA6@ChampUSA.COM>
+Date: Wed, 29 Apr 1998 17:12:36 -0700
+From: "Auteria Wally Winzer Jr." <wally.winzer@champusa.com>
+Organization: Champion Nutrition
+X-Mailer: Mozilla 4.05 [en] (Win95; U)
+MIME-Version: 1.0
+To: Dave Mills <mills@huey.udel.edu>
+Subject: Re: Problems compiling authcert (ntp-4.0.72g)
+References: <199804292002.aa16430@huey.udel.edu>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+As a suggestion you and your group can modify "make check" to substitute
+RSAREF in place of MD5 and DES.  Otherwise you should remove
+"make check" from the source distribution.
+
+This is only my opintion.
+
+- Wally Winzer Jr.
+
+Dave Mills wrote:
+
+> Wally,
+>
+> I included explicit directions in my first message. Do exactly that
+> and enjoy life; but, life would be happier with 72g. I'm not sure the
+> cryptocode was completely stable in that version. The rsaref stuff
+> is recent.
+>
+> Dave
+
+
+

@@ -1,0 +1,16 @@
+"Version" = "5.00";
+"Boot Drivers" = "PS2Keyboard EISABus PCIBus";
+"Active Drivers" = "";
+"Kernel" = "mach_kernel";
+"Kernel Flags" = "rootdev=en0";
+"Boot Graphics" = "No";
+"Install Mode" = "Yes";
+"Ask For Drivers" = "Yes";
+"Language" = "No language selected";
+"Installation Driver Families" = "Disk SCSI Network";
+"Prompt For Driver Disk" = "Yes";
+"APM" = "Yes";
+"Driver Disk Prompts" = "3";
+"DRIVER_FAMILIES_1" = "SCSI Disk";
+"DRIVER_FAMILIES_2" = "Network";
+"DRIVER_ASK_3" = "Yes";

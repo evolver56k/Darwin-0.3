@@ -1,0 +1,183 @@
+			ADB driver thread pcode
+		
+adbThread(id adbObject)
+{
+	set up registers and interrupt ports and so forth;
+	cmdPort initially disabled;
+	doReset;
+	enable cmdPort;
+	while(1) {
+		wait for msg on portSet;
+		if msg on interrupt port 
+			adbInterruptHandler;
+		else if msg on cmdPort
+			adbCommandHandler;
+		else
+			log error;
+	}
+}
+
+/*
+ * Called on async interrupt only; should be "data avaiable" or
+ * service request.
+ */
+- adbInterruptHandler
+{
+	grab interrupt cause and clear the pending bits;
+	if (interrupt cause == AS_INPUT_DATA_PENDING) {
+	
+		/*
+		 * Normal async data in case.
+		 */
+ 		handleDataIn(currentAddress);
+		enableAutopoll(currentAddress);
+		enable cmdPort;
+	}
+	else if(interrupt cause == service request) {
+		scanServiceRequestor;
+	}
+	else {
+		handle error - probably just do a reset;
+	}	
+}
+
+/*
+ * Execute client command. 
+ */
+- adbCommandHandler
+{
+	switch cmd {
+	    case reset:
+	    	disable cmdPort;
+		doReset;
+		status = good;
+		enable cmdPort;
+		break;
+		
+	    case send_cmd:
+		disable cmdPort;
+		disableAutopoll;
+		status = sendCmd(cmd);
+		enableAutopoll;
+		return rtn;
+		
+	    case attach:
+	    	if desired address already attached
+		     status = IO_CR_BUSY;
+		else {
+		    record client/address pair;
+		    status = good;
+		}
+	}
+	I/O complete(status);
+}
+
+/*
+ * Handle service request.
+ */
+- scanServiceRequestor
+{
+	disableAutopoll;
+	for(currentAddress = 0 to max) {
+		send a talk register 0 command;
+		if OK {
+			get other registers;
+			dispatch to client;
+		}
+		else try next address;
+	}	
+	enableAutopoll(last responding adress);
+	return;
+}
+
+- doReset
+{
+	disable cmdPort;
+	assert reset;
+	while(1) {
+		wait for interrupt message;
+		if resetPulseCompleted		// nothing else matters
+			break;
+	}
+	scanBus;
+	enableAutopoll(address = 0);
+}
+
+/*
+ * Autopoll must be off.
+ */
+- (IOReturn)sendCmd : (adbDriverCommand *)cmd
+{
+	disable cmdPort;
+	load cmd and byte count;
+	hit AC_TRANSMIT_COMMAND;
+	wait for interrupt;
+	if interrupt status = userAccessCompleted {
+		cool;
+		save bit count in *cmd;
+		return IO_R_SUCCESS;
+	}
+	if service request {
+		scanServiceRequestor;
+	}
+	deal with other errors;
+	if autopoll not enabled {
+		enableAutopoll(user access address);
+	}
+}
+
+- (void)enableAutopoll(adbAddress address)
+{
+	cmd = talk register 0 (address);
+	load cmd and bit count registers;
+	hit AC_ENABLE_AUTO_POLL;
+}
+
+/*
+ * Shut down autopoll mode in preparation for doing a user poll operation.
+ */
+- (void)disableAutopoll
+{
+	if !autoPollEnabled
+		return;
+	hit AC_DISABLE_AUTO_POLL;
+	while(1) {
+	    wait for interrupt;
+	    if interrupt cause == AS_INPUT_DATA_PENDING {
+	    
+		/*
+		 * Lost a race, must handle this incoming event from
+		 * last autopoll address.
+		 */
+		handleDataIn(currentAddress);
+	    }
+	    else if interrupt cause = auto polling stopped
+	    	return;
+	}
+}
+
+/*
+ * scan bus, resolve address conflicts.
+ */
+- (void)scanBus
+{
+
+}
+
+/*
+ * Handle async data available condition (AS_INPUT_DATA_PENDING true).
+ */
+- -(void)handleDataIn(deviceAddress)
+{
+	adbEvent localEvent;
+	
+	disable cmdPort;
+	do {
+		save reg 0 (current data0/1) in localEvent;
+		get the other three registers, stash in localEvent;
+		localEvent.deviceAddress = deviceAddress;
+		dispatchEvent(localEvent);
+		error = sendCmd(talk register 0 (deviceAddress));
+	while(!error);
+}
+

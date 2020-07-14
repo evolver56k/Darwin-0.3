@@ -1,0 +1,52 @@
+Forwarded: Sat, 08 Nov 1997 12:46:22 -0500
+Forwarded: "mills@udel.edu "
+Replied: Sat, 08 Nov 1997 12:44:34 -0500
+Replied: "John Hay <jhay@mikom.csir.co.za> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa05086;
+          8 Nov 1997 04:09 EST
+Received: (from jhay@localhost)
+	by zibbi.mikom.csir.co.za (8.8.7/8.8.7) id LAA00414
+	for stenn@whimsy.udel.edu; Sat, 8 Nov 1997 11:09:19 +0200 (SAT)
+From: John Hay <jhay@mikom.csir.co.za>
+Message-Id: <199711080909.LAA00414@zibbi.mikom.csir.co.za>
+Subject: little problem in ntp-4.0.70a-export
+To: Harlan Stenn <stenn@whimsy.udel.edu>
+Date: Sat, 8 Nov 1997 11:09:19 +0200 (SAT)
+X-Mailer: ELM [version 2.4ME+ PL32 (25)]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+Hi Harlan,
+
+I have tried ntp-4.0.70a on my FreeBSD box and when it startup, a
+message is written to the console:
+... ntpd[23211]: plock() error: No such file or directory
+
+Then it coninues to run. A little looking into this seems that there
+was a cut-and-paste glitch or something like that. There is three
+lines that I think don't belong in ntpd.c, or maybe they belong
+somewhere elese. In any case here is a diff for that.
+
+A question, is local reference clocks suppose to work? On my machine
+with a GPS attached I just get a signal 8 and coredump, but I haven't
+started to investigate yet. On the other one with no local clocks it
+has been running fine for more than a day though.
+
+John
+-- 
+John Hay -- John.Hay@mikom.csir.co.za
+
+
+--- ntpd/ntpd.c.org	Sun Oct 19 08:13:41 1997
++++ ntpd/ntpd.c	Sat Nov  8 08:45:31 1997
+@@ -502,9 +502,6 @@
+ # else /* not HAVE_SCHED_SETSCHEDULER */
+ #  if defined(HAVE_RTPRIO)
+ #   ifdef RTP_SET
+-	    msyslog(LOG_ERR, "plock() error: %m");
+-#   endif
+-#   ifdef RTP_SET
+ 	{
+ 		struct rtprio srtp;
+ 

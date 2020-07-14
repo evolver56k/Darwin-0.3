@@ -1,0 +1,7 @@
+Package: grep
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 2.1
+URL: ftp://prep.ai.mit.edu/pub/gnu/grep-2.1.tar.gz
+Description: Get-Regular-Expression-and-Print tool
+Build-Depends: build-base

@@ -1,0 +1,96 @@
+[PackageForTheWeb]
+Version=2.0
+
+[Options]
+Title=NetworkTimeProtocol
+Company=Freeware
+CompanyEMail=
+BasePath=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images
+ImportPath=N:\ntp-4.0.72j\ports\winnt\package\install\Media\NTP
+UseRTF=0
+SaveFiles=0
+SubFolders=1
+ApplicationName=NetworkTimeProtocol
+Description=Time Synchronization
+Comments=
+Notice=Copyright (c) David L. Mills 1992, 1993, 1994, 1995, 1996
+Version=4.0.73a
+OutputSpec=N:\ntp-4.0.73a\ports\winnt\package\webpack\Output\NetworkTimeProtocol.exe
+GUIDs=0
+Type=2
+Compress=1
+Sign=0
+Transfer=0
+Files=6
+
+[Engine]
+Setup=disk1\SETUP.EXE
+
+[Web Page]
+Generate=1
+Template=
+MSClient=
+NClient=
+
+[Runtime]
+Welcome=
+License=
+Prompt=
+Password=
+DefaultPath=
+Language=
+WindowStyle=0
+Options=2
+Execute=disk1\SETUP.EXE
+CmdLine=/SMS
+
+[Extension]
+Server=
+Calls=0
+
+[Code Signing]
+CompanyURL=
+SpecFile=
+KeyFile=
+Method=0
+
+; ~~~~~~~~~~ File Section ~~~~~~~~~~~
+[SubFolders]
+Count=1
+Folder1=disk1
+
+[File 1]
+Name=lang.dat
+Path=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images\disk1\
+Flags=1
+Disk=0
+
+[File 2]
+Name=os.dat
+Path=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images\disk1\
+Flags=1
+Disk=0
+
+[File 3]
+Name=SETUP.EXE
+Path=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images\disk1\
+Flags=589825
+Disk=0
+
+[File 4]
+Name=_INST32I.EX_
+Path=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images\disk1\
+Flags=524289
+Disk=0
+
+[File 5]
+Name=_ISDEL.EXE
+Path=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images\disk1\
+Flags=589825
+Disk=0
+
+[File 6]
+Name=_SETUP.DLL
+Path=N:\ntp-4.0.73a\ports\winnt\package\install\Media\NTP\Disk Images\disk1\
+Flags=655377
+Disk=0

@@ -1,0 +1,46 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            alphalinux.h, 
+            alphavms.h, 
+            decstation.h, 
+            delta68.h, 
+            dpx2.h, 
+            hp300bsd.h, 
+            i386bsd.h, 
+            i386linux.h, 
+            i386mach3.h, 
+            i386sco.h, 
+            i860mach3.h, 
+            m68kaux.h, 
+            m68klinux.h, 
+            m88kmach3.h, 
+            mipsbsd.h, 
+            mipsmach3.h, 
+            "news-mips.h", 
+            news.h, 
+            pc532mach.h, 
+            riscos.h, 
+            sparclinux.h, 
+            symmetry.h, 
+            tahoe.h, 
+            vaxbsd.h, 
+            vaxult.h, 
+            vaxult2.h
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = hosts; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

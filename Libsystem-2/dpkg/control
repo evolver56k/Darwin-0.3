@@ -1,0 +1,6 @@
+Package: libsystem
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 25.1
+Description: System framework
+Build-Depends: build-base, cctools-obj, libc-obj, libcurses-obj, libedit-obj, libinfo-obj, libkvm-obj, libm-obj, librpcsvc-obj, libstreams-obj, objc4-obj, project-makefiles

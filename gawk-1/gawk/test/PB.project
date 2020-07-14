@@ -1,0 +1,50 @@
+{
+    FILESTABLE = {
+        Documentation = (README, ChangeLog); 
+        Headers = (); 
+        Makefiles = (
+            mmap8k.in, 
+            anchgsub.in, 
+            swaplns.in, 
+            sprintfc.in, 
+            splitvar.in, 
+            tweakfld.in, 
+            splitargv.in, 
+            rswhite.in, 
+            rs.in, 
+            reparse.in, 
+            reint.in, 
+            tradanch.in, 
+            reindops.in, 
+            prdupval.in, 
+            pipeio2.in, 
+            nors.in, 
+            numsubstr.in, 
+            nfset.in, 
+            nlfldsep.in, 
+            igncfs.in, 
+            gensub.in, 
+            funstack.in, 
+            fsrs.in, 
+            fsbs.in, 
+            fldchgnf.in, 
+            fldchg.in, 
+            compare.in, 
+            back89.in, 
+            argarray.in, 
+            backgsub.in, 
+            clsflnam.in, 
+            asgext.in, 
+            Makefile.in
+        ); 
+        Resources = (fflush.sh, pid.sh); 
+        SUBPROJECTS = (reg, lib); 
+        Sources = (); 
+    }; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = test; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

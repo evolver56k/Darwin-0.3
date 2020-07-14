@@ -1,0 +1,34 @@
+Here's what we decided (I think):
+
+1. an "NRW DMA Device" is defined as a a device which resides in a slot 
+   with whose NextBus slot Id bits 9 through 7 are '111'. 
+   
+2. There are three kinds of address space which a driver can map in:
+
+   * Register space consists of one page of registers as defined in the NRW
+     spec, sec. 5.2.8.2. A driver can map in a register page if and only if
+     it is associated with an NRW DMA Device.
+   
+   * Slot Space consists of up to 16 MB of memory, starting at 0xfs000000.
+     An  NRW DMA device driver can map in the first 0xf00000 (15 M) bytes 
+     of its associated slot space. A non-NRW DMA device driver can map in all
+     16 MB of its slot space.
+     
+   * Board space consists of up to 256 MB, starting at 0xs000000. Drivers 
+     associated with slots 13 and 14 are allowed to map in all or part of 
+     their board space.
+     
+Some examples: 
+
+  * A driver for the internal SCSI device can map in one Register page 
+    and up to 15 MB of slot space, although it won't ever need the slot 
+    space. 
+    
+  * A driver for a non-NRW DMA device in slot 14 can map in 16 MB of 
+    slot space and 256 MB of board space.
+    
+  * A driver for an NRW DMA device in slot 7 can map in one Register page
+    and up to 15 MB of slot space. This slot space can be shared by all
+    drivers associated with devices in slot 7. 
+   
+   

@@ -1,0 +1,792 @@
+# Dpkg --- the Debian GNU/Linux package maintenance system.
+#
+# Copyright (C) 1994,1995,1996 Ian Jackson <ian@chiark.chu.cam.ac.uk>
+# Copyright (C) 1995,1996 Erick Branderhorst <branderhorst@heel.fgg.eur.nl>
+# Copyright (C) 1996 Miquel van Smoorenburg <miquels@cistron.nl>
+# Copyright (C) 1996 Kim-Minh Kaplan <kkaplan@cdfhp3.in2p3.fr>
+# Copyright (C) 1996 Michael Shields <shields@crosslink.net>
+# Copyright (C) 1995 Bruce Perens <bruce@pixar.com>
+# Copyright (C) 1994 Carl Streeter <streeter@cae.wisc.edu>
+# Copyright (C) 1994 Matt Welsh <mdw@sunsite.unc.edu>
+# Copyright (C) 1994 Ian Murdock <imurdock@debian.org>
+# Parts written by Colin Plumb and Branko Lankester in 1993.
+#
+# Messages français pour dpkg (Linux/GNU Debian) :
+# Copyright (C) 1997 Yann Dirson <dirson@debian.org>.
+# Copyright (C) 1997 Christophe Le Bars <clebars@debian.org>.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dpkg 1.4.0.21\n"
+"POT-Creation-Date: 1998-03-02 16:26-0800\n"
+"PO-Revision-Date: 1997-05-13 22:07 EDT\n"
+"Last-Translator: Yann Dirson <dirson@debian.org>\n"
+"Language-Team: French <dpkg@packages.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: lib/arch.c:64
+#, fuzzy, c-format
+msgid "unable to parse architecture string `%.250s'"
+msgstr "impossible d'ouvrir le fichier sortie `%.250s'"
+
+#: lib/arch.c:143
+#, c-format
+msgid ""
+"dpkg: unexpected output from `%s --print-libgcc-file-name':\n"
+" `%s'\n"
+msgstr ""
+"dpkg: \"output\" inattendu de '%s --print-libgcc-file-name':\n"
+" `%s'\n"
+
+#: lib/arch.c:146
+#, c-format
+msgid "compiler libgcc filename not understood: %.250s"
+msgstr "nom du fichier 'libgcc' donné par le compilateur pas compris : %.250s"
+
+#: lib/arch.c:154
+msgid "unable to determine system information using uname()"
+msgstr ""
+
+#: lib/arch.c:179
+msgid "failed to fdopen CC pipe"
+msgstr "échec de \"fd-ouverture\" du tube de CC"
+
+#: lib/arch.c:185
+#, c-format
+msgid "failed to exec C compiler `%.250s'"
+msgstr "impossible d'exécuter le compilateur C '%.250s'"
+
+#: lib/arch.c:190
+msgid "error reading from CC pipe"
+msgstr "erreur de lecture dans le tube de CC"
+
+#: lib/arch.c:192
+msgid "empty output"
+msgstr "pas d'\"output\""
+
+#: lib/arch.c:195
+msgid "no newline"
+msgstr "pas de saut de ligne"
+
+#: lib/arch.c:199
+msgid "no gcc-lib component"
+msgstr "pas de composant gcc-lib"
+
+#: lib/arch.c:202
+msgid "no hyphen after gcc-lib"
+msgstr "pas de trait d'union après gcc-lib"
+
+#: lib/arch.c:204
+msgid "no / after arch-directory"
+msgstr ""
+
+#: lib/database.c:232
+#, c-format
+msgid "bin %5d has %7d\n"
+msgstr ""
+
+#: lib/database.c:236
+#, c-format
+msgid "size %7d occurs %5d times\n"
+msgstr ""
+
+#: lib/database.c:237
+msgid "failed write during hashreport"
+msgstr "échec d'écriture pendant 'hashreport'"
+
+#: lib/dbmodify.c:68
+#, c-format
+msgid ""
+"updates directory contains file `%.250s' whose name is too long (length=%d, "
+"max=%d)"
+msgstr ""
+"le répertoire de mise à jour contient le fichier '%.250s', dont le nom est "
+"trop long (longueur=%d, max=%d)"
+
+#: lib/dbmodify.c:72
+#, c-format
+msgid ""
+"updates directory contains files with different length names (both %d and %d)"
+msgstr ""
+"le répertoire de mise à jour contient des fichiers avec des noms de "
+"différentes longueurs (à la fois %d et %d)"
+
+#: lib/dbmodify.c:86
+#, c-format
+msgid "cannot scan updates directory `%.255s'"
+msgstr "ne peut pas parcourir le répertoire de mise à jour '%.255s'"
+
+#: lib/dbmodify.c:102
+#, c-format
+msgid "failed to remove incorporated update file %.255s"
+msgstr "échec de suppression du fichier de mise à jour '%.255s' déjà incorporé"
+
+#: lib/dbmodify.c:119
+#, c-format
+msgid "unable to create %.250s"
+msgstr "impossible de créer '%.250s'"
+
+#: lib/dbmodify.c:122
+#, c-format
+msgid "unable to fill %.250s with padding"
+msgstr "impossible de compléter '%.250s' par remplissage"
+
+#: lib/dbmodify.c:124
+#, c-format
+msgid "unable flush %.250s after padding"
+msgstr "impossible de \"flusher\" '%.250s' après remplissage"
+
+#: lib/dbmodify.c:126
+#, c-format
+msgid "unable seek to start of %.250s after padding"
+msgstr "impossible de rembobiner le fichier '%.250s' après remplissage"
+
+#: lib/dbmodify.c:154
+msgid "requested operation requires superuser privilege"
+msgstr "l'opération demandée requiert les droits de super-utilisateur"
+
+#: lib/dbmodify.c:159
+msgid "unable to access dpkg status area"
+msgstr "impossible d'accéder à la BD d'état de dpkg"
+
+#: lib/dbmodify.c:161
+msgid "operation requires read/write access to dpkg status area"
+msgstr ""
+"opération nécéssitant un accès en lecture-écriture à la BD d'état de dpkg"
+
+#: lib/dbmodify.c:209
+#, c-format
+msgid "failed to remove my own update file %.255s"
+msgstr "échec de suppression de mon propre fichier de mise à jour (%.255s)"
+
+#: lib/dbmodify.c:242
+#, c-format
+msgid "unable to write updated status of `%.250s'"
+msgstr "impossible d'écrire le nouvel état de '%.250s'"
+
+#: lib/dbmodify.c:244
+#, c-format
+msgid "unable to flush updated status of `%.250s'"
+msgstr "impossible de \"flusher\" le nouvel état de '%.250s'"
+
+#: lib/dbmodify.c:246
+#, c-format
+msgid "unable to truncate for updated status of `%.250s'"
+msgstr "impossible de tronquer le nouvel état de '%.250s'"
+
+#: lib/dbmodify.c:248
+#, c-format
+msgid "unable to fsync updated status of `%.250s'"
+msgstr "impossible de \"fsync-hroniser\" le nouvel état de '%.250s'"
+
+#: lib/dbmodify.c:250
+#, c-format
+msgid "unable to close updated status of `%.250s'"
+msgstr "impossible de fermer le nouvel état de '%.250s'"
+
+#: lib/dbmodify.c:253
+#, c-format
+msgid "unable to install updated status of `%.250s'"
+msgstr "impossible d'installer le nouvel état de '%.250s'"
+
+#: lib/dump.c:224
+#, fuzzy, c-format
+msgid "failed to write details of `%.50s' to `%.250s'"
+msgstr ""
+"échec d'écriture d'infos dans '%3$.250s' sur la version %1$s de '%2$.50s'"
+
+#. submsg: writedb
+#: lib/dump.c:239
+msgid "available"
+msgstr "disponible"
+
+#: lib/dump.c:239
+msgid "status"
+msgstr "installée"
+
+#. supermsg: writedb 2
+#: lib/dump.c:248
+#, c-format
+msgid "failed to open `%s' for writing %s information"
+msgstr "échec d'ouvrerture de '%s' pour écriture d'infos sur un paquet %s"
+
+#: lib/dump.c:251 lib/parse.c:95
+msgid "unable to set buffering on status file"
+msgstr "impossible de paramétrer le tampon du fichier d'état"
+
+#. supermsg: writedb
+#: lib/dump.c:263
+#, c-format
+msgid "failed to write %s record about `%.50s' to `%.250s'"
+msgstr ""
+"échec d'écriture d'infos dans '%3$.250s' sur la version %1$s de '%2$.50s'"
+
+#. supermsg: writedb
+#: lib/dump.c:271
+#, c-format
+msgid "failed to flush %s information to `%.250s'"
+msgstr "échec du \"flush\" dans '%2$.250s' d'infos un paquet %1$s"
+
+#. supermsg: writedb
+#: lib/dump.c:274
+#, c-format
+msgid "failed to fsync %s information to `%.250s'"
+msgstr "échec de la \"fsync-hronisation\"  dans '%2$.250s' d'infos %1$s"
+
+#. supermsg: writedb
+#: lib/dump.c:277
+#, c-format
+msgid "failed to close `%.250s' after writing %s information"
+msgstr "échec de fermeture de '%.250s' après l'écriture d'infos %ss"
+
+#. supermsg: writedb
+#: lib/dump.c:282
+#, c-format
+msgid "failed to link `%.250s' to `%.250s' for backup of %s info"
+msgstr ""
+"échec lors de la liaison de '%.250s' à '%.250s' pour sauvegarde d'infos %ss"
+
+#. supermsg: writedb
+#: lib/dump.c:286
+#, c-format
+msgid "failed to install `%.250s' as `%.250s' containing %s info"
+msgstr ""
+"échec d'installation de '%.250s' comme '%.250s' contenant des infos %ss"
+
+#: lib/ehandle.c:81
+msgid "out of memory pushing error handler: "
+msgstr "manque de mémoire en empilant un gestionnaire d'erreur : "
+
+#: lib/ehandle.c:96
+#, c-format
+msgid ""
+"%s: error while cleaning up:\n"
+" %s\n"
+msgstr ""
+"%s : erreur lors du nettoyage :\n"
+" %s\n"
+
+#: lib/ehandle.c:111
+msgid "dpkg: too many nested errors during error recovery !!\n"
+msgstr "dpkg : trop d'erreurs imbriquées lors d'une reprise d'erreur!!\n"
+
+#: lib/ehandle.c:184
+#, fuzzy
+msgid "out of memory for new cleanup entry with many arguments"
+msgstr ""
+"manque de mémoire pour une nouvelle \"cleanup entry\" avec beaucoup "
+"d'arguments"
+
+#: lib/ehandle.c:271
+#, c-format
+msgid "error writing `%.250s'"
+msgstr "erreur lors d'une écriture dans '%.250s'"
+
+#: lib/ehandle.c:275
+#, c-format
+msgid "%s:%d: internal error `%s'\n"
+msgstr "%s:%d : erreur interne '%s'\n"
+
+#. supermsg: convert_string
+#: lib/fields.c:43
+#, c-format
+msgid "%s is missing"
+msgstr "%s manque"
+
+#. supermsg: convert_string
+#: lib/fields.c:50
+#, c-format
+msgid "`%.*s' is not allowed for %s"
+msgstr "'%.*s' n'est pas autorisé en tant que %s"
+
+#. supermsg: convert_string
+#: lib/fields.c:56
+#, fuzzy, c-format
+msgid "junk after %s"
+msgstr "\"junk\" après %s"
+
+#: lib/fields.c:66
+#, c-format
+msgid "invalid package name (%.250s)"
+msgstr "nom de paquet invalide (%.250s)"
+
+#: lib/fields.c:85
+#, c-format
+msgid "empty file details field `%s'"
+msgstr "champ détail de fichier '%s' vide"
+
+#: lib/fields.c:88
+#, c-format
+msgid "file details field `%s' not allowed in status file"
+msgstr "champ détail de fichier '%s' non-autorisé dans le fichier d'état"
+
+#: lib/fields.c:98
+#, c-format
+msgid "too many values in file details field `%s' (compared to others)"
+msgstr ""
+"trop de valeurs dans le champ détail de fichier '%s' (par rapport aux autres)"
+
+#: lib/fields.c:111
+#, c-format
+msgid "too few values in file details field `%s' (compared to others)"
+msgstr ""
+"trop peu de valeurs dans le champ détail de fichier '%s' (par rapport aux "
+"autres)"
+
+#. submsg: convert_string
+#: lib/fields.c:128
+msgid "yes/no in `essential' field"
+msgstr "yes/no dans le champ 'essential'"
+
+#. submsg: convert_string
+#: lib/fields.c:148
+msgid "word in `priority' field"
+msgstr "mot dans le champ 'priority'"
+
+#: lib/fields.c:162
+msgid "value for `status' field not allowed in this context"
+msgstr "valeur du champ 'Status' non autorisée dans ce contexte"
+
+#. submsg: convert_string
+#: lib/fields.c:166
+msgid "first (want) word in `status' field"
+msgstr "premier mot (état désiré) dans le champ 'status'"
+
+#. submsg: convert_string
+#: lib/fields.c:169
+msgid "second (error) word in `status' field"
+msgstr "deuxième mot (erreur) dans le champ 'status'"
+
+#. submsg: convert_string
+#: lib/fields.c:176
+msgid "third (status) word in `status' field"
+msgstr "troisième mot (état actuel) dans le champ 'status'"
+
+#: lib/fields.c:187
+#, c-format
+msgid "error in Version string `%.250s': %.250s"
+msgstr "erreur dans la spécification de Version '%.250s' : %.250s"
+
+#: lib/fields.c:198
+msgid "obsolete `Revision' or `Package-Revision' field used"
+msgstr "utilisation d'un champ obsolète 'Revision' ou 'Package-Revision'"
+
+#: lib/fields.c:216
+msgid "value for `config-version' field not allowed in this context"
+msgstr "valeur non-autorisée dans le contexte du champ 'Config-Version'"
+
+#: lib/fields.c:220
+#, c-format
+msgid "error in Config-Version string `%.250s': %.250s"
+msgstr "erreur dans la spécification de Config-Version '%.250s': %.250s"
+
+#: lib/fields.c:236
+#, fuzzy, c-format
+msgid "value for `conffiles' has line starting with non-space `%c'"
+msgstr ""
+"valeur de 'conffiles' contenant une ligne commençant par le caractère '%c'"
+
+#: lib/fields.c:242
+#, c-format
+msgid "value for `conffiles' has malformatted line `%.*s'"
+msgstr "valeur de 'conffiles' contenant la ligne mal-formatée '%.*s'"
+
+#: lib/fields.c:248
+msgid "root or null directory is listed as a conffile"
+msgstr "répertoire racine ou nul déclaré comme fichier de conf"
+
+#: lib/fields.c:291
+#, c-format
+msgid ""
+"`%s' field, missing package name, or garbage where package name expected"
+msgstr ""
+"champ '%s' : nom de paquet manquant, ou \"junk\" à la place d'un nom de "
+"paquet"
+
+#: lib/fields.c:294
+#, c-format
+msgid "`%s' field, invalid package name `%.255s': %s"
+msgstr "champ '%s' : nom de paquet invalide '%.255s' : %s"
+
+#: lib/fields.c:325
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" bad version relationship %c%c"
+msgstr ""
+"champ '%s' : référence à '%.255s' :\n"
+" mauvaise relation entre versions : %c%c"
+
+#: lib/fields.c:331
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" `%c' is obsolete, use `%c=' or `%c%c' instead"
+msgstr ""
+"champ `%s':  référence à '%.255s' :\n"
+" '%c' est obsolète, utiliser '%c=' ou '%c%c' à la place"
+
+#: lib/fields.c:341
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" implicit exact match on version number, suggest using `=' instead"
+msgstr ""
+"champ `%s' : référence à '%.255s' :\n"
+" spécification exacte implicite du numéro de version ;\n"
+"   utilisez plutôt '=' à la place"
+
+#: lib/fields.c:348
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" version value starts with non-alphanumeric, suggest adding a space"
+msgstr ""
+"champ '%s' : référence à '%.255s' :\n"
+" spécification de version commençant avec un caractère non-alphanumérique,\n"
+"   ajoutez plutôt un espace"
+
+#: lib/fields.c:358
+#, c-format
+msgid "`%s' field, reference to `%.255s': version contains `('"
+msgstr "champ '%s' : référence à '%.255s' : version contenant '('"
+
+#: lib/fields.c:361
+#, c-format
+msgid "`%s' field, reference to `%.255s': version unterminated"
+msgstr "champ '%s' : référence à '%.255s' : version non-terminée"
+
+#: lib/fields.c:366
+#, c-format
+msgid "`%s' field, reference to `%.255s': error in version: %.255s"
+msgstr ""
+"champ '%s' : référence à '%.255s' :\n"
+" erreur de spécification de version : '%.255s'"
+
+#: lib/fields.c:375
+#, c-format
+msgid "`%s' field, syntax error after reference to package `%.255s'"
+msgstr "champ '%s' : erreur de syntaxe après la référence au paquet '%.255s'"
+
+#: lib/fields.c:382
+#, c-format
+msgid "alternatives (`|') not allowed in %s field"
+msgstr "alternatives ('|') non-autorisées dans un champ '%s'"
+
+#: lib/lock.c:53
+msgid "unable to unlock dpkg status database"
+msgstr "impossible de déverrouiller la BD d'état de dpkg"
+
+#: lib/lock.c:75
+msgid "you do not have permission to lock the dpkg status database"
+msgstr "vous n'avez pas la permission de verrouiller la BD d'état de dpkg"
+
+#: lib/lock.c:77
+msgid "unable to open/create status database lockfile"
+msgstr "impossible de créer/ouvrir le fichier verrou de la BD d'état"
+
+#: lib/lock.c:86
+msgid "status database area is locked - another dpkg/dselect is running"
+msgstr "BD d'état verrouillée - un autre dpkg/dselect fonctionne"
+
+#: lib/lock.c:88
+msgid "unable to lock dpkg status database"
+msgstr "impossible de verrouiller la BD d'état"
+
+#: lib/mlib.c:50
+#, c-format
+msgid "malloc failed (%ld bytes)"
+msgstr "échec de 'malloc' (%ld octets)"
+
+#: lib/mlib.c:68
+#, c-format
+msgid "realloc failed (%ld bytes)"
+msgstr "échec de 'realloc' (%ld octets)"
+
+#: lib/mlib.c:75
+#, c-format
+msgid "%s (subprocess): %s\n"
+msgstr "%s (sous-processus) : %s\n"
+
+#: lib/mlib.c:88
+msgid "fork failed"
+msgstr "échec de 'fork'"
+
+#. submsg: stdFDs
+#: lib/mlib.c:97
+#, fuzzy
+msgid "in"
+msgstr "oina"
+
+#: lib/mlib.c:97
+msgid "out"
+msgstr ""
+
+#: lib/mlib.c:97
+msgid "err"
+msgstr ""
+
+#. supermsg: stdFDs
+#: lib/mlib.c:103
+#, c-format
+msgid "failed to dup for std%s"
+msgstr "échec pour \"dup\" vers std%s"
+
+#: lib/mlib.c:104
+#, c-format
+msgid "failed to dup for fd %d"
+msgstr "échec de duplication du fd %d"
+
+#: lib/mlib.c:110
+msgid "failed to create pipe"
+msgstr "échec de création d'un tube"
+
+#: lib/mlib.c:117
+#, c-format
+msgid "subprocess %s returned error exit status %d"
+msgstr "le sous-processus '%s' s'est terminé avec une valeur d'erreur (%d)"
+
+#: lib/mlib.c:120
+#, c-format
+msgid "subprocess %s killed by signal (%s)%s"
+msgstr "sous-processus '%s' tué par signal (%s)%s"
+
+#: lib/mlib.c:121
+msgid ", core dumped"
+msgstr ", 'core' généré"
+
+#: lib/mlib.c:123
+#, c-format
+msgid "subprocess %s failed with wait status code %d"
+msgstr "un sous-processus '%s' a échoué ; 'wait(2)' donne un code d'état de %d"
+
+#. supermsg: waitsubproc -- arg is usually a command line
+#: lib/mlib.c:133
+#, c-format
+msgid "wait for %s failed"
+msgstr "échec de l'attente de «%s»"
+
+#: lib/myopt.c:50
+#, c-format
+msgid "unknown option --%s"
+msgstr "option '--%s' inconnue"
+
+#: lib/myopt.c:54
+#, c-format
+msgid "--%s option takes a value"
+msgstr "l'option '--%s' prend un paramètre"
+
+#: lib/myopt.c:59
+#, c-format
+msgid "--%s option does not take a value"
+msgstr "l'option '--%s' ne prend pas de paramètre"
+
+#: lib/myopt.c:66
+#, c-format
+msgid "unknown option -%c"
+msgstr "option -%c inconnue"
+
+#: lib/myopt.c:71
+#, c-format
+msgid "-%c option takes a value"
+msgstr "l'option -%c prend un paramètre"
+
+#: lib/myopt.c:79
+#, c-format
+msgid "-%c option does not take a value"
+msgstr "l'option -%c ne prend pas de paramètre"
+
+#: lib/parse.c:91
+#, c-format
+msgid "failed to open package info file `%.255s' for reading"
+msgstr "échec d'ouverture du fichier d'info '%.255s' en lecture"
+
+#: lib/parse.c:122
+#, c-format
+msgid "EOF after field name `%.50s'"
+msgstr "EOF après le nom de champ '%.50s'"
+
+#: lib/parse.c:125
+#, c-format
+msgid "newline in field name `%.50s'"
+msgstr "saut de ligne dans le nom de champ '%.50s'"
+
+#: lib/parse.c:128
+#, c-format
+msgid "MSDOS EOF (^Z) in field name `%.50s'"
+msgstr "EOF M$-DOS (^Z) dans le nom de champ '%.50s'"
+
+#: lib/parse.c:131
+#, c-format
+msgid "field name `%.50s' must be followed by colon"
+msgstr "le nom de champ '%.50s' doit être suivi par deux points (':')"
+
+#: lib/parse.c:139
+#, c-format
+msgid "EOF before value of field `%.50s' (missing final newline)"
+msgstr "EOF avant la valeur du champ '%.50s' (manque le saut de ligne final)"
+
+#: lib/parse.c:143
+#, c-format
+msgid "MSDOS EOF char in value of field `%.50s' (missing newline?)"
+msgstr "EOF M$-DOS dans la valeur du champ '%.50s' (manque un saut de ligne?)"
+
+#: lib/parse.c:154
+#, c-format
+msgid "EOF during value of field `%.50s' (missing final newline)"
+msgstr "EOF dans la valeur du champ '%.50s' (manque le saut de ligne final)"
+
+#: lib/parse.c:171
+#, c-format
+msgid "duplicate value for `%s' field"
+msgstr "valeur en double pour le champ '%s'"
+
+#: lib/parse.c:176
+#, c-format
+msgid "user-defined field name `%s' too short"
+msgstr "nom de champ défini par l'utilisateur trop court (%s)"
+
+#: lib/parse.c:181
+#, c-format
+msgid "duplicate value for user-defined field `%.50s'"
+msgstr "valeur en double pour le champ '%.50s' défini par l'utilisateur"
+
+#: lib/parse.c:194
+msgid "several package info entries found, only one allowed"
+msgstr "infos trouvées sur plusieurs paquets, alors qu'une seule est autorisée"
+
+#: lib/parse.c:197
+msgid "package name"
+msgstr "nom du paquet"
+
+#: lib/parse.c:201
+msgid "description"
+msgstr "description"
+
+#: lib/parse.c:204
+#, fuzzy
+msgid "maintainer"
+msgstr "responsable"
+
+#: lib/parse.c:208
+msgid "version"
+msgstr "version"
+
+#: lib/parse.c:213
+msgid "architecture"
+msgstr "architecture"
+
+#: lib/parse.c:227
+msgid "Configured-Version for package with inappropriate Status"
+msgstr ""
+"'Configured-Version' présent pour un paquet avec un 'Status' inapproprié"
+
+#: lib/parse.c:241
+msgid "Package which in state not-installed has conffiles, forgetting them"
+msgstr ""
+"Paquet dans l'état 'non-installé' possédant des fichiers de configuration,\n"
+" on les oublie"
+
+#: lib/parse.c:289
+#, c-format
+msgid "failed to read from `%.255s'"
+msgstr "échec de lecture dans '%.255s'"
+
+#: lib/parse.c:291
+#, c-format
+msgid "failed to close after read: `%.255s'"
+msgstr "échec de fermeture après lecture dans '%.255s'"
+
+#: lib/parse.c:292
+#, c-format
+msgid "no package information in `%.255s'"
+msgstr "pas d'informations de paquet dans '%.255s'"
+
+#: lib/parsehelp.c:39
+#, c-format
+msgid "failed to read `%s' at line %d"
+msgstr "échec de lecture dans '%s' à la ligne %d"
+
+#. supermsg: parserr
+#: lib/parsehelp.c:41
+#, c-format
+msgid "%s, in file `%.255s' near line %d"
+msgstr "%s dans le fichier '%.255s' près de la ligne %d"
+
+#. supermsg: parserr
+#: lib/parsehelp.c:44
+msgid "warning"
+msgstr "erreur non critique"
+
+#. supermsg: parserr
+#: lib/parsehelp.c:46
+msgid "parse error"
+msgstr "erreur de syntaxe"
+
+# FIXME: voir ce qui est fait de cette chaîne
+#: lib/parsehelp.c:48
+#, c-format
+msgid " package `%.255s'"
+msgstr " paquet '%.255s'"
+
+#: lib/parsehelp.c:59
+msgid "failed to write parsing warning"
+msgstr "échec d'écriture d'une erreur non critique d'analyse syntaxique"
+
+#: lib/parsehelp.c:120
+msgid "may not be empty string"
+msgstr "ne doit pas être une chaine vide"
+
+#: lib/parsehelp.c:121
+msgid "must start with an alphanumeric"
+msgstr "doit commencer par un caractère alphanumérique"
+
+#: lib/parsehelp.c:122
+msgid "must be at least two characters"
+msgstr "doit contenir au moins deux caractères"
+
+#: lib/parsehelp.c:131
+#, c-format
+msgid "character `%c' not allowed - only letters, digits and %s allowed"
+msgstr ""
+"caractère '%c' non-autorisé - seuls les lettres, les chiffres et %s sont "
+"autorisés"
+
+#: lib/parsehelp.c:200
+msgid "version string is empty"
+msgstr "la spécification de version est vide"
+
+#: lib/parsehelp.c:205
+msgid "epoch in version is not number"
+msgstr "l'époque dans la version n'est pas un nombre"
+
+#: lib/parsehelp.c:206
+msgid "nothing after colon in version number"
+msgstr "rien après deux-points dans le numéro de la version"
+
+#. supermsg: parsemustfield
+#: lib/parsehelp.c:228
+#, c-format
+msgid "missing %s"
+msgstr "manque : %s"
+
+#: lib/parsehelp.c:233
+#, c-format
+msgid "empty value for %s"
+msgstr "%s a une valeur nulle"
+
+#: lib/showcright.c:37
+#, fuzzy, c-format
+msgid "unable to open GPL file %s"
+msgstr "impossible d'ouvrir le fichier sortie `%.250s'"
+
+#: lib/showcright.c:41
+#, fuzzy, c-format
+msgid "unable to exec \"%s\" to display GPL file"
+msgstr "impossible d'exécuter 'cat' pour afficher le fichier de licence"
+
+#: lib/varbuf.c:77
+msgid "failed to realloc for variable buffer"
+msgstr "échec de réallocation d'un tampon variable"

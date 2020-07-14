@@ -1,0 +1,6 @@
+Package: drveide
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 33
+Description: EIDE device driver
+Build-Depends: build-base, drivertools

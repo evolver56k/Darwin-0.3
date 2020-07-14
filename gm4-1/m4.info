@@ -1,0 +1,20 @@
+##
+# cvs
+##
+
+Title		m4 Macro Processor
+BuildDiskTitle	m4 Macro Processor
+Version		1.4
+Description	This package contains m4, GNU Macro Processor.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		m4 #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

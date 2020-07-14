@@ -1,0 +1,20 @@
+##
+# diffutils
+##
+
+Title		GNU Diff Utilities
+BuildDiskTitle	GNU Diff Utilities
+Version		2.7
+Description	This package contains the GNU diff utilities: diff, diff2, cmp, sdiff.
+
+DefaultLocation		/
+Relocatable		NO
+Diskname		diffutils #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

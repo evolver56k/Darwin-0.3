@@ -1,0 +1,28 @@
+/.gdbinit/1.1.1.1/Wed Apr 14 19:20:40 1999//Tapache-1
+/Apache.dsp/1.1.1.1/Wed Apr 14 19:20:40 1999//Tapache-1
+/Apache.mak/1.1.1.1/Wed Apr 14 19:20:40 1999//Tapache-1
+/ApacheCore.def/1.1.1.1/Wed Apr 14 19:20:40 1999//Tapache-1
+/ApacheCore.dsp/1.1.1.1/Wed Apr 14 19:20:40 1999//Tapache-1
+/ApacheCore.mak/1.1.1.1/Wed Apr 14 19:20:40 1999//Tapache-1
+/BUILD.NOTES/1.1.1.1/Wed Apr 14 19:20:41 1999//Tapache-1
+/CHANGES/1.1.1.1/Wed Apr 14 19:20:41 1999//Tapache-1
+/Configuration/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/Configuration.tmpl/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/Configure/1.1.1.2/Wed Apr 14 19:22:54 1999//Tapache-1
+/INSTALL/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/Makefile.nt/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/Makefile.tmpl/1.1.1.2/Wed Apr 14 19:22:54 1999//Tapache-1
+/Makefile_win32.txt/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/Makefile_win32_debug.txt/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/PORTING/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/README/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/README.EBCDIC/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+/buildmark.c/1.1.1.1/Wed Apr 14 19:20:42 1999//Tapache-1
+D/ap////
+D/helpers////
+D/include////
+D/main////
+D/modules////
+D/os////
+D/regex////
+D/support////

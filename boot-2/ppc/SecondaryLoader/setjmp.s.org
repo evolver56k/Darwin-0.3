@@ -1,0 +1,97 @@
+	.text
+	.globl	__setjmp
+	.globl	setjmp
+	.globl	__longjmp
+	.globl	longjmp
+	
+__longjmp:
+longjmp:
+	subi	3,3,4		/* Adjust pointer */
+	lwzu	1,4(3)
+	lwzu	2,4(3)
+	lwzu	0,4(3)
+	mtlr	0
+	lwzu	14,4(3)
+	lwzu	15,4(3)
+	lwzu	16,4(3)
+	lwzu	17,4(3)
+	lwzu	18,4(3)
+	lwzu	19,4(3)
+	lwzu	20,4(3)
+	lwzu	21,4(3)
+	lwzu	22,4(3)
+	lwzu	23,4(3)
+	lwzu	24,4(3)
+	lwzu	25,4(3)
+	lwzu	26,4(3)
+	lwzu	27,4(3)
+	lwzu	28,4(3)
+	lwzu	29,4(3)
+	lwzu	30,4(3)
+	lwzu	31,4(3)
+	lfdu	14,4(3)
+	lfdu	15,8(3)
+	lfdu	16,8(3)
+	lfdu	17,8(3)
+	lfdu	18,8(3)
+	lfdu	19,8(3)
+	lfdu	20,8(3)
+	lfdu	21,8(3)
+	lfdu	22,8(3)
+	lfdu	23,8(3)
+	lfdu	24,8(3)
+	lfdu	25,8(3)
+	lfdu	26,8(3)
+	lfdu	27,8(3)
+	lfdu	28,8(3)
+	lfdu	29,8(3)
+	lfdu	30,8(3)
+	lfdu	31,8(3)
+	mr	3,4
+	blr
+
+setjmp:
+__setjmp:
+	subi	3,3,4		/* Adjust pointer */
+	stwu	1,4(3)
+	stwu	2,4(3)
+	mflr	0
+	stwu	0,4(3)
+	stwu	14,4(3)
+	stwu	15,4(3)
+	stwu	16,4(3)
+	stwu	17,4(3)
+	stwu	18,4(3)
+	stwu	19,4(3)
+	stwu	20,4(3)
+	stwu	21,4(3)
+	stwu	22,4(3)
+	stwu	23,4(3)
+	stwu	24,4(3)
+	stwu	25,4(3)
+	stwu	26,4(3)
+	stwu	27,4(3)
+	stwu	28,4(3)
+	stwu	29,4(3)
+	stwu	30,4(3)
+	stwu	31,4(3)
+	stfdu	14,4(3)
+	stfdu	15,8(3)
+	stfdu	16,8(3)
+	stfdu	17,8(3)
+	stfdu	18,8(3)
+	stfdu	19,8(3)
+	stfdu	20,8(3)
+	stfdu	21,8(3)
+	stfdu	22,8(3)
+	stfdu	23,8(3)
+	stfdu	24,8(3)
+	stfdu	25,8(3)
+	stfdu	26,8(3)
+	stfdu	27,8(3)
+	stfdu	28,8(3)
+	stfdu	29,8(3)
+	stfdu	30,8(3)
+	stfdu	31,8(3)
+	li	3,0
+	blr

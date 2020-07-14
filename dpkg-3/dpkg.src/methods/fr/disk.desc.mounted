@@ -1,0 +1,15 @@
+Installation à partir d'un répertoire contenu dans un système de
+fichiers qui a déjà été monté.  Si les options disponibles pour
+effectuer les montages automatiquement ne vous convienent pas, vous
+devrez basculer vers un shell (par exemple en changeant de console
+virtuelle en utilisant les touches Alt-F<n> ou en quittant 'dselect'),
+et l'utiliser pour monter le système de fichiers avant de continuer.
+
+La hiérarchie d'où vous installez devrait contenir les fichiers
+'Packages.gz' de chaque distribution à installer (en général 'stable',
+'contrib' et 'non-free'), ainsi que les fichiers binary*/*/*.deb
+correspondants.
+
+La manière la plus facile de les récupérer est de faire une copie,
+éventuellement partielle, de la hiérarchie du site FTP, si cela
+est possible.

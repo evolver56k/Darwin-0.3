@@ -1,0 +1,34 @@
+"Mounting*Swapdisk...";
+"Checking*Disk...";
+"Checking*for*Network...";
+"Checking*System*Files...";
+"Mounting*File*Systems...";
+"Starting*System*Services...";
+
+/* These strings are for initializing the startup disk off CD-ROM */
+
+"Ready to install system*software on hard disk ...**Initialize (erase) disk first*Press `y' or `n', then Return.";
+"Load aborted, halting ...";
+"Mounting hard disk ...";
+/* Keep this on one line */
+"Hard disk is damaged!";
+/* Keep this on four lines */
+"Can't continue without*initializing hard disk.*Ok to initialize it?*Press `y' or `n', then Return.";
+"Removing /private ...";
+"Your disk now has two*partitions. One is preferred.**Build it with one partition?*Press `y' or `n', then Return.";
+"Initializing hard disk ...";
+/* Keep this on one line */
+"Installation failed!";
+/* Keep this on three lines */
+"*Couldn't initialize disk.*Press Return to halt.";
+"Installing software ...";
+/* Keep this on one line */
+"Installation failed!";
+/* Keep this on three lines */
+"*Not enough disk space.*Press Return to halt.";
+"Installing /etc/fstab file ...";
+/* Keep this on one line */
+"Installation complete!";
+/* Keep this on two lines */
+"*Press Return to restart.";
+

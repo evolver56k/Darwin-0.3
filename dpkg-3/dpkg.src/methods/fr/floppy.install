@@ -1,0 +1,100 @@
+#!/bin/sh
+
+set -e
+vardir="$1"
+method=$2
+option=$3
+
+cd "$vardir/methods/floppy"
+
+mountpoint="$vardir/methods/mnt"
+
+. ./shvar.$option
+
+help () {
+	echo "
+J'ai maintenant besoin des disques contenant les paquets à
+installer.  Je continuerait à vous dire ce qu'il reste à faire,
+au case où cela pourrait être utile pour décider quelle
+disquette utiliser."
+}
+
+help
+
+xit=1
+trap '
+	if [ -n "$umount" ]
+	then
+		umount "$umount"
+	fi
+	exit $xit
+' 0
+
+while [ -z "$goconfigure" ]
+do
+	yet="`dpkg --yet-to-unpack`"
+	if [ -z "$yet" ]
+	then
+		echo "
+Tous les paquets sont installés, je vais les configurer."
+		goconfigure=1
+		continue
+	fi
+	echo "
+Paquets encore à déballer :"
+	echo "$yet"
+	dpkg-split -l
+		
+	echo -n "
+Insérez une disquette contenant les fichiers .deb, ou entrez q pour quitter.  "
+	read response
+	case "$response" in
+	[Qq] )
+		goconfigure=1
+		;;
+	* )
+		umount="$defaultfloppy"
+		if mount -rt "$defaultfstype" "$defaultfloppy" "$mountpoint"
+		then
+			echo
+			dpkg --unpack -GROEB "$mountpoint" || true
+			umount "$defaultfloppy"
+		fi
+		umount=""
+		;;
+	esac
+done
+
+if ! [ -z "$yet" ]
+then
+	response=""
+	while [ -z "$response" ]
+	do
+		echo -n "
+Tous les paquets n'ont pas encore été déballés.  Dois-je quand même
+passer à la configuration ?  Si des paquets déballés jusqu'ici dépend
+d'autres qui ne l'ont pas encore été, vous verrez des messages d'erreur ;
+d'un autre côté, si vous dites non, ceux des paquets qui auraient pu être
+configurés ne le seront pas.   (o/n)  "
+		
+		read response
+		case "$response" in
+		[Nn]* )
+			echo "
+OK. N'oubliez pas d'y revenir, car les paquets déballés mais non
+configurés ne sont en général pas utilisables.  D'une autre façon, vous
+pouvez utiliser l'item 'Configurer' du menu principal de «dselect»."
+			exit 1
+			;;
+		[Oo]* )
+			;;
+		* )
+			response=""
+			;;
+		esac
+	done
+fi
+
+dpkg --configure --pending
+
+xit=0

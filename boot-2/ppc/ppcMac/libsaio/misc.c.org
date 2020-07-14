@@ -1,0 +1,34 @@
+/*
+ * Mach Operating System
+ * Copyright (c) 1990 Carnegie-Mellon University
+ * Copyright (c) 1989 Carnegie-Mellon University
+ * All rights reserved.  The CMU software License Agreement specifies
+ * the terms and conditions for use and redistribution.
+ */
+
+/*
+ *						INTEL CORPORATION PROPRIETARY INFORMATION
+ *
+ *		This software is supplied under the terms of a license	agreement or
+ *		nondisclosure agreement with Intel Corporation and may not be copied
+ *		nor disclosed except in accordance with the terms of that agreement.
+ *
+ *		Copyright 1988, 1989 Intel Corporation
+ */
+
+/*
+ * Copyright 1993 NeXT, Inc.
+ * All rights reserved.
+ */
+
+#import "io_inline.h"
+#import "libsaio.h"
+
+char *newString(char *oldString)
+{
+	if (oldString)
+		return strcpy(malloc(strlen(oldString)+1), oldString);
+	else
+		return NULL;
+}
+

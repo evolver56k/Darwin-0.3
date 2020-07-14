@@ -1,0 +1,76 @@
+#!/bin/sh
+
+set -e
+vardir="$1"
+method=$2
+option=$3
+
+cd "$vardir/methods/floppy"
+
+defaultfloppy=fd0
+defaultfstype=msdos
+if [ -f shvar.$option ]
+then
+	. ./shvar.$option
+	defaultfloppy="`echo \"$defaultfloppy\" | sed -e 's,^/dev/,,'`"
+fi
+
+while [ -z "$floppy" ]
+do
+	echo -n "
+Quel lecteur de disquettes voulez-vous utiliser ?  Donnez le nom du fichier
+spécial (ex. fd0), ou la lettre MSDOS du lecteur (ex. A).  [$defaultfloppy]  "
+	read floppy
+	if [ -z "$floppy" ]
+	then
+		floppy="$defaultfloppy"
+	fi
+	case "$floppy" in
+	[ABab] | [ABab]: )
+		floppy="`echo $floppy | \
+			sed -e 's/:$//; s,^[Aa],/dev/fd0,; s,^[Bb],/dev/fd1,'`"
+		;;
+	/* )
+		;;
+	* )
+		floppy="/dev/$floppy"
+		;;
+	esac
+	if ! [ -b "$floppy" ]
+	then
+		echo "$floppy n'est pas un \"device\" bloc."
+		floppy=""
+	fi
+done
+
+while [ -z "$fstype" ]
+do
+	echo -n "
+Quel est le type de système de fichiers des disquettes ?  [$defaultfstype]  "
+	read fstype
+	if [ -z "$fstype" ]
+	then
+		fstype="$defaultfstype"
+	fi
+	if ! grep "	$fstype$" /proc/filesystems >/dev/null
+	then
+		echo \
+"Votre noyau ne semble pas supporter ce type de système de fichiers."		
+		fstype=""
+	fi
+done
+
+echo
+
+outputparam () {
+	echo "$2" | sed -e "s/'/'\\\\''/; s/^/$1='/; s/$/'/" >&3
+}
+
+exec 3>shvar.$option.new
+
+outputparam defaultfloppy "$floppy"
+outputparam defaultfstype "$fstype"
+
+mv shvar.$option.new shvar.$option
+
+exit 0

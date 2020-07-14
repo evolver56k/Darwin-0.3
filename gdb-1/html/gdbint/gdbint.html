@@ -1,0 +1,3571 @@
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.51
+     from /SourceCache/gdb/gdb-113/gdb/gdb/doc/gdbint.texinfo on 23 August 1998 -->
+
+<TITLE>GDB Internals</TITLE>
+</HEAD>
+<BODY>
+<H1>GDB Internals</H1>
+<ADDRESS>John Gilmore</ADDRESS>
+<ADDRESS>Cygnus Support</ADDRESS>
+<P>
+<P><HR><P>
+
+
+<H1><A NAME="SEC1" HREF="gdbint_toc.html#TOC1">The <TT>`README'</TT> File</A></H1>
+
+<P>
+Check the <TT>`README'</TT> file, it often has useful information that does not
+appear anywhere else in the directory.
+
+</P>
+
+
+<H1><A NAME="SEC2" HREF="gdbint_toc.html#TOC2">Getting Started Working on GDB</A></H1>
+
+<P>
+GDB is a large and complicated program, and if you first starting to
+work on it, it can be hard to know where to start.  Fortunately, if you
+know how to go about it, there are ways to figure out what is going on:
+
+</P>
+
+<UL>
+<LI>
+
+This manual, the GDB Internals manual, has information which applies
+generally to many parts of GDB.
+
+<LI>
+
+Information about particular functions or data structures are located in
+comments with those functions or data structures.  If you run across a
+function or a global variable which does not have a comment correctly
+explaining what is does, this can be thought of as a bug in GDB; feel
+free to submit a bug report, with a suggested comment if you can figure
+out what the comment should say (see section <A HREF="gdbint.html#SEC42">Submitting Patches</A>).  If you
+find a comment which is actually wrong, be especially sure to report that.
+
+Comments explaining the function of macros defined in host, target, or
+native dependent files can be in several places.  Sometimes they are
+repeated every place the macro is defined.  Sometimes they are where the
+macro is used.  Sometimes there is a header file which supplies a
+default definition of the macro, and the comment is there.  This manual
+also has a list of macros (see section <A HREF="gdbint.html#SEC43">Host Conditionals</A>, see section <A HREF="gdbint.html#SEC44">Target Conditionals</A>, see section <A HREF="gdbint.html#SEC45">Native Conditionals</A>, and see section <A HREF="gdbint.html#SEC46">Obsolete Conditionals</A>) with some documentation.
+
+<LI>
+
+Start with the header files.  Once you some idea of how GDB's internal
+symbol tables are stored (see <TT>`symtab.h'</TT>, <TT>`gdbtypes.h'</TT>), you
+will find it much easier to understand the code which uses and creates
+those symbol tables.
+
+<LI>
+
+You may wish to process the information you are getting somehow, to
+enhance your understanding of it.  Summarize it, translate it to another
+language, add some (perhaps trivial or non-useful) feature to GDB, use
+the code to predict what a test case would do and write the test case
+and verify your prediction, etc.  If you are reading code and your eyes
+are starting to glaze over, this is a sign you need to use a more active
+approach.
+
+<LI>
+
+Once you have a part of GDB to start with, you can find more
+specifically the part you are looking for by stepping through each
+function with the <CODE>next</CODE> command.  Do not use <CODE>step</CODE> or you
+will quickly get distracted; when the function you are stepping through
+calls another function try only to get a big-picture understanding
+(perhaps using the comment at the beginning of the function being
+called) of what it does.  This way you can identify which of the
+functions being called by the function you are stepping through is the
+one which you are interested in.  You may need to examine the data
+structures generated at each stage, with reference to the comments in
+the header files explaining what the data structures are supposed to
+look like.
+
+Of course, this same technique can be used if you are just reading the
+code, rather than actually stepping through it.  The same general
+principle applies--when the code you are looking at calls something
+else, just try to understand generally what the code being called does,
+rather than worrying about all its details.
+
+<LI>
+
+A good place to start when tracking down some particular area is with a
+command which invokes that feature.  Suppose you want to know how
+single-stepping works.  As a GDB user, you know that the <CODE>step</CODE>
+command invokes single-stepping.  The command is invoked via command
+tables (see <TT>`command.h'</TT>); by convention the function which actually
+performs the command is formed by taking the name of the command and
+adding <SAMP>`_command'</SAMP>, or in the case of an <CODE>info</CODE> subcommand,
+<SAMP>`_info'</SAMP>.  For example, the <CODE>step</CODE> command invokes the
+<CODE>step_command</CODE> function and the <CODE>info display</CODE> command invokes
+<CODE>display_info</CODE>.  When this convention is not followed, you might
+have to use <CODE>grep</CODE> or <KBD>M-x tags-search</KBD> in emacs, or run GDB on
+itself and set a breakpoint in <CODE>execute_command</CODE>.
+
+<LI>
+
+If all of the above fail, it may be appropriate to ask for information
+on <CODE>bug-gdb</CODE>.  But <EM>never</EM> post a generic question like "I was
+wondering if anyone could give me some tips about understanding
+GDB"---if we had some magic secret we would put it in this manual.
+Suggestions for improving the manual are always welcome, of course.
+</UL>
+
+<P>
+Good luck!
+
+</P>
+
+
+<H1><A NAME="SEC3" HREF="gdbint_toc.html#TOC3">Debugging GDB with itself</A></H1>
+<P>
+If GDB is limping on your machine, this is the preferred way to get it
+fully functional.  Be warned that in some ancient Unix systems, like
+Ultrix 4.2, a program can't be running in one process while it is being
+debugged in another.  Rather than typing the command <CODE>./gdb
+./gdb</CODE>, which works on Suns and such, you can copy <TT>`gdb'</TT> to
+<TT>`gdb2'</TT> and then type <CODE>./gdb ./gdb2</CODE>.
+
+</P>
+<P>
+When you run GDB in the GDB source directory, it will read a
+<TT>`.gdbinit'</TT> file that sets up some simple things to make debugging
+gdb easier.  The <CODE>info</CODE> command, when executed without a subcommand
+in a GDB being debugged by gdb, will pop you back up to the top level
+gdb.  See <TT>`.gdbinit'</TT> for details.
+
+</P>
+<P>
+If you use emacs, you will probably want to do a <CODE>make TAGS</CODE> after
+you configure your distribution; this will put the machine dependent
+routines for your local machine where they will be accessed first by
+<KBD>M-.</KBD>
+
+</P>
+<P>
+Also, make sure that you've either compiled GDB with your local cc, or
+have run <CODE>fixincludes</CODE> if you are compiling with gcc.
+
+</P>
+
+
+<H1><A NAME="SEC4" HREF="gdbint_toc.html#TOC4">GDB Overview</A></H1>
+
+
+
+<H2><A NAME="SEC5" HREF="gdbint_toc.html#TOC5">Libraries used by GDB</A></H2>
+
+<P>
+GDB relies on a number of libraries:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`config/'</TT>
+<DD>
+Configuration options shared by GDB and all of the libraries it uses.
+GDB has it's own much more extensive configuration in <TT>`gdb/config'</TT>.
+<DT><TT>`readline/'</TT>
+<DD>
+Contains the <CODE>-lreadline</CODE> and <CODE>-lhistory</CODE> libraries for
+command-line processing.  The <CODE>-lreadline</CODE> library handles 
+command-line editing, terminal interface, keymap interfaces, and file
+completion; the <CODE>-lhistory</CODE> library handles history processing and
+history substitution using csh-style syntax.  For more information, see
+<TT>`readline/doc/hist.texi'</TT> and <TT>`readline/doc/rlman.texi'</TT>.
+<DT><TT>`bfd/'</TT>
+<DD>
+BFD is a package which allows applications to use the
+same routines to operate on object files whatever the object file
+format.  A new object file format can be supported simply by
+creating a new BFD back end and adding it to the library.
+
+BFD is split into two parts: the front end, and the back ends (one for
+each object file format).
+
+<UL>
+<LI>The front end of BFD provides the interface to the user. It manages
+
+memory and various canonical data structures. The front end also
+decides which back end to use and when to call back end routines.
+<LI>The back ends provide BFD its view of the real world. Each back
+
+end provides a set of calls which the BFD front end can use to maintain
+its canonical form. The back ends also may keep around information for
+their own use, for greater efficiency.
+</UL>
+
+For more information on BFD, see <TT>`bfd/doc/bfd.texi'</TT>.  For
+more information on the use of BFD in GDB, see section <A HREF="gdbint.html#SEC33">Binary File Descriptor Library Support for GDB</A>.
+<DT><TT>`opcodes/'</TT>
+<DD>
+A collection of routines to parse/print machine-language instructions
+and arguments for a number of processors.
+<DT><TT>`mmalloc/'</TT>
+<DD>
+The gnu <CODE>malloc()</CODE> library.
+<DT><TT>`sim/'</TT>
+<DD>
+Simulators for a number of common microprocessors.  Allows GDB to debug
+machine code for architectures for which no CPU is readily available or
+which are not yet capable of interacting with GDB directly.  Generally
+used to simulate and/or debug embedded systems.
+<DT><TT>`texinfo/'</TT>
+<DD>
+Texinfo is a documentation system that uses a single source file to
+produce both online information and printed output.  Most GDB-related
+documentation is produced using this system.  For more information, see
+<TT>`texinfo/doc/texinfo.texi'</TT>.
+<DT><TT>`libiberty/'</TT>
+<DD>
+Contains the <CODE>-liberty</CODE> library of free software.
+It is a collection of subroutines used by various GNU programs,
+typically functions that are included in GNU libc, but not in certain
+vendor versions of libc.  Example functions provided by <CODE>-liberty</CODE>:
+<DL COMPACT>
+
+<DT><CODE>getopt</CODE>
+<DD>
+get options from command line
+<DT><CODE>obstack</CODE>
+<DD>
+stacks of arbitrarily-sized objects
+<DT><CODE>strerror</CODE>
+<DD>
+error message strings corresponding to errno
+<DT><CODE>strtol</CODE>
+<DD>
+string-to-long conversion
+<DT><CODE>strtoul</CODE>
+<DD>
+string-to-unsigned-long conversion
+</DL>
+</DL>
+
+
+
+<H2><A NAME="SEC6" HREF="gdbint_toc.html#TOC6">GDB Directory Structure</A></H2>
+
+<P>
+The sources to GDB itself are currently stored in four subdirectories,
+all of which are used to build the final executable:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`gdb/'</TT>
+<DD>
+The main GDB sources as provided by the FSF.  Changes to this directory
+have been kept as small as possible to minimize the effort of merging
+them with the FSF sources (though many changes still have been made).
+<DT><TT>`gdb-next/'</TT>
+<DD>
+Apple-specific additions to the GDB source base.  These will eventually
+be merged into the <TT>`gdb/'</TT> directory, but are currently kept
+separate to make them easier to manage.
+<DT><TT>`gdb-4.14/'</TT>
+<DD>
+GDB sources as modified by NeXT for gdb-4.14.  These are nearly
+obsolete, but are kept around until I have merged all of the original
+NeXT changes into the new GDB source base.
+<DT><TT>`gdb-next-4.14/'</TT>
+<DD>
+Apple-specific additions to the (nearly obsolete) GDB 4.14 source base.
+These are kept around solely for the purpose of building GDB 4.14
+binaries when necessary.
+</DL>
+
+<P>
+Until recently, it was possible to build both GDB 4.17 and the GDB
+4.14/4.17 hybrid that shipped with DR1 from the same source tree.  GDB
+4.17 was built in <TT>`gdb'</TT> and used files from <TT>`gdb-next'</TT> and
+<TT>`gdb/'</TT>, in that order, and GDB 4.14 was built in <TT>`gdb-4.14'</TT>
+and used the files from <TT>`gdb-next-4.14/'</TT>, <TT>`gdb-next/'</TT>,
+<TT>`gdb-4.14/'</TT>, and <TT>`gdb/'</TT>, also in that order.
+
+</P>
+<P>
+As of January 8, I have stopped building GDB 4.14 along with GDB 4.17
+from the same sources.  I suspect GDB 4.14 will no longer
+build from these sources without modification, although I suspect the
+necessary changes would be relatively minor.
+
+</P>
+<P>
+GDB also uses the following subdirectories:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`include/'</TT>
+<DD>
+Header files shared by GDB and all of the libraries it uses.
+These files typically will typically apply to either:
+
+<UL>
+<LI>
+
+General operating-system functions (such as symbol reading, IEEE floats, 
+etc.) for which GDB and it's libraries want to have a common interface.
+<LI>
+
+Interfaces between GDB and one of its libraries (such as
+<TT>`remote-sim.h'</TT> and <TT>`libiberty.h'</TT>).
+</UL>
+
+<DT><TT>`gdb/config/'</TT>
+<DD>
+Contains GDB-specific configuration files.  For more information see section <A HREF="gdbint.html#SEC22">Adding a New Configuration</A>.
+
+</DL>
+
+
+
+<H2><A NAME="SEC7" HREF="gdbint_toc.html#TOC7">Overview of Source Files</A></H2>
+
+
+
+<H3><A NAME="SEC8" HREF="gdbint_toc.html#TOC8">Top Level</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`main.c'</TT>
+<DD>
+Contains the GDB top-level interpreter.  Parses command-line arguments,
+performs GDB initialization, and passes control to command-line interpreter.
+<DT><TT>`maint.c'</TT>
+<DD>
+Collection of utility functions for viewing/debugging the internal state 
+of GDB.
+<DT><TT>`top.c'</TT>
+<DD>
+Top-level routine used by GDB.  Evaluates commands, and provides a
+number of top-level functions and mechanisms to set general purpose
+variables.
+<DT><TT>`command.c'</TT>
+<DD>
+parse and evaluate gdb commands and command documentation
+<DT><TT>`printcmd.c'</TT>
+<DD>
+user commands for printing expressions and displaying memory
+</DL>
+
+
+
+<H3><A NAME="SEC9" HREF="gdbint_toc.html#TOC9">GDB Targets / Program Control</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`target.c'</TT>
+<DD>
+Defines the target abstraction, used to encapsulate all communications
+between GDB and a target.  See the comments in <TT>`target.h'</TT> for more
+information.
+<DT><TT>`exec.c'</TT>
+<DD>
+Interface between executable files and the 'target' abstraction.  Allows
+GDB to inspect/analyze executable images, without necessarily having a
+debuggable process available.
+<DT><TT>`corefile.c'</TT>
+<DD>
+Interface between core images and the 'target' abstraction.  Allows GDB
+to inspect/analyze memory and register dumps from corefile images.  Not
+used in GDB 4.14.
+<DT><TT>`thread.c'</TT>
+<DD>
+Interface between GDB and multiply-threaded subprocesses.  Not currently 
+used by either GDB 4.14 or GDB 4.17.
+<DT><TT>`fork-child.c'</TT>
+<DD>
+Code to create an inferior process on UNIX systems.
+<DT><TT>`infcmd.c'</TT>
+<DD>
+User-level commands for inspecting/controlling the state of process
+execution.  Commands such as 'step', 'next', 'finish', and 'continue' go
+here.
+<DT><TT>`inflow.c'</TT>
+<DD>
+Handles terminal modes and signal handling for UNIX child processes.
+<DT><TT>`infrun.c'</TT>
+<DD>
+Target-independent code to control the execution of an inferior process.
+Handles breakpoints, signal handling, shared library handling (on some
+systems), as well as far too many other things.  Contains
+<CODE>wait_for_inferior</CODE>, probably the hairiest function in all of GDB.
+<DT><TT>`inftarg.c'</TT>
+<DD>
+Interface between the GDB 'target' abstraction and UNIX child processes.
+Many of the functions in the file are overridden (via macros) in the
+<CODE>nextstep-*</CODE> functions.
+</DL>
+
+
+
+<H3><A NAME="SEC10" HREF="gdbint_toc.html#TOC10">Types, Values, and Expressions</A></H3>
+
+<P>
+A <CODE>type</CODE> is the fundamental data structure in GDB for representing
+type information.  Each <CODE>type</CODE> structure is associated with a
+particular object file, with the exception of a few pre-created type
+structures used for backwards compatibility with other parts of GDB.
+GDB provides a number of "fundamental" data types; more complex data
+types can be represented by nesting <CODE>type</CODE> structures within each
+other.  See section <A HREF="gdbint.html#SEC10">Types, Values, and Expressions</A> for more information.
+
+</P>
+<P>
+A <CODE>value</CODE> is the GDB data structure for representing both R- and
+L-values of any type.  A <CODE>value</CODE> contains a pointer to a GDB
+<CODE>type</CODE> structure, as well as a region of memory containing the
+value's contents (for an R-value) or address (for an L-value).
+
+</P>
+<P>
+A <CODE>expression</CODE> is the GDB data structure for all expressions in all
+programming languages.  Expressions can be parsed and evaluated
+interactively according to the current language syntax, can be used by
+breakpoints and watchpoints to compute values, and can cause execution
+to take place within a target process (by evaluating function
+expressions).  Expressions are parsed, evaluated, and printed using the
+language-dispatching mechanisms described in <TT>`language.c'</TT> and
+section <A HREF="gdbint.html#SEC14">Language-Specific Sources</A>.
+
+</P>
+<P>
+GDB source files to manipulate <CODE>type</CODE> structures:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`typeprint.c'</TT>
+<DD>
+Prints type information structures in readable form.  Interfaces to the
+language-specific type printing routines described in
+section <A HREF="gdbint.html#SEC14">Language-Specific Sources</A>.
+<DT><TT>`gdbtypes.c'</TT>
+<DD>
+Fundamental type definitions used by GDB.
+</DL>
+
+<P>
+GDB source files to manipulate <CODE>expression</CODE> structures:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`parse.c'</TT>
+<DD>
+Parse expressions typed at the command-line into <CODE>expression</CODE>.
+Interfaces to the language-specific expression parsing routines described
+in section <A HREF="gdbint.html#SEC14">Language-Specific Sources</A>.
+<DT><TT>`eval.c'</TT>
+<DD>
+Evaluates <CODE>expression</CODE> structures in the current execution context.
+<DT><TT>`expprint.c'</TT>
+<DD>
+Prints <CODE>expression</CODE> structures in readable (infix) form.
+Interfaces to the language-specific type printing routines described in
+section <A HREF="gdbint.html#SEC14">Language-Specific Sources</A>.
+</DL>
+
+<P>
+GDB source files to manipulate <CODE>value</CODE> structures:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`valarith.c'</TT>
+<DD>
+perform arithmetic operations on values
+<DT><TT>`valops.c'</TT>
+<DD>
+perform non-arithmetic operations on values
+<DT><TT>`valprint.c'</TT>
+<DD>
+print functions for values
+<DT><TT>`values.c'</TT>
+<DD>
+low-level packing/unpacking of value objects to/from raw format
+</DL>
+<DL COMPACT>
+
+<DT><TT>`findvar.c'</TT>
+<DD>
+resolve variables to their value structures (as appropriate to
+the current stack environment).
+</DL>
+
+
+
+<H3><A NAME="SEC11" HREF="gdbint_toc.html#TOC11">Stack Analysis</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`blockframe.c'</TT>
+<DD>
+machine-independent code to analyze stack frames
+<DT><TT>`stack.c'</TT>
+<DD>
+machine-independent stack frame analysis, user-level commands to manage
+and inspect the stack.
+</DL>
+
+
+
+<H3><A NAME="SEC12" HREF="gdbint_toc.html#TOC12">Breakpoints</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`breakpoint.c'</TT>
+<DD>
+Machine-independent breakpoint code.  Handles and dispatches all forms
+of breakpoints, including hardware breakpoints, software breakpoints,
+hardware and software watchpoints, and shared library breakpoints.
+Contains top-level commands to set, inspect, and manipulate breakpoints
+and watchpoints.  Provides routine to read memory from inferior,
+replacing any memory that may have been overwritten by a breakpoint with 
+its saved value.
+<DT><TT>`mem-break.c'</TT>
+<DD>
+Implements software breakpoints.  To set a breakpoint at a given
+location, GDB saves the instruction at that location and inserts a
+software trap instruction in its place.
+</DL>
+
+
+
+<H3><A NAME="SEC13" HREF="gdbint_toc.html#TOC13">Symbol File Management</A></H3>
+
+<P>
+The following files allow GDB to parse and manage symbol information in
+a variety of formats.  For an overview of GDB object file and symbol
+handling, see section <A HREF="gdbint.html#SEC31">Symbol Tables</A>.
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`objfiles.c'</TT>
+<DD>
+create/destroy/manage objfile structures
+<DT><TT>`symfile.c'</TT>
+<DD>
+top-level commands to handle objfiles, also handles overlays (unused)
+<DT><TT>`symmisc.c'</TT>
+<DD>
+various objfile and (p)symtab utilities (mainly debugging)
+<DT><TT>`symtab.c'</TT>
+<DD>
+basic symbol table utilities (mainly lookup)
+</DL>
+
+<DL COMPACT>
+
+<DT><TT>`minsyms.c'</TT>
+<DD>
+manage minimal symbol tables
+<DT><TT>`buildsym.c'</TT>
+<DD>
+build complete symbol data structures
+</DL>
+
+<P>
+The following source files provide symbol-reading interfaces for various
+file formats.  Although all these files are compiled into the Rhapsody
+GDB, only the first three (<TT>`stabsread'</TT>, <TT>`dbxread'</TT>, and
+<TT>`machoread'</TT>) are actively used by the rest of GDB.
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`stabsread.c'</TT>
+<DD>
+common stabs parsing routines
+<DT><TT>`dbxread.c'</TT>
+<DD>
+read DBX (stabs) symbol files
+<DT><TT>`machoread.c'</TT>
+<DD>
+read Mach-O (stabs) symbol files
+<DT><TT>`nlmread.c'</TT>
+<DD>
+read Netware NLM symbol files (unused)
+<DT><TT>`os9kread.c'</TT>
+<DD>
+read OS9/OS9K symbol files (unused)
+<DT><TT>`dwarf2read.c'</TT>
+<DD>
+read DWARF2 symbol files (unused)
+<DT><TT>`dwarfread.c'</TT>
+<DD>
+read DWARF symbol files (unused)
+<DT><TT>`elfread.c'</TT>
+<DD>
+read ELF symbol files (unused)
+<DT><TT>`coffread.c'</TT>
+<DD>
+read COFF symbol files (unused)
+<DT><TT>`mdebugread.c'</TT>
+<DD>
+read ECOFF symbol files (unused)
+<DT><TT>`mipsread.c'</TT>
+<DD>
+read MIPS symbol files (unused)
+</DL>
+
+
+
+<H3><A NAME="SEC14" HREF="gdbint_toc.html#TOC14">Language-Specific Sources</A></H3>
+
+<P>
+The following files are used to provide language-specific expression
+evaluation and printing support.  The file <VAR>lang</VAR>-exp handles
+expression parsing, <VAR>lang</VAR>-typeprint
+prints human-readable versions of GDB 'type' structures, and
+<VAR>lang</VAR>-valprint prints human-readable versions of GDB 'value'
+structures, and <VAR>lang</VAR>-lang provides general language-specific
+support functions.  For more information on language-specific support in
+GDB, see section <A HREF="gdbint.html#SEC28">Adding a Source Language to GDB</A>.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>C</CODE>
+<DD>
+<TT>`c-exp'</TT>, <TT>`c-lang'</TT>, <TT>`c-typeprint'</TT>, <TT>`c-valprint'</TT>
+<DT><CODE>C++</CODE>
+<DD>
+<TT>`cp-valprint'</TT>
+<DT><CODE>Objective-C</CODE>
+<DD>
+<TT>`objc-exp'</TT>, <TT>`objc-lang'</TT>, <TT>`objc'</TT>
+<DT><CODE>Chill</CODE>
+<DD>
+<TT>`ch-exp'</TT>, <TT>`ch-lang'</TT>, <TT>`ch-typeprint'</TT>, <TT>`ch-valprint'</TT>
+<DT><CODE>Fortran</CODE>
+<DD>
+<TT>`f-exp'</TT>, <TT>`f-lang'</TT>, <TT>`f-typeprint'</TT>, <TT>`f-valprint'</TT>
+<DT><CODE>Java</CODE>
+<DD>
+<TT>`jv-exp'</TT>, <TT>`jv-lang'</TT>, <TT>`jv-typeprint'</TT>, <TT>`jv-valprint'</TT>
+<DT><CODE>Modula II</CODE>
+<DD>
+<TT>`m2-exp'</TT>, <TT>`m2-lang'</TT>, <TT>`m2-typeprint'</TT>, <TT>`m2-valprint'</TT>
+<DT><CODE>Scheme</CODE>
+<DD>
+<TT>`scm-exp'</TT>, <TT>`scm-lang'</TT>, <TT>`scm-valprint'</TT>
+</DL>
+
+
+
+<H3><A NAME="SEC15" HREF="gdbint_toc.html#TOC15">Kernel Debugging</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`remote-kdp.c'</TT>
+<DD>
+interface gdb 'target' interface to a remote Rhapsody kernel via KDP
+<DT><TT>`kdp-udp.c'</TT>
+<DD>
+communications library for KDP
+<DT><TT>`remote-utils.c'</TT>
+<DD>
+more serial-line support (unused)
+<DT><TT>`remote.c'</TT>
+<DD>
+generic serial-line debugging (unused)
+<DT><TT>`ser-tcp.c'</TT>
+<DD>
+treat TCP connection as serial line (unused)
+<DT><TT>`ser-unix.c'</TT>
+<DD>
+interface to unix serial ports (unused)
+<DT><TT>`serial.c'</TT>
+<DD>
+implement generic serial routines (unused)
+</DL>
+
+
+
+<H3><A NAME="SEC16" HREF="gdbint_toc.html#TOC16">Rhapsody-specific Sources</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`nextstep-nat-dyld.c'</TT>
+<DD>
+handle dyld debugging messages and take action (mainly load symfiles)
+<DT><TT>`nextstep-nat-inferior.c'</TT>
+<DD>
+interface between GDB 'target' abstraction and Mach process control
+functions
+<DT><TT>`nextstep-nat-mutils.c'</TT>
+<DD>
+mach functions to read/write memory, other manipulations
+<DT><TT>`nextstep-nat-sigthread.c'</TT>
+<DD>
+create/manage thread to detect signals sent to the inferior process
+<DT><TT>`nextstep-nat-threads.c'</TT>
+<DD>
+interface gdb 'target' interface to a running Rhapsody process on the same machine
+
+<DT><TT>`nextstep-tdep.c'</TT>
+<DD>
+extra functions needed for all nextstep targets (empty)
+<DT><TT>`nextstep-xdep.c'</TT>
+<DD>
+extra functions needed for nextstep hosts (empty)
+</DL>
+
+
+
+<H3><A NAME="SEC17" HREF="gdbint_toc.html#TOC17">PowerPC-specific Sources</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`ppc-frameinfo.c'</TT>
+<DD>
+determine/print PPC stack frame info (find prologue, etc)
+<DT><TT>`ppc-frameops.c'</TT>
+<DD>
+basic PPC stack frame operations (push dummy, push args, pop, find saved regs)
+<DT><TT>`ppc-next-tcore.c'</TT>
+<DD>
+fetch/store PPC registers to/from running Mach thread
+<DT><TT>`ppc-next-tdep.c'</TT>
+<DD>
+fetch/store PPC registers from Mach data structure
+<DT><TT>`ppc-tdep.c'</TT>
+<DD>
+PPC analysis functions used by rest of GDB 
+</DL>
+
+
+
+<H3><A NAME="SEC18" HREF="gdbint_toc.html#TOC18">Miscellaneous</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`demangle'</TT>
+<DD>
+Allow user to explicitly select function name demangling style
+(e.g. 'k+r', 'lucid', 'GNU').
+
+<DT><TT>`language'</TT>
+<DD>
+Multiple-language support for GDB.  Contains dispatch tables to the
+language-specific routines, routines to detect the language of a source
+file / object module, and explicit commands to print/set the current
+language environment.
+
+<DT><TT>`source'</TT>
+<DD>
+View and navigate through source files.  Also responsible for directory
+search path mechanisms.
+
+</DL>
+
+
+
+<H3><A NAME="SEC19" HREF="gdbint_toc.html#TOC19">Assorted Utilities</A></H3>
+
+<DL COMPACT>
+
+<DT><TT>`bcache'</TT>
+<DD>
+efficiency additions for obstack
+<DT><TT>`gnu-regex'</TT>
+<DD>
+regular expression library
+<DT><TT>`dcache'</TT>
+<DD>
+caches inferior memory accesses (for remote targets)
+<DT><TT>`complaints'</TT>
+<DD>
+error-printing for symbol file reading
+allows error messages to be printed only once
+per operation, rather than repeated incessantly
+<DT><TT>`copying'</TT>
+<DD>
+prints license/warranty information
+<DT><TT>`version'</TT>
+<DD>
+automatically generated, contains version string
+<DT><TT>`annotate'</TT>
+<DD>
+convenience functions to print annotations for libgdb
+<DT><TT>`environ'</TT>
+<DD>
+utilities to read/modify the process environment
+<DT><TT>`utils'</TT>
+<DD>
+Utilities used by GDB.  Provides routines to provide formatted output,
+memory management, and data conversion routines.
+</DL>
+
+
+
+<H1><A NAME="SEC20" HREF="gdbint_toc.html#TOC20">Defining a New Host or Target Architecture</A></H1>
+
+<P>
+When building support for a new host and/or target, much of the work you
+need to do is handled by specifying configuration files;
+see section <A HREF="gdbint.html#SEC22">Adding a New Configuration</A>.  Further work can be
+divided into "host-dependent" (see section <A HREF="gdbint.html#SEC23">Adding a New Host</A>) and
+"target-dependent" (see section <A HREF="gdbint.html#SEC27">Adding a New Target</A>).  The
+following discussion is meant to explain the difference between hosts
+and targets.
+
+</P>
+
+
+<H2><A NAME="SEC21" HREF="gdbint_toc.html#TOC21">"host-dependent" vs. "target-dependent" Attributes</A></H2>
+
+<P>
+<STRONG>Host</STRONG> refers to attributes of the system where GDB runs.
+<STRONG>Target</STRONG> refers to the system where the program being debugged
+executes.   In most cases they are the same machine, in which case
+a third type of <STRONG>Native</STRONG> attributes come into play.
+
+</P>
+<P>
+Defines and include files needed to build on the host are host support.
+Examples are tty support, system defined types, host byte order, host
+float format.
+
+</P>
+<P>
+Defines and information needed to handle the target format are target
+dependent.  Examples are the stack frame format, instruction set,
+breakpoint instruction, registers, and how to set up and tear down the stack
+to call a function.
+
+</P>
+<P>
+Information that is only needed when the host and target are the same,
+is native dependent.  One example is Unix child process support; if the
+host and target are not the same, doing a fork to start the target
+process is a bad idea.  The various macros needed for finding the
+registers in the <CODE>upage</CODE>, running <CODE>ptrace</CODE>, and such are all in the
+native-dependent files.
+
+</P>
+<P>
+Another example of native-dependent code is support for features
+that are really part of the target environment, but which require 
+<CODE>#include</CODE> files that are only available on the host system.
+Core file handling and <CODE>setjmp</CODE> handling are two common cases.
+
+</P>
+<P>
+When you want to make GDB work "native" on a particular
+machine, you have to include all three kinds of information.
+
+</P>
+<P>
+The dependent information in GDB is organized into files by naming
+conventions.  
+
+</P>
+<P>
+Host-Dependent Files
+<DL COMPACT>
+
+<DT><TT>`config/*/*.mh'</TT>
+<DD>
+Sets Makefile parameters
+<DT><TT>`config/*/xm-*.h'</TT>
+<DD>
+Global #include's and #define's and definitions
+<DT><TT>`*-xdep.c'</TT>
+<DD>
+Global variables and functions
+</DL>
+
+<P>
+Native-Dependent Files
+<DL COMPACT>
+
+<DT><TT>`config/*/*.mh'</TT>
+<DD>
+Sets Makefile parameters (for <EM>both</EM> host and native)
+<DT><TT>`config/*/nm-*.h'</TT>
+<DD>
+#include's and #define's and definitions.  This file
+is only included by the small number of modules that need it,
+so beware of doing feature-test #define's from its macros.
+<DT><TT>`*-nat.c'</TT>
+<DD>
+global variables and functions
+</DL>
+
+<P>
+Target-Dependent Files
+<DL COMPACT>
+
+<DT><TT>`config/*/*.mt'</TT>
+<DD>
+Sets Makefile parameters
+<DT><TT>`config/*/tm-*.h'</TT>
+<DD>
+Global #include's and #define's and definitions
+<DT><TT>`*-tdep.c'</TT>
+<DD>
+Global variables and functions
+</DL>
+
+<P>
+At this writing, most supported hosts have had their host and native
+dependencies sorted out properly.  There are a few stragglers, which
+can be recognized by the absence of NATDEPFILES lines in their
+<TT>`config/*/*.mh'</TT>.
+
+</P>
+
+
+<H1><A NAME="SEC22" HREF="gdbint_toc.html#TOC22">Adding a New Configuration</A></H1>
+
+<P>
+Most of the work in making GDB compile on a new machine is in specifying
+the configuration of the machine.  This is done in a dizzying variety of
+header files and configuration scripts, which we hope to make more
+sensible soon.  Let's say your new host is called an <VAR>xxx</VAR> (e.g.
+<SAMP>`sun4'</SAMP>), and its full three-part configuration name is
+<CODE><VAR>xarch</VAR>-<VAR>xvend</VAR>-<VAR>xos</VAR></CODE> (e.g.  <SAMP>`sparc-sun-sunos4'</SAMP>).  In
+particular:
+
+</P>
+<P>
+In the top level directory, edit <TT>`config.sub'</TT> and add <VAR>xarch</VAR>,
+<VAR>xvend</VAR>, and <VAR>xos</VAR> to the lists of supported architectures,
+vendors, and operating systems near the bottom of the file.  Also, add
+<VAR>xxx</VAR> as an alias that maps to
+<CODE><VAR>xarch</VAR>-<VAR>xvend</VAR>-<VAR>xos</VAR></CODE>.  You can test your changes by
+running
+
+</P>
+
+<PRE>
+./config.sub <VAR>xxx</VAR>
+</PRE>
+
+<P>
+and
+
+<PRE>
+./config.sub <CODE><VAR>xarch</VAR>-<VAR>xvend</VAR>-<VAR>xos</VAR></CODE>
+</PRE>
+
+<P>
+which should both respond with <CODE><VAR>xarch</VAR>-<VAR>xvend</VAR>-<VAR>xos</VAR></CODE>
+and no error messages.
+
+</P>
+<P>
+Now, go to the <TT>`bfd'</TT> directory and 
+create a new file <TT>`bfd/hosts/h-<VAR>xxx</VAR>.h'</TT>.  Examine the
+other <TT>`h-*.h'</TT> files as templates, and create one that brings in the
+right include files for your system, and defines any host-specific
+macros needed by BFD, the Binutils, GNU LD, or the Opcodes directories.
+(They all share the bfd <TT>`hosts'</TT> directory and the <TT>`configure.host'</TT>
+file.)
+
+</P>
+<P>
+Then edit <TT>`bfd/configure.host'</TT>.  Add a line to recognize your
+<CODE><VAR>xarch</VAR>-<VAR>xvend</VAR>-<VAR>xos</VAR></CODE> configuration, and set
+<CODE>my_host</CODE> to <VAR>xxx</VAR> when you recognize it.  This will cause your
+file <TT>`h-<VAR>xxx</VAR>.h'</TT> to be linked to <TT>`sysdep.h'</TT> at configuration
+time.  When creating the line that recognizes your configuration,
+only match the fields that you really need to match; e.g. don't
+match the architecture or manufacturer if the OS is sufficient
+to distinguish the configuration that your <TT>`h-<VAR>xxx</VAR>.h'</TT> file supports.
+Don't match the manufacturer name unless you really need to.
+This should make future ports easier.
+
+</P>
+<P>
+Also, if this host requires any changes to the Makefile, create a file
+<TT>`bfd/config/<VAR>xxx</VAR>.mh'</TT>, which includes the required lines.
+
+</P>
+<P>
+It's possible that the <TT>`libiberty'</TT> and <TT>`readline'</TT> directories
+won't need any changes for your configuration, but if they do, you can
+change the <TT>`configure.in'</TT> file there to recognize your system and
+map to an <TT>`mh-<VAR>xxx</VAR>'</TT> file.  Then add <TT>`mh-<VAR>xxx</VAR>'</TT>
+to the <TT>`config/'</TT> subdirectory, to set any makefile variables you
+need.  The only current options in there are things like <SAMP>`-DSYSV'</SAMP>.
+(This <TT>`mh-<VAR>xxx</VAR>'</TT> naming convention differs from elsewhere
+in GDB, by historical accident.  It should be cleaned up so that all
+such files are called <TT>`<VAR>xxx</VAR>.mh'</TT>.)
+
+</P>
+<P>
+Aha!  Now to configure GDB itself!  Edit
+<TT>`gdb/configure.in'</TT> to recognize your system and set <CODE>gdb_host</CODE>
+to <VAR>xxx</VAR>, and (unless your desired target is already available) also
+set <CODE>gdb_target</CODE> to something appropriate (for instance,
+<VAR>xxx</VAR>).  To handle new hosts, modify the segment after the comment
+<SAMP>`# per-host'</SAMP>; to handle new targets, modify after <SAMP>`#
+per-target'</SAMP>.
+
+</P>
+<P>
+Finally, you'll need to specify and define GDB's host-, native-, and
+target-dependent <TT>`.h'</TT> and <TT>`.c'</TT> files used for your
+configuration; the next two chapters discuss those.
+
+</P>
+
+
+
+<H1><A NAME="SEC23" HREF="gdbint_toc.html#TOC23">Adding a New Host</A></H1>
+
+<P>
+Once you have specified a new configuration for your host
+(see section <A HREF="gdbint.html#SEC22">Adding a New Configuration</A>), there are three remaining
+pieces to making GDB work on a new machine.  First, you have to make it
+host on the new machine (compile there, handle that machine's terminals
+properly, etc).  If you will be cross-debugging to some other kind of
+system that's already supported, you are done.
+
+</P>
+<P>
+If you want to use GDB to debug programs that run on the new machine,
+you have to get it to understand the machine's object files, symbol
+files, and interfaces to processes; see section <A HREF="gdbint.html#SEC27">Adding a New Target</A>
+and see section <A HREF="gdbint.html#SEC25">Adding a New Native Configuration</A>
+
+</P>
+<P>
+Several files control GDB's configuration for host systems:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`gdb/config/<VAR>arch</VAR>/<VAR>xxx</VAR>.mh'</TT>
+<DD>
+Specifies Makefile fragments needed when hosting on machine <VAR>xxx</VAR>.
+In particular, this lists the required machine-dependent object files,
+by defining <SAMP>`XDEPFILES=...'</SAMP>.  Also
+specifies the header file which describes host <VAR>xxx</VAR>, by defining
+<CODE>XM_FILE= xm-<VAR>xxx</VAR>.h</CODE>.  You can also define <CODE>CC</CODE>,
+<CODE>REGEX</CODE> and <CODE>REGEX1</CODE>, <CODE>SYSV_DEFINE</CODE>, <CODE>XM_CFLAGS</CODE>,
+<CODE>XM_ADD_FILES</CODE>, <CODE>XM_CLIBS</CODE>, <CODE>XM_CDEPS</CODE>,
+etc.; see <TT>`Makefile.in'</TT>.
+
+<DT><TT>`gdb/config/<VAR>arch</VAR>/xm-<VAR>xxx</VAR>.h'</TT>
+<DD>
+(<TT>`xm.h'</TT> is a link to this file, created by configure).
+Contains C macro definitions describing the host system environment,
+such as byte order, host C compiler and library, ptrace support,
+and core file structure.  Crib from existing <TT>`xm-*.h'</TT> files
+to create a new one.
+
+<DT><TT>`gdb/<VAR>xxx</VAR>-xdep.c'</TT>
+<DD>
+Contains any miscellaneous C code required for this machine
+as a host.  On many machines it doesn't exist at all.  If it does
+exist, put <TT>`<VAR>xxx</VAR>-xdep.o'</TT> into the <CODE>XDEPFILES</CODE> line
+in <TT>`gdb/config/mh-<VAR>xxx</VAR>'</TT>.
+</DL>
+
+
+
+<H2><A NAME="SEC24" HREF="gdbint_toc.html#TOC24">Generic Host Support Files</A></H2>
+
+<P>
+There are some "generic" versions of routines that can be used by
+various systems.  These can be customized in various ways by macros
+defined in your <TT>`xm-<VAR>xxx</VAR>.h'</TT> file.  If these routines work for
+the <VAR>xxx</VAR> host, you can just include the generic file's name (with
+<SAMP>`.o'</SAMP>, not <SAMP>`.c'</SAMP>) in <CODE>XDEPFILES</CODE>.  
+
+</P>
+<P>
+Otherwise, if your machine needs custom support routines, you will need
+to write routines that perform the same functions as the generic file.
+Put them into <CODE><VAR>xxx</VAR>-xdep.c</CODE>, and put <CODE><VAR>xxx</VAR>-xdep.o</CODE>
+into <CODE>XDEPFILES</CODE>.
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`ser-bsd.c'</TT>
+<DD>
+This contains serial line support for Berkeley-derived Unix systems.
+
+<DT><TT>`ser-go32.c'</TT>
+<DD>
+This contains serial line support for 32-bit programs running under DOS
+using the GO32 execution environment.
+
+<DT><TT>`ser-termios.c'</TT>
+<DD>
+This contains serial line support for System V-derived Unix systems.
+</DL>
+
+<P>
+Now, you are now ready to try configuring GDB to compile using your system
+as its host.  From the top level (above <TT>`bfd'</TT>, <TT>`gdb'</TT>, etc), do:
+
+</P>
+
+<PRE>
+./configure <VAR>xxx</VAR> --target=vxworks960
+</PRE>
+
+<P>
+This will configure your system to cross-compile for VxWorks on
+the Intel 960, which is probably not what you really want, but it's
+a test case that works at this stage.  (You haven't set up to be
+able to debug programs that run <EM>on</EM> <VAR>xxx</VAR> yet.)
+
+</P>
+<P>
+If this succeeds, you can try building it all with:
+
+</P>
+
+<PRE>
+make
+</PRE>
+
+<P>
+Repeat until the program configures, compiles, links, and runs.
+When run, it won't be able to do much (unless you have a VxWorks/960
+board on your network) but you will know that the host support is
+pretty well done.
+
+</P>
+<P>
+Good luck!  Comments and suggestions about this section are particularly
+welcome; send them to <SAMP>`bug-gdb@prep.ai.mit.edu'</SAMP>.
+
+</P>
+
+
+<H1><A NAME="SEC25" HREF="gdbint_toc.html#TOC25">Adding a New Native Configuration</A></H1>
+
+<P>
+If you are making GDB run native on the <VAR>xxx</VAR> machine, you have
+plenty more work to do.  Several files control GDB's configuration for
+native support:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`gdb/config/<VAR>xarch</VAR>/<VAR>xxx</VAR>.mh'</TT>
+<DD>
+Specifies Makefile fragments needed when hosting <EM>or native</EM>
+on machine <VAR>xxx</VAR>.
+In particular, this lists the required native-dependent object files,
+by defining <SAMP>`NATDEPFILES=...'</SAMP>.  Also
+specifies the header file which describes native support on <VAR>xxx</VAR>,
+by defining <SAMP>`NAT_FILE= nm-<VAR>xxx</VAR>.h'</SAMP>.
+You can also define <SAMP>`NAT_CFLAGS'</SAMP>,
+<SAMP>`NAT_ADD_FILES'</SAMP>, <SAMP>`NAT_CLIBS'</SAMP>, <SAMP>`NAT_CDEPS'</SAMP>,
+etc.; see <TT>`Makefile.in'</TT>.
+
+<DT><TT>`gdb/config/<VAR>arch</VAR>/nm-<VAR>xxx</VAR>.h'</TT>
+<DD>
+(<TT>`nm.h'</TT> is a link to this file, created by configure).
+Contains C macro definitions describing the native system environment,
+such as child process control and core file support.
+Crib from existing <TT>`nm-*.h'</TT> files to create a new one.
+
+<DT><TT>`gdb/<VAR>xxx</VAR>-nat.c'</TT>
+<DD>
+Contains any miscellaneous C code required for this native support
+of this machine.  On some machines it doesn't exist at all.
+</DL>
+
+
+
+<H2><A NAME="SEC26" HREF="gdbint_toc.html#TOC26">Generic Native Support Files</A></H2>
+
+<P>
+There are some "generic" versions of routines that can be used by
+various systems.  These can be customized in various ways by macros
+defined in your <TT>`nm-<VAR>xxx</VAR>.h'</TT> file.  If these routines work for
+the <VAR>xxx</VAR> host, you can just include the generic file's name (with
+<SAMP>`.o'</SAMP>, not <SAMP>`.c'</SAMP>) in <CODE>NATDEPFILES</CODE>.  
+
+</P>
+<P>
+Otherwise, if your machine needs custom support routines, you will need
+to write routines that perform the same functions as the generic file.
+Put them into <CODE><VAR>xxx</VAR>-nat.c</CODE>, and put <CODE><VAR>xxx</VAR>-nat.o</CODE>
+into <CODE>NATDEPFILES</CODE>.  
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`inftarg.c'</TT>
+<DD>
+This contains the <EM>target_ops vector</EM> that supports Unix child
+processes on systems which use ptrace and wait to control the child.
+
+<DT><TT>`procfs.c'</TT>
+<DD>
+This contains the <EM>target_ops vector</EM> that supports Unix child
+processes on systems which use /proc to control the child.
+
+<DT><TT>`fork-child.c'</TT>
+<DD>
+This does the low-level grunge that uses Unix system calls
+to do a "fork and exec" to start up a child process.
+
+<DT><TT>`infptrace.c'</TT>
+<DD>
+This is the low level interface to inferior processes for systems
+using the Unix <CODE>ptrace</CODE> call in a vanilla way.
+
+<DT><TT>`core-aout.c::fetch_core_registers()'</TT>
+<DD>
+Support for reading registers out of a core file.  This routine calls
+<CODE>register_addr()</CODE>, see below.
+Now that BFD is used to read core files, virtually all machines should
+use <CODE>core-aout.c</CODE>, and should just provide <CODE>fetch_core_registers</CODE> in
+<CODE><VAR>xxx</VAR>-nat.c</CODE> (or <CODE>REGISTER_U_ADDR</CODE> in <CODE>nm-<VAR>xxx</VAR>.h</CODE>).
+
+<DT><TT>`core-aout.c::register_addr()'</TT>
+<DD>
+If your <CODE>nm-<VAR>xxx</VAR>.h</CODE> file defines the macro
+<CODE>REGISTER_U_ADDR(addr, blockend, regno)</CODE>, it should be defined to
+set <CODE>addr</CODE> to the offset within the <SAMP>`user'</SAMP>
+struct of GDB register number <CODE>regno</CODE>.  <CODE>blockend</CODE> is the
+offset within the "upage" of <CODE>u.u_ar0</CODE>.
+If <CODE>REGISTER_U_ADDR</CODE> is defined,
+<TT>`core-aout.c'</TT> will define the <CODE>register_addr()</CODE> function and use
+the macro in it.  If you do not define <CODE>REGISTER_U_ADDR</CODE>, but you
+are using the standard <CODE>fetch_core_registers()</CODE>, you will need to
+define your own version of <CODE>register_addr()</CODE>, put it into your
+<CODE><VAR>xxx</VAR>-nat.c</CODE> file, and be sure <CODE><VAR>xxx</VAR>-nat.o</CODE> is in
+the <CODE>NATDEPFILES</CODE> list.  If you have your own
+<CODE>fetch_core_registers()</CODE>, you may not need a separate
+<CODE>register_addr()</CODE>.  Many custom <CODE>fetch_core_registers()</CODE>
+implementations simply locate the registers themselves.</DL>
+
+<P>
+When making GDB run native on a new operating system,
+to make it possible to debug
+core files, you will need to either write specific code for parsing your
+OS's core files, or customize <TT>`bfd/trad-core.c'</TT>.  First, use
+whatever <CODE>#include</CODE> files your machine uses to define the struct of
+registers that is accessible (possibly in the u-area) in a core file
+(rather than <TT>`machine/reg.h'</TT>), and an include file that defines whatever
+header exists on a core file (e.g. the u-area or a <SAMP>`struct core'</SAMP>).  Then
+modify <CODE>trad_unix_core_file_p()</CODE> to use these values to set up the
+section information for the data segment, stack segment, any other
+segments in the core file (perhaps shared library contents or control
+information), "registers" segment, and if there are two discontiguous
+sets of registers (e.g.  integer and float), the "reg2" segment.  This
+section information basically delimits areas in the core file in a
+standard way, which the section-reading routines in BFD know how to seek
+around in.
+
+</P>
+<P>
+Then back in GDB, you need a matching routine called
+<CODE>fetch_core_registers()</CODE>.  If you can use the generic one, it's in
+<TT>`core-aout.c'</TT>; if not, it's in your <TT>`<VAR>xxx</VAR>-nat.c'</TT> file.
+It will be passed a char pointer to the entire "registers" segment,
+its length, and a zero; or a char pointer to the entire "regs2"
+segment, its length, and a 2.  The routine should suck out the supplied
+register values and install them into GDB's "registers" array.
+(See section <A HREF="gdbint.html#SEC20">Defining a New Host or Target Architecture</A>,
+for more info about this.)
+
+</P>
+<P>
+If your system uses <TT>`/proc'</TT> to control processes, and uses ELF
+format core files, then you may be able to use the same routines
+for reading the registers out of processes and out of core files.
+
+</P>
+
+
+<H1><A NAME="SEC27" HREF="gdbint_toc.html#TOC27">Adding a New Target</A></H1>
+
+<P>
+For a new target called <VAR>ttt</VAR>, first specify the configuration as
+described in section <A HREF="gdbint.html#SEC22">Adding a New Configuration</A>.  If your new
+target is the same as your new host, you've probably already done that.
+
+</P>
+<P>
+A variety of files specify attributes of the GDB target environment:
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`gdb/config/<VAR>arch</VAR>/<VAR>ttt</VAR>.mt'</TT>
+<DD>
+Contains a Makefile fragment specific to this target.
+Specifies what object files are needed for target <VAR>ttt</VAR>, by
+defining <SAMP>`TDEPFILES=...'</SAMP>.
+Also specifies the header file which describes <VAR>ttt</VAR>, by defining
+<SAMP>`TM_FILE= tm-<VAR>ttt</VAR>.h'</SAMP>.  You can also define <SAMP>`TM_CFLAGS'</SAMP>,
+<SAMP>`TM_CLIBS'</SAMP>, <SAMP>`TM_CDEPS'</SAMP>,
+and other Makefile variables here; see <TT>`Makefile.in'</TT>.
+
+<DT><TT>`gdb/config/<VAR>arch</VAR>/tm-<VAR>ttt</VAR>.h'</TT>
+<DD>
+(<TT>`tm.h'</TT> is a link to this file, created by configure).
+Contains macro definitions about the target machine's
+registers, stack frame format and instructions.
+Crib from existing <TT>`tm-*.h'</TT> files when building a new one.
+
+<DT><TT>`gdb/<VAR>ttt</VAR>-tdep.c'</TT>
+<DD>
+Contains any miscellaneous code required for this target machine.
+On some machines it doesn't exist at all.  Sometimes the macros
+in <TT>`tm-<VAR>ttt</VAR>.h'</TT> become very complicated, so they are
+implemented as functions here instead, and the macro is simply
+defined to call the function.
+
+<DT><TT>`gdb/exec.c'</TT>
+<DD>
+Defines functions for accessing files that are
+executable on the target system.  These functions open and examine an
+exec file, extract data from one, write data to one, print information
+about one, etc.  Now that executable files are handled with BFD, every
+target should be able to use the generic exec.c rather than its
+own custom code.
+
+<DT><TT>`gdb/config/<VAR>arch</VAR>/tm-<VAR>arch</VAR>.h'</TT>
+<DD>
+This often exists to describe the basic layout of the target machine's
+processor chip (registers, stack, etc).
+If used, it is included by <TT>`tm-<VAR>xxx</VAR>.h'</TT>.  It can
+be shared among many targets that use the same processor.
+
+<DT><TT>`gdb/<VAR>arch</VAR>-tdep.c'</TT>
+<DD>
+Similarly, there are often common subroutines that are shared by all
+target machines that use this particular architecture.
+</DL>
+
+<P>
+When adding support for a new target machine, there are various areas
+of support that might need change, or might be OK.
+
+</P>
+<P>
+If you are using an existing object file format (a.out or COFF), 
+there is probably little to be done.  See <TT>`bfd/doc/bfd.texinfo'</TT>
+for more information on writing new a.out or COFF versions.
+
+</P>
+<P>
+If you need to add a new object file format, you must first add it to
+BFD.  This is beyond the scope of this document right now.  Basically
+you must build a transfer vector (of type <CODE>bfd_target</CODE>), which will
+mean writing all the required routines, and add it to the list in
+<TT>`bfd/targets.c'</TT>.
+
+</P>
+<P>
+You must then arrange for the BFD code to provide access to the
+debugging symbols.  Generally GDB will have to call swapping routines
+from BFD and a few other BFD internal routines to locate the debugging
+information.  As much as possible, GDB should not depend on the BFD
+internal data structures.
+
+</P>
+<P>
+For some targets (e.g., COFF), there is a special transfer vector used
+to call swapping routines, since the external data structures on various
+platforms have different sizes and layouts.  Specialized routines that
+will only ever be implemented by one object file format may be called
+directly.  This interface should be described in a file
+<TT>`bfd/libxxx.h'</TT>, which is included by GDB.
+
+</P>
+<P>
+If you are adding a new operating system for an existing CPU chip, add a
+<TT>`tm-<VAR>xos</VAR>.h'</TT> file that describes the operating system
+facilities that are unusual (extra symbol table info; the breakpoint
+instruction needed; etc).  Then write a
+<TT>`tm-<VAR>xarch</VAR>-<VAR>xos</VAR>.h'</TT> that just <CODE>#include</CODE>s
+<TT>`tm-<VAR>xarch</VAR>.h'</TT> and <TT>`tm-<VAR>xos</VAR>.h'</TT>.  (Now that we have
+three-part configuration names, this will probably get revised to
+separate the <VAR>xos</VAR> configuration from the <VAR>xarch</VAR>
+configuration.)
+
+</P>
+
+
+
+<H1><A NAME="SEC28" HREF="gdbint_toc.html#TOC28">Adding a Source Language to GDB</A></H1>
+
+<P>
+To add other languages to GDB's expression parser, follow the following steps:
+
+</P>
+<DL COMPACT>
+
+<DT><EM>Create the expression parser.</EM>
+<DD>
+This should reside in a file <TT>`<VAR>lang</VAR>-exp.y'</TT>.  Routines for building
+parsed expressions into a <SAMP>`union exp_element'</SAMP> list are in <TT>`parse.c'</TT>.
+
+Since we can't depend upon everyone having Bison, and YACC produces
+parsers that define a bunch of global names, the following lines
+<EM>must</EM> be included at the top of the YACC parser, to prevent
+the various parsers from defining the same global names:
+
+
+<PRE>
+#define yyparse 	<VAR>lang</VAR>_parse
+#define yylex 	<VAR>lang</VAR>_lex
+#define yyerror 	<VAR>lang</VAR>_error
+#define yylval 	<VAR>lang</VAR>_lval
+#define yychar 	<VAR>lang</VAR>_char
+#define yydebug 	<VAR>lang</VAR>_debug
+#define yypact  	<VAR>lang</VAR>_pact 
+#define yyr1		<VAR>lang</VAR>_r1   
+#define yyr2		<VAR>lang</VAR>_r2   
+#define yydef		<VAR>lang</VAR>_def  
+#define yychk		<VAR>lang</VAR>_chk  
+#define yypgo		<VAR>lang</VAR>_pgo  
+#define yyact  	<VAR>lang</VAR>_act  
+#define yyexca  	<VAR>lang</VAR>_exca
+#define yyerrflag  	<VAR>lang</VAR>_errflag
+#define yynerrs  	<VAR>lang</VAR>_nerrs
+</PRE>
+
+At the bottom of your parser, define a <CODE>struct language_defn</CODE> and
+initialize it with the right values for your language.  Define an
+<CODE>initialize_<VAR>lang</VAR></CODE> routine and have it call
+<SAMP>`add_language(<VAR>lang</VAR>_language_defn)'</SAMP> to tell the rest of GDB
+that your language exists.  You'll need some other supporting variables
+and functions, which will be used via pointers from your
+<CODE><VAR>lang</VAR>_language_defn</CODE>.  See the declaration of <CODE>struct
+language_defn</CODE> in <TT>`language.h'</TT>, and the other <TT>`*-exp.y'</TT> files,
+for more information.
+
+<DT><EM>Add any evaluation routines, if necessary</EM>
+<DD>
+If you need new opcodes (that represent the operations of the language),
+add them to the enumerated type in <TT>`expression.h'</TT>.  Add support
+code for these operations in <CODE>eval.c:evaluate_subexp()</CODE>.  Add cases
+for new opcodes in two functions from <TT>`parse.c'</TT>:
+<CODE>prefixify_subexp()</CODE> and <CODE>length_of_subexp()</CODE>.  These compute
+the number of <CODE>exp_element</CODE>s that a given operation takes up.
+
+<DT><EM>Update some existing code</EM>
+<DD>
+Add an enumerated identifier for your language to the enumerated type
+<CODE>enum language</CODE> in <TT>`defs.h'</TT>.
+
+Update the routines in <TT>`language.c'</TT> so your language is included.  These
+routines include type predicates and such, which (in some cases) are
+language dependent.  If your language does not appear in the switch
+statement, an error is reported.
+
+Also included in <TT>`language.c'</TT> is the code that updates the variable
+<CODE>current_language</CODE>, and the routines that translate the
+<CODE>language_<VAR>lang</VAR></CODE> enumerated identifier into a printable
+string.
+
+Update the function <CODE>_initialize_language</CODE> to include your language.  This
+function picks the default language upon startup, so is dependent upon
+which languages that GDB is built for.
+
+Update <CODE>allocate_symtab</CODE> in <TT>`symfile.c'</TT> and/or symbol-reading
+code so that the language of each symtab (source file) is set properly.
+This is used to determine the language to use at each stack frame level.
+Currently, the language is set based upon the extension of the source
+file.  If the language can be better inferred from the symbol
+information, please set the language of the symtab in the symbol-reading
+code.
+
+Add helper code to <CODE>expprint.c:print_subexp()</CODE> to handle any new
+expression opcodes you have added to <TT>`expression.h'</TT>.  Also, add the
+printed representations of your operators to <CODE>op_print_tab</CODE>.
+
+<DT><EM>Add a place of call</EM>
+<DD>
+Add a call to <CODE><VAR>lang</VAR>_parse()</CODE> and <CODE><VAR>lang</VAR>_error</CODE> in
+<CODE>parse.c:parse_exp_1()</CODE>.
+
+<DT><EM>Use macros to trim code</EM>
+<DD>
+The user has the option of building GDB for some or all of the
+languages.  If the user decides to build GDB for the language
+<VAR>lang</VAR>, then every file dependent on <TT>`language.h'</TT> will have the
+macro <CODE>_LANG_<VAR>lang</VAR></CODE> defined in it.  Use <CODE>#ifdef</CODE>s to
+leave out large routines that the user won't need if he or she is not
+using your language.
+
+Note that you do not need to do this in your YACC parser, since if GDB
+is not build for <VAR>lang</VAR>, then <TT>`<VAR>lang</VAR>-exp.tab.o'</TT> (the
+compiled form of your parser) is not linked into GDB at all.
+
+See the file <TT>`configure.in'</TT> for how GDB is configured for different
+languages.
+
+<DT><EM>Edit <TT>`Makefile.in'</TT></EM>
+<DD>
+Add dependencies in <TT>`Makefile.in'</TT>.  Make sure you update the macro
+variables such as <CODE>HFILES</CODE> and <CODE>OBJS</CODE>, otherwise your code may
+not get linked in, or, worse yet, it may not get <CODE>tar</CODE>red into the
+distribution!
+</DL>
+
+
+
+<H1><A NAME="SEC29" HREF="gdbint_toc.html#TOC29">Configuring GDB for Release</A></H1>
+
+<P>
+From the top level directory (containing <TT>`gdb'</TT>, <TT>`bfd'</TT>,
+<TT>`libiberty'</TT>, and so on):
+
+<PRE>
+make -f Makefile.in gdb.tar.gz
+</PRE>
+
+<P>
+This will properly configure, clean, rebuild any files that are
+distributed pre-built (e.g. <TT>`c-exp.tab.c'</TT> or <TT>`refcard.ps'</TT>),
+and will then make a tarfile.  (If the top level directory has already
+been configured, you can just do <CODE>make gdb.tar.gz</CODE> instead.)
+
+</P>
+<P>
+This procedure requires:
+
+<UL>
+<LI>symbolic links
+
+<LI><CODE>makeinfo</CODE> (texinfo2 level)
+
+<LI>TeX
+
+<LI><CODE>dvips</CODE>
+
+<LI><CODE>yacc</CODE> or <CODE>bison</CODE>
+
+</UL>
+
+<P>
+... and the usual slew of utilities (<CODE>sed</CODE>, <CODE>tar</CODE>, etc.).
+
+</P>
+
+
+<H2><A NAME="SEC30" HREF="gdbint_toc.html#TOC30">Documentation Release Procedure</A></H2>
+
+<P>
+<TT>`gdb.texinfo'</TT> is currently marked up using the texinfo-2 macros,
+which are not yet a default for anything (but we have to start using
+them sometime).  
+
+</P>
+<P>
+For making paper, the only thing this implies is the right generation of
+<TT>`texinfo.tex'</TT> needs to be included in the distribution.
+
+</P>
+<P>
+For making info files, however, rather than duplicating the texinfo2
+distribution, generate <TT>`gdb-all.texinfo'</TT> locally, and include the files
+<TT>`gdb.info*'</TT> in the distribution.  Note the plural; <CODE>makeinfo</CODE> will
+split the document into one overall file and five or so included files.
+
+</P>
+
+
+<H1><A NAME="SEC31" HREF="gdbint_toc.html#TOC31">Symbol Tables</A></H1>
+
+<P>
+GDB has three types of symbol tables.
+
+</P>
+
+<UL>
+<LI>full symbol tables (symtabs).  These contain the main
+
+information about symbols and addresses.
+<LI>partial symbol tables (psymtabs).  These contain enough
+
+information to know when to read the corresponding
+part of the full symbol table.
+<LI>minimal symbol tables (msymtabs).  These contain information
+
+gleaned from non-debugging symbols.
+</UL>
+
+<P>
+This section describes partial symbol tables.
+
+</P>
+<P>
+A psymtab is constructed by doing a very quick pass over an executable
+file's debugging information.  Small amounts of information are
+extracted -- enough to identify which parts of the symbol table will
+need to be re-read and fully digested later, when the user needs the
+information.  The speed of this pass causes GDB to start up very
+quickly.  Later, as the detailed rereading occurs, it occurs in small
+pieces, at various times, and the delay therefrom is mostly invisible to
+the user.  (See section <A HREF="gdbint.html#SEC34">Symbol Reading</A>.)
+
+</P>
+<P>
+The symbols that show up in a file's psymtab should be, roughly, those
+visible to the debugger's user when the program is not running code from
+that file.  These include external symbols and types, static
+symbols and types, and enum values declared at file scope.
+
+</P>
+<P>
+The psymtab also contains the range of instruction addresses that the
+full symbol table would represent.
+
+</P>
+<P>
+The idea is that there are only two ways for the user (or much of
+the code in the debugger) to reference a symbol:
+
+</P>
+
+<UL>
+
+<LI>by its address
+
+(e.g. execution stops at some address which is inside a function
+in this file).  The address will be noticed to be in the
+range of this psymtab, and the full symtab will be read in.
+<CODE>find_pc_function</CODE>, <CODE>find_pc_line</CODE>, and other <CODE>find_pc_...</CODE>
+functions handle this.
+
+<LI>by its name
+
+(e.g. the user asks to print a variable, or set a breakpoint on a
+function).  Global names and file-scope names will be found in the
+psymtab, which will cause the symtab to be pulled in.  Local names will
+have to be qualified by a global name, or a file-scope name, in which
+case we will have already read in the symtab as we evaluated the
+qualifier.  Or, a local symbol can be referenced when
+we are "in" a local scope, in which case the first case applies.
+<CODE>lookup_symbol</CODE> does most of the work here.
+
+</UL>
+
+<P>
+The only reason that psymtabs exist is to cause a symtab to be read in
+at the right moment.  Any symbol that can be elided from a psymtab,
+while still causing that to happen, should not appear in it.  Since
+psymtabs don't have the idea of scope, you can't put local symbols in
+them anyway.  Psymtabs don't have the idea of the type of a symbol,
+either, so types need not appear, unless they will be referenced by
+name.
+
+</P>
+<P>
+It is a bug for GDB to behave one way when only a psymtab has been read,
+and another way if the corresponding symtab has been read in.  Such
+bugs are typically caused by a psymtab that does not contain all the
+visible symbols, or which has the wrong instruction address ranges.
+
+</P>
+<P>
+The psymtab for a particular section of a symbol-file (objfile)
+could be thrown away after the symtab has been read in.  The symtab
+should always be searched before the psymtab, so the psymtab will
+never be used (in a bug-free environment).  Currently,
+psymtabs are allocated on an obstack, and all the psymbols themselves
+are allocated in a pair of large arrays on an obstack, so there is
+little to be gained by trying to free them unless you want to do a lot
+more work.
+
+</P>
+
+
+<H1><A NAME="SEC32" HREF="gdbint_toc.html#TOC32">Types</A></H1>
+
+<P>
+Fundamental Types (e.g., FT_VOID, FT_BOOLEAN).
+
+</P>
+<P>
+These are the fundamental types that GDB uses internally.  Fundamental
+types from the various debugging formats (stabs, ELF, etc) are mapped into
+one of these.  They are basically a union of all fundamental types that
+gdb knows about for all the languages that GDB knows about.
+
+</P>
+<P>
+Type Codes (e.g., TYPE_CODE_PTR, TYPE_CODE_ARRAY).
+
+</P>
+<P>
+Each time GDB builds an internal type, it marks it with one of these
+types.  The type may be a fundamental type, such as TYPE_CODE_INT, or
+a derived type, such as TYPE_CODE_PTR which is a pointer to another
+type.  Typically, several FT_* types map to one TYPE_CODE_* type, and
+are distinguished by other members of the type struct, such as whether
+the type is signed or unsigned, and how many bits it uses.
+
+</P>
+<P>
+Builtin Types (e.g., builtin_type_void, builtin_type_char).
+
+</P>
+<P>
+These are instances of type structs that roughly correspond to fundamental
+types and are created as global types for GDB to use for various ugly
+historical reasons.  We eventually want to eliminate these.  Note for
+example that builtin_type_int initialized in gdbtypes.c is basically the
+same as a TYPE_CODE_INT type that is initialized in c-lang.c for an
+FT_INTEGER fundamental type.  The difference is that the builtin_type is
+not associated with any particular objfile, and only one instance exists,
+while c-lang.c builds as many TYPE_CODE_INT types as needed, with each
+one associated with some particular objfile.
+
+</P>
+
+
+<H1><A NAME="SEC33" HREF="gdbint_toc.html#TOC33">Binary File Descriptor Library Support for GDB</A></H1>
+
+<P>
+BFD provides support for GDB in several ways:
+
+</P>
+<DL COMPACT>
+
+<DT><EM>identifying executable and core files</EM>
+<DD>
+BFD will identify a variety of file types, including a.out, coff, and
+several variants thereof, as well as several kinds of core files.
+
+<DT><EM>access to sections of files</EM>
+<DD>
+BFD parses the file headers to determine the names, virtual addresses,
+sizes, and file locations of all the various named sections in files
+(such as the text section or the data section).  GDB simply calls
+BFD to read or write section X at byte offset Y for length Z.
+
+<DT><EM>specialized core file support</EM>
+<DD>
+BFD provides routines to determine the failing command name stored
+in a core file, the signal with which the program failed, and whether
+a core file matches (i.e. could be a core dump of) a particular executable
+file.
+
+<DT><EM>locating the symbol information</EM>
+<DD>
+GDB uses an internal interface of BFD to determine where to find the
+symbol information in an executable file or symbol-file.  GDB itself
+handles the reading of symbols, since BFD does not "understand" debug
+symbols, but GDB uses BFD's cached information to find the symbols,
+string table, etc.
+</DL>
+
+
+
+<H1><A NAME="SEC34" HREF="gdbint_toc.html#TOC34">Symbol Reading</A></H1>
+
+<P>
+GDB reads symbols from "symbol files".  The usual symbol file is the
+file containing the program which GDB is debugging.  GDB can be directed
+to use a different file for symbols (with the "symbol-file"
+command), and it can also read more symbols via the "add-file" and "load"
+commands, or while reading symbols from shared libraries.
+
+</P>
+<P>
+Symbol files are initially opened by <TT>`symfile.c'</TT> using the BFD
+library.  BFD identifies the type of the file by examining its header.
+<CODE>symfile_init</CODE> then uses this identification to locate a
+set of symbol-reading functions.
+
+</P>
+<P>
+Symbol reading modules identify themselves to GDB by calling
+<CODE>add_symtab_fns</CODE> during their module initialization.  The argument
+to <CODE>add_symtab_fns</CODE> is a <CODE>struct sym_fns</CODE> which contains
+the name (or name prefix) of the symbol format, the length of the prefix,
+and pointers to four functions.  These functions are called at various
+times to process symbol-files whose identification matches the specified
+prefix.
+
+</P>
+<P>
+The functions supplied by each module are:
+
+</P>
+<DL COMPACT>
+
+<DT><CODE><VAR>xxx</VAR>_symfile_init(struct sym_fns *sf)</CODE>
+<DD>
+Called from <CODE>symbol_file_add</CODE> when we are about to read a new
+symbol file.  This function should clean up any internal state
+(possibly resulting from half-read previous files, for example)
+and prepare to read a new symbol file. Note that the symbol file
+which we are reading might be a new "main" symbol file, or might
+be a secondary symbol file whose symbols are being added to the
+existing symbol table.
+
+The argument to <CODE><VAR>xxx</VAR>_symfile_init</CODE> is a newly allocated
+<CODE>struct sym_fns</CODE> whose <CODE>bfd</CODE> field contains the BFD
+for the new symbol file being read.  Its <CODE>private</CODE> field
+has been zeroed, and can be modified as desired.  Typically,
+a struct of private information will be <CODE>malloc</CODE>'d, and
+a pointer to it will be placed in the <CODE>private</CODE> field.
+
+There is no result from <CODE><VAR>xxx</VAR>_symfile_init</CODE>, but it can call
+<CODE>error</CODE> if it detects an unavoidable problem.
+
+<DT><CODE><VAR>xxx</VAR>_new_init()</CODE>
+<DD>
+Called from <CODE>symbol_file_add</CODE> when discarding existing symbols.
+This function need only handle 
+the symbol-reading module's internal state; the symbol table data
+structures visible to the rest of GDB will be discarded by
+<CODE>symbol_file_add</CODE>.  It has no arguments and no result.
+It may be called after <CODE><VAR>xxx</VAR>_symfile_init</CODE>, if a new symbol
+table is being read, or may be called alone if all symbols are
+simply being discarded.
+
+<DT><CODE><VAR>xxx</VAR>_symfile_read(struct sym_fns *sf, CORE_ADDR addr, int mainline)</CODE>
+<DD>
+Called from <CODE>symbol_file_add</CODE> to actually read the symbols from a
+symbol-file into a set of psymtabs or symtabs.
+
+<CODE>sf</CODE> points to the struct sym_fns originally passed to
+<CODE><VAR>xxx</VAR>_sym_init</CODE> for possible initialization.  <CODE>addr</CODE> is the
+offset between the file's specified start address and its true address
+in memory.  <CODE>mainline</CODE> is 1 if this is the main symbol table being
+read, and 0 if a secondary symbol file (e.g. shared library or
+dynamically loaded file) is being read.</DL>
+
+<P>
+In addition, if a symbol-reading module creates psymtabs when
+<VAR>xxx</VAR>_symfile_read is called, these psymtabs will contain a pointer to
+a function <CODE><VAR>xxx</VAR>_psymtab_to_symtab</CODE>, which can be called from
+any point in the GDB symbol-handling code.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE><VAR>xxx</VAR>_psymtab_to_symtab (struct partial_symtab *pst)</CODE>
+<DD>
+Called from <CODE>psymtab_to_symtab</CODE> (or the PSYMTAB_TO_SYMTAB
+macro) if the psymtab has not already been read in and had its
+<CODE>pst-&#62;symtab</CODE> pointer set.  The argument is the psymtab
+to be fleshed-out into a symtab.  Upon return, pst-&#62;readin
+should have been set to 1, and pst-&#62;symtab should contain a
+pointer to the new corresponding symtab, or zero if there
+were no symbols in that part of the symbol file.
+</DL>
+
+
+
+<H1><A NAME="SEC35" HREF="gdbint_toc.html#TOC35">Cleanups</A></H1>
+
+<P>
+Cleanups are a structured way to deal with things that need to be done
+later.  When your code does something (like <CODE>malloc</CODE> some memory, or open
+a file) that needs to be undone later (e.g. free the memory or close
+the file), it can make a cleanup.  The cleanup will be done at some
+future point:  when the command is finished, when an error occurs, or
+when your code decides it's time to do cleanups.
+
+</P>
+<P>
+You can also discard cleanups, that is, throw them away without doing
+what they say.  This is only done if you ask that it be done.
+
+</P>
+<P>
+Syntax:
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>struct cleanup *<VAR>old_chain</VAR>;</CODE>
+<DD>
+Declare a variable which will hold a cleanup chain handle.
+
+<DT><CODE><VAR>old_chain</VAR> = make_cleanup (<VAR>function</VAR>, <VAR>arg</VAR>);</CODE>
+<DD>
+Make a cleanup which will cause <VAR>function</VAR> to be called with <VAR>arg</VAR>
+(a <CODE>char *</CODE>) later.  The result, <VAR>old_chain</VAR>, is a handle that can be
+passed to <CODE>do_cleanups</CODE> or <CODE>discard_cleanups</CODE> later.  Unless you are
+going to call <CODE>do_cleanups</CODE> or <CODE>discard_cleanups</CODE> yourself,
+you can ignore the result from <CODE>make_cleanup</CODE>.
+
+<DT><CODE>do_cleanups (<VAR>old_chain</VAR>);</CODE>
+<DD>
+Perform all cleanups done since <CODE>make_cleanup</CODE> returned <VAR>old_chain</VAR>.
+E.g.:   
+
+<PRE>
+make_cleanup (a, 0); 
+old = make_cleanup (b, 0); 
+do_cleanups (old);
+</PRE>
+
+will call <CODE>b()</CODE> but will not call <CODE>a()</CODE>.  The cleanup that calls <CODE>a()</CODE> will remain
+in the cleanup chain, and will be done later unless otherwise discarded.
+<DT><CODE>discard_cleanups (<VAR>old_chain</VAR>);</CODE>
+<DD>
+Same as <CODE>do_cleanups</CODE> except that it just removes the cleanups from the
+chain and does not call the specified functions.
+
+</DL>
+
+<P>
+Some functions, e.g. <CODE>fputs_filtered()</CODE> or <CODE>error()</CODE>, specify that they
+"should not be called when cleanups are not in place".  This means
+that any actions you need to reverse in the case of an error or
+interruption must be on the cleanup chain before you call these functions,
+since they might never return to your code (they <SAMP>`longjmp'</SAMP> instead).
+
+</P>
+
+
+
+<H1><A NAME="SEC36" HREF="gdbint_toc.html#TOC36">Wrapping Output Lines</A></H1>
+
+<P>
+Output that goes through <CODE>printf_filtered</CODE> or <CODE>fputs_filtered</CODE> or
+<CODE>fputs_demangled</CODE> needs only to have calls to <CODE>wrap_here</CODE> added 
+in places that would be good breaking points.  The utility routines
+will take care of actually wrapping if the line width is exceeded.
+
+</P>
+<P>
+The argument to <CODE>wrap_here</CODE> is an indentation string which is printed
+<EM>only</EM> if the line breaks there.  This argument is saved away and used
+later.  It must remain valid until the next call to <CODE>wrap_here</CODE> or
+until a newline has been printed through the <CODE>*_filtered</CODE> functions.
+Don't pass in a local variable and then return!
+
+</P>
+<P>
+It is usually best to call <CODE>wrap_here()</CODE> after printing a comma or space.
+If you call it before printing a space, make sure that your indentation
+properly accounts for the leading space that will print if the line wraps
+there.
+
+</P>
+<P>
+Any function or set of functions that produce filtered output must finish
+by printing a newline, to flush the wrap buffer, before switching to
+unfiltered ("<CODE>printf</CODE>") output.  Symbol reading routines that print
+warnings are a good example.
+
+</P>
+
+
+
+<H1><A NAME="SEC37" HREF="gdbint_toc.html#TOC37">Frames</A></H1>
+
+<P>
+A frame is a construct that GDB uses to keep track of calling and called
+functions.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>FRAME_FP</CODE>
+<DD>
+in the machine description has no meaning to the machine-independent
+part of GDB, except that it is used when setting up a new frame from
+scratch, as follows:
+
+
+<PRE>
+      create_new_frame (read_register (FP_REGNUM), read_pc ()));
+</PRE>
+
+Other than that, all the meaning imparted to <CODE>FP_REGNUM</CODE> is imparted by
+the machine-dependent code.  So, <CODE>FP_REGNUM</CODE> can have any value that
+is convenient for the code that creates new frames.  (<CODE>create_new_frame</CODE>
+calls <CODE>INIT_EXTRA_FRAME_INFO</CODE> if it is defined; that is where you should
+use the <CODE>FP_REGNUM</CODE> value, if your frames are nonstandard.)
+
+<DT><CODE>FRAME_CHAIN</CODE>
+<DD>
+Given a GDB frame, determine the address of the calling function's
+frame.  This will be used to create a new GDB frame struct, and then
+<CODE>INIT_EXTRA_FRAME_INFO</CODE> and <CODE>INIT_FRAME_PC</CODE> will be called for
+the new frame.
+</DL>
+
+
+
+<H1><A NAME="SEC38" HREF="gdbint_toc.html#TOC38">Remote Stubs</A></H1>
+
+<P>
+GDB's file <TT>`remote.c'</TT> talks a serial protocol to code that runs
+in the target system.  GDB provides several sample "stubs" that can
+be integrated into target programs or operating systems for this purpose;
+they are named <TT>`*-stub.c'</TT>.
+
+</P>
+<P>
+The GDB user's manual describes how to put such a stub into your target
+code.  What follows is a discussion of integrating the SPARC stub
+into a complicated operating system (rather than a simple program),
+by Stu Grossman, the author of this stub.
+
+</P>
+<P>
+The trap handling code in the stub assumes the following upon entry to
+trap_low:
+
+</P>
+
+<OL>
+<LI>%l1 and %l2 contain pc and npc respectively at the time of the trap
+
+<LI>traps are disabled
+
+<LI>you are in the correct trap window
+
+</OL>
+
+<P>
+As long as your trap handler can guarantee those conditions, then there is no
+reason why you shouldn't be able to `share' traps with the stub.  The stub has
+no requirement that it be jumped to directly from the hardware trap vector.
+That is why it calls <CODE>exceptionHandler()</CODE>, which is provided by the external
+environment.  For instance, this could setup the hardware traps to actually
+execute code which calls the stub first, and then transfers to its own trap
+handler.
+
+</P>
+<P>
+For the most point, there probably won't be much of an issue with `sharing'
+traps, as the traps we use are usually not used by the kernel, and often
+indicate unrecoverable error conditions.  Anyway, this is all controlled by a
+table, and is trivial to modify.
+The most important trap for us is for <CODE>ta 1</CODE>.  Without that, we
+can't single step or do breakpoints.  Everything else is unnecessary
+for the proper operation of the debugger/stub.
+
+</P>
+<P>
+From reading the stub, it's probably not obvious how breakpoints work.  They
+are simply done by deposit/examine operations from GDB.
+
+</P>
+
+
+<H1><A NAME="SEC39" HREF="gdbint_toc.html#TOC39">Longjmp Support</A></H1>
+
+<P>
+GDB has support for figuring out that the target is doing a
+<CODE>longjmp</CODE> and for stopping at the target of the jump, if we are
+stepping.  This is done with a few specialized internal breakpoints,
+which are visible in the <CODE>maint info breakpoint</CODE> command.
+
+</P>
+<P>
+To make this work, you need to define a macro called
+<CODE>GET_LONGJMP_TARGET</CODE>, which will examine the <CODE>jmp_buf</CODE>
+structure and extract the longjmp target address.  Since <CODE>jmp_buf</CODE>
+is target specific, you will need to define it in the appropriate
+<TT>`tm-xxx.h'</TT> file.  Look in <TT>`tm-sun4os4.h'</TT> and
+<TT>`sparc-tdep.c'</TT> for examples of how to do this.
+
+</P>
+
+
+<H1><A NAME="SEC40" HREF="gdbint_toc.html#TOC40">Coding Style</A></H1>
+
+<P>
+GDB is generally written using the GNU coding standards, as described in
+<TT>`standards.texi'</TT>, which is available for anonymous FTP from GNU
+archive sites.  There are some additional considerations for GDB
+maintainers that reflect the unique environment and style of GDB
+maintenance.  If you follow these guidelines, GDB will be more
+consistent and easier to maintain.
+
+</P>
+<P>
+GDB's policy on the use of prototypes is that prototypes are used
+to <EM>declare</EM> functions but never to <EM>define</EM> them.  Simple
+macros are used in the declarations, so that a non-ANSI compiler can
+compile GDB without trouble.  The simple macro calls are used like
+this:
+
+</P>
+
+<PRE>
+extern int
+memory_remove_breakpoint PARAMS ((CORE_ADDR, char *));
+</PRE>
+
+<P>
+Note the double parentheses around the parameter types.  This allows
+an arbitrary number of parameters to be described, without freaking
+out the C preprocessor.  When the function has no parameters, it
+should be described like:
+
+</P>
+
+<PRE>
+void
+noprocess PARAMS ((void));
+</PRE>
+
+<P>
+The <CODE>PARAMS</CODE> macro expands to its argument in ANSI C, or to a simple
+<CODE>()</CODE> in traditional C.
+
+</P>
+<P>
+All external functions should have a <CODE>PARAMS</CODE> declaration in a
+header file that callers include.  All static functions should have such
+a declaration near the top of their source file.
+
+</P>
+<P>
+We don't have a gcc option that will properly check that these rules
+have been followed, but it's GDB policy, and we periodically check it
+using the tools available (plus manual labor), and clean up any remnants.
+
+</P>
+
+
+<H1><A NAME="SEC41" HREF="gdbint_toc.html#TOC41">Clean Design</A></H1>
+
+<P>
+In addition to getting the syntax right, there's the little question of
+semantics.  Some things are done in certain ways in GDB because long
+experience has shown that the more obvious ways caused various kinds of
+trouble.  In particular:
+
+</P>
+<DL COMPACT>
+
+<DT>*
+<DD>
+You can't assume the byte order of anything that comes from a
+target (including <VAR>value</VAR>s, object files, and instructions).  Such
+things must be byte-swapped using <CODE>SWAP_TARGET_AND_HOST</CODE> in GDB,
+or one of the swap routines defined in <TT>`bfd.h'</TT>, such as <CODE>bfd_get_32</CODE>.
+
+<DT>*
+<DD>
+You can't assume that you know what interface is being used to talk to
+the target system.  All references to the target must go through the
+current <CODE>target_ops</CODE> vector.
+
+<DT>*
+<DD>
+You can't assume that the host and target machines are the same machine
+(except in the "native" support modules).
+In particular, you can't assume that the target machine's header files
+will be available on the host machine.  Target code must bring along its
+own header files -- written from scratch or explicitly donated by their
+owner, to avoid copyright problems.
+
+<DT>*
+<DD>
+Insertion of new <CODE>#ifdef</CODE>'s will be frowned upon.  It's much better
+to write the code portably than to conditionalize it for various systems.
+
+<DT>*
+<DD>
+New <CODE>#ifdef</CODE>'s which test for specific compilers or manufacturers
+or operating systems are unacceptable.  All <CODE>#ifdef</CODE>'s should test
+for features.  The information about which configurations contain which
+features should be segregated into the configuration files.  Experience
+has proven far too often that a feature unique to one particular system
+often creeps into other systems; and that a conditional based on 
+some predefined macro for your current system will become worthless
+over time, as new versions of your system come out that behave differently
+with regard to this feature.
+
+<DT>*
+<DD>
+Adding code that handles specific architectures, operating systems, target
+interfaces, or hosts, is not acceptable in generic code.  If a hook
+is needed at that point, invent a generic hook and define it for your
+configuration, with something like:
+
+
+<PRE>
+#ifdef	WRANGLE_SIGNALS
+   WRANGLE_SIGNALS (signo);
+#endif
+</PRE>
+
+In your host, target, or native configuration file, as appropriate, 
+define <CODE>WRANGLE_SIGNALS</CODE> to do the machine-dependent thing.  Take
+a bit of care in defining the hook, so that it can be used by other
+ports in the future, if they need a hook in the same place.
+
+If the hook is not defined, the code should do whatever "most" machines
+want.  Using <CODE>#ifdef</CODE>, as above, is the preferred way to do this,
+but sometimes that gets convoluted, in which case use
+
+
+<PRE>
+#ifndef SPECIAL_FOO_HANDLING
+#define SPECIAL_FOO_HANDLING(pc, sp) (0)
+#endif
+</PRE>
+
+where the macro is used or in an appropriate header file.
+
+Whether to include a <STRONG>small</STRONG> hook, a hook around the exact pieces of
+code which are system-dependent, or whether to replace a whole function
+with a hook depends on the case.  A good example of this dilemma can be
+found in <CODE>get_saved_register</CODE>.  All machines that GDB 2.8 ran on
+just needed the <CODE>FRAME_FIND_SAVED_REGS</CODE> hook to find the saved
+registers.  Then the SPARC and Pyramid came along, and
+<CODE>HAVE_REGISTER_WINDOWS</CODE> and <CODE>REGISTER_IN_WINDOW_P</CODE> were
+introduced.  Then the 29k and 88k required the <CODE>GET_SAVED_REGISTER</CODE>
+hook.  The first three are examples of small hooks; the latter replaces
+a whole function.  In this specific case, it is useful to have both
+kinds; it would be a bad idea to replace all the uses of the small hooks
+with <CODE>GET_SAVED_REGISTER</CODE>, since that would result in much
+duplicated code.  Other times, duplicating a few lines of code here or
+there is much cleaner than introducing a large number of small hooks.
+
+Another way to generalize GDB along a particular interface is with an
+attribute struct.  For example, GDB has been generalized to handle
+multiple kinds of remote interfaces -- not by #ifdef's everywhere, but
+by defining the "target_ops" structure and having a current target (as
+well as a stack of targets below it, for memory references).  Whenever
+something needs to be done that depends on which remote interface we are
+using, a flag in the current target_ops structure is tested (e.g.
+`target_has_stack'), or a function is called through a pointer in the
+current target_ops structure.  In this way, when a new remote interface
+is added, only one module needs to be touched -- the one that actually
+implements the new remote interface.  Other examples of
+attribute-structs are BFD access to multiple kinds of object file
+formats, or GDB's access to multiple source languages.
+
+Please avoid duplicating code.  For example, in GDB 3.x all the code
+interfacing between <CODE>ptrace</CODE> and the rest of GDB was duplicated in
+<TT>`*-dep.c'</TT>, and so changing something was very painful.  In GDB 4.x,
+these have all been consolidated into <TT>`infptrace.c'</TT>.
+<TT>`infptrace.c'</TT> can deal with variations between systems the same way
+any system-independent file would (hooks, #if defined, etc.), and
+machines which are radically different don't need to use infptrace.c at
+all.
+
+<DT>*
+<DD>
+<EM>Do</EM> write code that doesn't depend on the sizes of C data types,
+the format of the host's floating point numbers, the alignment of anything,
+or the order of evaluation of expressions.  In short, follow good 
+programming practices for writing portable C code.
+
+</DL>
+
+
+
+<H1><A NAME="SEC42" HREF="gdbint_toc.html#TOC42">Submitting Patches</A></H1>
+
+<P>
+Thanks for thinking of offering your changes back to the community of
+GDB users.  In general we like to get well designed enhancements.
+Thanks also for checking in advance about the best way to transfer the
+changes.
+
+</P>
+<P>
+The two main problems with getting your patches in are,
+
+</P>
+<DL COMPACT>
+
+<DT>*
+<DD>
+The GDB maintainers will only install "cleanly designed" patches.
+You may not always agree on what is clean design.
+see section <A HREF="gdbint.html#SEC40">Coding Style</A>, see section <A HREF="gdbint.html#SEC41">Clean Design</A>.
+
+<DT>*
+<DD>
+If the maintainers don't have time to put the patch in when it
+arrives, or if there is any question about a patch, it
+goes into a large queue with everyone else's patches and
+bug reports.
+</DL>
+
+<P>
+I don't know how to get past these problems except by continuing to try.
+
+</P>
+<P>
+There are two issues here -- technical and legal.
+
+</P>
+<P>
+The legal issue is that to incorporate substantial changes requires a
+copyright assignment from you and/or your employer, granting ownership
+of the changes to the Free Software Foundation.  You can get the
+standard document for doing this by sending mail to
+<CODE>gnu@prep.ai.mit.edu</CODE> and asking for it.  I recommend that people
+write in "All programs owned by the Free Software Foundation" as "NAME
+OF PROGRAM", so that changes in many programs (not just GDB, but GAS,
+Emacs, GCC, etc) can be contributed with only one piece of legalese
+pushed through the bureacracy and filed with the FSF.  I can't start
+merging changes until this paperwork is received by the FSF (their
+rules, which I follow since I maintain it for them).
+
+</P>
+<P>
+Technically, the easiest way to receive changes is to receive each
+feature as a small context diff or unidiff, suitable for "patch".
+Each message sent to me should include the changes to C code and
+header files for a single feature, plus ChangeLog entries for each
+directory where files were modified, and diffs for any changes needed
+to the manuals (gdb/doc/gdb.texi or gdb/doc/gdbint.texi).  If there
+are a lot of changes for a single feature, they can be split down
+into multiple messages.
+
+</P>
+<P>
+In this way, if I read and like the feature, I can add it to the
+sources with a single patch command, do some testing, and check it in.
+If you leave out the ChangeLog, I have to write one.  If you leave
+out the doc, I have to puzzle out what needs documenting.  Etc.
+
+</P>
+<P>
+The reason to send each change in a separate message is that I will
+not install some of the changes.  They'll be returned to you with
+questions or comments.  If I'm doing my job, my message back to you
+will say what you have to fix in order to make the change acceptable.
+The reason to have separate messages for separate features is so
+that other changes (which I <EM>am</EM> willing to accept) can be installed
+while one or more changes are being reworked.  If multiple features
+are sent in a single message, I tend to not put in the effort to sort
+out the acceptable changes from the unacceptable, so none of the
+features get installed until all are acceptable.
+
+</P>
+<P>
+If this sounds painful or authoritarian, well, it is.  But I get a lot
+of bug reports and a lot of patches, and most of them don't get
+installed because I don't have the time to finish the job that the bug
+reporter or the contributor could have done.  Patches that arrive
+complete, working, and well designed, tend to get installed on the day
+they arrive.  The others go into a queue and get installed if and when
+I scan back over the queue -- which can literally take months
+sometimes.  It's in both our interests to make patch installation easy
+-- you get your changes installed, and I make some forward progress on
+GDB in a normal 12-hour day (instead of them having to wait until I
+have a 14-hour or 16-hour day to spend cleaning up patches before I
+can install them).
+
+</P>
+<P>
+Please send patches to <CODE>bug-gdb@prep.ai.mit.edu</CODE>, if they are less
+than about 25,000 characters.  If longer than that, either make them
+available somehow (e.g. anonymous FTP), and announce it on
+<CODE>bug-gdb</CODE>, or send them directly to the GDB maintainers at
+<CODE>gdb-patches@cygnus.com</CODE>.
+
+</P>
+
+
+<H1><A NAME="SEC43" HREF="gdbint_toc.html#TOC43">Host Conditionals</A></H1>
+
+<P>
+When GDB is configured and compiled, various macros are defined or left
+undefined, to control compilation based on the attributes of the host
+system.  These macros and their meanings (or if the meaning is not
+documented here, then one of the source files where they are used is
+indicated) are:
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>GDBINIT_FILENAME</CODE>
+<DD>
+The default name of GDB's initialization file (normally <TT>`.gdbinit'</TT>).
+
+<DT><CODE>MEM_FNS_DECLARED</CODE>
+<DD>
+Your host config file defines this if it includes 
+declarations of <CODE>memcpy</CODE> and <CODE>memset</CODE>.  Define this
+to avoid conflicts between the native include
+files and the declarations in <TT>`defs.h'</TT>.
+
+<DT><CODE>NO_SYS_FILE</CODE>
+<DD>
+Define this if your system does not have a <CODE>&#60;sys/file.h&#62;</CODE>.
+
+<DT><CODE>SIGWINCH_HANDLER</CODE>
+<DD>
+If your host defines <CODE>SIGWINCH</CODE>, you can define this to
+be the name of a function to be called if <CODE>SIGWINCH</CODE> is received.
+
+<DT><CODE>SIGWINCH_HANDLER_BODY</CODE>
+<DD>
+Define this to expand into code that will define the function
+named by the expansion of <CODE>SIGWINCH_HANDLER</CODE>.
+
+<DT><CODE>ALIGN_STACK_ON_STARTUP</CODE>
+<DD>
+Define this if your system is of a sort that will crash in <CODE>tgetent</CODE>
+if the stack happens not to be longword-aligned when <CODE>main</CODE> is
+called.  This is a rare situation, but is known to occur on several
+different types of systems.
+
+<DT><CODE>CRLF_SOURCE_FILES</CODE>
+<DD>
+Define this if host files use <CODE>\r\n</CODE> rather than <CODE>\n</CODE> as a
+line terminator.  This will cause source file listings to omit <CODE>\r</CODE>
+characters when printing.  It must be possible to open files in binary
+mode using <CODE>O_BINARY</CODE> or, for fopen, <CODE>"rb"</CODE>.
+
+<DT><CODE>DEFAULT_PROMPT</CODE>
+<DD>
+The default value of the prompt string (normally <CODE>"(gdb) "</CODE>).
+
+<DT><CODE>DEV_TTY</CODE>
+<DD>
+The name of the generic TTY device, defaults to <CODE>"/dev/tty"</CODE>.
+
+<DT><CODE>FCLOSE_PROVIDED</CODE>
+<DD>
+Define this if the system declares <CODE>fclose</CODE> in the headers included in
+<CODE>defs.h</CODE>.  This isn't needed unless your compiler is unusually anal.
+
+<DT><CODE>FOPEN_RB</CODE>
+<DD>
+Define this if binary files are opened the same way as text files.
+
+<DT><CODE>GETENV_PROVIDED</CODE>
+<DD>
+Define this if the system declares <CODE>getenv</CODE> in its headers included in
+<CODE>defs.h</CODE>. This isn't needed unless your compiler is unusually anal.
+
+<DT><CODE>HAVE_MMAP</CODE>
+<DD>
+In some cases, use the system call <CODE>mmap</CODE> for reading symbol
+tables.  For some machines this allows for sharing and quick updates.
+
+<DT><CODE>HAVE_SIGSETMASK</CODE>
+<DD>
+Define this if the host system has job control, but does not
+define <CODE>sigsetmask()</CODE>.
+Currently, this is only true of the RS/6000.
+
+<DT><CODE>HAVE_TERMIO</CODE>
+<DD>
+Define this if the host system has <CODE>termio.h</CODE>.
+
+<DT><CODE>HOST_BYTE_ORDER</CODE>
+<DD>
+The ordering of bytes in the host.
+This must be defined to be either <CODE>BIG_ENDIAN</CODE> or <CODE>LITTLE_ENDIAN</CODE>.
+
+<DT><CODE>INT_MAX</CODE>
+<DD>
+<DT><CODE>INT_MIN</CODE>
+<DD>
+<DT><CODE>LONG_MAX</CODE>
+<DD>
+<DT><CODE>UINT_MAX</CODE>
+<DD>
+<DT><CODE>ULONG_MAX</CODE>
+<DD>
+Values for host-side constants.
+
+<DT><CODE>ISATTY</CODE>
+<DD>
+Substitute for isatty, if not available.
+
+<DT><CODE>KERNEL_U_ADDR</CODE>
+<DD>
+Define this to the address of the <CODE>u</CODE> structure (the "user struct",
+also known as the "u-page") in kernel virtual memory.  GDB needs to know
+this so that it can subtract this address from absolute addresses in
+the upage, that are obtained via ptrace or from core files.  On systems
+that don't need this value, set it to zero.
+
+<DT><CODE>KERNEL_U_ADDR_BSD</CODE>
+<DD>
+Define this to cause GDB to determine the address of <CODE>u</CODE> at runtime,
+by using Berkeley-style <CODE>nlist</CODE> on the kernel's image in the root
+directory.
+
+<DT><CODE>KERNEL_U_ADDR_HPUX</CODE>
+<DD>
+Define this to cause GDB to determine the address of <CODE>u</CODE> at runtime,
+by using HP-style <CODE>nlist</CODE> on the kernel's image in the root
+directory.
+
+<DT><CODE>LONGEST</CODE>
+<DD>
+This is the longest integer type available on the host.
+If not defined, it will default to <CODE>long long</CODE> or <CODE>long</CODE>,
+depending on <CODE>CC_HAS_LONG_LONG</CODE>.
+
+<DT><CODE>CC_HAS_LONG_LONG</CODE>
+<DD>
+Define this if the host C compiler supports "long long".
+This is set by the configure script.
+
+<DT><CODE>PRINTF_HAS_LONG_LONG</CODE>
+<DD>
+Define this if the host can handle printing of long long integers via
+the printf format directive "ll". This is set by the configure script.
+
+<DT><CODE>HAVE_LONG_DOUBLE</CODE>
+<DD>
+Define this if the host C compiler supports "long double".
+This is set by the configure script.
+
+<DT><CODE>PRINTF_HAS_LONG_DOUBLE</CODE>
+<DD>
+Define this if the host can handle printing of long double float-point
+numbers via the printf format directive "Lg". This is set by the
+configure script.
+
+<DT><CODE>SCANF_HAS_LONG_DOUBLE</CODE>
+<DD>
+Define this if the host can handle the parsing of long double
+float-point numbers via the scanf format directive directive
+"Lg". This is set by the configure script.
+
+<DT><CODE>LSEEK_NOT_LINEAR</CODE>
+<DD>
+Define this if <CODE>lseek (n)</CODE> does not necessarily move to byte number
+<CODE>n</CODE> in the file.  This is only used when reading source files.  It
+is normally faster to define <CODE>CRLF_SOURCE_FILES</CODE> when possible.
+
+<DT><CODE>L_SET</CODE>
+<DD>
+This macro is used as the argument to lseek (or, most commonly, bfd_seek).
+FIXME, should be replaced by SEEK_SET instead, which is the POSIX equivalent.
+
+<DT><CODE>MAINTENANCE_CMDS</CODE>
+<DD>
+If the value of this is 1, then a number of optional maintenance commands
+are compiled in.
+
+<DT><CODE>MALLOC_INCOMPATIBLE</CODE>
+<DD>
+Define this if the system's prototype for <CODE>malloc</CODE> differs from the
+ANSI definition.
+
+<DT><CODE>MMAP_BASE_ADDRESS</CODE>
+<DD>
+When using HAVE_MMAP, the first mapping should go at this address.
+
+<DT><CODE>MMAP_INCREMENT</CODE>
+<DD>
+when using HAVE_MMAP, this is the increment between mappings.
+
+<DT><CODE>NEED_POSIX_SETPGID</CODE>
+<DD>
+Define this to use the POSIX version of <CODE>setpgid</CODE> to determine
+whether job control is available.
+
+<DT><CODE>NORETURN</CODE>
+<DD>
+If defined, this should be one or more tokens, such as <CODE>volatile</CODE>,
+that can be used in both the declaration and definition of functions
+to indicate that they never return.  The default is already set
+correctly if compiling with GCC. 
+This will almost never need to be defined.
+
+<DT><CODE>ATTR_NORETURN</CODE>
+<DD>
+If defined, this should be one or more tokens, such as
+<CODE>__attribute__ ((noreturn))</CODE>, that can be used in the declarations
+of functions to indicate that they never return.  The default is already
+set correctly if compiling with GCC.
+This will almost never need to be defined.
+
+<DT><CODE>USE_MMALLOC</CODE>
+<DD>
+GDB will use the <CODE>mmalloc</CODE> library for memory allocation for symbol
+reading if this symbol is defined.  Be careful defining it since there
+are systems on which <CODE>mmalloc</CODE> does not
+work for some reason.  One example is the DECstation, where its RPC
+library can't cope with our redefinition of <CODE>malloc</CODE> to call
+<CODE>mmalloc</CODE>.  When defining <CODE>USE_MMALLOC</CODE>, you will also have
+to set <CODE>MMALLOC</CODE> in the Makefile, to point to the mmalloc library.
+This define is set when you configure with --with-mmalloc.
+
+<DT><CODE>NO_MMCHECK</CODE>
+<DD>
+Define this if you are using <CODE>mmalloc</CODE>, but don't want the overhead
+of checking the heap with <CODE>mmcheck</CODE>.  Note that on some systems,
+the C runtime makes calls to malloc prior to calling <CODE>main</CODE>, and if
+<CODE>free</CODE> is ever called with these pointers after calling <CODE>mmcheck</CODE>
+to enable checking, a memory corruption abort is certain to occur.  These
+systems can still use mmalloc, but must define NO_MMCHECK.
+
+<DT><CODE>MMCHECK_FORCE</CODE>
+<DD>
+Define this to 1 if the C runtime allocates memory prior to <CODE>mmcheck</CODE>
+being called, but that memory is never freed so we don't have to worry
+about it triggering a memory corruption abort.  The default is 0, which
+means that <CODE>mmcheck</CODE> will only install the heap checking functions
+if there has not yet been any memory allocation calls, and if it fails
+to install the functions, gdb will issue a warning.  This is currently
+defined if you configure using --with-mmalloc.
+
+<DT><CODE>NO_SIGINTERRUPT</CODE>
+<DD>
+Define this to indicate that siginterrupt() is not available.
+
+<DT><CODE>R_OK</CODE>
+<DD>
+Define if this is not in a system .h file.
+
+<DT><CODE>SEEK_CUR</CODE>
+<DD>
+<DT><CODE>SEEK_SET</CODE>
+<DD>
+Define these to appropriate value for the system lseek(), if not
+already defined.
+
+<DT><CODE>STOP_SIGNAL</CODE>
+<DD>
+This is the signal for stopping GDB.  Defaults to SIGTSTP.
+(Only redefined for the Convex.)
+
+<DT><CODE>USE_O_NOCTTY</CODE>
+<DD>
+???
+
+<DT><CODE>USG</CODE>
+<DD>
+Means that System V (prior to SVR4) include files are in use.
+(FIXME:  This symbol is abused in <TT>`infrun.c'</TT>, <TT>`regex.c'</TT>,
+<TT>`remote-nindy.c'</TT>, and <TT>`utils.c'</TT> for other things, at the moment.)
+
+<DT><CODE>lint</CODE>
+<DD>
+Define this to help lint in some stupid way.
+
+<DT><CODE>volatile</CODE>
+<DD>
+Define this to override the defaults of <CODE>__volatile__</CODE> or <CODE>/**/</CODE>.
+
+</DL>
+
+<P>
+Platform-specific host conditionals.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>ALTOS_AS</CODE>
+<DD>
+xm-altos.h
+<DT><CODE>MOTOROLA</CODE>
+<DD>
+xm-altos.h
+<DT><CODE>NBPG</CODE>
+<DD>
+altos-xdep.c
+
+<DT><CODE>DELTA88</CODE>
+<DD>
+m88k-xdep.c
+<DT><CODE>DGUX</CODE>
+<DD>
+m88k-xdep.c
+
+<DT><CODE>F_OK</CODE>
+<DD>
+xm-ultra3.h
+
+<DT><CODE>UPAGES</CODE>
+<DD>
+altos-xdep.c
+
+</DL>
+
+<P>
+Regex conditionals.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>C_ALLOCA</CODE>
+<DD>
+regex.c
+<DT><CODE>NFAILURES</CODE>
+<DD>
+regex.c
+<DT><CODE>RE_NREGS</CODE>
+<DD>
+regex.h
+<DT><CODE>SIGN_EXTEND_CHAR</CODE>
+<DD>
+regex.c
+<DT><CODE>SWITCH_ENUM_BUG</CODE>
+<DD>
+regex.c
+<DT><CODE>SYNTAX_TABLE</CODE>
+<DD>
+regex.c
+<DT><CODE>Sword</CODE>
+<DD>
+regex.c
+<DT><CODE>sparc</CODE>
+<DD>
+regex.c
+
+</DL>
+
+
+
+<H1><A NAME="SEC44" HREF="gdbint_toc.html#TOC44">Target Conditionals</A></H1>
+
+<P>
+When GDB is configured and compiled, various macros are defined or left
+undefined, to control compilation based on the attributes of the target
+system.  These macros and their meanings are:
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>ADDITIONAL_OPTIONS</CODE>
+<DD>
+<DT><CODE>ADDITIONAL_OPTION_CASES</CODE>
+<DD>
+<DT><CODE>ADDITIONAL_OPTION_HANDLER</CODE>
+<DD>
+<DT><CODE>ADDITIONAL_OPTION_HELP</CODE>
+<DD>
+These are a set of macros that allow the addition of additional command
+line options to GDB.  They are currently used only for the unsupported
+i960 Nindy target, and should not be used in any other configuration.
+
+<DT><CODE>ADDR_BITS_REMOVE (addr)</CODE>
+<DD>
+If a raw machine address includes any bits that are not really part
+of the address, then define this macro to expand into an expression
+that zeros those bits in <VAR>addr</VAR>.  For example, the two low-order
+bits of a Motorola 88K address may be used by some kernels for their
+own purposes, since addresses must always be 4-byte aligned, and so
+are of no use for addressing.  Those bits should be filtered out with
+an expression such as <CODE>((addr) &#38; ~3)</CODE>.
+
+<DT><CODE>BEFORE_MAIN_LOOP_HOOK</CODE>
+<DD>
+Define this to expand into any code that you want to execute before
+the main loop starts.  Although this is not, strictly speaking,
+a target conditional, that is how it is currently being used.
+Note that if a configuration were to define it one way for a host
+and a different way for the target, GDB will probably not compile,
+let alone run correctly.
+
+<DT><CODE>BELIEVE_PCC_PROMOTION</CODE>
+<DD>
+coffread.c
+<DT><CODE>BELIEVE_PCC_PROMOTION_TYPE</CODE>
+<DD>
+stabsread.c
+
+<DT><CODE>BITS_BIG_ENDIAN</CODE>
+<DD>
+Define this if the numbering of bits in the targets does *not* match
+the endianness of the target byte order.
+A value of 1 means that the bits are numbered in a big-endian order,
+0 means little-endian.
+
+<DT><CODE>BREAKPOINT</CODE>
+<DD>
+This is the character array initializer for the bit pattern to put into
+memory where a breakpoint is set.  Although it's common to use a trap
+instruction for a breakpoint, it's not required; for instance, the bit
+pattern could be an invalid instruction.  The breakpoint must be no
+longer than the shortest instruction of the architecture.
+
+<DT><CODE>BIG_BREAKPOINT</CODE>
+<DD>
+<DT><CODE>LITTLE_BREAKPOINT</CODE>
+<DD>
+Similar to BREAKPOINT, but used for bi-endian targets.
+
+<DT><CODE>CALL_DUMMY</CODE>
+<DD>
+valops.c
+<DT><CODE>CALL_DUMMY_LOCATION</CODE>
+<DD>
+inferior.h
+<DT><CODE>CALL_DUMMY_STACK_ADJUST</CODE>
+<DD>
+valops.c
+
+<DT><CODE>CANNOT_FETCH_REGISTER (regno)</CODE>
+<DD>
+A C expression that should be nonzero if <VAR>regno</VAR> cannot be
+fetched from an inferior process.
+This is only relevant if <CODE>FETCH_INFERIOR_REGISTERS</CODE> is not
+defined.
+
+<DT><CODE>CANNOT_STORE_REGISTER (regno)</CODE>
+<DD>
+A C expression that should be nonzero if <VAR>regno</VAR> should not be
+written to the target.  This is often the case for program counters,
+status words, and other special registers.  If this is not defined,
+GDB will assume that all registers may be written.
+
+<DT><CODE>CHILL_PRODUCER</CODE>
+<DD>
+<DT><CODE>GCC_PRODUCER</CODE>
+<DD>
+<DT><CODE>GPLUS_PRODUCER</CODE>
+<DD>
+<DT><CODE>LCC_PRODUCER</CODE>
+<DD>
+If defined, these are the producer strings in a DWARF 1 file.  All of
+these have reasonable defaults already.
+
+<DT><CODE>DO_DEFERRED_STORES</CODE>
+<DD>
+<DT><CODE>CLEAR_DEFERRED_STORES</CODE>
+<DD>
+Define this to execute any deferred stores of registers into the inferior,
+and to cancel any deferred stores.
+
+Currently only implemented correctly for native Sparc configurations?
+
+<DT><CODE>CPLUS_MARKER</CODE>
+<DD>
+Define this to expand into the character that G++ uses to
+distinguish compiler-generated identifiers from programmer-specified
+identifiers.  By default, this expands into <CODE>'$'</CODE>.
+Most System V targets should define this to <CODE>'.'</CODE>.
+
+<DT><CODE>DBX_PARM_SYMBOL_CLASS</CODE>
+<DD>
+Hook for the <CODE>SYMBOL_CLASS</CODE> of a parameter when decoding DBX symbol
+information.  In the i960, parameters can be stored as locals or as
+args, depending on the type of the debug record.
+
+<DT><CODE>DECR_PC_AFTER_BREAK</CODE>
+<DD>
+Define this to be the amount by which to decrement the PC after
+the program encounters a breakpoint.
+This is often the number of bytes in BREAKPOINT, though not always.
+For most targets this value will be 0.
+
+<DT><CODE>DECR_PC_AFTER_HW_BREAK</CODE>
+<DD>
+Similarly, for hardware breakpoints.
+
+<DT><CODE>DISABLE_UNSETTABLE_BREAK addr</CODE>
+<DD>
+If defined, this should evaluate to 1 if <VAR>addr</VAR> is in a shared
+library in which breakpoints cannot be set and so should be disabled.
+Used by breakpoint.c.
+
+<DT><CODE>DO_REGISTERS_INFO</CODE>
+<DD>
+If defined, use this to print the value of a register or all registers.
+
+<DT><CODE>END_OF_TEXT_DEFAULT</CODE>
+<DD>
+This is an expression that should designate the end of the text section
+(? FIXME ?)
+
+<DT><CODE>EXTRACT_RETURN_VALUE</CODE>
+<DD>
+tm-m68k.h
+<DT><CODE>EXTRACT_STRUCT_VALUE_ADDRESS</CODE>
+<DD>
+values.c
+
+<DT><CODE>EXTRA_FRAME_INFO</CODE>
+<DD>
+If defined, this must be a list of slots that may be inserted into
+the <CODE>frame_info</CODE> structure defined in <CODE>frame.h</CODE>.
+
+<DT><CODE>EXTRA_SYMTAB_INFO</CODE>
+<DD>
+If defined, this must be a list of slots that may be inserted into
+the <CODE>symtab</CODE> structure defined in <CODE>symtab.h</CODE>.
+
+<DT><CODE>FLOAT_INFO</CODE>
+<DD>
+If defined, then the `info float' command will print information about
+the processor's floating point unit.
+
+<DT><CODE>FP_REGNUM</CODE>
+<DD>
+The number of the frame pointer register.
+
+<DT><CODE>FRAMELESS_FUNCTION_INVOCATION</CODE>
+<DD>
+blockframe.c
+<DT><CODE>FRAME_ARGS_ADDRESS_CORRECT</CODE>
+<DD>
+stack.c
+
+<DT><CODE>FRAME_CHAIN</CODE>
+<DD>
+Given FRAME, return a pointer to the calling frame.
+
+<DT><CODE>FRAME_CHAIN_COMBINE</CODE>
+<DD>
+blockframe.c
+<DT><CODE>FRAME_CHAIN_VALID</CODE>
+<DD>
+frame.h
+<DT><CODE>FRAME_CHAIN_VALID_ALTERNATE</CODE>
+<DD>
+frame.h
+<DT><CODE>FRAME_FIND_SAVED_REGS</CODE>
+<DD>
+stack.c
+
+<DT><CODE>FRAME_NUM_ARGS (val, fi)</CODE>
+<DD>
+For the frame described by fi, set val to the number of arguments
+that are being passed.
+
+<DT><CODE>FRAME_SPECIFICATION_DYADIC</CODE>
+<DD>
+stack.c
+
+<DT><CODE>FRAME_SAVED_PC</CODE>
+<DD>
+Given FRAME, return the pc saved there.  That is, the return address.
+
+<DT><CODE>FUNCTION_EPILOGUE_SIZE</CODE>
+<DD>
+For some COFF targets, the <CODE>x_sym.x_misc.x_fsize</CODE> field of the
+function end symbol is 0.  For such targets, you must define
+<CODE>FUNCTION_EPILOGUE_SIZE</CODE> to expand into the standard size
+of a function's epilogue.
+
+<DT><CODE>GCC_COMPILED_FLAG_SYMBOL</CODE>
+<DD>
+<DT><CODE>GCC2_COMPILED_FLAG_SYMBOL</CODE>
+<DD>
+If defined, these are the names of the symbols that GDB will look for to
+detect that GCC compiled the file.  The default symbols are
+<CODE>gcc_compiled.</CODE> and <CODE>gcc2_compiled.</CODE>, respectively. (Currently
+only defined for the Delta 68.)
+
+<DT><CODE>GDB_TARGET_IS_HPPA</CODE>
+<DD>
+This determines whether horrible kludge code in dbxread.c and partial-stab.h
+is used to mangle multiple-symbol-table files from HPPA's.  This should all
+be ripped out, and a scheme like elfread.c used.
+
+<DT><CODE>GDB_TARGET_IS_MACH386</CODE>
+<DD>
+mach386-xdep.c
+<DT><CODE>GDB_TARGET_IS_SUN3</CODE>
+<DD>
+a68v-xdep.c
+<DT><CODE>GDB_TARGET_IS_SUN386</CODE>
+<DD>
+sun386-xdep.c
+
+<DT><CODE>GET_LONGJMP_TARGET</CODE>
+<DD>
+For most machines, this is a target-dependent parameter.  On the DECstation
+and the Iris, this is a native-dependent parameter, since &#60;setjmp.h&#62; is
+needed to define it.
+
+This macro determines the target PC address that longjmp() will jump
+to, assuming that we have just stopped at a longjmp breakpoint.  It
+takes a CORE_ADDR * as argument, and stores the target PC value through
+this pointer.  It examines the current state of the machine as needed.
+
+<DT><CODE>GET_SAVED_REGISTER</CODE>
+<DD>
+Define this if you need to supply your own definition for the
+function <CODE>get_saved_register</CODE>.
+Currently this is only done for the a29k.
+
+<DT><CODE>GR64_REGNUM</CODE>
+<DD>
+Very a29k-specific.
+
+<DT><CODE>HAVE_REGISTER_WINDOWS</CODE>
+<DD>
+Define this if the target has register windows.
+<DT><CODE>REGISTER_IN_WINDOW_P regnum</CODE>
+<DD>
+Define this to be an expression that is 1 is the given register is
+in the window.
+
+<DT><CODE>IBM6000_TARGET</CODE>
+<DD>
+Shows that we are configured for an IBM RS/6000 target.  This conditional
+should be eliminated (FIXME) and replaced by feature-specific macros.
+It was introduced in haste and we are repenting at leisure.
+
+<DT><CODE>IEEE_FLOAT</CODE>
+<DD>
+Define this if the target system uses IEEE-format floating point numbers.
+
+<DT><CODE>IGNORE_SYMBOL type</CODE>
+<DD>
+This seems to be no longer used.
+
+<DT><CODE>INIT_EXTRA_FRAME_INFO (fromleaf, fci)</CODE>
+<DD>
+If defined, this should be a C expression or statement that fills
+in the <CODE>EXTRA_FRAME_INFO</CODE> slots of the given frame <VAR>fci</VAR>.
+
+<DT><CODE>INIT_EXTRA_SYMTAB_INFO</CODE>
+<DD>
+symfile.c
+
+<DT><CODE>INIT_FRAME_PC (fromleaf, prev)</CODE>
+<DD>
+This is a C statement that sets the pc of the frame pointed
+to by <VAR>prev</VAR>.  [By default...]
+
+<DT><CODE>INNER_THAN</CODE>
+<DD>
+Define this to be either <CODE>&#60;</CODE> if the target's stack grows
+downward in memory, or <CODE>&#62;</CODE> is the stack grows upwards.
+
+<DT><CODE>IN_SIGTRAMP (pc name)</CODE>
+<DD>
+Define this to return true if the given pc and/or name indicates
+that the current function is a sigtramp.
+
+<DT><CODE>SIGTRAMP_START (pc)</CODE>
+<DD>
+<DT><CODE>SIGTRAMP_END (pc)</CODE>
+<DD>
+Define these to be the start and end address of the sigtramp for the given pc.
+On machines where the address is just a compile time constant, the macro
+expansion will typically just ignore the supplied pc.
+
+<DT><CODE>IN_SOLIB_TRAMPOLINE pc name</CODE>
+<DD>
+Define this to evaluate to nonzero if the program is stopped in
+the trampoline that connects to a shared library.
+
+<DT><CODE>IS_TRAPPED_INTERNALVAR name</CODE>
+<DD>
+This is an ugly hook to allow the specification of special actions
+that should occur as a side-effect of setting the value of a variable
+internal to GDB.  Currently only used by the h8500.
+Note that this could be either a host or target conditional.
+
+<DT><CODE>KERNEL_DEBUGGING</CODE>
+<DD>
+tm-ultra3.h
+<DT><CODE>MIPSEL</CODE>
+<DD>
+mips-tdep.c
+
+<DT><CODE>NEED_TEXT_START_END</CODE>
+<DD>
+Define this if GDB should determine the start and end addresses
+of the text section.  (Seems dubious.)
+
+<DT><CODE>KERNEL_DEBUGGING</CODE>
+<DD>
+<DT><CODE>NO_HIF_SUPPORT</CODE>
+<DD>
+(Specific to the a29k.)
+
+<DT><CODE>NO_SINGLE_STEP</CODE>
+<DD>
+Define this if the target does not support single-stepping.  If this is
+defined, you must supply, in <CODE>*-tdep.c</CODE>, the function
+<CODE>single_step</CODE>, which takes a target_signal as argument and returns
+nothing.  It must insert breakpoints at each possible destinations of
+the next instruction.  See <CODE>sparc-tdep.c</CODE> and <CODE>rs6000-tdep.c</CODE>
+for examples.
+
+<DT><CODE>PCC_SOL_BROKEN</CODE>
+<DD>
+(Used only in the Convex target.)
+
+<DT><CODE>PC_IN_CALL_DUMMY</CODE>
+<DD>
+inferior.h
+
+<DT><CODE>PC_LOAD_SEGMENT</CODE>
+<DD>
+If defined, print information about the load segment for the program
+counter.  (Defined only for the RS/6000.)
+
+<DT><CODE>PC_REGNUM</CODE>
+<DD>
+If the program counter is kept in a register, then define this macro
+to be the number of that register.
+This need be defined only if <CODE>TARGET_WRITE_PC</CODE> is not defined.
+
+<DT><CODE>NPC_REGNUM</CODE>
+<DD>
+The number of the "next program counter" register, if defined.
+
+<DT><CODE>NNPC_REGNUM</CODE>
+<DD>
+The number of the "next next program counter" register, if defined.
+Currently, this is only defined for the Motorola 88K.
+
+<DT><CODE>PRINT_REGISTER_HOOK (regno)</CODE>
+<DD>
+If defined, this must be a function that prints the contents of the
+given register to standard output.
+
+<DT><CODE>PRINT_TYPELESS_INTEGER</CODE>
+<DD>
+This is an obscure substitute for <CODE>print_longest</CODE> that
+seems to have been defined for the Convex target.
+
+<DT><CODE>PROCESS_LINENUMBER_HOOK</CODE>
+<DD>
+A hook defined for XCOFF reading.
+
+<DT><CODE>PROLOGUE_FIRSTLINE_OVERLAP</CODE>
+<DD>
+(Only used in unsupported Convex configuration.)
+
+<DT><CODE>PS_REGNUM</CODE>
+<DD>
+If defined, this is the number of the processor status register.
+(This definition is only used in generic code when parsing "$ps".)
+
+<DT><CODE>POP_FRAME</CODE>
+<DD>
+Used in <SAMP>`call_function_by_hand'</SAMP> to remove an artificial stack frame.
+
+<DT><CODE>PUSH_ARGUMENTS (nargs, args, sp, struct_return, struct_addr)</CODE>
+<DD>
+Define this to push arguments onto the stack for inferior function call.
+
+<DT><CODE>PUSH_DUMMY_FRAME</CODE>
+<DD>
+Used in <SAMP>`call_function_by_hand'</SAMP> to create an artificial stack frame.
+
+<DT><CODE>REGISTER_BYTES</CODE>
+<DD>
+The total amount of space needed to store GDB's copy of the machine's
+register state.
+
+<DT><CODE>REGISTER_NAMES</CODE>
+<DD>
+Define this to expand into an initializer of an array of strings.
+Each string is the name of a register.
+[more detail]
+
+<DT><CODE>REG_STRUCT_HAS_ADDR (gcc_p, type)</CODE>
+<DD>
+Define this to return 1 if the given type will be passed by pointer
+rather than directly.
+
+<DT><CODE>SDB_REG_TO_REGNUM</CODE>
+<DD>
+Define this to convert sdb register numbers
+into GDB regnums.  If not defined, no conversion will be done.
+
+<DT><CODE>SHIFT_INST_REGS</CODE>
+<DD>
+(Only used for m88k targets.)
+
+<DT><CODE>SKIP_PROLOGUE</CODE>
+<DD>
+A C statement that advances the PC across any function entry
+prologue instructions so as to reach "real" code.
+
+<DT><CODE>SKIP_PROLOGUE_FRAMELESS_P</CODE>
+<DD>
+A C statement that should behave similarly, but that can stop
+as soon as the function is known to have a frame.
+If not defined, <CODE>SKIP_PROLOGUE</CODE> will be used instead.
+
+<DT><CODE>SKIP_TRAMPOLINE_CODE (pc)</CODE>
+<DD>
+If the target machine has trampoline code that sits between callers
+and the functions being called, then define this macro to return
+a new PC that is at the start of the real function.
+
+<DT><CODE>SP_REGNUM</CODE>
+<DD>
+Define this to be the number of the register that serves as the
+stack pointer.
+
+<DT><CODE>STAB_REG_TO_REGNUM</CODE>
+<DD>
+Define this to convert stab register numbers (as gotten from `r' declarations)
+into GDB regnums.  If not defined, no conversion will be done.
+
+<DT><CODE>STACK_ALIGN (addr)</CODE>
+<DD>
+Define this to adjust the address to the alignment required for the
+processor's stack.
+
+<DT><CODE>STEP_SKIPS_DELAY (addr)</CODE>
+<DD>
+Define this to return true if the address is of an instruction with a
+delay slot.  If a breakpoint has been placed in the instruction's delay
+slot, GDB will single-step over that instruction before resuming
+normally.  Currently only defined for the Mips.
+
+<DT><CODE>STORE_RETURN_VALUE (type, valbuf)</CODE>
+<DD>
+A C expression that stores a function return value of type <VAR>type</VAR>,
+where <VAR>valbuf</VAR> is the address of the value to be stored.
+
+<DT><CODE>SUN_FIXED_LBRAC_BUG</CODE>
+<DD>
+(Used only for Sun-3 and Sun-4 targets.)
+
+<DT><CODE>SYMBOL_RELOADING_DEFAULT</CODE>
+<DD>
+The default value of the `symbol-reloading' variable.
+(Never defined in current sources.)
+
+<DT><CODE>TARGET_BYTE_ORDER</CODE>
+<DD>
+The ordering of bytes in the target.
+This must be defined to be either <CODE>BIG_ENDIAN</CODE> or <CODE>LITTLE_ENDIAN</CODE>.
+
+<DT><CODE>TARGET_CHAR_BIT</CODE>
+<DD>
+Number of bits in a char; defaults to 8.
+
+<DT><CODE>TARGET_COMPLEX_BIT</CODE>
+<DD>
+Number of bits in a complex number; defaults to <CODE>2 * TARGET_FLOAT_BIT</CODE>.
+
+<DT><CODE>TARGET_DOUBLE_BIT</CODE>
+<DD>
+Number of bits in a double float; defaults to <CODE>8 * TARGET_CHAR_BIT</CODE>.
+
+<DT><CODE>TARGET_DOUBLE_COMPLEX_BIT</CODE>
+<DD>
+Number of bits in a double complex; defaults to <CODE>2 * TARGET_DOUBLE_BIT</CODE>.
+
+<DT><CODE>TARGET_FLOAT_BIT</CODE>
+<DD>
+Number of bits in a float; defaults to <CODE>4 * TARGET_CHAR_BIT</CODE>.
+
+<DT><CODE>TARGET_INT_BIT</CODE>
+<DD>
+Number of bits in an integer; defaults to <CODE>4 * TARGET_CHAR_BIT</CODE>.
+
+<DT><CODE>TARGET_LONG_BIT</CODE>
+<DD>
+Number of bits in a long integer; defaults to <CODE>4 * TARGET_CHAR_BIT</CODE>.
+
+<DT><CODE>TARGET_LONG_DOUBLE_BIT</CODE>
+<DD>
+Number of bits in a long double float;
+defaults to <CODE>2 * TARGET_DOUBLE_BIT</CODE>.
+
+<DT><CODE>TARGET_LONG_LONG_BIT</CODE>
+<DD>
+Number of bits in a long long integer; defaults to <CODE>2 * TARGET_LONG_BIT</CODE>.
+
+<DT><CODE>TARGET_PTR_BIT</CODE>
+<DD>
+Number of bits in a pointer; defaults to <CODE>TARGET_INT_BIT</CODE>.
+
+<DT><CODE>TARGET_SHORT_BIT</CODE>
+<DD>
+Number of bits in a short integer; defaults to <CODE>2 * TARGET_CHAR_BIT</CODE>.
+
+<DT><CODE>TARGET_READ_PC</CODE>
+<DD>
+<DT><CODE>TARGET_WRITE_PC (val, pid)</CODE>
+<DD>
+<DT><CODE>TARGET_READ_SP</CODE>
+<DD>
+<DT><CODE>TARGET_WRITE_SP</CODE>
+<DD>
+<DT><CODE>TARGET_READ_FP</CODE>
+<DD>
+<DT><CODE>TARGET_WRITE_FP</CODE>
+<DD>
+These change the behavior of <CODE>read_pc</CODE>, <CODE>write_pc</CODE>,
+<CODE>read_sp</CODE>, <CODE>write_sp</CODE>, <CODE>read_fp</CODE> and <CODE>write_fp</CODE>.
+For most targets, these may be left undefined.  GDB will call the
+read and write register functions with the relevant <CODE>_REGNUM</CODE> argument.
+
+These macros are useful when a target keeps one of these registers in a
+hard to get at place;  for example, part in a segment register and part
+in an ordinary register.
+
+<DT><CODE>USE_STRUCT_CONVENTION (gcc_p, type)</CODE>
+<DD>
+If defined, this must be an expression that is nonzero if a value
+of the given <VAR>type</VAR> being returned from a function must have
+space allocated for it on the stack.  <VAR>gcc_p</VAR> is true if the
+function being considered is known to have been compiled by GCC;
+this is helpful for systems where GCC is known to use different calling
+convention than other compilers.
+
+<DT><CODE>VARIABLES_INSIDE_BLOCK (desc, gcc_p)</CODE>
+<DD>
+For dbx-style debugging information, if the compiler puts variable
+declarations inside LBRAC/RBRAC blocks, this should be defined
+to be nonzero.  <VAR>desc</VAR> is the value of <CODE>n_desc</CODE> from the
+<CODE>N_RBRAC</CODE> symbol, and <VAR>gcc_p</VAR> is true if GDB has noticed
+the presence of either the <CODE>GCC_COMPILED_SYMBOL</CODE> or the
+<CODE>GCC2_COMPILED_SYMBOL</CODE>.
+By default, this is 0.
+
+<DT><CODE>OS9K_VARIABLES_INSIDE_BLOCK (desc, gcc_p)</CODE>
+<DD>
+Similarly, for OS/9000.  Defaults to 1.
+
+<DT><CODE>WRS_ORIG</CODE>
+<DD>
+remote-vx.c
+
+<DT><CODE>test</CODE>
+<DD>
+(Define this to enable testing code in regex.c.)
+
+</DL>
+
+<P>
+Motorola M68K target conditionals.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>BPT_VECTOR</CODE>
+<DD>
+Define this to be the 4-bit location of the breakpoint trap vector.
+If not defined, it will default to <CODE>0xf</CODE>.
+
+<DT><CODE>REMOTE_BPT_VECTOR</CODE>
+<DD>
+Defaults to <CODE>1</CODE>.
+
+</DL>
+
+
+
+<H1><A NAME="SEC45" HREF="gdbint_toc.html#TOC45">Native Conditionals</A></H1>
+
+<P>
+When GDB is configured and compiled, various macros are defined or left
+undefined, to control compilation when the host and target systems
+are the same.  These macros should be defined (or left undefined)
+in <TT>`nm-<VAR>system</VAR>.h'</TT>.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>ATTACH_DETACH</CODE>
+<DD>
+If defined, then GDB will include support for the <CODE>attach</CODE> and
+<CODE>detach</CODE> commands.  Defines <CODE>attach</CODE> and <CODE>detach</CODE> in
+<TT>`infptrace.c'</TT>, enables <CODE>child_attach</CODE> and <CODE>child_detach</CODE>
+in <TT>`inftarg.c'</TT> (normally these files are just stubs).
+
+<DT><CODE>ATTACH_NO_WAIT</CODE>
+<DD>
+If set, prevents the <CODE>attach</CODE> command from waiting for an exception 
+from the attached process before returning to command-level.
+
+<DT><CODE>CHILD_PREPARE_TO_STORE</CODE>
+<DD>
+If the machine stores all registers at once in the child process,
+then define this to ensure that all values are correct.
+This usually entails a read from the child.
+
+[Note that this is incorrectly defined in <TT>`xm-<VAR>system</VAR>.h'</TT>
+files currently.]
+
+<DT><CODE>FETCH_INFERIOR_REGISTERS</CODE>
+<DD>
+Define this if the native-dependent code will provide its
+own routines
+<CODE>fetch_inferior_registers</CODE> and <CODE>store_inferior_registers</CODE> in
+<TT>`<VAR>HOST</VAR>-nat.c'</TT>.
+If this symbol is <EM>not</EM> defined, and <TT>`infptrace.c'</TT>
+is included in this configuration, the default routines in
+<TT>`infptrace.c'</TT> are used for these functions.
+
+<DT><CODE>FILES_INFO_HOOK</CODE>
+<DD>
+(Only defined for Convex.)
+
+<DT><CODE>FP0_REGNUM</CODE>
+<DD>
+This macro is normally defined to be the number of the first floating
+point register, if the machine has such registers.  As such, it would
+appear only in target-specific code.  However, /proc support uses this
+to decide whether floats are in use on this target.
+
+<DT><CODE>GET_LONGJMP_TARGET</CODE>
+<DD>
+For most machines, this is a target-dependent parameter.  On the DECstation
+and the Iris, this is a native-dependent parameter, since &#60;setjmp.h&#62; is
+needed to define it.
+
+This macro determines the target PC address that longjmp() will jump
+to, assuming that we have just stopped at a longjmp breakpoint.  It
+takes a CORE_ADDR * as argument, and stores the target PC value through
+this pointer.  It examines the current state of the machine as needed.
+
+<DT><CODE>ONE_PROCESS_WRITETEXT</CODE>
+<DD>
+Define this to be able to, when a breakpoint insertion fails, warn the
+user that another process may be running with the same executable.
+
+<DT><CODE>PROC_NAME_FMT</CODE>
+<DD>
+Defines the format for the name of a <TT>`/proc'</TT> device.  Should be
+defined in <TT>`nm.h'</TT> <EM>only</EM> in order to override the default
+definition in <TT>`procfs.c'</TT>.
+
+<DT><CODE>PTRACE_FP_BUG</CODE>
+<DD>
+mach386-xdep.c
+
+<DT><CODE>PTRACE_ARG3_TYPE</CODE>
+<DD>
+The type of the third argument to the <CODE>ptrace</CODE> system call, if it exists
+and is different from <CODE>int</CODE>.
+
+<DT><CODE>REGISTER_U_ADDR</CODE>
+<DD>
+Defines the offset of the registers in the "u area"; see section <A HREF="gdbint.html#SEC23">Adding a New Host</A>.
+
+<DT><CODE>SHELL_COMMAND_CONCAT</CODE>
+<DD>
+If defined, is a string to prefix on the shell command used to start
+the inferior.
+
+<DT><CODE>SHELL_FILE</CODE>
+<DD>
+If defined, this is the name of the shell to use to run the inferior.
+Defaults to <CODE>"/bin/sh"</CODE>.
+
+<DT><CODE>SOLIB_ADD (filename, from_tty, targ)</CODE>
+<DD>
+Define this to expand into an expression that will cause the symbols
+in <VAR>filename</VAR> to be added to GDB's symbol table.
+
+<DT><CODE>SOLIB_CREATE_INFERIOR_HOOK</CODE>
+<DD>
+Define this to expand into any shared-library-relocation code
+that you want to be run just after the child process has been forked.
+
+<DT><CODE>START_INFERIOR_TRAPS_EXPECTED</CODE>
+<DD>
+When starting an inferior, GDB normally expects to trap twice;
+once when the shell execs, and once when the program itself execs.
+If the actual number of traps is something other than 2, then
+define this macro to expand into the number expected.
+
+<DT><CODE>SVR4_SHARED_LIBS</CODE>
+<DD>
+Define this to indicate that SVR4-style shared libraries are in use.
+
+<DT><CODE>USE_PROC_FS</CODE>
+<DD>
+This determines whether small routines in <TT>`*-tdep.c'</TT>, which
+translate register values
+between GDB's internal representation and the /proc representation,
+are compiled.
+
+<DT><CODE>U_REGS_OFFSET</CODE>
+<DD>
+This is the offset of the registers in the upage.  It need only be
+defined if the generic ptrace register access routines in
+<TT>`infptrace.c'</TT> are being used (that is,
+<TT>`infptrace.c'</TT> is configured in, and
+<CODE>FETCH_INFERIOR_REGISTERS</CODE> is not defined).  If the default value
+from <TT>`infptrace.c'</TT> is good enough, leave it undefined.
+
+The default value means that u.u_ar0 <EM>points to</EM> the location of the
+registers.  I'm guessing that <CODE>#define U_REGS_OFFSET 0</CODE> means that
+u.u_ar0 <EM>is</EM> the location of the registers.
+
+<DT><CODE>CLEAR_SOLIB</CODE>
+<DD>
+objfiles.c
+
+<DT><CODE>DEBUG_PTRACE</CODE>
+<DD>
+Define this to debug ptrace calls.
+
+</DL>
+
+
+
+<H1><A NAME="SEC46" HREF="gdbint_toc.html#TOC46">Obsolete Conditionals</A></H1>
+
+<P>
+Fragments of old code in GDB sometimes reference or set the following
+configuration macros.  They should not be used by new code, and
+old uses should be removed as those parts of the debugger are 
+otherwise touched.
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>STACK_END_ADDR</CODE>
+<DD>
+This macro used to define where the end of the stack appeared, for use
+in interpreting core file formats that don't record this address in the
+core file itself.  This information is now configured in BFD, and GDB
+gets the info portably from there.  The values in GDB's configuration
+files should be moved into BFD configuration files (if needed there),
+and deleted from all of GDB's config files.
+
+Any <TT>`<VAR>foo</VAR>-xdep.c'</TT> file that references STACK_END_ADDR
+is so old that it has never been converted to use BFD.  Now that's old!
+
+<DT><CODE>PYRAMID_CONTROL_FRAME_DEBUGGING</CODE>
+<DD>
+pyr-xdep.c
+<DT><CODE>PYRAMID_CORE</CODE>
+<DD>
+pyr-xdep.c
+<DT><CODE>PYRAMID_PTRACE</CODE>
+<DD>
+pyr-xdep.c
+
+<DT><CODE>REG_STACK_SEGMENT</CODE>
+<DD>
+exec.c
+
+</DL>
+
+
+
+<H1><A NAME="SEC47" HREF="gdbint_toc.html#TOC47">The XCOFF Object File Format</A></H1>
+
+<P>
+The IBM RS/6000 running AIX uses an object file format called xcoff.
+The COFF sections, symbols, and line numbers are used, but debugging
+symbols are dbx-style stabs whose strings are located in the
+<SAMP>`.debug'</SAMP> section (rather than the string table).  For more
+information, See section `Top' in <CITE>The Stabs Debugging Format</CITE>, and search
+for XCOFF.
+
+</P>
+<P>
+The shared library scheme has a nice clean interface for figuring out
+what shared libraries are in use, but the catch is that everything which
+refers to addresses (symbol tables and breakpoints at least) needs to be
+relocated for both shared libraries and the main executable.  At least
+using the standard mechanism this can only be done once the program has
+been run (or the core file has been read).
+
+</P>
+<P><HR><P>
+This document was generated on 23 August 1998 using the
+<A HREF="http://wwwcn.cern.ch/dci/texi2html/">texi2html</A>
+translator version 1.51.</P>
+</BODY>
+</HTML>

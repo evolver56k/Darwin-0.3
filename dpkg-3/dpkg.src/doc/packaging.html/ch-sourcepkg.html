@@ -1,0 +1,699 @@
+<html><head>
+<title>Debian packaging manual - Source packages</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 3<br>
+Source packages
+</h1>
+
+The Debian binary packages in the distribution are generated from
+Debian sources, which are in a special format to assist the easy and
+automatic building of binaries.<P>
+
+There was a previous version of the Debian source format, which is now
+being phased out.  Instructions for converting an old-style package
+are given in the Debian policy manual.
+<hr>
+<h2><A name="s-sourcetools">
+3.1 Tools for processing source packages
+</A></h2>
+
+Various tools are provided for manipulating source packages; they pack
+and unpack sources and help build of binary packages and help manage
+the distribution of new versions.<P>
+
+They are introduced and typical uses described here; see <code>dpkg-source(1)</code> for full documentation about their
+arguments and operation.<P>
+
+For examples of how to construct a Debian source package, and how to
+use those utilities that are used by Debian source packages, please
+see the <kbd>hello</kbd> example package.
+<hr>
+<h3><A name="s3.1.1">
+3.1.1 <kbd>dpkg-source</kbd> - packs and unpacks Debian source packages
+</A></h3>
+
+This program is frequently used by hand, and is also called from
+package-independent automated building scripts such as
+<kbd>dpkg-buildpackage</kbd>.<P>
+
+To unpack a package it is typically invoked with
+<pre>dpkg-source -x <var>.../path/to/filename</var>.dsc</pre>
+with the <code></code><var>filename</var><code>.tar.gz</code> and
+<code></code><var>filename</var><code>.diff.gz</code> (if applicable) in the same directory.  It
+unpacks into <code></code><var>package</var><code>-</code><var>version</var><code></code>, and if applicable
+<code></code><var>package</var><code>-</code><var>version</var><code>.orig</code>, in the current directory.<P>
+
+To create a packed source archive it is typically invoked:
+<pre>dpkg-source -b <var>package</var>-<var>version</var></pre>
+This will create the <code>.dsc</code>, <code>.tar.gz</code> and <code>.diff.gz</code> (if
+appropriate) in the current directory.  <kbd>dpkg-source</kbd> does not
+clean the source tree first - this must be done separately if it is
+required.<P>
+
+See also <A href="#s-sourcearchives">Source packages as archives, section 3.3</A>.
+
+<hr>
+<h3><A name="s3.1.2">
+3.1.2 <kbd>dpkg-buildpackage</kbd> - overall package-building control
+script
+</A></h3>
+
+<kbd>dpkg-buildpackage</kbd> is a script which invokes <kbd>dpkg-source</kbd>,
+the <code>debian/rules</code> targets <kbd>clean</kbd>, <kbd>build</kbd> and
+<kbd>binary</kbd>, <kbd>dpkg-genchanges</kbd> and <kbd>pgp</kbd> to build a signed
+source and binary package upload.<P>
+
+It is usually invoked by hand from the top level of the built or
+unbuilt source directory.  It may be invoked with no arguments; useful
+arguments include:
+<dl compact>
+<dt><code>-uc</code>, <code>-us</code><dd>Do not PGP-sign the <code>.changes</code> file or the source package
+<code>.dsc</code> file, respectively.
+<dt><code>-p</code><var>pgp-command</var><code></code><dd>Invoke <var>pgp-command</var> instead of finding <code>pgp</code> on the
+<kbd>PATH</kbd>.  <var>pgp-command</var> must behave just like <kbd>pgp</kbd>.
+<dt><code>-r</code><var>root-command</var><code></code><dd>When root privilege is required, invoke the command
+<var>root-command</var>.  <var>root-command</var> should invoke its first
+argument as a command, from the <kbd>PATH</kbd> if necessary, and pass its
+second and subsequent arguments to the command it calls.  If no
+<var>root-command</var> is supplied then <var>dpkg-buildpackage</var> will take
+no special action to gain root privilege, so that for most packages it
+will have to be invoked as root to start with.
+<dt><code>-b</code>, <code>-B</code><dd>Two types of binary-only build and upload - see <code>dpkg-source(1)</code>.</dl>
+
+
+<hr>
+<h3><A name="s3.1.3">
+3.1.3 <kbd>dpkg-gencontrol</kbd> - generates binary package control files
+</A></h3>
+
+This program is usually called from <code>debian/rules</code> (see <A href="#s-sourcetree">The Debianised source tree, section 3.2</A>) in the top level of the source tree.<P>
+
+This is usually done just before the files and directories in the
+temporary directory tree where the package is being built have their
+permissions and ownerships set and the package is constructed using
+<kbd>dpkg-deb</kbd><A href="footnotes.html#4" name="fr4">[4]</A>.<P>
+
+<kbd>dpkg-gencontrol</kbd> must be called after all the files which are to
+go into the package have been placed in the temporary build directory,
+so that its calculation of the installed size of a package is correct.<P>
+
+It is also necessary for <kbd>dpkg-gencontrol</kbd> to be run after
+<kbd>dpkg-shlibdeps</kbd> so that the variable substitutions created by
+<kbd>dpkg-shlibdeps</kbd> in <code>debian/substvars</code> are available.<P>
+
+For a package which generates only one binary package, and which
+builds it in <code>debian/tmp</code> relative to the top of the source
+package, it is usually sufficient to call:
+<pre>dpkg-gencontrol</pre><P>
+
+Sources which build several binaries will typically need something
+like:
+<pre>dpkg-gencontrol -Pdebian/tmp-<var>pkg</var> -p<var>package</var></pre>
+The <code>-P</code> tells <kbd>dpkg-gencontrol</kbd> that the package is being
+built in a non-default directory, and the <code>-p</code> tells it which
+package's control file should be generated.<P>
+
+<kbd>dpkg-gencontrol</kbd> also adds information to the list of files in
+<code>debian/files</code>, for the benefit of (for example) a future
+invocation of <kbd>dpkg-genchanges</kbd>.
+
+<hr>
+<h3><A name="s3.1.4">
+3.1.4 <kbd>dpkg-shlibdeps</kbd> - calculates shared library dependencies
+</A></h3>
+
+This program is usually called from <code>debian/rules</code> just before
+<kbd>dpkg-gencontrol</kbd> (see <A href="#s-sourcetree">The Debianised source tree, section 3.2</A>), in the top level
+of the source tree.<P>
+
+Its arguments are executables<A href="footnotes.html#5" name="fr5">[5]</A> for which shared library
+dependencies should be included in the binary package's control file.<P>
+
+If some of the executable(s) shared libraries should only warrant a
+<code>Recommends</code> or <code>Suggests</code>, or if some warrant a
+<code>Pre-Depends</code>, this can be achieved by using the
+<code>-d</code><var>dependency-field</var><code></code> option before those executable(s).
+(Each <code>-d</code> option takes effect until the next <code>-d</code>.)<P>
+
+<kbd>dpkg-shlibdeps</kbd> does not directly cause the output control file
+to be modified.  Instead by default it adds to the
+<code>debian/substvars</code> file variable settings like
+<code>shlibs:Depends</code>.  These variable settings must be referenced in
+dependency fields in the appropriate per-binary-package sections of
+the source control file.<P>
+
+For example, the <kbd>procps</kbd> package generates two kinds of
+binaries, simple C binaries like <kbd>ps</kbd> which require a
+predependency and full-screen ncurses binaries like <kbd>top</kbd> which
+require only a recommendation.  It can say in its <code>debian/rules</code>:
+<pre>dpkg-shlibdeps -dPre-Depends ps -dRecommends top</pre>
+and then in its main control file <code>debian/control</code>:
+<pre><var>...</var>
+Package: procps
+Pre-Depends: ${shlibs:Pre-Depends}
+Recommends: ${shlibs:Recommends}
+<var>...</var></pre><P>
+
+Sources which produce several binary packages with different shared
+library dependency requirements can use the <code>-p</code><var>varnameprefix</var><code></code>
+option to override the default <code>shlib:</code> prefix (one invocation of
+<kbd>dpkg-shlibdeps</kbd> per setting of this option).  They can thus
+produce several sets of dependency variables, each of the form
+<code></code><var>varnameprefix</var><code>:</code><var>dependencyfield</var><code></code>, which can be referred
+to in the appropriate parts of the binary package control files.
+
+<hr>
+<h3><A name="s3.1.5">
+3.1.5 <kbd>dpkg-distaddfile</kbd> - adds a file to <code>debian/files</code>
+</A></h3>
+
+Some packages' uploads need to include files other than the source and
+binary package files.<P>
+
+<kbd>dpkg-distaddfile</kbd> adds a file to the <code>debian/files</code> file so
+that it will be included in the <code>.changes</code> file when
+<kbd>dpkg-genchanges</kbd> is run.<P>
+
+It is usually invoked from the <kbd>binary</kbd> target of
+<code>debian/rules</code>:
+<pre>dpkg-distaddfile <var>filename</var> <var>section</var> <var>priority</var></pre>
+The <var>filename</var> is relative to the directory where
+<kbd>dpkg-genchanges</kbd> will expect to find it - this is usually the
+directory above the top level of the source tree.  The
+<code>debian/rules</code> target should put the file there just before or
+just after calling <kbd>dpkg-distaddfile</kbd>.<P>
+
+The <var>section</var> and <var>priority</var> are passed unchanged into the
+resulting <code>.changes</code> file.  See <A href="ch-controlfields.html#s-f-classification"><code>Section</code> and <code>Priority</code>, subsection 4.2.9</A>.
+
+<hr>
+<h3><A name="s3.1.6">
+3.1.6 <kbd>dpkg-genchanges</kbd> - generates a <code>.changes</code> upload
+control file
+</A></h3>
+
+This program is usually called by package-independent automatic
+building scripts such as <kbd>dpkg-buildpackage</kbd>, but it may also be
+called by hand.<P>
+
+It is usually called in the top level of a built source tree, and when
+invoked with no arguments will print out a straightforward
+<code>.changes</code> file based on the information in the source package's
+changelog and control file and the binary and source packages which
+should have been built.
+
+<hr>
+<h3><A name="s3.1.7">
+3.1.7 <kbd>dpkg-parsechangelog</kbd> - produces parsed representation of
+a changelog
+</A></h3>
+
+This program is used internally by <kbd>dpkg-source</kbd> et al.  It may
+also occasionally be useful in <code>debian/rules</code> and elsewhere.  It
+parses a changelog, <code>debian/changelog</code> by default, and prints a
+control-file format representation of the information in it to
+standard output.
+<hr>
+<h2><A name="s-sourcetree">
+3.2 The Debianised source tree
+</A></h2>
+
+The source archive scheme described later is intended to allow a
+Debianised source tree with some associated control information to be
+reproduced and transported easily.  The Debianised source tree is a
+version of the original program with certain files added for the
+benefit of the Debianisation process, and with any other changes
+required made to the rest of the source code and installation scripts.<P>
+
+The extra files created for Debian are in the subdirectory <code>debian</code>
+of the top level of the Debianised source tree.  They are described
+below.
+<hr>
+<h3><A name="s3.2.1">
+3.2.1 <code>debian/rules</code> - the main building script
+</A></h3>
+
+This file is an executable makefile, and contains the package-specific
+recipies for compiling the package and building binary package(s) out
+of the source.<P>
+
+It must start with the line <code>#!/usr/bin/make -f</code>, so that it
+can be invoked by saying its name rather than invoking <kbd>make</kbd>
+explicitly.<P>
+
+The targets which are required to be present are:
+
+<dl>
+<dt><code>build</code><dd>This should perform all non-interactive configuration and compilation
+of the package.  If a package has an interactive pre-build
+configuration routine, the Debianised source package should be built
+after this has taken place, so that it can be built without rerunning
+the configuration.<P>
+
+For some packages, notably ones where the same source tree is compiled
+in different ways to produce two binary packages, the <kbd>build</kbd>
+target does not make much sense.  For these packages it is good enough
+to provide two (or more) targets (<code>build-a</code> and <code>build-b</code> or
+whatever) for each of the ways of building the package, and a
+<kbd>build</kbd> target that does nothing.  The <kbd>binary</kbd> target will have
+to build the package in each of the possible ways and make the binary
+package out of each.<P>
+
+The <kbd>build</kbd> target must not do anything that might require root
+privilege.<P>
+
+The <kbd>build</kbd> target may need to run <kbd>clean</kbd> first - see below.<P>
+
+When a package has a configuration routine that takes a long time, or
+when the makefiles are poorly designed, or when <kbd>build</kbd> needs to
+run <kbd>clean</kbd> first, it is a good idea to <code>touch build</code> when the
+build process is complete.  This will ensure that if <code>debian/rules
+build</code> is run again it will not rebuild the whole program.
+<p><dt><code>binary</code>, <code>binary-arch</code>, <code>binary-indep</code><dd>The <kbd>binary</kbd> target should be all that is necessary for the user
+to build the binary package.  It is split into two parts:
+<kbd>binary-arch</kbd> builds the packages' output files which are
+specific to a particular architecture, and <kbd>binary-indep</kbd>
+builds those which are not.<P>
+
+<kbd>binary</kbd> should usually be a target with no commands which simply
+depends on <kbd>binary-arch</kbd> and <kbd>binary-indep</kbd>.<P>
+
+Both <kbd>binary-*</kbd> targets should depend on the <kbd>build</kbd> target,
+above, so that the package is built if it has not been already.  It
+should then create the relevant binary package(s), using
+<kbd>dpkg-gencontrol</kbd> to make their control files and <kbd>dpkg-deb</kbd>
+to build them and place them in the parent of the top level directory.<P>
+
+If one of the <kbd>binary-*</kbd> targets has nothing to do (this will be
+always be the case if the source generates only a single binary
+package, whether architecture-dependent or not) it <em>must</em> still
+exist, but should always succeed.<P>
+
+<A href="ch-binarypkg.html">Binary packages, chapter 2</A> describes how to construct binary packages.<P>
+
+The <kbd>binary</kbd> targets must be invoked as root.
+<p><dt><code>clean</code><dd>This should undo any effects that the <kbd>build</kbd> and <kbd>binary</kbd>
+targets may have had, except that it should leave alone any output
+files created in the parent directory by a run of <kbd>binary</kbd>.<P>
+
+If a <kbd>build</kbd> file is touched at the end of the <kbd>build</kbd> target,
+as suggested above, it must be removed as the first thing that
+<kbd>clean</kbd> does, so that running <kbd>build</kbd> again after an interrupted
+<kbd>clean</kbd> doesn't think that everything is already done.<P>
+
+The <kbd>clean</kbd> target must be invoked as root if <kbd>binary</kbd> has
+been invoked since the last <kbd>clean</kbd>, or if <kbd>build</kbd> has been
+invoked as root (since <kbd>build</kbd> may create directories, for
+example).
+<p><dt><code>get-orig-source</code> (optional)<dd>This target fetches the most recent version of the original source
+package from a canonical archive site (via FTP or WWW, for example),
+does any necessary rearrangement to turn it into the original source
+tarfile format described below, and leaves it in the current directory.<P>
+
+This target may be invoked in any directory, and should take care to
+clean up any temporary files it may have left.<P>
+
+This target is optional, but providing it if possible is a good idea.
+<p></dl>
+
+
+The <kbd>build</kbd>, <kbd>binary</kbd> and <kbd>clean</kbd> targets must be
+invoked with a current directory of the package's top-level
+directory.
+<P>
+
+Additional targets may exist in <code>debian/rules</code>, either as
+published or undocumented interfaces or for the package's internal
+use.
+
+<hr>
+<h3><A name="s3.2.2">
+3.2.2 <code>debian/control</code>
+</A></h3>
+
+This file contains version-independent details about the source
+package and about the binary packages it creates.<P>
+
+It is a series of sets of control fields, each syntactically similar
+to a binary package control file.  The sets are separated by one or
+more blank lines.  The first set is information about the source
+package in general; each subsequent set describes one binary package
+that the source tree builds.<P>
+
+The syntax and semantics of the fields are described below in
+<A href="ch-controlfields.html">Control files and their fields, chapter 4</A>.<P>
+
+The general (binary-package-independent) fields are:
+<ul compact>
+<li><A href="ch-controlfields.html#s-f-Source"><code>Source</code></A> (mandatory)<li><A href="ch-controlfields.html#s-f-Maintainer"><code>Maintainer</code></A><li><A href="ch-controlfields.html#s-f-classification"><code>Section</code> and <code>Priority</code></A>
+(classification, mandatory)<li><A href="ch-controlfields.html#s-f-Standards-Version"><code>Standards-Version</code></A></ul>
+<P>
+
+The per-binary-package fields are:
+<ul compact>
+<li><A href="ch-controlfields.html#s-f-Package"><code>Package</code></A> (mandatory)<li><A href="ch-controlfields.html#s-f-Architecture"><code>Architecture</code></A> (mandatory)<li><A href="ch-descriptions.html"><code>Description</code></A><li><A href="ch-controlfields.html#s-f-classification"><code>Section</code> and <code>Priority</code></A> (classification)<li><A href="ch-controlfields.html#s-f-Essential"><code>Essential</code></A><li><A href="ch-relationships.html"><code>Depends</code> et al.</A> (package interrelationships)</ul>
+<P>
+
+These fields are used by <kbd>dpkg-gencontrol</kbd> to generate control
+files for binary packages (see below), by <kbd>dpkg-genchanges</kbd> to
+generate the <code>.changes</code> file to accompany the upload, and by
+<kbd>dpkg-source</kbd> when it creates the <code>.dsc</code> source control file as
+part of a source archive.<P>
+
+The fields here may contain variable references - their values will be
+substituted by <kbd>dpkg-gencontrol</kbd>, <kbd>dpkg-genchanges</kbd> or
+<kbd>dpkg-source</kbd> when they generate output control files.  See <A href="#s-srcsubstvars"><code>debian/substvars</code> and variable substitutions, subsection 3.2.4</A> for details.<P>
+<hr>
+<h4><A name="s3.2.2.1">
+3.2.2.1 User-defined fields
+</A></h4>
+
+Additional user-defined fields may be added to the source package
+control file.  Such fields will be ignored, and not copied to (for
+example) binary or source package control files or upload control
+files.<P>
+
+If you wish to add additional unsupported fields to these output files
+you should use the mechanism described here.<P>
+
+Fields in the main source control information file with names starting
+<code>X</code>, followed by one or more of the letters <code>BCS</code> and a hyphen
+<code>-</code>, will be copied to the output files.  Only the part of the
+field name after the hyphen will be used in the output file.  Where
+the letter <code>B</code> is used the field will appear in binary package
+control files, where the letter <code>S</code> is used in source package
+control files and where <code>C</code> is used in upload control
+(<code>.changes</code>) files.<P>
+
+For example, if the main source information control file contains the
+field
+<pre>XBS-Comment: I stand between the candle and the star.</pre>
+then the binary and source package control files will contain the
+field
+<pre>Comment: I stand between the candle and the star.</pre>
+<hr>
+<h3><A name="s-dpkgchangelog">
+3.2.3 <code>debian/changelog</code>
+</A></h3>
+
+This file records the changes to the Debian-specific parts of the
+package<A href="footnotes.html#6" name="fr6">[6]</A>.<P>
+
+It has a special format which allows the package building tools to
+discover which version of the package is being built and find out
+other release-specific information.<P>
+
+That format is a series of entries like this:<P>
+<pre><var>package</var> (<var>version</var>) <var>distribution(s)</var>; urgency=<var>urgency</var>
+
+  * <var>change details</var>
+    <var>more change details</var>
+  * <var>even more change details</var>
+
+ -- <var>maintainer name and email address</var>  <var>date</var></pre><P>
+
+<var>package</var> and <var>version</var> are the source package name and
+version number. <P>
+ 
+<var>distribution(s)</var> lists the distributions where
+this version should be installed when it is uploaded - it is copied to
+the <code>Distribution</code> field in the <code>.changes</code> file.  See <A href="ch-controlfields.html#s-f-Distribution"><code>Distribution</code>, subsection 4.2.14</A>.<P>
+
+<var>urgency</var> is the value for the <code>Urgency</code> field in the
+<code>.changes</code> file for the upload.  See <A href="ch-controlfields.html#s-f-Urgency"><code>Urgency</code>, subsection 4.2.15</A>.  It is
+not possible to specify an urgency containing commas; commas are used
+to separate <code></code><var>keyword</var><code>=</code><var>value</var><code></code> settings in the <kbd>dpkg</kbd>
+changelog format (though there is currently only one useful
+<var>keyword</var>, <code>urgency</code>).<P>
+
+The change details may in fact be any series of lines starting with at
+least two spaces, but conventionally each change starts with an
+asterisk and a separating space and continuation lines are indented so
+as to bring them in line with the start of the text above.  Blank
+lines may be used here to separate groups of changes, if desired.<P>
+
+The maintainer name and email address should <em>not</em> necessarily be
+those of the usual package maintainer.  They should be the details of
+the person doing <em>this</em> version.  The information here will be
+copied to the <code>.changes</code> file, and then later used to send an
+acknowledgement when the upload has been installed.<P>
+
+The <var>date</var> should be in RFC822 format<A href="footnotes.html#7" name="fr7">[7]</A>; it should include the
+timezone specified numerically, with the timezone name or abbreviation
+optionally present as a comment.<P>
+
+The first `title' line with the package name should start at the left
+hand margin; the `trailer' line with the maintainer and date details
+should be preceded by exactly one space.  The maintainer details and
+the date must be separated by exactly two spaces.<P>
+
+An Emacs mode for editing this format is available: it is called
+<code>debian-changelog-mode</code>.  You can have this mode selected
+automatically when you edit a Debian changelog by adding a local
+variables clause to the end of the changelog.
+<hr>
+<h4><A name="s3.2.3.1">
+3.2.3.1 Defining alternative changelog formats
+</A></h4>
+
+It is possible to use a different format to the standard one, by
+providing a parser for the format you wish to use.<P>
+
+In order to have <code>dpkg-parsechangelog</code> run your parser, you must
+include a line within the last 40 lines of your file matching the Perl
+regular expression:
+<code>\schangelog-format:\s+([0-9a-z]+)\W</code>
+The part in parentheses should be the name of the format.  For
+example, you might say:
+<pre>@@@ changelog-format: joebloggs @@@</pre>
+Changelog format names are non-empty strings of alphanumerics.<P>
+
+If such a line exists then <code>dpkg-parsechangelog</code> will look for the
+parser as <code>/usr/lib/dpkg/parsechangelog/</code><var>format-name</var><code></code> or
+<code>/usr/local/lib/dpkg/parsechangelog/</code><var>format-name</var><code></code>; it is an
+error for it not to find it, or for it not to be an executable
+program.  The default changelog format is <code>dpkg</code>, and a parser for
+it is provided with the <code>dpkg</code> package.<P>
+
+The parser will be invoked with the changelog open on standard input
+at the start of the file.  It should read the file (it may seek if it
+wishes) to determine the information required and return the parsed
+information to standard output in the form of a series of control
+fields in the standard format.  By default it should return
+information about only the most recent version in the changelog; it
+should accept a <code>-v</code><var>version</var><code></code> option to return changes
+information from all versions present <em>strictly after</em>
+<var>version</var>, and it should then be an error for <var>version</var> not to
+be present in the changelog.<P>
+
+The fields are:
+<ul compact>
+<li><A href="ch-controlfields.html#s-f-Source"><code>Source</code></A><li><A href="ch-versions.html"><code>Version</code></A> (mandatory)<li><A href="ch-controlfields.html#s-f-Distribution"><code>Distribution</code></A> (mandatory)<li><A href="ch-controlfields.html#s-f-Urgency"><code>Urgency</code></A> (mandatory)<li><A href="ch-controlfields.html#s-f-Maintainer"><code>Maintainer</code></A> (mandatory)<li><A href="ch-controlfields.html#s-f-Date"><code>Date</code></A><li><A href="ch-controlfields.html#s-f-Changes"><code>Changes</code></A> (mandatory)</ul>
+<P>
+
+If several versions are being returned (due to the use of <code>-v</code>),
+the urgency value should be of the highest urgency code listed at the
+start of any of the versions requested followed by the concatenated
+(space-separated) comments from all the versions requested; the
+maintainer, version, distribution and date should always be from the
+most recent version.<P>
+
+For the format of the <code>Changes</code> field see <A href="ch-controlfields.html#s-f-Changes"><code>Changes</code>, subsection 4.2.18</A>.<P>
+
+If the changelog format which is being parsed always or almost always
+leaves a blank line between individual change notes these blank lines
+should be stripped out, so as to make the resulting output compact.<P>
+
+If the changelog format does not contain date or package name
+information this information should be omitted from the output.  The
+parser should not attempt to synthesise it or find it from other
+sources.<P>
+
+If the changelog does not have the expected format the parser should
+exit with a nonzero exit status, rather than trying to muddle through
+and possibly generating incorrect output.<P>
+
+A changelog parser may not interact with the user at all.
+<hr>
+<h3><A name="s-srcsubstvars">
+3.2.4 <code>debian/substvars</code> and variable substitutions
+</A></h3>
+
+When <kbd>dpkg-gencontrol</kbd>, <kbd>dpkg-genchanges</kbd> and
+<kbd>dpkg-source</kbd> generate control files they do variable
+substitutions on their output just before writing it.  Variable
+substitutions have the form <code>${</code><var>variable-name</var><code>}</code>.  The optional
+file <code>debian/substvars</code> contains variable substitutions to be
+used; variables can also be set directly from <code>debian/rules</code>
+using the <code>-V</code> option to the source packaging commands, and certain
+predefined variables are available.<P>
+
+The is usually generated and modified dynamically by
+<code>debian/rules</code> targets; in this case it must be removed by the
+<kbd>clean</kbd> target.<P>
+
+
+
+See <code>dpkg-source(1)</code> for full details about source
+variable substitutions, including the format of
+<code>debian/substvars</code>.
+<hr>
+<h3><A name="s3.2.5">
+3.2.5 <code>debian/files</code>
+</A></h3>
+
+This file is not a permanent part of the source tree; it is used while
+building packages to record which files are being generated.
+<kbd>dpkg-genchanges</kbd> uses it when it generates a <code>.changes</code> file.<P>
+
+It should not exist in a shipped source package, and so it (and any
+backup files or temporary files such as
+<code>files.new</code><A href="footnotes.html#8" name="fr8">[8]</A>) should be removed by the
+<kbd>clean</kbd> target.  It may also be wise to ensure a fresh start by
+emptying or removing it at the start of the <kbd>binary</kbd> target.<P>
+
+<kbd>dpkg-gencontrol</kbd> adds an entry to this file for the <code>.deb</code>
+file that will be created by <kbd>dpkg-deb</kbd> from the control file
+that it generates, so for most packages all that needs to be done with
+this file is to delete it in <kbd>clean</kbd>.<P>
+
+If a package upload includes files besides the source package and any
+binary packages whose control files were made with
+<kbd>dpkg-gencontrol</kbd> then they should be placed in the parent of the
+package's top-level directory and <kbd>dpkg-distaddfile</kbd> should be
+called to add the file to the list in <code>debian/files</code>.
+<hr>
+<h3><A name="s3.2.6">
+3.2.6 <code>debian/tmp</code>
+</A></h3>
+
+This is the canonical temporary location for the construction of
+binary packages by the <kbd>binary</kbd> target.  The directory <code>tmp</code>
+serves as the root of the filesystem tree as it is being constructed
+(for example, by using the package's upstream makefiles install
+targets and redirecting the output there), and it also contains the
+<code>DEBIAN</code> subdirectory.  See <A href="ch-binarypkg.html#s-bincreating">Creating package files - <kbd>dpkg-deb</kbd>, section 2.1</A>.<P>
+
+If several binary packages are generated from the same source tree it
+is usual to use several <code>debian/tmp</code><var>something</var><code></code> directories,
+for example <code>tmp-a</code> or <code>tmp-doc</code>.<P>
+
+Whatever <code>tmp</code> directories are created and used by <kbd>binary</kbd>
+must of course be removed by the <kbd>clean</kbd> target.
+
+<hr>
+<h2><A name="s-sourcearchives">
+3.3 Source packages as archives
+</A></h2>
+
+As it exists on the FTP site, a Debian source package consists of
+three related files.  You must have the right versions of all three to
+be able to use them.<P>
+
+<dl>
+<dt>Debian source control file - <code>.dsc</code><dd>This file contains a series of fields, identified and separated just
+like the fields in the control file of a binary package.  The fields
+are listed below; their syntax is described above, in
+<A href="ch-controlfields.html">Control files and their fields, chapter 4</A>.
+<ul compact>
+<li><A href="ch-controlfields.html#s-f-Source"><code>Source</code></A><li><A href="ch-versions.html"><code>Version</code></A><li><A href="ch-controlfields.html#s-f-Maintainer"><code>Maintainer</code></A><li><A href="ch-controlfields.html#s-f-Binary"><code>Binary</code></A><li><A href="ch-controlfields.html#s-f-Architecture"><code>Architecture</code></A><li><A href="ch-controlfields.html#s-f-Standards-Version"><code>Standards-Version</code></A><li><A href="ch-controlfields.html#s-f-Files"><code>Files</code></A></ul>
+<P>
+
+The source package control file is generated by <kbd>dpkg-source</kbd>
+when it builds the source archive, from other files in the source
+package, described above.  When unpacking it is checked against the
+files and directories in the other parts of the source package, as
+described below.
+<dt>Original source archive - <code></code><var>package</var><code>_</code><var>upstream-version</var><code>.orig.tar.gz</code><dd>This is a compressed (with <code>gzip -9</code>) <kbd>tar</kbd> file containing
+the source code from the upstream authors of the program.  The tarfile
+unpacks into a directory
+<code></code><var>package</var><code>-</code><var>upstream-version</var><code>.orig</code>, and does not contain
+files anywhere other than in there or in its subdirectories.
+<dt>Debianisation diff - <code></code><var>package</var><code>_</code><var>upstream_version-revision</var><code>.diff.gz</code><dd>This is a unified context diff (<code>diff -u</code>) giving the changes which
+are required to turn the original source into the Debian source.
+These changes may only include editing and creating plain files.  The
+permissions of files, the targets of symbolic links and the
+characteristics of special files or pipes may not be changed and no
+files may be removed or renamed.<P>
+
+All the directories in the diff must exist, except the <code>debian</code>
+subdirectory of the top of the source tree, which will be created by
+<kbd>dpkg-source</kbd> if necessary when unpacking.<P>
+
+The <kbd>dpkg-source</kbd> program will automatically make the
+<code>debian/rules</code> file executable (see below).
+</dl>
+<P>
+
+If there is no original source code - for example, if the package is
+specially prepared for Debian or the Debian maintainer is the same as
+the upstream maintainer - the format is slightly different: then there
+is no diff, and the tarfile is named
+<code></code><var>package</var><code>_</code><var>version</var><code>.tar.gz</code> and contains a directory
+<code></code><var>package</var><code>-</code><var>version</var><code></code>.
+<hr>
+<h2><A name="s3.4">
+3.4 Unpacking a Debian source package without <kbd>dpkg-source</kbd>
+</A></h2>
+
+<code>dpkg-source -x</code> is the recommended way to unpack a Debian source
+package.  However, if it is not available it is possible to unpack a
+Debian source archive as follows:
+
+<ol compact>
+<li>Untar the tarfile, which will create a <code>.orig</code> directory.<li>Rename the <code>.orig</code> directory to
+<code></code><var>package</var><code>-</code><var>version</var><code></code>.<li>Create the subdirectory <code>debian</code> at the top of the source
+tree.<li>Apply the diff using <code>patch -p0</code>.<li>Untar the tarfile again if you want a copy of the original
+source code alongside the Debianised version.</ol>
+<P>
+
+It is not possible to generate a valid Debian source archive without
+using <kbd>dpkg-source</kbd>.  In particular, attempting to use
+<kbd>diff</kbd> directly to generate the <code>.diff.gz</code> file will not work.
+<hr>
+<h3><A name="s3.4.1">
+3.4.1 Restrictions on objects in source packages
+</A></h3>
+
+The source package may not contain any hard links<A href="footnotes.html#9" name="fr9">[9]</A><A href="footnotes.html#10" name="fr10">[10]</A>, device special files, sockets or setuid or setgid
+files.<A href="footnotes.html#11" name="fr11">[11]</A><P>
+
+The source packaging tools manage the changes between the original and
+Debianised source using <kbd>diff</kbd> and <kbd>patch</kbd>.  Turning the
+original source tree as included in the <code>.orig.tar.gz</code> into the
+debianised source must not involve any changes which cannot be handled
+by these tools.  Problematic changes which cause <kbd>dpkg-source</kbd> to
+halt with an error when building the source package are:
+<ul compact>
+<li>Adding or removing symbolic links, sockets or pipes.<li>Changing the targets of symbolic links.<li>Creating directories, other than <code>debian</code>.<li>Changes to the contents of binary files.</ul>
+
+Changes which cause <kbd>dpkg-source</kbd> to print a warning but continue
+anyway are:
+<ul compact>
+<li>Removing files, directories or symlinks.  <A href="footnotes.html#12" name="fr12">[12]</A><li>Changed text files which are missing the usual final newline
+(either in the original or the modified source tree).</ul>
+
+Changes which are not represented, but which are not detected by
+<kbd>dpkg-source</kbd>, are:
+<ul compact>
+<li>Changing the permissions of files (other than
+<code>debian/rules</code>) and directories.</ul>
+<P>
+
+The <code>debian</code> directory and <code>debian/rules</code> are handled
+specially by <kbd>dpkg-source</kbd> - before applying the changes it will
+create the <code>debian</code> directory, and afterwards it will make
+<code>debian/rules</code> world-exectuable.
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-controlfields.html">next</A>; <A href="ch-binarypkg.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

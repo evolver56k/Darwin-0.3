@@ -1,0 +1,50 @@
+/APPLE_LICENSE/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+/Makefile/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+/Makefile.include/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+/Makefile.postamble/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+/Makefile.preamble/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+/PB.project/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+/README.rtf/1.1.1.1/Sun May  2 04:21:16 1999/-kb/Tsystem_cmds-2
+D/ac.tproj////
+D/accton.tproj////
+D/arch.tproj////
+D/at.tproj////
+D/atrun.tproj////
+D/chkpasswd.tproj////
+D/chpass.tproj////
+D/cron.tproj////
+D/dmesg.tproj////
+D/dpkg////
+D/fastboot.tproj////
+D/fbalert.tproj////
+D/fbshow.tproj////
+D/getty.tproj////
+D/halt.tproj////
+D/hostinfo.tproj////
+D/init.tproj////
+D/iostat.tproj////
+D/kdump.tproj////
+D/kgmon.tproj////
+D/ktrace.tproj////
+D/kvm_mkdb.tproj////
+D/login.tproj////
+D/mach_init.tproj////
+D/mach_swapon.tproj////
+D/makekey.tproj////
+D/mkfile.tproj////
+D/nologin.tproj////
+D/nvram.tproj////
+D/pagesize.tproj////
+D/passwd.tproj////
+D/pwd_mkdb.tproj////
+D/reboot.tproj////
+D/shutdown.tproj////
+D/swapon.tproj////
+D/sync.tproj////
+D/sysctl.tproj////
+D/update.tproj////
+D/vipw.tproj////
+D/vm_stat.tproj////
+D/zdump.tproj////
+D/zic.tproj////
+D/zprint.tproj////

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+PWD=`pwd`
+CMP=~tamura2/secondary_loader/ppcMac
+
+for DIR in libsa libsaio rcz sarld
+do
+    cd $PWD
+    cd $DIR
+
+    for FILE in `ls *.c *.h *.s Makefile 2> /dev/null`
+    do
+        echo $DIR/$FILE
+        if test -f $CMP/$DIR/$FILE
+        then
+            diff $FILE $CMP/$DIR
+        else
+            echo "no original file: $FILE"
+        fi
+    done
+done

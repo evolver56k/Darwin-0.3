@@ -1,0 +1,1004 @@
+TODO for MacOS X:
+- Deal with mig not having a dyld_event_MsgError() call back for mig errors
+  when user_dyld_event_server_callback() is called.
+- Figure out if dyld should use malloc_error() to get "dyld: " in front of
+  malloc error messages.
+
+TODO:
+- For hppa cache flushing use FDC and FIC on the written instruction address.
+
+Waiting on bug fixes:
+
+Changes the 5.4 release (the cctools-295 release):
+- Fixed a bug in libdyld function _dyld_image_containing_address() which was
+  addring the vmslide to the mach header address that it should not have done.
+
+Changes the 5.3 release (the cctools-294 release):
+- Added the libdyld function _dyld_image_containing_address() to
+  dyld_libfuncs.c.  Radar bug #2325380.
+
+Changes the 5.3 release (the cctools-293 release):
+- Cut over to using the zone protect stuff in libc_dynamic.a now that it has
+  suppose to appear in Beaker1K.  The file malloc.c is #ifndef'ed __MACH30__ .
+  This was Tracker bug #48087 and Radar bug #2148087.
+- Fixed the call to pthread_mutex_init() in malloc.c to have NULL as the second
+  argument.  Also fixed a cast to call to malloc that needed a `*'.
+
+Changes the 5.3 release (the cctools-292 release):
+- Ported malloc.c to used pthreads instead of cthreads.
+- Added some braces to get rid of the warning message from the egcs compiler
+  "warning: suggest explicit braces to avoid ambiguous `else'".  This was done
+  to mod_init_funcs.c
+
+Changes for the 5.3 release (the cctools-288 release):
+- Fixed a bug where on PowerPC if the RESET_LAZY_REFERENCES NSUnLinkModule()
+  option is used in a program that is not linked with crt1.0, bundle1.o or
+  dylib1.o that has the ".long dyld_stub_binding_helper" fix.
+- Changed call_module_initializers() in mod_init_funcs.c to use the iinit and
+  ninit fields masked by 0xffff.  This is done to get a dyld out there before
+  the high half of these feilds are used for module termination indexes and
+  counts.  This will avoid programs crashing that have libraries that have
+  module termination routines but are running with an old dyld.  With this dyld
+  the library module termination routines won't get called but the program won't
+  crash when the module initialization routines get called.
+- Changed the printf() routine in errors.c to print to stderr not stdout and
+  not call fflush() (Radar bug #2274737).
+
+Changes for the 5.3 release (the cctools-287 release):
+- Support for private images has been added.  Including support for the new API
+  NSLookupSymbolInModule().
+- The support for NSUnLinkModule for only MH_BUNDLE file types has been added.
+- The support for the private NSMakePrivateModulePublic() call need for dlopen()
+  has been added.
+
+Changes for the 5.3 release (the cctools-286 release):
+- Change the use of the i386 cpp macro to __i386__ and ppc to __ppc__
+- Added the support for the module termination functions.  In this version they
+  are only called for things loaded with NSLinkModule() when NSUnLinkModule()
+  is called.  To test this the ifdef TESTING_MOD_TERM needs to be set.
+  This effected the files images.c, mod_init_funcs.c, dyld_libfuncs.c,
+  mod_init_funcs.h and images.h.
+
+Changes for the 5.3 release (the cctools-285 release):
+- Made a hack to errors.h to define the missing errno numbers for __MACH30__
+  like it is done for __MWERKS__.
+- Added #define'ing NeXT if not defined to mig_support.c
+- Also picked up a change to the server_loop() in debug.c which did not
+  correctly reset the thread suppend count of the thread_that_has_dyld_lock
+  when it's suppend count was not 1.
+- Picked up fixes in dyld_debug.defs and debug.c to the Mach 3.0 ported code
+  made by David Peterson.
+
+Changes for the 5.3 release, MacOS X bring up (the cctools-282 release):
+- Changed host_self(), task_self(), thread_self() and port_deallocate() to
+  mach_host_self(), mach_task_self(), mach_thread_self() and
+  mach_port_deallocate() for MacOS X.  Also included "stuff/openstep_mach.h" for
+  macros to allow it to still build on Openstep.  Also changed ifdef's __SLICK__
+  to __OPENSTEP__.
+- Changed the Makefile to allow for RC_OS=macos for MacOS X builds.
+- Added an #ifdef __MACH30__ in _dyld_fork_child() and _dyld_fork_child_final()
+  in dyld_libfuncs.c for resetting mach_task_self_ .
+- Added an #ifdef __MACH30__ #import <mach/thread_switch.h> to lock.c
+- Ifndef'ed out __MACH30__ for all of mig_support.c .
+- Ifdef'ed the use of vm_region() in images.c for __MACH30__ differences and
+  also changed port_t to mach_port_t.
+- Changed port_t and thread_t to mach_port_t in debug.h and debug.c.  Added
+  a typedef for msg_type_long_t for MacOS X bring up while the mig stuff is
+  ifdef'ed out to debug.c.  Change PORT_NULL to MACH_PORT_NULL in debug.c.
+  Ifndef'ed out __MACH30__ all of start_debug_thread() and server_loop() in
+  debug.c for bring up.
+- Added a typedef for msg_return_t to dyld_event_MsgError.h MacOS X bring up
+  while the mig stuff is ifdef'ed out.
+- Changed thread_t to mach_port_t in lock.h and lock.c.
+- Ifdef'ed out the use of the profileServer stuff in dyld_init.c and images.c
+  for __MACH30__ bring up.
+- Ifdef'ed out most of the mig stuff in the .defs files for __MACH30__ for
+  bring up.  And added some matching hacks in debug.c.
+
+- Made a hack in the Makefile and if'ed mwcc the .s.o rule to use cc not
+  $(CC).  As the MetroWerks compiler does not take .s files.
+- Added #import <stuff/bool.h> to dyld_init.h so it would compile with the 
+  MetroWerks compiler.
+- Added the following:
+    #ifdef __MWERKS__
+    #define EBADEXEC	    85      /* Bad executable */
+    #define EBADARCH        86      /* Bad CPU type in executable */
+    #define ESHLIBVERS      87      /* Shared library version mismatch */
+    #define EBADMACHO       88      /* Malformed Macho file */
+    #endif
+  to errors.h as the MetroWerks headers don't defined this.
+- Removed the asm() in error.c to declare error_string into section_order.s to
+  make it compile with the MetroWerks compiler.
+- Removed the asm() in symbos.c to declare symbol_blocks into section_order.s to
+  make it compile with the MetroWerks compiler.
+- Changed the declaration of the address field dyld_funcs in dyld_libfuncs.c 
+  from:
+    unsigned long address;
+  to:
+    void (*address)(void);
+  and changed the casts in the initialization to make it compile with the
+  MetroWerks compiler.
+- Changed the #undef task_self() to #undef task_self in dyld_libfuncs.c to make
+  it compile with the MetroWerks compiler.
+- Added an #import "stuff/bool.h" to lock.h to make it compile with the
+  MetroWerks compiler.
+- Added an ifneq:
+    ifneq "mwcc" "$(notdir $(CC))"
+      MIG_FLAGS = $(RC_CFLAGS) $(PGFLAGS)
+    endif
+  around the MIG_FLAGS as a hack to get it to compile with the MetroWerks
+  compiler and not hang up on flags such as -relax_pointers -w off.
+- Added #ifndef __MWERKS__ around the empty struct definitions in
+  inbound_message_reply in debug.c
+- Changed 4 (void *) casts to (char *) casts in malloc.c to make it compile
+  with the MetroWerks compiler.
+- Changed the Makefile to pass obscure ld flags via -Wl rather than directly
+  with the compiler driver.
+
+Changes for the 5.2 release (the cctools-274 release):
+- Fixed a bug in validate_NSSymbol() in symbols.c where it was return NULL
+  if the module is in the INITIALIZING state.  This can happen if a module
+  initializer routine calls NSModuleForSymbol on a symbol in it's module.
+  The fix is to allow modules in the INITIALIZING as well as the LINKED or
+  FULLY_LINKED state to have info returned.  Radar bug #2238301.
+- Changed load_executable_image() in images.c to use the first segment in the
+  load commands as the seg1addr not the one with the lowest address. Radar bug
+  #2237029.
+
+Changes for the 5.2 release (the cctools-273 release):
+- Added a print() function to errors.c that calls printf() and then fflush() on
+  stdout.  This hopefully will fix the problem launcher is having when piping
+  it's output.  Radar bug #2227265.  This bug was dropped from cctools-268.
+
+Changes for the 5.2 release (the cctools-272 release):
+- Changed the "bl L1" instructon to a "bcl 20,31 L1" in dyld_start.s for ppc.
+  Radar bug #2231996.
+- Fixed two bugs in load_library_image() in images.c when many dynamic libraries
+  are used.  The problem is that when is_library_loaded() returns TRUE the file
+  descriptor is not closed.  This leads to the second problem where the wrong
+  errno is printed if the library can't be opened and then is searched for as
+  the errno gets over written.  Radar bug #2230181.
+
+Changes for the 5.2 release (the cctools-267 release):
+- Added dyld_sample_debug for debugging shared pc sample buffer code.  Radar
+  bug #2227592.
+- Added a check in load_library_image() in images.c to make sure the file is a
+  plain file and prints an error for that case.  This make it so the confusing
+  can't map error message is not printed for the directory case.  Radar bug
+  #2227477.
+- Changed search_for_name_in_path() in images.c to skip paths with no
+  characters in them.  Radar bug #2227589.
+
+Changes for the 5.1 release (the cctools-264 release):
+- Added a definition of getenv() that always returns NULL so the reference to
+  _dyld_lookup_and_bind() is not pulled in by the libc_dynamic code.
+  This is needed for isspace() in strtod needed by vsnprintf() for locale stuff.
+
+Changes for the 5.1 release (the cctools-262 release):
+- In Titan1P the profil(2) system call got fixed.  So the #ifdef SLICK code
+  that was in shared_pcsample_buffer() in images.c which had the divide by 2
+  was removed and now there is no #ifdef SLICK and the code that does not
+  divide by 2 is used for both Rhapsody and #ifdef SLICK.  Radar bug #2215979.
+
+Changes for the 5.1 release (the cctools-260 release):
+- Added -c to all the install commands in the Makefile.
+
+Changes for the 5.1 release (the cctools-259 release):
+- Changed the Makefile to not use /usr/local/bin/install for Rhapsody but to
+  just call strip and then install to make it work.
+
+Changes for the 5.1 release (the cctools-258 release):
+- Fixed shared_pcsample_buffer() in images.c to use the 4.4BSD profile header.
+  Also delt with the bug in profil(2) in sizing the buffer.  See the detailed
+  comments in the profileServer notes file.  Radar bug #2204555.
+
+Changes for the 5.1 release (the cctools-257 release):
+- Changed dyld -seg1addr from from 0x12000000 to 0x41100000 in the Makefile.
+- Changed the Makefile to use /usr/local/bin/install for Rhapsody for dyld
+  install to get at -sS option.
+
+Changes for the 5.1 release (the cctools-253 release):
+- Changed the default Framework fallback path to match the new directory
+  layout for Preimer.
+
+Changes for the 5.1 release (the cctools-250 release):
+- Changed the ppc version _try_to_get_lock in machdep_lock.s to a version that
+  lends itself to stepping over.  The old code could not be run in single
+  step mode as it would alwasy loose the reservation.  The new code can be
+  run to the next branch and not loose the reservation.  This is to allow some
+  single step profiling tools.
+
+Changes for the 5.1 release (the cctools-249 release):
+- Changed the use of vsprintf() to vsnprintf() in errors.c in two places now
+  that it exists in the 4.4bsd.  The code is in the else clause of an ifdef'ed
+  __SLICK__ . This was filed as Tracker bug #48089.
+
+Changes for the 5.1 release (the cctools-248 release):
+- Fixed a bug where dyld could not slide itself on ppc.  The problem was caused
+  by calling vm_flush_cache() which should not have been called.  The cache
+  flushing does not have to be done when the code in compiled -dynamic.  See
+  dyld_reloc.c for changes and comments.
+
+Changes for the 5.1 release (the cctools-247 release):
+- Added MKDIRS if code to the Makefile to build native on Rhapsody.
+- Changed the Makefile to use gnutar instead of tar because it works on Rhapsody
+  where tar does not.
+- Changed the code ifdef __TEFLON__ to ifndef __SLICK__ (where __TEFLON__ will
+  nolonger be defined for Rhapsody builds) so the default builds will be native
+  Rhapsody builds.  The changes were dyld_init.c, errors.c, images.c and
+  malloc.c
+
+Changes for the 5.0 release (the cctools-235 release):
+- Fixed the PPC_RELOC_BR24 to correctly check for overflow.  It now checks
+  the top 7 (not 6) bits are the same. 
+
+Changes for the 5.0 release (the cctools-226 release):
+- Fixed a bug when the $HOME environment variable was not set.  The variable
+  home was initialized to NULL and then later a strlen was done on it.  The
+  fix was to in initialized it to "/".
+- Fixed a bug in ppc_reloc where it was not correctly calculating the immediate
+  of a HA16 reloc by checking the 0x8000 bit of the other half and and sign
+  extending it and adding it to form the correct immediate.
+
+Changes for the 5.0 release (the cctools-224 release):
+- Defined NO_INDR_LIBC if __TEFLON__ is defined in malloc.c and errors.c so it
+  will build with SDK2.
+
+Changes for the 5.0 release (the cctools-222 release):
+- Changed pickup_environment_variables() in dyld_init.c to not use atol() in
+  getting the value for DYLD_PREBIND_DEBUG because it pulls in stuff in the
+  TEFLON libc_dynamic.a that fails to link (locale stuff for "." which pulles
+  in dyld_lookup_and_bind("__environ")).
+- Added some ifdef's for NO_INDR_LIBC because the libraries are not indr'ed
+  for the Teflon SDK2.
+  In mach_error() in error.c for not using mach_error_string to avoid pulling
+  in mach_error from -lc_dynamic and causing a multiply defined for
+  "_mach_error".  In malloc.c changed _set_malloc_singlethreaded to
+  set_malloc_singlethreaded without the underbar.
+- Added -lcc_dynamic to the link line because for PowerPC the compiler appears
+  to call libgcc functions unlike other architectures.
+- Fixed a bug in stub_binding_helper.s for ppc which was incorrectly
+  referencing _bind_lazy_symbol_reference in the assembly code without the
+  leading underbar.
+
+Changes for the 5.0 release (the cctools-221.4 and cctools-222 releases):
+- Added including <mach-o/ppc/reloc.h> for ppc in images.c .
+- Picked up changed entry_point.c to which changed struct ppc_thread_state_t to
+  ppc_thead_state_t.
+
+Changes for the 5.0 release (the cctools-221 release):
+- Picked up the changes for the correct Rhapsody thread state changes into
+  entry_point.c.
+
+Changes for the 5.0 release (the cctools-219 release):
+- Added searching fallback paths when dynamic libraries can't be found.  The
+  Two paths are DYLD_FALLBACK_FRAMEWORK_PATH and DYLD_FALLBACK_LIBRARY_PATH.
+  If these are not set they default to $(HOME)/Library/Frameworks:
+  /LocalLibrary/Frameworks:/NextLibrary/Frameworks and $(HOME)/lib:
+  /usr/local/lib:/lib:/usr/lib (bug #69135).
+
+Changes for the 5.0 release (the cctools-218 release):
+- Updated the PowerPC locking code with suggestions from colleagues.
+- Updated ppc_cache_flush in cache_flush.s with suggestions from colleagues.
+
+Changes for the 5.0 release (the cctools-217 release):
+- Moved sparc_cache_flush.s to cache_flush.s and added _ppc_cache_flush in it
+  that uses the "icbi" instruction cache block invalidate instruction.  Changed
+  the relocation routines in ppc_reloc.c to use this.
+- Wrote the machine dependent lock code for the PowerPC.
+- Wrote __dyld_start for the PowerPC.
+- Wrote _stub_binding_helper_interface for the PowerPC.
+- Wrote and added ppc_reloc.c.
+- Changed m98k ifdef to ppc in malloc.c.
+- Added PowerPC support in for PPC_RELOC_PB_LA_PTR in images.c in 2 places.
+- Added PowerPC support in get_entry_point() in entry_point.c.
+
+Changes for the 4.2 release (the cctools-207 release):
+- Fixed a bug in the DYLD_FRAMEWORK_PATH where if the framework has a suffix
+  like _profile then DYLD_FRAMEWORK_PATH does not work.  The fix in in 
+  get_framework_name() in images.c (bug #75900).
+
+Changes for the 4.1 release (the cctools-203 release):
+- Added DYLD_FRAMEWORK_PATH to search for frameworks.  If set and a dynamic
+  library with a path of the form "Foo.framework/Versions/A/Foo" or
+  "Foo.framework/Foo" (where the last component Foo is the framework name and
+  the component A is any name) then "Foo.framework/Versions/A/Foo" or
+  "Foo.framework/Foo" would be appended to each element in the
+  DYLD_FRAMEWORK_PATH.  This is tried before DYLD_LIBRARY_PATH if it is set.
+  This mostly effected images.c (bug #70403).
+
+Changes for the 4.0 release (the cctools-200 release):
+- The dyld debug interface can cause the program using it to crash if the target
+  task has memory mapped from a file that has been removed over NFS.  The
+  problem was the code in libdyld for the dyld debug interface was crashing when
+  it used memory in response to a successful vm_read on this memory.  Two
+  changes where made in libdyld.  First was to vm_read from the target task at
+  the prefered address of dyld before going into the loop that scaned the
+  address space.  Second in the loop that trys to start the debug thread only
+  100 trys are made in the loop that is doing the thread_switch waiting for the
+  debug thread to start.  If 100 trys are made it is assumed the debug thread
+  can't be started and it returns failure.  This causes gdb to not crash and not
+  hang and return continue without symbols from libraries.  With this a back
+  trace is possible.  And one can still force library symbols to be loaded with
+  the gdb add_module command (bug #65770).
+
+Changes for the 4.0 release (the cctools-198 release):
+- Added some code in the error case when a dynamic library was thin and for the
+  other byte sex so it reported the library as wrong architecture instead of
+  malformed (bug #65420).
+
+Changes for the 4.0 release (the cctools-193 release):
+- Fixed a bug in dyld's handling of library names for NSAddLibrary() where it
+  did not save away the name of the library.  It simply used the pointer passed
+  to it which caused future loads of librarys to get confused it the same space
+  is used to load another library as dyld thinks it is already loaded (bug
+  #63579).
+
+Changes for the 4.0 release (the cctools-191 release):
+- Fixed a bug where the call backs for registered for adding images was not
+  being called immediately after NSAddLibrary() was finished.  This delayed the
+  objc fixup until the next trip through dyld (bug #62882).
+
+Changes for the 4.0 release (the cctools-190 release):
+- Fixed a bug in the checking for symbols in the executable that are overriding
+  library symbols.  The look in check_executable_for_overrides() was wrong in
+  that dyst->iextdefsym was not added to the terminating value the index.  This
+  caused some to try to use prebound libraries when they shouldn't.  This
+  happened with the program gdb and the symbol catch_exception_raise (bug
+  #62897).
+
+Changes for the 4.0 release (the cctools-188 release):
+- Fixed a bug in undoing the prebinding on RISC machines.  RISC machine
+  instructions only hold part of a 32-bit expression that is being relocated.
+  The other half of the expression is in a relocation entry.  When prebinding
+  has to be undone the process has two steps.  First the prebound symbol value
+  is substracted from the relocated expression.  Second the correct value of
+  the symbol is added back to the relocated expression.  The bug in dyld is
+  that the relocated expression is split between the instruction and a
+  relocation entry and the part in the relocation entry is not updated.
+  So when the second step is done it does not reconstruct relocated expression
+  correctly.  The fix was to update the part of the relocated expresion stored
+  in the relocation entry by first making the linkedit segment writeable and
+  then storing the update half of the immediate (bug #62117).
+
+Changes for the 4.0 release (the cctools-186 release):
+- Fixed a bug in _dyld_bind_fully_image_containing_address() in dyld_libfuncs.c
+  which did not deal with modules in the PREBOUND_UNLINKED state and call
+  undo_external_relocation() before calling link_library_module() (bug #61399).
+
+Changes for the 4.0 release (the cctools-181 release):
+- Fixed a bug that cause dyld to crash when undoing the external relocation
+  relocation entries in a prebound dynamic library.  It fails to make the
+  segments which are read-only writeable before doing the relocation and gets
+  a bus error when trying to write on read-only memory.  This had to be fixed
+  in three places before undo_external_relocation() was called.  The three
+  places were in resolve_undefineds() in symbols.c, _dyld_bind_objc_module()
+  in dyld_libfuncs.c, and server_dyld_debug_bind_module() in debug.c
+  (bug #59553).
+
+Changes for the 4.0 release (the cctools-180 release):
+- Change the sparc_reloc() routine to use the sparc flush instruction for
+  sync'ing the icache (bug #59327).
+
+Changes for the 4.0 release (the cctools-178 release):
+- Fixed a bug where a if a non-prebound library gets loaded after the initial
+  launch undo_prebinding_for_library() mistakenly gets called (bug #58805).
+- To allow dyld to be linked with libc_dynamic.dylib (the libc_static code
+  compiled -dynamic) two things were done.  The first was to add a definition
+  of abort() to errors.c.  abort() is used by malloc() when it fails, so the
+  abort() in errors.c just exits with DYLD_EXIT_FAILURE_BASE+DYLD_UNIX_RESOURCE.
+  This eliminates undefined symbol __dyld_bind_fully_image_containing_address
+  because signal.o gets pulled in with abort.o.  Second the DYLD_HANG_TIME
+  feature was removed.  This eliminates undefined symbol __dyld_lookup_and_bind
+  which used in getenv.o via timezone stuff and sleep (bug #58557 and #50228).
+
+Changes for the 4.0 release (the cctools-177 release):
+- Fixed a bug in external_relocation() and undo_external_relocaion() in
+  sparc_reloc.c where reloc types SPARC_RELOC_HI22 and SPARC_RELOC_LO10
+  had two statements reversed.  The addition of the value to the immediate was
+  done before the extraction of the immeditate (bug #58729).
+- Corrected the wording for compatibility version mismatch from "less than" to
+  "greater than" (bug #58644).
+
+Changes for the 4.0 release (the cctools-176 release):
+- Changed _dyld_fork_child() and _dyld_fork_child_final() from calling
+  mach_init() to calling task_self() and setting task_self_ which fixed the
+  DYLD_MEM_PROTECT feature and allowed the system to boot with fork stubs that
+  used _dyld_fork_child_final().
+- Added _dyld_lookup_and_bind_objc() (bug #58442).
+- Optimized undo_prebinding_for_library() by just setting the module_state to
+  PREBOUND_UNLINKED instead of undoing all the relocation for all the modules
+  (bug #58434).
+- Fixed a bug where the time stamps of the libraries recorded in the executable
+  did not match the libraries' time stamp prebinding was not correctly
+  disabled.  The check was added in map_library_image() to match the check that
+  was in is_library_loaded() (bug #58387).
+- Fixed a bug in using just prebound libraries without prebound executables.
+  A check needed to be made that the executable does not defined any symbols
+  that the libraries defines and reference.  check_executable_for_overrides()
+  in symbols was added and this is called in try_to_use_prebound_libraries()
+  in images.c (bug #58357).
+- Fixed a bug in external_relocation() and undo_external_relocaion() in
+  sparc_reloc.c where reloc types SPARC_RELOC_WDISP22 and SPARC_RELOC_WDISP30
+  were incorrectly assumed to have a pair (bug #58436).
+
+Changes for the 4.0 release (the cctools-175 release):
+- Added support for using just prebound libraries without prebound executables.
+
+Changes for the 4.0 release (the cctools-173 release):
+- Implemented the stuff needed for the dyld library functions: NSNameOfModule,
+  NSLibraryNameForModule, NSNameOfSymbol, NSIsSymbolNameDefined,
+  NSLookupAndBindSymbol, NSAddressOfSymbol, NSModuleForSymbol, NSAddLibrary.
+  The first three are allowed to be called in a multiply defined handler.
+- Removed the default link state from the image struct and the enum.  This is
+  because for prebinding we are picking up which modules are bound from the 
+  LC_PREBOUND_DYLIB commands.
+- Added the support for using prebound images.  This touched a bunch of stuff in
+  dyld_init.c and in images.c.
+
+Changes for the 4.0 release (the cctools-171 release):
+- Changed the check of the size of the shared pc sample buffer in
+  shared_pcsample_buffer() to round to sizeof(unsigned short) because gprof
+  complains when the number of samples in not a multiple that.
+- Fixed a bug with shared_pcsample_buffer() which did not close the file
+  descriptor for the shared pc sample buffer.  This caused getty to fail which
+  was expecting to get file descriptor 0.
+
+Changes for the 4.0 release (the cctools-170 release):
+- Picked up the changed from the sparc project to dyld_reloc.c which added
+  3 ifdef __DYNAMIC__ sequences so dyld could be compiled without -dynamic.
+- Added the DYLD_INSERT_LIBRARIES feature which is set to a colon separated
+  list of libraries that are inserted as the first libraries to be searched.
+- Changed the support for fork() so that DYLD_MEM_PROTECT works by adding a
+  _dyld_fork_child_final() call and changing _dyld_fork_child().  The change
+  to _dyld_fork_child() was to save away the value of dyld_mem_prot and set
+  it to FALSE.  Then in _dyld_fork_child_final() mach_init() is again call and
+  dyld_mem_prot is restored.  This is done as the code in the fork stub messes
+  with the ports and the vm_protect() call fails.
+- Added in the real shared pcsample buffer interface called to dyld in
+  dyld_init.c and images.c.
+
+Changes for the 4.0 and Argon releases (the cctools-166.10 and cctools-170
+releases):
+- Changed THREAD_NULL to MACH_PORT_NULL so cctools will build in Argon.
+
+Changes for the 4.0 release (the cctools-169.1 and cctools-170 releases):
+- Fixed a bug in allocate_with_no_error_check() in allocate.c where it did not
+  create the zone if it was NULL.
+
+Changes for the 4.0 release (the cctools-169 release):
+- Fixed a bug in map_library_image() that was saving the compatibility_version
+  incorrectly from the user of the library not from the LC_ID_DYLIB of the
+  library.
+
+Changes for the 4.0 release (the cctools-168 release):
+- Picked up sparc changes to stub_binding_helper.s, sparc_reloc.c, dyld_reloc.c
+  and dyld_start.s .
+- Added shared pcsample buffer stuff.  It is turned off right now with an ifdef
+  SHARED_PCSAMPLE_BUFFERS_TESTING in dyld_init.c and images.c waiting for the
+  server to be written.
+- Added the functions _dyld_fork_prepare, _dyld_fork_parent and _dyld_fork_child
+  to fix bug #55484 and to allow DYLD_MEM_PROTECT to work.
+- Change the version numbers of dynamic library to the form X[.Y[.Z]] to match
+  how next does versioning of it's projects.  This effected libtool(1), ld(1),
+  otool(1), dyld, libstuff(version_number.c) and man pages for ld and libtool
+  bug #55627).  In here the changes were in images.c .
+- Fixed the i386 locking code in machdep_lock.s to use the xchgl instruction
+  and also added the lock prefix in the old ifdef'ed out code (bug #55469).
+- Added back a few const qualifiers now that -dynamic does not put these into
+  the TEXT segment.
+- Put symbol_blocks and error_string into their own section and ordered them
+  at the end of the data section (see asm()'s in symbols.c and errors.c).  The
+  file section_order.s was added to define the section load order and is loaded
+  first.  This gets the data segment to one page plus the page(s) needed for the
+  symbol blocks (which will not be needed for rocket launching).
+- Tuned the data structure sizes so no malloc()'s are done by default.
+- Changed allocation of symbol_list structs to come out of an array of 
+  symbol_blocks so to dirty fewer pages.
+- Added a pool to allocate module_state's out of for libraries.
+- Changed what was "struct module" into module_state which is typedef'ed char
+  to save allocated space for it (as a struct it was subject to a minimum
+  alignment of a struct which was 2 or 4 bytes).
+- Fixed a bug introduced in cctools-167 where the dylib_name was free()'ed and
+  it shouldn't be.  Also added printing "dyld: " to DefaultMallocError() in
+  my copy of malloc so I can tell it is the malloc in dyld that got hosed.
+- Added _dyld_debug_module_name() to the dyld debug interface to get image's
+  true names.
+- Cleaned up a memory leak in server_dyld_debug_defining_module() in debug.c
+  where the out of line data for name was not vm_deallocated().
+
+Changes for the 4.0 PR1 release (the cctools-166.7 and cctools-168 releases):
+- Changed the RELINKED state to FULLY_LINKED and made it first class state.
+  This is so multiple calls that fully bind modules are fast after the first
+  call (bug #55192).
+- Changed is_library_loaded() in images.c to compare device and inode numbers
+  if the name is not the same (bug #55085).
+
+Changes for the 4.0 PR1 release (the cctools-166.4 and cctools-168 releases):
+- Fixed a problem with bug fix #53397 in fully binding previously linked
+  modules.  The problem was when a previously linked module was relinked it
+  got relocated a second time.  To avoid this a new link state, RELINKED is
+  used by link_library_module() and resolve_undefineds() in symbols.c.
+
+Changes for the 4.0 release (the cctools-167 release):
+- The name of the executable, argv[0] is saved in images.c and then used in
+  printing error messages in error.c (bug #54144).
+- Added a string table in images.c to save object file images names.  Also
+  changed it so dylib names are used from the dylib id command when they
+  are not changed do to DYLD_LIBRARY_PATH which avoids allocating space for
+  them in the default case.
+- Fixed a reported bug if DYLD_LIBRARY_PATH is set to nothing then something
+  bad happens which I could not reproduce (I think a library gets loaded twice)
+  (bug #54449).
+- Added the DYLD_HANG_TIME feature for supporting sampling of launch times.
+
+Changes for the 4.0 PR1 release (the cctools-166.3 and cctools-167 releases):
+- Picked up the changes made to malloc for Lantern1X in dyld's copy.
+- Fixed a bug in load_library_image() when DYLD_LIBRARY_PATH is set where the
+  allocated name is not allocated with enough space when the search fails and
+  the original name is used (bug #54542).
+- Changed the way module initializers are called.  They are now started out
+  delayed (that is not called).  Then when _dyld_make_delayed_module_initiali-
+  zer_calls() is called (from crt1.o) the delayed initializers are called and
+  future initializers are no longer delayed (bug #54334).
+- Added the function _dyld_bind_fully_image_containing_address() to be used
+  to fully bind functions that are installed as signal handlers.  This required
+  the addtion of a bind_now parameter to the following routines:
+  link_in_need_modules(), link_library_module() and resolve_undefineds().
+  The link_library_module() bind_now does the same thing as link_object_module()
+  in that it binds lazy symbols in when TRUE.  Also both of these functions
+  now have an extra check when checking for multiply defined symbols to see
+  if the symbol that is already defined is in the module being bound as a
+  module may be lazy bound and later be fully bound (bug #53397).
+
+Changes for the 4.0 PR1 release (the cctools-166.2 and cctools-167 releases):
+- Fixed a bug in new_object_image() when more than NOBJECT_IMAGES (10) were
+  loaded (bug #53456).
+
+Changes for the 4.0 release (the cctools-165 release):
+- Fixed the incorrect asumption that 0 was an invalid file descriptor and
+  changed this to -1.  This was done in map_image() and the call to map_image()
+  for mapping in object file images.
+- Also added the DYLD_EBADEXEC_ONLY and DYLD_BIND_AT_LAUNCH environment
+  variables.
+
+Changes for the 4.0 release (the cctools-161 release):
+- Fixed a bug in _dyld_moninit() which had the wrong increment expression for
+  steping through the list of libraries.  This was:
+	for(i = 0; i < q->nimages; q++){
+  which should have been:
+	for(i = 0; i < q->nimages; i++){
+  This also appeared in two other places in dyld_libfuncs.c and in two places
+  in debug.c.  In the _dyld_moninit() case this caused only the first dylib
+  to get profiled.
+- Also added some ifdef MALLOC_DEBUG in dyld_init.c and allocate.c so that
+  libMallocDebug.a could be switched with malloc.o and used with malloc debug.
+
+Changes for the 4.0 release (the cctools-160 release):
+- Fixed the i386 machine dependent try_to_get_lock() assembly routine to use
+  a bts (bit test and set instruction) because the use of the xchgl was just
+  wrong.  Some how the code would work but it would cause the threads to spin
+  in trying to get the lock.
+- Fixed a problem with monaddition being called from dyld with the lock being
+  set and then later trying to dynamicly bind things resulting in a dyld
+  dead lock error.  This is not thread safe and could crash if objects are being
+  unloaded while monaddition is being called.
+
+Changes for the 4.0 release (the cctools-158 release):
+- Added _dyld_fork_mach_init() which recalls mach_init() for use in the child
+  side of fork so that the fork code can be in a dynamic library.  This is
+  needed  as the value of task_self_ has changed and is an invalid port in the
+  child and if used the in the dyld code it will fail.
+- Changed it so that check_and_report_undefineds() gets called with the lock
+  still taken and it releases the lock before calling the user's handler.  Then
+  after the handler is called the lock is set again.  Made the same basic
+  changes to the register functions and module initialization function calls.
+- Added saving registers r20, r27 and r29 for the hppa in the
+  _stub_binding_helper_interface which are assumed to be saved by a millicode
+  call.  Also changed the hppa interface to add 64 bytes to the stack on entry
+  because in the case of binding a millicode call in a leaf function it can't
+  assume the caller will allocate space.  These two things were causing the
+  hppa version of Lantern1P not to work.
+- Fixed a few problems in load_library_image() with the code that deals with
+  constructing library names with dyld_library_path.
+
+Changes for the 4.0 release (the cctools-154 release):
+- Fixed a bug that caused non-lazy pointers for N_INDR symbols not to get set.
+  The problem was that the N_INDR symbol did not end up on the being_linked list
+  and thus the non-lazy pointer for it was never set.
+  The first part of the fix was in resolve_undefineds(), link_library_module()
+  and link_object_module() to have the call to lookup_symbol() not to chase down
+  the indirection loop but just find the N_INDR symbol.
+  This was done by adding the special NO_INDR_LOOP argument as the indr_loop
+  argument to lookup_symbol().
+  The second part of the fix was in relocate_symbol_pointers_in_object_image()
+  and relocate_symbol_pointers_in_library_image() if the symbol on the
+  being_linked list was an N_INDR symbol a lookup_symbol() is called to get
+  the correct value of the symbol before calling relocate_symbol_pointers().
+
+- Added support for stripping defined externals that appear as indirect symbol
+  table entries in non-lazy pointer sections.  Strip uses the values
+  INDIRECT_SYMBOL_LOCAL and INDIRECT_SYMBOL_ABS to represent the symbols that
+  are defined that were stripped. relocate_symbol_pointers_for_defined_externs()
+  uses these values to know wether or not to adjust the value of the non-lazy
+  pointer.
+- Fixed uses of defined absolute symbols that was adding the vmaddr_slide to
+  them.  This occured in a number of places.  Now testing is done if the type
+  is not N_ABS then the vmaddr_slide is added.
+
+Changes for the 4.0 release (the cctools-150 release):
+- Added code in bind_lazy_symbol_reference() to handle private extern symbols
+  being lazy bound.
+- Changed with the the event message that this image was added is set to after
+  the local relocation is done in map_library_image().
+
+Changes for the 4.0 release (the cctools-149 release):
+- Fixed the problem with the dynamic linker relocating itself when compiled with
+  -dyanmic as introduced in cctools-148.  Three changes to _dyld_reloc() in
+  dyld_reloc.c were made.  First was the reference to _mh_dylinker_header,
+  second was the reference to SEG_LINKEDIT and third was adding the missing call
+  to relocate_symbol_pointers_for_defined_externs() (bug #50582).
+- Changed the way cache_sync_on_reloc gets set.  It is now based on
+  S_ATTR_SOME_INSTRUCTIONS instead of S_ATTR_PURE_INSTRUCTIONS which is set by
+  the assembler for all sections that it assembles instructions into.
+- Changed the way set uid (and set gid) programs and DYLD_LIBRARY_PATH are
+  handled.  If the programs is setuid or setgid then dyld_library_path is not
+  set and the environment variable DYLD_LIBRARY_PATH is written on so that
+  programs that are exec'ed do not have it set.
+- Added support for executables built that should be bound at launch time.  If
+  the executable has the MH_BINDATLOAD flag in the mach header (built with the
+  -bind_at_load to ld(1)) then dyld_init() sets executable_bind_at_load and when
+  a module is to be bound all undefined references (lazy and non-lazy) are added
+  to the list of needed symbols.  This is also supported in the mach header of
+  bundle files.
+- Finished the multiply defined error handler so that a new symbol can be
+  specified to be used.  This changed effected multiply_defined_error() in
+  error.c to mark the symbol as discarded (N_DESC_DESCARDED in the n_desc
+  field of the nlist struct).  To do this the linkedit segment is made writable
+  to do this.  This mark is then looked for in lookup_symbol() in symbols.c .
+  Also added was the routine change_symbol_pointers_in_images() in symbols.c
+  which is called from multiply_defined_error() to reset the values of symbol
+  pointers if the symbol changes.
+- Added the arguments new_image and prev_image to multiply_defined_error()
+  which are a pointers to the images for the new and previous definitions of
+  the symbols.
+- Changed the first call to vm_protect() (for libraries not objects) in
+  relocate_modules_being_linked() in reloc.c to use (VM_PROT_WRITE |
+  VM_PROT_READ | VM_PROT_EXECUTE) instead of maxprot.
+- Added a check in load_executable_image() in images.c for segments that have
+  external relocation (S_ATTR_EXT_RELOC) to make sure the maxprot has
+  VM_PROT_WRITE and VM_PROT_READ.
+- Removed the unused first argument symbol_name from relocate_symbol_pointers()
+  in symbols.c.
+
+Changes for the 4.0 release (the cctools-148 release):
+- Changed how dyld gets built.  Now it gets built with -dynamic.  Had to add
+  a fake dyld_stub_binding_helper to dyld_init.s which traps so it will link.
+  Added compiling with -O and not building dyld.o.  Removed most of the hack in
+  the Makefile because this will only be built with 4.0 tools now.
+- Now installs dyld with strip -S.
+
+Changes for the 4.0 release (the cctools-147 release):
+- Added support for profiling dyld loaded code.
+- Added _dyld_get_image_name().
+
+Changes for the 4.0 release (the cctools-145 release):
+- Fixed references to private externs symbols in libraries so that the library
+  module that defines them is forced to be linked in.  This is need so that
+  module init functions, register functions for linking and debug events get
+  triggered for these modules.  The code is in symbols.c at the end of
+  link_library_module().  This now closes the issue about putting the private
+  extern symbols in a dylibs table of contents.  These modules may never be
+  unlinked or replaced (just a the library can't be unloaded).
+- Fixed a bug in the m68k _stub_binding_helper_interface where the calling
+  convention has  a1 as a pointer to an area to return structures and needs to
+  be saved.  Since this wasn't accounted for we are forced to save it and
+  shuffle the arguments in the assembly interface.
+- Fixed three bugs in the hppa _stub_binding_helper_interface where registers
+  that should have been saved weren't.  The first was %r28 which is a pointer
+  to an area to return structures.  The second was %r31 which is the millicode
+  return address register.  And third were the argument registers 2 and 3 which
+  should also have been saved as they are treated as caller save registers.
+- Added dyld allocated memory protection via the environment variable
+  DYLD_MEM_PROTECT.  This involved picking up malloc.c and adding the
+  zoneprotect stuff to it.  This could have problems when used with the debugger
+  interface and should not be used.
+- Changed the time outs for the debug mach messages from 30 seconds to 4
+  miniutes.  The debugger was timing out in reading large dylibs.  It shouldn't
+  process the messages when it gets them but rather just create a list of things
+  to do and then do them.
+- Fixed a bug in the locking of the dyld data structures.  What was happening
+  is that lock and thread_that_has_lock could be inconsistant as the lock can
+  get taken by a thread and it switch out of before thread_that_has_lock is
+  set to thread_self().  Then an other thread can find the lock set and in
+  checking for a dead lock will test thread_that_has_lock against thread_self()
+  and think it is a dead lock.  The fix was somewhat extensive.  Lock was
+  changed to global_lock and used to protect dyld_lock and
+  thread_that_has_dyld_lock.  Now global_lock is lock to inspect or set either
+  of dyld_lock or thread_that_has_dyld_lock.  Then to make the debugger it
+  depends order of setting and clearing of dyld_lock and
+  thread_that_has_dyld_lock are such that if dyld_lock is true
+  thread_that_has_dyld_lock will be vaild or THREAD_NULL.  The later case can
+  only happen when a tread is unlocking.  So in set_lock and release_lock if
+  it is the debug thread nothing is done because if there was a thread that had
+  the lock it was resumed or it's trying to release the lock and it it fine.
+
+Changes for the 4.0 release (the cctools-143 release):
+- Change it so that registered functions get called when the dyld lock is not
+  out.  This added a new link state.
+- Changed the order dependent libraries of dymanic libraries get loaded.  To
+  get all of the executables libraries loaded before libraries dependent
+  libraries.  The change was in map_library_image() the call to
+  load_images_libraries() was removed.  Then a new flag,
+  dependent_libraries_loaded, was added to the library_image structure.  Then
+  the routine load_dependent_libraries() was added to call
+  load_images_libraries() for library images where dependent_libraries_loaded
+  was FALSE.  load_dependent_libraries() is called from link_in_need_modules().
+- Added dealing with N_INDR symbols in the dynamic linker and doing checking of
+  N_INDR symbol loop checking.  This is in lookup_symbol() in symbols.c.
+- Fixed a bug that did not have the correct address of the dynamic link editor's
+  mach header for DYLD_IMAGE_ADDED events when the dynamic linker was not moved
+  from it's staticly linked address.  The fix was to initialize
+  dyld_image_header to the value of &_mh_dylinker_header in dyld_reloc.c .
+
+Changes for the 4.0 release (the cctools-141 release):
+- Fixed a problem with module bound events for the exectable not being reported.
+  The was a problem in that the link_state was not set to LINKED by
+  call_module_initializers().  This was also a problem for objects loaded that
+  had no section marked with S_MOD_INIT_FUNC_POINTERS.
+- Added support for runtime loading.  Only loading of MH_BUNDLE files is
+  currently supported (no unloading, replacing).  This is the minimum support
+  to get programs using bundles up.  This includes the routines to register
+  functions for loading and binding for the Objective-C runtime.
+
+Changes for the 4.0 release (the cctools-138 release):
+- Changed relocate_symbol_pointers_for_private_externs() to
+  relocate_symbol_pointers_for_defined_externs() which adds the vmaddr_slide
+  to all non-lazy pointers for symbols defined in the library (private or not).
+  This can happen with ld -r modules where a non-lazy pointer can end up with
+  a defined symbol.
+- Added the calling of module initializaton routines.
+- Changed the locking for _dyld_lookup_and_bind() in dyld_libfuncs.c and moved
+  it into bind_symbol_by_name() in symbols.c because it can cause the user's
+  undefined symbol handler to be called and the lock must be released before it
+  is called.
+
+Changes for the 4.0 release (the cctools-136 release):
+- Changed dyld_start for the i386 to push a zero as a end of frame marker for
+  the debugger and reset %ebp to zero because crt1.o pushes it's value as the
+  end frame marker.
+
+Changes for the 4.0 release (the cctools-135 release):
+- Finished the dyld debug interface stuff.
+
+Changes for the 4.0 release (the cctools-134 release):
+- Started adding the dyld debug interface stuff.  This stuff is incomplete at
+  this release but will compile cleanly.
+- Picked up the sparc fix to entry_point.c which was using the wrong struct
+  and field to get the entry point.
+- Fixed a problem with the machine dependent locks on the m68k and i386 where
+  the address of the lock was passed to the assembly routines and there was a
+  missing indirection.
+
+Changes for the 4.0 release (the cctools-133 release):
+- Stub'ed out all the machine dependent stuff for sparc so at least it can
+  build without problems.
+- Started in on the debug interface.
+- Added the setting and calling of the user's error handlers.
+- Added the lock and the locking for the dyld data structures.
+- Fixed a bug in dyld_start.s for the hppa where the it was calling _dyld_init
+  not __dyld_init as it should have been.
+- Fixed a bug in dyld_start.s for the m68k where the argument for __dyld_reloc
+  had a sp@+ instead of sp@- for the move of the argument on to the stack.
+
+Changes for the 4.0 release (the cctools-132 release):
+- Got hppa support done (relocation, dyld_start, entry_point).
+
+Changes for the 3.3 release (the cctools-127 release):
+- Got the kernel interface support debugged (under the i386).  A few fixes, in
+  __dyld_start for the i386 the mh parameter was put at 4 off the esp which was
+  changed to zero, also in __dyld_start for both the i386 and m68k the mh
+  argument was not removed before calling the entry point, in generic_reloc.c
+  in local_relocation reloc[i].field was being used were field was broken out
+  depending on if the entry was scattered so it was changed to use the broken
+  out fields and in dyld_reloc() SEG_LINKEDIT needed vmaddr_slide added to it
+  to allow it to run before the code was relocated.
+
+Changes for the 3.3 release (the cctools-122 release):
+- Fixed a bug in the relocate_symbol_pointers_in_library_image() that did not
+  calculate the symbol_index right (the two values were reversed) this bug was
+  already fixed in relocate_symbol_pointers_in_object_image().
+- Fixed a bug in relocate_symbol_pointers() that did not add the 
+  image->vmaddr_slide value to the address to be set with the symbol value.
+
+Changes for the 3.3 release (the cctools-120 release):
+- Figured out what is needed in the way of compiler changes need at this point.
+  They are:
+
+* Change the i386 symbol stub code to fix bugs in the code (yes I gave you code
+  that does not work, I've tested this new stuff).
+  For non-pic stubs, from this:
+		.symbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		ljmp     L_foo$lazy_ptr
+	Lfoo$stub_binder:
+		pushl   $L_foo$lazy_ptr
+		jmp     stub_binding_helper
+  to this:
+		.symbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		jmp     *L_foo$lazy_ptr
+	Lfoo$stub_binder:
+		pushl   $L_foo$lazy_ptr
+		jmp     dyld_stub_binding_helper
+
+  For pic code, from this:
+	.picsymbol_stub
+	<< I never wrote this case down >>
+
+  to this:
+		.picsymbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		call	L1foo$stub
+	L1foo$stub:
+		popl	%eax
+		movl	L_foo$lazy_ptr-L1foo$stub(%eax),%ebx
+		jmp	%ebx
+	Lfoo$stub_binder:
+		lea	L_foo$lazy_ptr-L1foo$stub(%eax),%eax
+		pushl	%eax
+		jmp     dyld_stub_binding_helper
+
+* Change the m68k symbol stub code to fix bugs in the code.
+  For non-pic stubs, from this:
+	.symbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		jmp	@(L_foo$lazy_ptr)
+	Lfoo$stub_binder:
+		movel	#L_foo$lazy_ptr,sp@-
+		bra	stub_binding_helper
+		.lazy_symbol_pointer
+
+  to this:
+	.symbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		movel	L_foo$lazy_ptr,a0
+		jmp	a0@
+	Lfoo$stub_binder:
+		movel	#L_foo$lazy_ptr,sp@-
+		bra	stub_binding_helper
+		.lazy_symbol_pointer
+
+  For pic code, from this:
+	.picsymbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		jmp	pc@(L_foo$lazy_ptr-.)
+	Lfoo$stub_binder:
+		movel	pc@(L_foo$lazy_ptr-.),sp@-
+		bra	stub_binding_helper
+  to this:
+	.picsymbol_stub
+	Lfoo$stub:
+		.indirect_symbol _foo
+		movel	pc@(L_foo$lazy_ptr-.),a0
+		jmp	a0@
+	Lfoo$stub_binder:
+		pea	pc@(L_foo$lazy_ptr-.)
+		bra	dyld_stub_binding_helper
+
+* Change the name of the symbol stub_binding_helper to dyld_stub_binding_helper.
+  I want all names associated with the dynamic linker to start with "dyld".
+
+* Change the compiler driver to pass "-NEXTSTEP-deployment-target XXX" to as(1)
+  and ld(1).  I see no reason to pass it to lipo(1) which is the other tool I
+  own which cc(1) runs.
+
+* Change the compiler driver when "-NEXTSTEP-deployment-target 3.3" is seen to
+  use -lcrt1.o instead of -lcrt0.o .  I would suggest we leave the default as
+  3.2 until we have this all working (which will be still quite some time).
+
+* Also if the -object or -preload ld(1) options are seen always link with
+  -lcrt0.o (reguardless of the -NEXTSTEP-deployment-target flag).
+  
+* Add the new ld flags to the compiler driver to pass them through to ld(1) if
+  specified:
+	-dylinker
+	-dylinker_install_name XXX
+	-output_for_dyld
+	-keep_private_externs
+ 
+- Agreed on a kernel interface for the 3.3 kernel.   This was the email I sent
+  to David Bohman after a discussion on this:
+
+The kernel when it is executing an a.out with an LC_LOAD_DYLINKER command will
+do the following:
+
+* Map the segments Mach-O file specified by the LC_LOAD_DYLINKER into memory.
+  If the vmaddress of the segments are not available it will "slide" it to the
+  any available address.  The segment of this Mach-O will be contigious so the
+  kernel can determine the size of the needed memory by adding up the vmsize's
+  of the LC_SEGMENT commands.
+
+* Then the kernel will use the entry point in the LC_LOAD_DYLINKER (plus any
+  slide amount) to start the task instead of the entry point in the a.out.
+
+* One additional argument will be passed to the entry point in the
+  LC_LOAD_DYLINKER in addition to the normal argc, argv, envp.  This argument is
+  the value of the address where the a.out's file offset 0 appears in memory.
+  That is the vmaddr of the LC_SEGMENT command of the a.out who's fileoff is 0
+  (which is the address of the a.out's mach_header in memory).  If there is no
+  such segment in an a.out with an LC_LOAD_DYLINKER the exec(2) should fail with
+  and EBADEXEC or some such thing.  This extra argument will be first on stack
+  based architectures like the m68k and i386 such that if it is removed from the
+  stack the interface is the same as it is to the a.out's entry point.  For
+  example the m68k interface would be:
+	/*
+	 * Runtime startup for NeXT m68k interface to the dynamic linker. 
+	 * This is the same as crt0.s with the addition of the address of
+	 * the a.out's mach header passed as the an extra first argument.
+	 *
+	 * Kernel sets up stack frame to look like:
+	 *
+	 *	| STRING AREA |
+	 *	+-------------+
+	 *	|      0      |
+	 *	+-------------+
+	 *	|    env[n]   |
+	 *	+-------------+
+	 *	       :
+	 *	       :
+	 *	+-------------+
+	 *	|    env[0]   |
+	 *	+-------------+
+	 *	|      0      |
+	 *	+-------------+
+	 *	| arg[argc-1] |
+	 *	+-------------+
+	 *	       :
+	 *	       :
+	 *	+-------------+
+	 *	|    arg[0]   |
+	 *	+-------------+
+	 *	|     argc    |
+	 *	+-------------+
+	 * sp->	|      mh     | Address of where the a.out's file offset 0 is
+	 *	+-------------+ in memory.
+	 *
+	 *	Where arg[i] and env[i] point into the STRING AREA
+	 */
+  For the RISC architectures we will needed to work out the interface as to
+  where this extra argument will be.
+
+* You also want to think about what you want the dynamic linker is to do in the
+  case of an EBADEXEC like error (like a dynamic shared file is not found).  I
+  could send a mach message on a specific port or something to tell the parent
+  that even though the exec(2) did not fail the task did not run successfully.
+
+* We also wanted to allow the user to control where and how big his stack is.
+  The kernel would check the stack pointer of the LC_UNIXTHREAD and if it was
+  non-zero would use that as the stack pointer.  The a.out file must also have
+  an LC_SEGMENT that allocates the stack's memory which contains the stack
+  pointer's value.  This would be implemented in the static link editor, ld(1),
+  by specifying "-stack_size hex_number" and possibly additionally
+  "-stack_pointer hex_number".  The static link editor will create a zerofill
+  segment named __UNIXSTACK of the indicated size and set the stack pointer to
+  the top or bottom depending on the way the architecture grows it's stack.
+
+* Lastly we wanted to change the project ownership of <mach-o/loader.h> and
+  <mach-o/nlist.h>.  The first is installed by mk project and the later is
+  installed by the libc project.  The ownership should be the cctools project.
+  Here's the current copy of <mach-o/loader.h> as in the cctools project:
+
+  Just tell me when you want me to change the cctools project to start
+  installing <mach-o/loader.h> and the mk project can just stop installing it.
+  Also who do I need to talk to with reguard to the libc project and the
+  ownership of <mach-o/nlist.h>?
+
+Changes for the 3.3 release (the cctools-115 release):
+- Started writing the dynamic link editor.

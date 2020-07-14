@@ -1,0 +1,9 @@
+BUILDIT_CMD := `echo ~rc/bin/buildit`
+BUILDIT_ARGS = . -- NEXT_ROOT=/TeflonRoot 'CC=cc -traditional-cpp -D__TEFLON__'
+BUILDIT_QUICK_ARGS = -noclean -nosum -noinstallsrc -noinstallhdrs
+
+buildit::
+	$(BUILDIT_CMD) $(RC_CFLAGS) $(BUILDIT_ARGS)
+
+nbuildit::
+	$(BUILDIT_CMD) $(BUILDIT_QUICK_ARGS) $(RC_CFLAGS) $(BUILDIT_ARGS) 

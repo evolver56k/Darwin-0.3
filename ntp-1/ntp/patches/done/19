@@ -1,0 +1,62 @@
+Forwarded: Thu, 26 Feb 1998 01:32:30 -0500
+Forwarded: "mills@udel.edu "
+Replied: Thu, 26 Feb 1998 01:31:49 -0500
+Replied: "Juha Sarlin <juha@c3l.tyreso.se> ulrich.windl@rz.uni-regensburg.de"
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa19725;
+          25 Feb 1998 03:24 EST
+Received: (from juha@localhost)
+	by samuraj.c3l.tyreso.se (8.8.5/8.8.5) id JAA06866;
+	Wed, 25 Feb 1998 09:24:49 +0100
+Date: Wed, 25 Feb 1998 09:24:49 +0100
+From: Juha Sarlin <juha@c3l.tyreso.se>
+Message-Id: <199802250824.JAA06866@samuraj.c3l.tyreso.se>
+To: ulrich.windl@rz.uni-regensburg.de
+CC: stenn@whimsy.udel.edu
+In-reply-to: <176A950B1D48@rkdvmks1.ngate.uni-regensburg.de> (ulrich.windl@rz.uni-regensburg.de)
+Subject: Re: Report on using ntp-4.0.72 under Linux-2.0
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+
+>>>>> Ulrich Windl <ulrich.windl@rz.uni-regensburg.de> writes:
+
+> what about adding error checking in xntpd?
+
+Like this, perhaps:
+
+*** ntp_loopfilter.c.orig	Tue Feb 17 02:48:44 1998
+--- ntp_loopfilter.c	Mon Feb 24 09:16:25 1998
+***************
+*** 233,236 ****
+--- 233,237 ----
+  #if defined(KERNEL_PLL)
+  	struct timex ntv;
++ 	int retval;
+  #endif /* KERNEL_PLL */
+  
+***************
+*** 454,457 ****
+--- 455,462 ----
+  		    sys_rootdispersion) * 1e6);
+  		ntv.constant = sys_poll - 2;
++ #ifdef MAXTC
++ 		if (ntv.constant > MAXTC)
++ 		    ntv.constant = MAXTC;
++ #endif
+  		ntv.status = STA_PLL;
+  		if (pps_enable)
+***************
+*** 487,491 ****
+  			ntv.status |= STA_FLL;
+  #endif
+! 		if (ntp_adjtime(&ntv) == TIME_ERROR)
+  			if (ntv.status != pll_status)
+  				msyslog(LOG_ERR, "kernel pll status change %x",
+--- 492,499 ----
+  			ntv.status |= STA_FLL;
+  #endif
+! 		retval = ntp_adjtime(&ntv);
+! 		if (retval < 0)
+! 			msyslog(LOG_ERR, "local_clock: ntp_adjtime failed: %m");
+! 		else if (retval == TIME_ERROR)
+  			if (ntv.status != pll_status)
+  				msyslog(LOG_ERR, "kernel pll status change %x",

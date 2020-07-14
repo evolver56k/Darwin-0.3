@@ -1,0 +1,173 @@
+			DMA Dequeue algorithm
+			
+Definitions: 
+
+* a descriptor is "completed" (as far as the kernel is concerned) if at least one byte moved between the device and the descriptor. A descriptor can be "completed" even if it was aborted because of any error. A descriptor 'n' is NOT completed if a device-level error occurred while processing data from descriptor 'n-1', even of the TE fetched one or two buffers worth of data from descriptor 'n'.
+
+* DMA read: transfer from device to memory
+
+* DMA write: transfer from memory to device
+
+Notes:
+
+* We write -1 to a descriptor's rem_byte_count field when it is enqueued.
+* We write -1000 (or some magic number less than -(max buffer size)) to the
+  hw_count register every time we write the hw_curr_desc register.
+* Once chan_dma_dequeue() is called with DEQUEUE_ALL, further calls specifying
+  only DEQUEUE_COMPLETED are not guaranteed to return only completed frames.
+  
+  
+chan_dma_dequeue(dequeue_spec_t dequeue_spec) {
+
+	desc = head of software's descriptor chain;
+	if(direction == DMA_READ) {
+		if(desc->rem_byte_count != -1) {
+			/*
+			 * Easy case; TE has written the rem_byte_count field, 
+			 * indicating completion. 
+			 */
+			dequeue_ok = TRUE;
+			goto got_one;
+		}
+		
+		/*
+		 * Continue - this descriptor could still be complete
+		 * if EOR was not here.
+		 */
+	}
+	if(desc_list_not_empty) {
+		/*
+		 * Channel running; another easy case. This descriptor is
+		 * complete as long as it's not the current descriptor.
+		 */
+		if(desc != hw_curr_desc)
+			dequeue_ok = TRUE;
+		else
+			dequeue_ok = FALSE;			
+	}
+	else {
+		/*
+		 * Channel idle.
+		 */
+		if(desc != hw_curr_desc) {
+		 	/*
+			 * Not current, must be completed.
+			 */
+			dequeue_ok = TRUE;
+		}
+		else {	
+		    	/*
+			 * This descriptor was either the last descriptor
+			 * serviced by the TE or the next one to be serviced.
+			 *
+			 * We write -1000 to hw_count every time we write
+			 * hw_curr_desc, so if it's still -1000, we know
+			 * the TE hasn't gotten to this one yet.
+			 */
+			if(hw_count == -1000) {
+				dequeue_ok = FALSE;
+			}
+			else {
+				/*
+				 * Tricky case. The TE at least started to work
+				 * on this descriptor, but we don't know if
+				 * any data from this descriptor moved to/from
+				 * the device. We have to examine the amount
+				 * of data moved from memory and the state of
+				 * the TE buffers...
+				 */
+				if(hw_count between 0 and -(max buffer size)) {
+					/*
+					 * This implies completion by the TE.
+					 */
+					dequeue_ok = TRUE;
+				} 
+				else {
+					bytes_moved = desc->count - hw_count;
+												
+					if(direction == DMA_READ) {
+					    /*
+					     * For data in, any bytes 
+					     * transferred
+					     * means that the descriptor is
+					     * complete.
+					     */
+					    if(bytes_moved == 0) {
+						got_a_desc = FALSE;
+					    }
+					    else {
+						got_a_desc = TRUE;
+					    }
+					    goto got_one;
+					}
+
+					if(bytes_moved > (2 * buffer size)) {
+						/*
+						 * some had to move to the
+						 * device.
+						 */
+						dequeue_ok = TRUE;
+					}
+					else if(bytes_moved == 0) {
+						/*
+						 * We haven't touched this 
+						 * descriptor's data.
+						 */
+						dequeue_ok = FALSE;
+					}
+					else if(bytes_moved == 1 buffer) {
+					    if(either "buffer full" flag set) {
+					    	/*
+						 * We couldn't have moved data
+						 * to or from the device.
+						 */
+						dequeue_ok = FALSE;
+					    }
+					    else {
+					    	dequeue_ok = TRUE;
+					    }
+					}
+					else  {
+					    /*
+					     * bytes_moved == 2 buffers.
+					     */
+					    if(BOTH "buffer full" flags set) {
+						dequeue_ok = FALSE;
+					    }
+					    else {
+					    	/*
+						 * We moved 2 buffers from 
+						 * memory but at least one
+						 * of the buffers is not full, 
+						 * so some data must have 
+						 * moved to the device.
+						 */
+						dequeue_ok = TRUE;
+					    }
+					}
+				}
+			}
+		} /* desc == hw_curr */
+	}	  /* channel idle */
+	
+got_one:
+
+	/*
+	 * Even if dequeue_ok is FALSE, we can still dequeue if the channel
+	 * isn't running and the caller said they wanted all descriptors.
+	 */
+	if(!dequeue_ok && 
+	   (channel not running) && 
+	   (dequeue_spec == DEQUEUE_ALL)) {
+		dequeue_ok = TRUE;
+	}
+	if(dequeue_ok) {
+		grab this desc from s/w chain; 
+		if this is the last descriptor of a frame {
+			dequeue the frame;
+			get return parameters from last descriptor;
+			unlock the VM associated with this frame;
+			free all descriptors and the frame;
+		}
+	}
+}

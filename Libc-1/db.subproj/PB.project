@@ -1,0 +1,23 @@
+{
+    FILESTABLE = {
+        H_FILES = (); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        SUBPROJECTS = (btree.subproj, db.subproj, hash.subproj, mpool.subproj, recno.subproj); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_COMPILEROPTIONS = "-D__DBINTERFACE_PRIVATE"; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_COMPILEROPTIONS = "-D__DBINTERFACE_PRIVATE"; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = db; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_COMPILEROPTIONS = "-D__DBINTERFACE_PRIVATE"; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

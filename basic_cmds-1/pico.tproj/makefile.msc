@@ -1,0 +1,118 @@
+# $Id: makefile.msc,v 1.1.1.1 1999/04/15 17:45:13 wsanchez Exp $
+#
+#   Michael Seibel
+#   Networks and Distributed Computing
+#   Computing and Communications
+#   University of Washington
+#   Administration Builiding, AG-44
+#   Seattle, Washington, 98195, USA
+#   Internet: mikes@cac.washington.edu
+#
+#   Please address all bugs and comments to "pine-bugs@cac.washington.edu"
+#
+#   Copyright 1991-1993  University of Washington
+#
+#    Permission to use, copy, modify, and distribute this software and its
+#   documentation for any purpose and without fee to the University of
+#   Washington is hereby granted, provided that the above copyright notice
+#   appears in all copies and that both the above copyright notice and this
+#   permission notice appear in supporting documentation, and that the name
+#   of the University of Washington not be used in advertising or publicity
+#   pertaining to distribution of the software without specific, written
+#   prior permission.  This software is made available "as is", and
+#   THE UNIVERSITY OF WASHINGTON DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED,
+#   WITH REGARD TO THIS SOFTWARE, INCLUDING WITHOUT LIMITATION ALL IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND IN
+#   NO EVENT SHALL THE UNIVERSITY OF WASHINGTON BE LIABLE FOR ANY SPECIAL,
+#   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+#   LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, TORT
+#   (INCLUDING NEGLIGENCE) OR STRICT LIABILITY, ARISING OUT OF OR IN CONNECTION
+#   WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#  
+#   Pine and Pico are trademarks of the University of Washington.
+#   No commercial use of these trademarks may be made without prior
+#   written permission of the University of Washington.
+#
+
+#
+#
+# Makefile for MS-DOS version of the PINE composer library and 
+# stand-alone editor pico.
+#
+# MSC version of makefile
+#
+CC=cl
+RM=del
+CP=copy 
+
+#includes mouse support
+MOUSE=		-DMOUSE
+#includes symbol info for debugging 
+DEBUG=			#-Zi -Od
+
+!IF	DEFINED(PCTCP)
+NET=	-DPCTCP
+!ELSE
+NET=
+!ENDIF
+
+#in general, no debugging and optimize for size
+CFLAGS=	-Os $(DEBUG) -WX -AL -Gt4 -Gy $(NET) -DJOB_CONTROL -DANSI -DDOS $(MOUSE)
+
+# switches for library building
+LIBER=lib
+LIBARGS=/NOL -+
+
+HFILES=		estruct.h edef.h efunc.h ebind.h pico.h
+
+CFILES=		ansi.c attach.c basic.c bind.c browse.c \
+		buffer.c composer.c display.c file.c fileio.c \
+		line.c ibmpc.c osdep.c pico.c random.c region.c \
+		search.c spell.c window.c word.c
+
+OFILES=		ansi.obj attach.obj basic.obj bind.obj browse.obj \
+		buffer.obj composer.obj display.obj file.obj fileio.obj \
+		line.obj ibmpc.obj osdep.obj pico.obj random.obj region.obj \
+		search.obj spell.obj window.obj word.obj
+
+all:		pico.exe
+
+.c.obj:
+	$(CC) -c $(CFLAGS) $*.c
+	$(LIBER) libpico $(LIBARGS) $*;
+
+$(OFILES):	$(HFILES)
+
+#
+# dependencies for the Unix versions of pico and libpico.a
+#
+osdep.c:	os_dos.c
+		$(RM) osdep.c
+		$(CP) os_dos.c osdep.c
+
+osdep.h:	os_dos.h
+		$(RM) osdep.h
+		$(CP) os_dos.h osdep.h
+
+
+libpico.lib:	osdep.c osdep.h $(OFILES)
+#	del libpico.lib
+#	$(LIBER) libpico +ansi+attach+basic+bind+browse;
+#	$(LIBER) libpico +buffer+composer+display+file+fileio;
+#	$(LIBER) libpico +line+ibmpc+osdep+pico+random+region;
+#	$(LIBER) libpico +search+spell+window+word;
+
+
+main.obj: main.c $(HFILES)
+	$(CC) /c $(CFLAGS) main.c
+
+pico.exe: libpico.lib main.obj
+	link /I /NOI /NOE /stack:32768 main.obj,pico.exe,nul,libpico.lib;
+#	link /CO /I /NOI /NOE /stack:32768 main.obj,pico.exe,nul,libpico.lib;
+
+#clean:
+#		$(RM) *.lib
+#		$(RM) *.obj
+#		$(RM) osdep.c
+#		$(RM) osdep.h
+#

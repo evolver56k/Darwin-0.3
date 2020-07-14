@@ -1,0 +1,33 @@
+##
+# /etc/hostconfig
+##
+# This file in maintained by the system control panels
+##
+
+# Network configuration
+HOSTNAME=-AUTOMATIC-
+ROUTER=-AUTOMATIC-
+
+# Services
+AFPSERVER=-NO-
+APPLETALK=-YES-
+AUTODISKMOUNT=-YES-
+AUTOMOUNT=-YES-
+CONFIGSERVER=-NO-
+IPFORWARDING=-NO-
+MAILSERVER=-NO-
+MANAGEMENTSERVER=-NO-
+NETBOOTSERVER=-NO-
+NISDOMAIN=-NO-
+MACHIPC=-SECURE-
+TIMESYNC=-YES-
+QTSSERVER=-NO-
+WEBSERVER=-NO-
+
+# Tuning
+if [ "${AFPSERVER}" = "-YES-" ] ||
+   [ "${QTSSERVER}" = "-YES-" ]; then
+  SERVER=-YES-
+else
+  SERVER=-NO-
+fi

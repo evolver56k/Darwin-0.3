@@ -1,0 +1,14 @@
+/MacOSStubs.c/1.1.1.2/Thu Jul 22 22:56:04 1999/-kb/Tkernel-7
+/hfs.h/1.1.1.2/Thu Jul 22 22:56:04 1999/-kb/Tkernel-7
+/hfs_btreeio.c/1.1.1.2/Thu Jul 22 22:56:04 1999/-kb/Tkernel-7
+/hfs_dbg.h/1.1.1.2/Thu Jul 22 22:56:04 1999/-kb/Tkernel-7
+/hfs_lockf.c/1.1.1.2/Thu Jul 22 22:56:05 1999/-kb/Tkernel-7
+/hfs_lockf.h/1.1.1.2/Thu Jul 22 22:56:05 1999/-kb/Tkernel-7
+/hfs_lookup.c/1.1.1.2/Thu Jul 22 22:56:05 1999/-kb/Tkernel-7
+/hfs_readwrite.c/1.1.1.2/Thu Jul 22 22:56:05 1999/-kb/Tkernel-7
+/hfs_vfsops.c/1.1.1.2/Thu Jul 22 22:56:05 1999/-kb/Tkernel-7
+/hfs_vfsutils.c/1.1.1.2/Thu Jul 22 22:56:06 1999/-kb/Tkernel-7
+/hfs_vhash.c/1.1.1.2/Thu Jul 22 22:56:06 1999/-kb/Tkernel-7
+/hfs_vnodeops.c/1.1.1.2/Thu Jul 22 22:56:06 1999/-kb/Tkernel-7
+/mount_hfs.h/1.1.1.2/Thu Jul 22 22:56:06 1999/-kb/Tkernel-7
+D/hfscommon////

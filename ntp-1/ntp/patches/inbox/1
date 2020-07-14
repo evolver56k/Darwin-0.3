@@ -1,0 +1,51 @@
+Replied: Wed, 19 Feb 1997 00:30:04 -0500
+Replied: "Don Lewis <Don.Lewis@tsc.tdk.com> "
+Replied: Tue, 18 Feb 1997 18:25:35 -0500
+Replied: "Don Lewis <Don.Lewis@tsc.tdk.com> "
+Received: from snow-white.ee.udel.edu by whimsy.udel.edu id aa22244;
+          18 Feb 97 9:18 GMT
+Received: from sunrise.gv.tsc.tdk.com (root@sunrise.gv.tsc.tdk.com [192.168.241.191])
+          by gatekeeper.tsc.tdk.com (8.8.4/8.8.4) with ESMTP
+	  id BAA26998 for <stenn@whimsy.udel.edu>; Tue, 18 Feb 1997 01:18:52 -0800 (PST)
+Received: from salsa.gv.tsc.tdk.com (salsa.gv.tsc.tdk.com [192.168.241.194])
+          by sunrise.gv.tsc.tdk.com (8.8.4/8.8.4) with ESMTP
+	  id BAA15181 for <stenn@whimsy.udel.edu>; Tue, 18 Feb 1997 01:18:51 -0800 (PST)
+Received: (from gdonl@localhost)
+          by salsa.gv.tsc.tdk.com (8.8.4/8.8.4)
+	  id BAA03601; Tue, 18 Feb 1997 01:18:50 -0800 (PST)
+From: Don Lewis <Don.Lewis@tsc.tdk.com>
+Message-Id: <199702180918.BAA03601@salsa.gv.tsc.tdk.com>
+Date: Tue, 18 Feb 1997 01:18:49 -0800
+In-Reply-To: stenn@whimsy.udel.edu
+       "Re: xntp3-5.89.6 will be available soon" (Feb 18,  1:56am)
+X-Mailer: Mail User's Shell (7.2.6 alpha(3) 7/19/95)
+To: stenn@whimsy.udel.edu
+Subject: Re: xntp3-5.89.6 will be available soon
+Cc: Don.Lewis@tsc.tdk.com
+
+I dig around in the freebsd-hackers archive, and it sounds like
+signaled I/O won't work for the refclocks, at least without doing
+TIOCSCTTY, and then you have to have dumped your previous controlling
+tty and you're limited to one refclock.  It sounds like the symptoms
+should be F_SETOWN failing, though.
+
+I was digging through the FreeBSD source, and it looks like closing
+the fd associated with the tty device calls ttyflush(), which will
+post a signal to us if we somehow manange to get into signalled I/O
+mode.  That will cause the handler to get invoked before the close()
+returns.  Since the matching bit is still set in activefds, we'll select()
+on it.  I'd expect it to tell us it's ready for reading, but who knows
+what kind of wierd stuff will happen if we select() or read() on this
+fd in this state.
+
+I did notice that we're sometimes playing with activefds and maxactivefd
+without signals being blocked.  We should wrap the entire insides of
+close_socket() and close_file() between a BLOCKIO()/UNBLOCKIO() pair.
+Also, we need to block SIGIO while we're fiddling with the refio list
+in io_closeclock().  We could move the UNBLOCKIO() after the close_file()
+and eliminate the signal stuff in close_file(), and we may want to
+do the same with close_socket() and it's callers.
+
+Not to say that there isn't a bug in FreeBSD ...
+
+			---  Truck

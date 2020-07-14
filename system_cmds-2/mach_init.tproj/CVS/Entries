@@ -1,0 +1,21 @@
+/Makefile/1.1.1.1/Sun May  2 04:21:35 1999/-kb/Tsystem_cmds-2
+/Makefile.preamble/1.1.1.1/Sun May  2 04:21:35 1999/-kb/Tsystem_cmds-2
+/Notes/1.1.1.1/Sun May  2 04:21:35 1999/-kb/Tsystem_cmds-2
+/PB.project/1.1.1.1/Sun May  2 04:21:35 1999/-kb/Tsystem_cmds-2
+/bootstrap.c/1.1.1.1/Sun May  2 04:21:35 1999/-kb/Tsystem_cmds-2
+/bootstrap.defs/1.1.1.1/Sun May  2 04:21:35 1999/-kb/Tsystem_cmds-2
+/bootstrap.h/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/bootstrap_internal.h/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/bootstrap_server.c/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/bootstrap_server.h/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/error_log.c/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/error_log.h/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/initConf/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/lists.c/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/lists.h/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/parser.c/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/parser.h/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/rpc_services.c/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/testConfig/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+/testConfig2/1.1.1.1/Sun May  2 04:21:36 1999/-kb/Tsystem_cmds-2
+D/testServer////

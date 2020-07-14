@@ -1,0 +1,13 @@
+#
+# DDM Viewer data for the IDE driver
+#
+Index:0:"IDE Driver"
+#
+# Common fields.
+#
+0x00001000 :	"IDE Lock"
+0x00002000 :	"IDE Ctl"
+0x00004000 :	"IDE Cmd"
+0x00008000 :	"IDE Disk"
+0x00000100 :	"IDE DMA"
+0x00000200 :	"IDE Log"

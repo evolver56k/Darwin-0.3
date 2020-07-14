@@ -1,0 +1,41 @@
+#!/bin/sh
+
+##
+# Run the AppleTalk Startup Program.
+##
+
+. /etc/rc.common
+
+CheckForNetwork
+
+if [ "${NETWORKUP}" = "-NO-" ]; then exit; fi
+
+if [ "${ARCH}" = "ppc" ] &&
+   [ "${APPLETALK:=-YES-}" != "-NO-" ]; then
+
+    ConsoleMessage "Starting AppleTalk"
+
+    case "${APPLETALK}" in
+
+      -YES-)
+	# Single port on default interface
+        appletalk -u -q
+	;;
+
+      -ROUTER-)
+	# Router mode
+        appletalk -r -q
+	;;
+
+      -MULTIHOME-)
+	# Multihome non-routing mode
+        appletalk -x -q
+	;;
+
+      *)
+	# Single port on specified interface
+        appletalk -u -q -b ${APPLETALK}
+	;;
+
+    esac
+fi 

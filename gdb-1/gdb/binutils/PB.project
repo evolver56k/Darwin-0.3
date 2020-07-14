@@ -1,0 +1,110 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            acconfig.h, 
+            arparse.h, 
+            arsup.h, 
+            bucomm.h, 
+            budbg.h, 
+            coffgrok.h, 
+            debug.h, 
+            nlmconv.h, 
+            sysinfo.h
+        ); 
+        OTHER_LINKED = (
+            addr2line.c, 
+            ar.c, 
+            arlex.c, 
+            arparse.c, 
+            arsup.c, 
+            bucomm.c, 
+            coffdump.c, 
+            coffgrok.c, 
+            debug.c, 
+            deflex.c, 
+            dlltool.c, 
+            filemode.c, 
+            ieee.c, 
+            "is-ranlib.c", 
+            "is-strip.c", 
+            "maybe-ranlib.c", 
+            "maybe-strip.c", 
+            nlmconv.c, 
+            nlmheader.c, 
+            nm.c, 
+            "not-ranlib.c", 
+            "not-strip.c", 
+            objcopy.c, 
+            objdump.c, 
+            prdbg.c, 
+            rdcoff.c, 
+            rddbg.c, 
+            size.c, 
+            srconv.c, 
+            stabs.c, 
+            strings.c, 
+            sysdump.c, 
+            sysinfo.c, 
+            syslex.c, 
+            version.c, 
+            wrstabs.c
+        ); 
+        OTHER_SOURCES = (
+            ChangeLog, 
+            Makefile.in, 
+            NEWS, 
+            README, 
+            aclocal.m4, 
+            addr2line.1, 
+            ar.1, 
+            arlex.l, 
+            arparse.y, 
+            binutils.info, 
+            "binutils.info-1", 
+            "binutils.info-2", 
+            binutils.texi, 
+            config.in, 
+            config.texi, 
+            configure, 
+            configure.bat, 
+            configure.com, 
+            configure.in, 
+            cxxfilt.man, 
+            deflex.l, 
+            defparse.y, 
+            "dep-in.sed", 
+            "mac-binutils.r", 
+            makefile.vms, 
+            "mpw-config.in", 
+            "mpw-make.sed", 
+            nlmconv.1, 
+            nlmheader.y, 
+            nm.1, 
+            objcopy.1, 
+            objdump.1, 
+            ranlib.1, 
+            ranlib.sh, 
+            sanity.sh, 
+            size.1, 
+            strings.1, 
+            strip.1, 
+            sysinfo.y, 
+            syslex.l, 
+            sysroff.info
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = binutils; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

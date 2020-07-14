@@ -1,0 +1,173 @@
+OPTIONS/show_space		optional show_space
+OPTIONS/eventmeter		optional eventmeter
+OPTIONS/gdb			optional gdb
+OPTIONS/iplmeas			optional iplmeas
+OPTIONS/fp_emul			optional fp_emul
+OPTIONS/pc_support		optional pc_support
+OPTIONS/mk_hasdrivers		optional mk_hasdrivers
+OPTIONS/dk_hasdrivers		optional dk_hasdrivers
+
+
+bsd/dev/vol.c			optional vol
+
+bsd/dev/vol.c			optional vol
+
+bsd/if/ppc/if_en.c		standard
+bsd/if/ppc/mace.c		standard
+
+bsd/net/if_blue.c		standard
+bsd/net/ndrv.c			standard
+
+bsd/netinet/in_cksum.c		standard
+
+kern/xpr.c			optional xpr_debug
+
+machdep/ppc/APM.c		standard
+machdep/ppc/alignment.c		standard
+machdep/ppc/ast_ppc.c		standard
+machdep/ppc/DeviceTree.c	standard
+machdep/ppc/dbdma.c		standard
+machdep/ppc/diag.c		standard
+machdep/ppc/fault_copy.c	standard
+machdep/ppc/fpu_ppc.c		standard
+machdep/ppc/htab.c		standard
+machdep/ppc/kdp_machdep.c	standard
+machdep/ppc/kern_machdep.c	standard
+machdep/ppc/machdep.c		standard
+machdep/ppc/machine_clock.c	standard
+machdep/ppc/miniMonMachdep.c	standard
+machdep/ppc/misc.c		standard
+machdep/ppc/pcb.c		standard
+machdep/ppc/pmap.c		standard
+machdep/ppc/PseudoKernel.c	standard
+machdep/ppc/serial_io.c		standard
+machdep/ppc/swapgeneric.m	standard
+machdep/ppc/syscall_names.c	standard
+machdep/ppc/systemcalls.c	standard
+machdep/ppc/trap.c		standard
+machdep/ppc/unix_signal.c	standard
+machdep/ppc/unix_startup.c	standard
+
+
+machdep/ppc/bcopy.s		standard
+machdep/ppc/cache.s		standard
+machdep/ppc/cswtch.s		standard
+machdep/ppc/fpu.s		standard
+machdep/ppc/hw_exception.s	standard
+machdep/ppc/lowmem_vectors.s	standard
+machdep/ppc/mcount.s	standard
+machdep/ppc/misc_asm.s		standard
+machdep/ppc/movc.s		standard
+machdep/ppc/setjmp.s		standard
+machdep/ppc/start.s		standard
+machdep/ppc/xsumas.s		standard
+
+machdep/ppc/libc/abs.s		standard
+machdep/ppc/libc/bcmp.s		standard
+machdep/ppc/libc/ffs.s		standard
+
+bsd/dev/ppc/conf.c		standard
+bsd/dev/ppc/cons.c		standard
+bsd/dev/ppc/FBConsole.c		standard
+bsd/dev/ppc/SerialConsole.c	standard
+bsd/dev/ppc/km.m		standard
+bsd/dev/ppc/kmDevice.m		standard
+bsd/dev/ppc/kmGraphics.m	standard
+bsd/dev/ppc/kmLocalized.m	standard
+bsd/dev/ppc/mem.c		standard
+bsd/dev/ppc/nvram.c		standard
+bsd/dev/ppc/PowerSurgeMB.m	standard
+bsd/dev/ppc/video_scroll.s	standard
+
+bsd/dev/ppc/adb.m			standard
+bsd/dev/ppc/drvCuda/cuda.m		optional mk_hasdrivers
+bsd/dev/ppc/drvPMU/pmu.m		optional mk_hasdrivers
+bsd/dev/ppc/IOADBBus.m			standard
+bsd/dev/ppc/EventShmemLock.s		optional event
+bsd/dev/ppc/EventSrcPCKeyboard.m	optional event
+bsd/dev/ppc/EventSrcPCPointer.m		optional event
+bsd/dev/ppc/PPCKeyboard.m		standard
+bsd/dev/ppc/PPCKeymap.c			standard
+bsd/dev/ppc/PPCMouse.m			optional event
+bsd/dev/ppc/PCPointer.m			optional event
+
+bsd/dev/ppc/drvOHare/ohare.m		optional mk_hasdrivers
+
+bsd/dev/ppc/drvApple96_SCSI/Apple96BusState.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96Curio.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96CurioDBDMA.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96CurioPublic.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96HWPrivate.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96Hardware.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96ISR.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96SCSI.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Apple96SCSIPrivate.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/StateMachines.m		optional mk_hasdrivers
+bsd/dev/ppc/drvApple96_SCSI/Timestamp.c		optional mk_hasdrivers
+bsd/dev/ppc/drvAppleMesh_SCSI/MESH_DBDMA.m		optional mk_hasdrivers
+
+bsd/dev/ppc/drvMaceEnet/MaceEnet.m 			optional mk_hasdrivers
+bsd/dev/ppc/drvMaceEnet/MaceEnetPrivate.m 		optional mk_hasdrivers
+bsd/dev/ppc/drvMaceEnet/MaceEnetHW.m 			optional mk_hasdrivers
+
+bsd/dev/ppc/drvBMacEnet/BMacEnet.m             optional mk_hasdrivers
+bsd/dev/ppc/drvBMacEnet/BMacEnetPrivate.m      optional mk_hasdrivers
+bsd/dev/ppc/drvBMacEnet/BMacEnetHW.m           optional mk_hasdrivers
+bsd/dev/ppc/drvBMacEnet/BMacEnetMII.m 		optional mk_hasdrivers
+
+bsd/dev/ppc/drvDECchip21040/DECchip21040.m         optional mk_hasdrivers
+bsd/dev/ppc/drvDECchip21040/DECchip21041.m         optional mk_hasdrivers
+bsd/dev/ppc/drvDECchip21040/DECchip2104x.m         optional mk_hasdrivers
+bsd/dev/ppc/drvDECchip21040/DECchip2104xPrivate.m  optional mk_hasdrivers
+
+bsd/dev/ppc/drvATADisk/ATADisk.m			optional mk_hasdrivers
+bsd/dev/ppc/drvATADisk/ATADiskInternal.m		optional mk_hasdrivers
+bsd/dev/ppc/drvATADisk/ATADiskKernel.m			optional mk_hasdrivers
+
+bsd/dev/ppc/drvPPCATA/AtapiCnt.m			optional mk_hasdrivers
+bsd/dev/ppc/drvPPCATA/AtapiCntInternal.m		optional mk_hasdrivers
+bsd/dev/ppc/drvPPCATA/IdeCnt.m				optional mk_hasdrivers
+bsd/dev/ppc/drvPPCATA/IdeCntDma.m			optional mk_hasdrivers
+bsd/dev/ppc/drvPPCATA/AtapiCntCmds.m			optional mk_hasdrivers
+bsd/dev/ppc/drvPPCATA/IdeCntCmds.m			optional mk_hasdrivers
+bsd/dev/ppc/drvPPCATA/IdeCntInit.m			optional mk_hasdrivers
+
+bsd/dev/ppc/drvSymbios8xx/Sym8xxInit.m 			optional mk_hasdrivers
+bsd/dev/ppc/drvSymbios8xx/Sym8xxClient.m 		optional mk_hasdrivers
+bsd/dev/ppc/drvSymbios8xx/Sym8xxExecute.m 		optional mk_hasdrivers
+bsd/dev/ppc/drvSymbios8xx/Sym8xxMisc.m 			optional mk_hasdrivers
+
+bsd/dev/ppc/drvUSBCMD/usbcmd.m						standard
+bsd/dev/ppc/drvUSBCMD/ohciuim.c						standard
+bsd/dev/ppc/drvUSBCMD/OHCIDispatchTable.c				standard
+bsd/dev/ppc/drvUSBCMD/driverservices.c					standard
+bsd/dev/ppc/drvUSBCMD/OHCIRootHub.c					standard
+bsd/dev/ppc/drvUSBCMD/UIMrootHubSimulation.c				standard
+bsd/dev/ppc/drvUSBCMD/CompositeClassDriver/CompositeClassDriver.c	standard
+bsd/dev/ppc/drvUSBCMD/CompositeClassDriver/CompositeDriverDescription.c	standard
+bsd/dev/ppc/drvUSBCMD/CompositeClassDriver/ConfigParse.c		standard
+bsd/dev/ppc/drvUSBCMD/HubClassDriver/HubClassDriver.c			standard
+bsd/dev/ppc/drvUSBCMD/HubClassDriver/Hub2ClassDriver.c			standard
+bsd/dev/ppc/drvUSBCMD/HubClassDriver/rootHubDriver.c			standard
+bsd/dev/ppc/drvUSBCMD/Library/usl.c					standard
+bsd/dev/ppc/drvUSBCMD/Library/uslPipeState.c				standard
+bsd/dev/ppc/drvUSBCMD/Library/USLhubs.c					standard
+bsd/dev/ppc/drvUSBCMD/Library/uslPipe.c					standard
+bsd/dev/ppc/drvUSBCMD/Library/uslUtility.c				standard
+bsd/dev/ppc/drvUSBCMD/Library/uslDescriptors.c				standard
+bsd/dev/ppc/drvUSBCMD/Library/uslExpert.c				standard
+bsd/dev/ppc/drvUSBCMD/Library/uslUIMInterface.c				standard
+bsd/dev/ppc/drvUSBCMD/kbd/KBDConfigParse.c				standard
+bsd/dev/ppc/drvUSBCMD/kbd/KBDHIDEmulation.c				standard
+bsd/dev/ppc/drvUSBCMD/kbd/KeyboardModule.c				standard
+bsd/dev/ppc/drvUSBCMD/kbd/KeyboardModuleHeader.c			standard
+bsd/dev/ppc/drvUSBCMD/kbd/usb_keymap.c					standard
+bsd/dev/ppc/drvUSBCMD/mouse/MouseModule.c				standard
+bsd/dev/ppc/drvUSBCMD/mouse/MouseModuleHeader.c 			standard
+bsd/dev/ppc/drvUSBCMD/mouse/HIDEmulation.c				standard
+bsd/dev/ppc/drvUSBCMD/mouse/MouseConfigParse.c				standard
+
+driverkit/ppc/autoconf_ppc.m		optional driverkit
+driverkit/ppc/PPCKernBus.m		optional driverkit
+driverkit/ppc/IOAsmSupport.s		optional driverkit
+driverkit/ppc/IOSupport.c		optional driverkit

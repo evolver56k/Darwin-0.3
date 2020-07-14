@@ -1,0 +1,9 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:1561: Origin of test
+define(`foo', `Hello world.')
+dnl @result{}
+dumpdef(`foo')
+dnl @error{}foo:	`Hello world.'
+dnl @result{}
+dumpdef(`define')
+dnl @error{}define:	<define>
+dnl @result{}

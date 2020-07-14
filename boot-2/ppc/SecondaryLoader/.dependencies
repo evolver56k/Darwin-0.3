@@ -1,0 +1,249 @@
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+HFSSupport.o: HFSSupport.c /usr/include/setjmp.h HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c /usr/include/setjmp.h SecondaryLoaderOptions.h \
+ Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c /usr/include/setjmp.h StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+HFSSupport.o: HFSSupport.c /usr/include/setjmp.h HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c /usr/include/setjmp.h SecondaryLoaderOptions.h \
+ Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c /usr/include/setjmp.h StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+HFSSupport.o: HFSSupport.c /usr/include/setjmp.h HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c /usr/include/setjmp.h SecondaryLoaderOptions.h \
+ Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c /usr/include/setjmp.h StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+HFSSupport.o: HFSSupport.c /usr/include/setjmp.h HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c /usr/include/setjmp.h SecondaryLoaderOptions.h \
+ Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c /usr/include/setjmp.h StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c /usr/include/setjmp.h \
+ ../ppcMac/libsa/kernBootStruct.h SecondaryLoaderOptions.h \
+ ../include/mac/SecondaryLoader.h Display.h HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h
+HFSSupport.o: HFSSupport.c /usr/include/setjmp.h HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+icon.o: icon.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+HFSSupport.o: HFSSupport.c HFSSupport.h \
+ ../include/mac/SecondaryLoader.h SecondaryLoaderOptions.h
+Display.o: Display.c SecondaryLoaderOptions.h Display.h
+DeviceTree.o: DeviceTree.c SecondaryLoaderOptions.h
+printf.o: printf.c StdCFns.h
+icon.o: icon.c
+Debugger.o: Debugger.c
+Control2.o: Control2.c
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h
+SecondaryInC.o: SecondaryInC.c ../ppcMac/libsa/kernBootStruct.h \
+ SecondaryLoaderOptions.h ../include/mac/SecondaryLoader.h Display.h \
+ HFSSupport.h images.h

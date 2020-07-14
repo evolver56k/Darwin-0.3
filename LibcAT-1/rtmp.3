@@ -1,0 +1,77 @@
+.ds At AppleTalk
+.TH rtmp 3
+.SH NAME
+.NA rtmp_netinfo
+.TX
+Identify \*(At node and bridge addresses
+.SH SYNOPSIS
+.PP
+.B #include <at/appletalk.h>
+.PP
+.BI int\0rtmp_netinfo(int\0 fd ,
+.BI at_inet_t\0* addr, \0* bridge );
+.PP
+.SH DESCRIPTION
+This routine allows applications to determine \*(AT node addresses.
+It uses the structure 
+.I at_inet_t
+defined in 
+.B <at/appletalk.h>
+to specify an \*(At socket internet address, as follows:
+.PP
+.nf
+typedef struct at_inet {
+	at_net    net;
+	at_node   node;
+	at_socket socket;
+} at_inet_t;
+.fi
+.PP
+The parameters to
+.I rtmp_netinfo
+are defined as follows:
+.TP 10
+.I fd
+An \*(At socket descriptor.  If this parameter is -1, it is ignored,
+otherwise, the 
+.I socket
+field in
+.I addr
+upon return would contain the socket number corresponding to
+.IR fd .
+.TP
+.I addr
+Pointer to a struct
+.IR at_inet_t .
+If this pointer is non-NULL, \*(At node address will be returned in
+the struct it points to.  If
+.I fd
+is not -1, the
+.I socket 
+field of this struct will be filled, otherwise it will be 0.
+This
+.I addr
+parameter is ignored if it is NULL.
+.TP
+.I bridge
+Pointer to a struct
+.IR at_inet_t .
+If this pointer is non-NULL, the \*(At address of a bridge known to DDP 
+will be returned in the struct it points to.  It is ignored if NULL.
+The
+.I socket
+field is meaningless in this case and will always contain 0 on return.
+.PP
+Either 
+.I addr
+or
+.I bridge
+must be non-NULL.
+.I rtmp_netinfo 
+will return -1 if both are NULL.
+.PP
+The function returns 0 if successful, -1 otherwise.
+.PP
+.SH SEE ALSO
+.br
+.IR "Inside AppleTalk" .

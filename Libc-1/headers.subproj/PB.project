@@ -1,0 +1,22 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        H_FILES = (crt_externs.h, libc.h, monitor.h, NSSystemDirectories.h, standards.h); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PUBLIC_HEADERS = (crt_externs.h, libc.h, standards.h, monitor.h, NSSystemDirectories.h); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_MAINNIB = headers; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_MAINNIB = headers; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = headers; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_MAINNIB = headers; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

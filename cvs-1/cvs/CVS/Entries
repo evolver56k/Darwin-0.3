@@ -1,0 +1,44 @@
+/.cvsignore/1.1.1.1/Fri Apr 23 00:38:33 1999//Tcvs-1
+/BUGS/1.1.1.1/Fri Apr 23 00:38:33 1999//Tcvs-1
+/COPYING/1.1.1.1/Fri Apr 23 00:38:33 1999//Tcvs-1
+/COPYING.LIB/1.1.1.1/Fri Apr 23 00:38:33 1999//Tcvs-1
+/ChangeLog/1.1.1.2/Fri Apr 23 00:39:51 1999//Tcvs-1
+/ChangeLog.zoo/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/DEVEL-CVS/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/FAQ/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/HACKING/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/INSTALL/1.1.1.2/Fri Apr 23 00:39:53 1999//Tcvs-1
+/MINOR-BUGS/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/Makefile.in/1.1.1.2/Fri Apr 23 00:39:53 1999//Tcvs-1
+/NEWS/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/PB.project/1.1.1.1/Fri Apr 23 00:39:53 1999//Tcvs-1
+/PROJECTS/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/README/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/README.VMS/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/TESTS/1.1.1.1/Fri Apr 23 00:38:34 1999//Tcvs-1
+/TODO/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/acconfig.h/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/build.com/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/config.h.in/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/configure/1.1.1.2/Fri Apr 23 00:39:54 1999//Tcvs-1
+/configure.in/1.1.1.2/Fri Apr 23 00:39:55 1999//Tcvs-1
+/cvs-format.el/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/cvs.spec/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/cvsnt.dsp/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/cvsnt.mak/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/install-sh/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/mkinstalldirs/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+/stamp-h.in/1.1.1.1/Fri Apr 23 00:38:35 1999//Tcvs-1
+D/contrib////
+D/diff////
+D/doc////
+D/emx////
+D/lib////
+D/macintosh////
+D/man////
+D/os2////
+D/src////
+D/tools////
+D/vms////
+D/windows-NT////
+D/zlib////

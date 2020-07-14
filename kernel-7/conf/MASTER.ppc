@@ -1,0 +1,120 @@
+##
+# Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+#
+# @APPLE_LICENSE_HEADER_START@
+# 
+# Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+# Reserved.  This file contains Original Code and/or Modifications of
+# Original Code as defined in and that are subject to the Apple Public
+# Source License Version 1.1 (the "License").  You may not use this file
+# except in compliance with the License.  Please obtain a copy of the
+# License at http://www.apple.com/publicsource and read it before using
+# this file.
+# 
+# The Original Code and all software distributed under the License are
+# distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+# EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+# INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+# License for the specific language governing rights and limitations
+# under the License.
+# 
+# @APPLE_LICENSE_HEADER_END@
+##
+
+#
+# Mach Operating System
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement
+# specifies the terms and conditions for use and redistribution.
+#  
+######################################################################
+#
+#  Master NeXT configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+######################################################################
+#
+#  NeXT (PSEUDO-)DEVICES (select any combination)
+#	ex   = Excelan EXOS 202 Ethernet interface
+#	ip   = Interphase V/SMD 3200 disk controller
+#	od   = Canon OMD-1 Optical Disk
+#	rd   = RAM disk
+#	sd   = SCSI disk
+#	sg   = Generic SCSI Device
+#	st   = SCSI tape
+#	fd   = Floppy Disk 
+#	en   = Integrated Ethernet controller
+#	dsp  = DSP560001 digital signal processor
+#	iplmeas = ipl time measurement
+#	nextp = NeXT Laser Printer
+#	sound = sound I/O
+#	vol   = removable volume support device
+#	venip = virtual Ethernet/IP network interface
+#	zs    = Serial device
+#
+#  MULTIPROCESSOR SUPPORT (select exactly one)
+#	multi = support 4 processors
+#	uni   = supports single processor
+#
+#  SPECIAL CHARACTERISTICS (select any combination)
+#	gdb        = GNU kernel debugger
+#	posix_kern = POSIX support
+#
+#  CPU TYPE (select exactly one)
+#	NeXT   = FIXME
+#
+######################################################################
+#  
+#  Standard NeXT Research Configurations:
+#  -------- ---- -------- ---------------
+#
+#  RELEASE = [event kernobjc libdriver driverkit ppc mach medium vol pst gdb fixpri debug simple_clock mdebug kernserv kernstack ipc_compat ipc_debug nfsclient nfsserver quota fifo fdesc union portal ffs hfs cd9660 compat_43 netat revfs nbc]
+#  PROFILE = [RELEASE profile]
+#  DEBUG = [event kernobjc libdriver driverkit ppc mach medium vol pst gdb fixpri debug simple_clock mdebug kernserv xpr_debug uxpr kernstack ipc_compat ipc_debug nfsclient nfsserver quota fifo fdesc union portal ffs hfs cd9660 compat_43 netat diagnostic revfs nbc]
+#
+######################################################################
+#
+machine		"ppc"						# <ppc>
+cpu		"ppc"					# <ppc>
+
+makeoptions	CCONFIGFLAGS = "-g -O2"				# <gdb>
+makeoptions	CCONFIGFLAGS = "-O3"				# <!gdb>
+makeoptions	RELOC = "0x00010000"				# <ppc>
+
+makeoptions	LIBDRIVER = "libDriver_kern_g.o"		# <libdriverdbg>
+makeoptions	LIBDRIVER = "libDriver_kern.o"			# <libdriver>
+makeoptions	LIBOBJC   = "libkobjc.o"			# <kernobjc>
+makeoptions	LIBPEXPERT = "pexpertpowermac.o"		# <ppc>
+
+options		GDB		# GNU kernel debugger		# <gdb>
+options		DEBUG		# general debugging code	# <debug>
+options		SHOW_SPACE	# print size of structures	# <debug>
+options		EVENTMETER	# event meter support		# <debug>
+options		FP_EMUL		# floating point emulation	# <fp>
+options		UXPR		# user-level XPR package	# <uxpr>
+config		mach_kernel	swap generic			# <mach>
+
+options		EVENT						# <event>
+options         DK_HASDRIVERS	# Use built-in kernel drivers	#  
+options         MK_HASDRIVERS   # Use built-in driverkit drivers# 
+
+#
+#  Ipl measurement system
+#
+pseudo-device	iplmeas						# <iplmeas>
+
+#
+#  NFS measurement system
+#
+pseudo-device	nfsmeas						# <nfsmeas>
+
+#
+#  Removable Volume support
+#
+pseudo-device	vol						# <vol>
+
+#
+#  Point-to-Point Protocol support
+#
+pseudo-device ppp 2						# <ppp>

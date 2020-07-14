@@ -1,0 +1,222 @@
+<html><head>
+<title>Debian packaging manual - Shared libraries</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 12<br>
+Shared libraries
+</h1>
+
+Packages containing shared libraries must be constructed with a little
+care to make sure that the shared library is always available.  This
+is especially important for packages whose shared libraries are
+vitally important, such as the libc.<P>
+
+Firstly, your package should install the shared libraries under their
+normal names.  For example, the <kbd>libgdbm1</kbd> package should install
+<code>libgdbm.so.1.7.3</code> as <code>/usr/lib/libgdbm.so.1.7.3</code>.  The
+files should not be renamed or relinked by any prerm or postrm
+scripts; <kbd>dpkg</kbd> will take care of renaming things safely without
+affecting running programs, and attempts to interfere with this are
+likely to lead to problems.<P>
+
+Secondly, your package should include the symlink that <kbd>ldconfig</kbd>
+would create for the shared libraries.  For example, the
+<kbd>libgdbm1</kbd> package should include a symlink from
+<code>/usr/lib/libgdbm.so.1</code> to <code>libgdbm.so.1.7.3</code>.  This is
+needed so that <kbd>ld.so</kbd> can find the library in between the time
+<kbd>dpkg</kbd> installs it and <kbd>ldconfig</kbd> is run in the
+<kbd>postinst</kbd> script.  Futhermore, and <em>this is very important</em>,
+the library must be placed before the symlink pointing to it in the
+<code>.deb</code> file.  This is so that by the time <kbd>dpkg</kbd> comes to
+install the symlink (overwriting the previous symlink pointing at an
+older version of the library) the new shared library is already in
+place.  Currently the way to ensure the ordering is done properly is
+to install the library in the appropriate <code>debian/tmp/.../lib</code>
+directory before creating the symlink, by putting the commands in the
+<code>debian/rules</code> in the appropriate order.<P>
+
+
+Thirdly, the development package should contain a symlink for the
+shared library without a version number.  For example, the
+<code>libgdbm1-dev</code> package should include a symlink from
+<code>/usr/lib/libgdm.so</code> to <code>libgdm.so.1.7.3</code>.  This symlink is
+needed by <kbd>ld</kbd> when compiling packages as it will only look for
+<code>libgdm.so</code> and <code>libgdm.a</code> when compiling dynamically or
+statically, respectively.<P>
+
+If you do the above your package does not need to call <kbd>ldconfig</kbd>
+in its maintainer scripts.  It is especially important not to call
+<kbd>ldconfig</kbd> in the postrm or preinst scripts in the case where the
+package is being upgraded (see <A href="ch-maintainerscripts.html#s-unpackphase">Details of unpack phase of installation or upgrade, section 6.3</A>), as
+<kbd>ldconfig</kbd> will see the temporary names that <kbd>dpkg</kbd> uses for the
+files while it is installing them and will make the shared library
+links point to them, just before <kbd>dpkg</kbd> continues the installation
+and removes the links!
+
+<hr>
+<h2><A name="s-shlibs">
+12.1 The <code>shlibs</code> File Format
+</A></h2>
+
+This file is for use by <kbd>dpkg-shlibdeps</kbd> and is required when
+your package provides shared libraries.<P>
+
+Each line is of the form:
+<pre><var>library-name</var> <var>version-or-soname</var> <var>dependencies ...</var></pre><P>
+
+<var>library-name</var> is the name of the shared library, for example
+<code>libc5</code>.<P>
+
+<var>version-or-soname</var> is the soname of the library - ie, the thing
+that must exactly match for the library to be recognised by
+<kbd>ld.so</kbd>.  Usually this is major version number of the library.<P>
+
+<var>dependencies</var> has the same syntax as a dependency field in a
+binary package control file.  It should give details of which
+package(s) are required to satisfy a binary built against the version
+of the library contained in the package.  See <A href="ch-relationships.html#s-depsyntax">Syntax of relationship fields, section 8.1</A>.<P>
+
+For example, if the package <code>foo</code> contains <code>libfoo.so.1.2.3</code>,
+where the soname of the library is <code>libfoo.so.1</code>, and the first
+version of the package which contained a minor number of at least
+<code>2.3</code> was <var>1.2.3-1</var>, then the package's <var>shlibs</var> could
+say:
+<pre>libfoo 1	foo (&gt;= 1.2.3-1)</pre><P>
+
+The version-specific dependency is to avoid warnings from <kbd>ld.so</kbd>
+about using older shared libraries with newer binaries.
+<hr>
+<h2><A name="s12.2">
+12.2 Further Technical information on <code>shlibs</code>
+</A></h2>
+<hr>
+<h3><A name="s12.2.1">
+12.2.1 <em>What</em> are the <code>shlibs</code> files?
+</A></h3>
+
+The <code>debian/shlibs</code> file provides a way of checking
+for shared library dependencies on packaged binaries.  They are
+intended to be used by package maintainers to make their lives easier.<P>
+
+Other <code>shlibs</code> files that exist on a Debian system are
+<ul>
+<li><code>/etc/dpkg/shlibs.default</code><p><li><code>/etc/dpkg/shlibs.override</code><p><li><code>/var/lib/dpkg/info/*.shlibs</code><p><li><code>debian/shlibs.local</code><p></ul>
+
+
+These files are used by <kbd>dpkg-shlibdeps</kbd> when creating a binary
+package.
+<hr>
+<h3><A name="s12.2.2">
+12.2.2 <em>How</em> does <kbd>dpkg-shlibdeps</kbd> work?
+</A></h3>
+
+<kbd>dpkg-shlibdeps</kbd> calls <kbd>ldd</kbd> to determine the shared libraries
+used by the compiled binaries passed through its command line.<P>
+
+For each shared library, <kbd>dpkg-shlibdeps</kbd> needs to know 
+<ul compact>
+<li>the package containing the library, and<li>the library version number,</ul>
+<P>
+it scans the following files in this order.
+<ol compact>
+<li><code>debian/shlibs.local</code><li><code>/etc/dpkg/shlibs.override</code><li><code>/var/lib/dpkg/info/*.shlibs</code><li><code>/etc/dpkg/shlibs.default</code></ol>
+
+<hr>
+<h3><A name="s12.2.3">
+12.2.3 <em>Who</em> maintains the various <code>shlibs</code> files?
+</A></h3>
+
+<ul compact>
+<li><code>/etc/dpkg/shlibs.default</code> - the maintainer of dpkg<li><code>/var/lib/dpkg/info/</code><var>package</var><code>.shlibs</code> - the maintainer of each 
+package<li><code>/etc/dpkg/shlibs.override</code> - the local system administrator<li><code>debian/shlibs.local</code> - the maintainer of the package</ul>
+
+
+The <code>shlibs.default</code> file is managed by <kbd>dpkg</kbd>. The entries in
+<code>shlibs.default</code> that are provided by <kbd>dpkg</kbd> are just there to
+fix things until the shared library packages all have <code>shlibs</code>
+files.
+<hr>
+<h3><A name="s12.2.4">
+12.2.4 <em>How</em> to use <kbd>dpkg-shlibdeps</kbd> and the <code>shlibs</code> files?
+
+</A></h3>
+<hr>
+<h4><A name="s12.2.4.1">
+12.2.4.1 If your package doesn't provide a shared library
+</A></h4>
+
+Put a call to <kbd>dpkg-shlibs</kbd> into your <code>debian/rules</code> file.
+If your package contains only binaries (e.g. no scripts) use:
+<pre>dpkg-shlibdeps debian/tmp/usr/{bin,sbin}/*</pre>
+
+If <kbd>dpkg-shlibdeps</kbd> doesn't complain, you're done. If it does
+complain you might need to create your own <code>debian/shlibs.local</code>
+file.
+<hr>
+<h4><A name="s12.2.4.2">
+12.2.4.2 If your package provides a shared library
+</A></h4>
+
+Create a <code>debian/shlibs</code> file and let <code>debian/rules</code> install
+it in the control area:
+
+<pre>install -m644 debian/shlibs debian/tmp/DEBIAN</pre>
+
+If your package contains additional binaries see above.
+<hr>
+<h3><A name="s12.2.5">
+12.2.5 <em>How</em> to write <code>debian/shlibs.local</code>
+</A></h3>
+
+This file is intended only as a <em>temporary</em> fix if your binaries
+depend on a library which doesn't provide its own
+<code>/var/lib/dpkg/*.shlibs</code> file yet.<P>
+
+Let's assume you are packaging a binary <code>foo</code>. Your output in
+building the package might look like this.
+
+<pre>$ ldd foo
+libbar.so.1 =&gt; /usr/X11R6/lib/libbar.so.1.0
+libc.so.5 =&gt; /lib/libc.so.5.2.18
+libX11.so.6 =&gt; /usr/X11R6/lib/libX11.so.6.0</pre>
+
+And when you ran <kbd>dpkg-shlibdeps</kbd>
+
+<pre>$ dpkg-shlibdeps -o foo
+dpkg-shlibdeps: warning: unable to find dependency information 
+for shared library libbar 
+(soname 1, path /usr/X11R6/lib/libbar.so.1.0, dependency field Depends)
+shlibs:Depends=elf-x11r6lib, libc5 (&gt;= 5.2.18)</pre>
+
+The <kbd>foo</kbd> binary depends on the <kbd>libbar</kbd> shared library, but
+no package seems to provide a <code>*.shlibs</code> file in
+<code></code>var/lib/dpkg/info/.  Let's determine the package responsible:<P>
+
+<pre>$ dpkg -S /usr/X11R6/lib/libbar.so.1.0
+bar1: /usr/X11R6/lib/libbar.so.1.0
+$ dpkg -s bar1 | grep Version
+Version: 1.0-1</pre>
+
+This tells us that the <kbd>bar1</kbd> package, version 1.0-1 is the one
+we are using. Now we can create our own <code>debian/shlibs.local</code> to
+temporarly fix the above problem. Include the following line into your
+<code>debian/shlibs.local</code> file.
+
+<pre>    libbar 1 bar1 (&gt;= 1.0-1)</pre>
+
+Now your package build should work. As soon as the maintainer of
+<kbd>libbar1</kbd> provides a <code>shlibs</code> file, you can remove your
+<code>debian/shlibs.local</code> file.
+
+&lt;<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-methif.html">next</A>; <A href="ch-diversions.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

@@ -1,0 +1,561 @@
+\input texinfo
+@setfilename internals.info
+@titlepage
+@title dpkg Internals Manual
+@author Klee Dienes
+Version 1.4.1.4 (dpkg 1.4.1.4)This manual describes the internal structure of the @code{dpkg} package
+management system.
+@end titlepage
+@chapter Copyright
+
+
+
+Copyright @copyright{}1997 Klee Dienes @samp{<klee@@mit.edu>}.
+
+
+This manual is free software; you may redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or (at your option) any
+later version.
+
+
+This is distributed in the hope that it will be useful, but
+without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License with
+your Debian GNU/Linux system, in @file{/usr/doc/copyright/GPL}, or
+with the @code{dpkg} source package as the file @file{COPYING}.  If
+not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+Cambridge, MA 02139, USA.
+@chapter Build Notes
+
+@section Required Packages
+
+To compile this package you need to have some less-then-standard
+packages installed. Here's a list:
+
+
+
+@itemize @asis
+@item automake
+@item autoconf
+@item debiandoc-sgml
+@item dpkg-perl
+@item gawk
+@item gettext (from the "experimental" branch - not yet in "main" !)
+@item libtool
+@item lout
+@item psutils
+@item sgml-base
+@item sgml-data
+@item sgml-tools
+@item sgmlspm
+@item sp
+@item tetex-base
+@item tetex-bin
+@end itemize
+
+@section Automake
+
+
+
+This chapter by Tom Lees <tom@@lpsg.demon.co.uk> on Tue, 4 Mar 1997
+21:34:57 +0000, with subsequent modifications by Klee Dienes <klee@@debian.org>
+
+
+This chapter contains general notes about the conversion to
+@code{automake}.  If you plan on doing anything with @code{dpkg}, you
+should probably read all of this file first.  You have been warned.
+
+
+The current version of automake used is version @code{automake-1.1n},
+which is currently a beta version.  It has several significant
+advantages over the released version, including:
+
+@itemize @asis
+@item it supports emacs lisp properly
+@item It supports libtool properly
+@item it includes the aclocal utility
+@end itemize
+
+
+
+The @code{aclocal} utility is a very useful program which will automatically
+build an @file{aclocal.m4} file from the @file{configure.in} file to include the
+appropriate macros.
+
+
+@code{automake-1.1n} can be retreived from
+@file{ftp://ftp.cygnus.com/pub/tromey}
+
+
+This doesn't affect anything other than rebuilding the @file{Makefile.in} files
+from the sources.
+
+
+Probably the main difference which is noticable is that instead of
+using proprietary directory names, it now supports @code{configure
+--sharedstatedir}, and @code{configure --localstatedir}. To set these
+to the Debian defaults, you should use @code{./configure
+--localstatedir=/etc --sharedstatedir=/var/lib}.
+
+
+I have also customized the canonicalizing macros found in
+@code{autoconf-2.12} to include the old way of finding the @code{dpkg}
+``architecture'', i.e. to be a bit more smart. Instead of it trying to
+determine the architecture only, I changed it to use the `host',
+`build', and `target' system types. The target CPU type is checked
+against the archtable to find the architecture on which dpkg will run.
+
+
+It uses @code{gcc --print-libgcc-file-name} to find out the build
+architecture if possible (used later to determine ELF or @code{a.out}
+format), and also uses @code{dpkg --print-architecture} if possible to
+modify the @samp{cpu} field before it passes on the target alias to
+config.sub. If you want to specify the architecture, you should now
+use "--target=", rather than @code{--with-arch}, which was essentially
+a hack anyway.  The old @code{--with-arch} is still there, but it is
+somewhat less functional. I have also moved the @code{DPKG_CACHED_}
+macros into dpkg.m4 to make configure.in a bit more readable.
+
+
+I also converted to libtool 0.7 (which can be found in the Debian
+distribution now). Essentially, this means that all the dpkg tools can
+be compiled against a shared @samp{libdpkg} without much hassle (in
+fact, it is the default). You do not need to install libtool to use
+this feature (it works like autoconf), and generally, it should not be
+needed much at all.
+
+
+The new @samp{dist} targets will build a distribution including all
+files built by the @code{debiandoc2html}, @code{debiandoc2ps}, etc.,
+which are included in the distribution so that people may build @code{dpkg}
+without these (especially useful to porters).
+
+
+A target @samp{make debian} has been added, which will build the
+Debian files from a working directory (does a @samp{make dist}
+first). Now all we need is a modified dpkg-source so that the
+@file{dpkg-1.4.0.8.tar.gz} GNU-distribution file can be used as part
+of the Debian dsitribution.  I'm working on this, but it doesn't work
+too well at the moment (find it in examples).
+
+
+I removed the @samp{make portable} target - it doesn't do anything useful.
+
+
+I have added @samp{make uninstall} targets to aid non-Debian users who simply
+want to try out certain Debian packages, and the "dist" targets are also
+useful to build a "distribution" of the dpkg tool. Note that since automake
+automatically includes dependencies into the Makefiles in a distribution,
+if you want to modify the C files, it would be advisable to get and install
+automake, and then re-run it in the base dpkg distribution directory, so that
+automatic dependency generation will be switched back on, and any
+dependencies which change will be taken account of. The "make maintainer-clean"
+targets will remove all files which any of the following utilities create:
+
+@itemize @asis
+@item automake
+@item autoconf
+@item aclocal
+@item autoheader
+@item gettextize
+@item libtoolize
+@end itemize
+
+
+
+If you want to modify any of the sources, I recommend that you do the following
+first (after having installed the appropriate utilities, of course):-
+
+@itemize @asis
+@item make maintainer-clean
+@item aclocal
+@item autoheader
+@item autoconf
+@item gettextize
+@item libtoolize (do not let automake run this, as it will cause it not to
+include the libtool files in the dist targets) 
+@item for i in COPYING INSTALL; do ln -s /usr/share/automake/$i .; done
+@item automake
+@end itemize
+
+
+
+I have also incorporated the patches originally made by Galen
+Hazelwood to internationalize dpkg using GNU gettext - see the file
+"NOTES.intl" for more information about this.
+
+
+Other minor changes are:
+
+@itemize @asis
+@item The version number is now determined from debian/changelog, not from
+the directory name.
+@item Creation of version.h now handled from configure script, not Makefile.
+@item include/dpkg.h is now generated from include/dpkg.h.in by a sed
+script, inserting the appropriate directory definitions - so now it
+supports changing the dpkg directories (can install in /usr/local)
+@item Updated the COPYING (1 very minor change) and INSTALL files to those
+distributed with automake-1.1l
+@item Since the shared libdpkg is now installed, I also made
+include/Makefile install dpkg.h and dpkg-db.h into /usr/include by
+default
+@end itemize
+
+
+Questions:
+
+@itemize @asis
+@item Should I use @samp{localstatedir} and @samp{sharedstatedir} instead of
+@samp{sysconfdir} and @samp{datadir}?
+@end itemize
+
+@section Internationalization
+
+
+
+This section by Galen Hazelwood. 
+
+
+Dpkg is, to say the least, generous in its error reporting.  The vast
+majority of the output strings are error messages of one kind or another.
+And if you feel that you've stumbled into the Department of Redundancy
+Department, you would be absolutely correct.  Many of the error messages
+in dpkg.pot are duplicates, used at different points in the program.
+
+
+To avoid swamping the translators completely, I made some executive decisions
+on what kinds of strings to translate.  All the strings sent to debug() are
+left alone, on the grounds that these are for dpkg developers, and not for
+the general public.  Most interal error messages were very cryptic, and
+would probably confuse the translators when seen just sitting there in
+the dpkg.pot file, and are also left alone.  (I did mark some of the more
+verbose ones for translation.)
+
+
+If others disagree with me about the necessity of translating these strings,
+it's easy enough to just go through and mark them later.
+
+
+I added the startup gettext code to the main routine in dselect, which was
+necessary as many of the strings in lib are translated.  Dselect is otherwise
+unchanged.
+
+
+Changes:
+
+@itemize @asis
+@item The files in intl and po were taken from gettext 0.10.26, by way of
+the gettextize program.  I altered the makefiles to remove the VERSION
+symbol, which is only used in targets which dpkg does not support.
+@item aclocal.m4 was stolen from the textutils package, configure.in was
+altered to use these new tests, symbols were added to acconfig.h, and
+the two new directories were added to Makefile.in.
+@item The dpkg, dpkg-deb, md5sum, split, and dselect Makefiles now look for
+headers in ../intl, and try to link with whatever i18n libraries
+configure finds.  They also now define LOCALEDIR in CFLAGS.
+@item include/dpkg.h has the necessary NLS boilerplate, and the only file
+which dosen't include this (md5sum/md5sum.c) had it added directly.
+@item The most intrusive change is due to a disagreement between xgettext
+and the dpkg coding style.  Although xgettext understands string
+constant concatenation, it can't handle the case where preprocessor
+symbols are used as well.  The dpkg code uses this a lot, especially
+in cases like this:
+@example
+ohshite("error reading from " BACKEND " pipe");@end example
+
+where BACKEND is defined as "dpkg-deb".  Because xgettext can't handle
+this, I have changed this usage in all cases to something like:
+@example
+ohshite(_("error reading from dpkg-deb pipe");@end example
+
+This isn't very kind to Ian, I know.  But what can I do?
+@end itemize
+
+@section Note to translators
+
+
+
+This section by Yann Dirson <dirson@@debian.org>
+
+
+Some messages in dpkg are not self-contained, and may accept several
+substrings. To ease translation, these strings are tagged with "submsg:" and
+"supermsg:" comments, which you will see inside PO files.
+
+
+For example, as of dpkg-1.4.0.19, lib/dump.c has a writedb function
+which contains the following lines:
+
+@example
+const char *which;
+	
+/* submsg: writedb */
+which = available ? _("available") : 
+                   /* submsg: writedb */
+                   _("status");
+	
+/* supermsg: writedb 2 -- the substring can have only 2 values */
+if (!file) ohshite(_("failed to open `%s' for writing %s information"),filename,which);@end example
+
+
+
+
+The comments (propagated into PO files by xgettext) instruct the translator
+that the first strings will be used as substrings in the last one, as second
+parameter in the string (the second %s in this case).
+
+
+Note that xgettext associates a comment to only one translatable string.
+Thus the following would just tag one string out of 2:
+
+@example
+/* submsg: writedb */
+which= available ? _("available") : _("status");@end example
+
+
+
+As in the example, some (hopefully) useful comments may be inserted at the
+end of such a tagging-comment, by preceding them with 2 dashes.
+
+
+
+Other comments to go into PO files (provided they are just before an
+i18n-ized string) should be introduced with the "L10n:" keyword; this is just
+to allow stripping all other unrelated comments one day, when xgettext will
+let us specify multiple --add-comments options.
+@chapter Code Internals
+
+@section Structure Definitons
+
+@subsection versionrevision
+
+
+@example
+struct versionrevision @{
+  unsigned long epoch;
+  char *version;
+  char *revision;
+@};  @end example
+
+
+
+The versionrevision structure is used to store a Debian version specification@section Functions
+
+@subsection Error Handling
+
+
+Used to managed 
+@subsubsection @code{push_checkpoint}
+@findex push_checkpoint()
+
+
+@example
+void push_checkpoint (int mask, int value)@end example
+
+
+This will arrange that when error_unwind() is called, all previous
+cleanups will be executed with flagset = (original_flagset & mask) |
+value where @var{original_flagset} is the argument to error_unwind (as
+modified by any checkpoint which was pushed later).
+@subsection Variable buffer functions
+
+
+These functions are used to manipulate variable buffers.
+@subsection Parsing translation tables
+
+
+Each of these tables is used to associate a set of strings with a
+corresponding set of integers.
+
+Current tables are:
+
+
+@example
+const struct namevalue booleaninfos[];@end example
+
+
+
+Maps boolean strings (@code{"yes"},@code{"no"}) to their binary values.
+@subsubsection @code{priorityinfos[]}
+
+
+
+@example
+const struct namevalue priorityinfos[];@end example
+
+
+
+Maps priority strings to and from values of
+type @code{enum pkgpriority}.  
+Current priority values are:
+
+@table @asis
+@item @code{required}
+required@item @code{important}
+important@item @code{standard}
+standard@item @code{recommended}
+recommended@item @code{optional}
+optional@item @code{extra}
+extra@item @code{contrib}
+contrib@item @code{other}
+other@item @code{unknown}
+unknown@item @code{base}
+This is obsolete, but is accepted as an alias for @code{required}.
+@end table
+@subsubsection @code{statusinfos[]}
+
+
+
+@example
+const struct namevalue statusinfos[];@end example
+
+
+Maps package status strings to values of type @code{enum ???}.
+
+Package status strings are:
+
+"not-installed" "unpacked" "half-configured" "installed"
+"half-installed" "config-files" "postinst-failed" "removal-failed"@subsubsection @code{eflaginfos[]}
+
+
+
+@example
+const struct namevalue eflaginfos[];@end example
+@subsubsection @code{wantinfos[]}
+
+
+
+@example
+const struct namevalue wantinfos[];@end example
+@subsubsection @code{nicknames[]}
+
+
+
+@example
+const struct nickname nicknames[];@end example
+
+
+Maps obsolete control fields to their current versions.
+@subsection Parsing functions
+
+@subsubsection @code{parseerr}
+@findex parseerr()
+
+
+@example
+void parseerr
+(FILE *file, const char *filename, int lno,
+ FILE *warnto, int *warncount, const struct pkginfo *pigp,
+ int warnonly, const char *fmt, ...);@end example
+
+
+Report an error parsing a control data stream.  Checks @var{file} for
+error status on @var{file}, printing an error message to stderr and
+exiting with error status if an error is present on the stream.
+Formats the variable arguments according to the @code{printf}-style
+string in @var{fmt}, preceding the result with @var{filename},
+@var{lno}, and @var{pigp} (if not NULL).  If @var{warnonly} is 0,
+writes the result to stderr and exits with error status.  Otherwise,
+increments @var{warncount} and returns normally.@subsubsection @code{illegal_packagename}
+@findex illegal_packagename()
+
+
+@example
+const char *illegal_packagename
+(const char *p, const char **ep) @end example
+
+
+Checks the package name at @var{p} for proper syntax.  Returns NULL in
+case of success, setting @var{*ep} to point after the last character
+in the package name, including any trailing whitespace (as defined by
+isspace()).  In case of error, returns the error message as a pointer
+to a static buffer.@subsubsection @code{informativeversion}
+@findex informativeversion()
+
+
+@example
+int informativeversion(const struct versionrevision *version)@end example
+
+
+
+Returns true if and only if the @code{versionrevision} is non-empty;
+otherwise returns false.@subsubsection @code{varbufversion}
+@findex varbufversion()
+
+
+@example
+void varbufversion
+(struct varbuf *vb,
+ const struct versionrevision *version,
+ enum versiondisplayepochwhen vdew);@end example
+
+
+Writes a human-readable representation of @var{version} to @var{vb}.
+Possible values of @var{vdew}:
+
+@table @asis
+@item vdew_never
+never include epoch@item vdew_nonambig
+include epoch string if non-zero@item vdew_always
+always include epoch string
+@end table
+@subsubsection @code{versiondescribe}
+@findex versiondescribe()
+
+
+@example
+const char *versiondescribe
+(const struct versionrevision *version,
+ enum versiondisplayepochwhen vdew);@end example
+
+
+
+Return a human-readable representation of @var{version} as a pointer
+to a static buffer.  If the version structure is empty, return
+@code{"<none>"}.  Static buffers are allocated from a set of 10
+in round-robin fashion (they will be re-used after 10 successive calls
+to @code{versiondescribe}).@subsubsection @code{parseversion}
+@findex parseversion()
+
+
+@example
+const char *parseversion
+(struct versionrevision *rversion, const char *string);@end example
+
+
+
+Parse the contents of @var{string} into @var{rversion}.  If
+successful, returns NULL, otherwise returns a pointer to a static
+error string.@subsubsection @code{parsemustfield}
+@findex parsemustfield()
+
+
+@example
+void parsemustfield
+(FILE *file, const char *filename, int lno,
+ FILE *warnto, int *warncount,
+ const struct pkginfo *pigp, int warnonly,
+ char **value, const char *what);@end example
+@subsubsection @code{skip_slash_dotslash}
+@findex skip_slash_dotslash()
+
+
+@example
+const char *skip_slash_dotslash (const char *p);@end example
+@subsubsection @code{convert_string}
+@findex convert_string()
+
+
+@example
+static int convert_string
+(const char *filename, int lno, const char *what, int otherwise,
+ FILE *warnto, int *warncount, const struct pkginfo *pigp,
+ const char *startp, const struct namevalue *nvip,
+ const char **endpp) @end example
+@contents
+@printindex fn
+@bye

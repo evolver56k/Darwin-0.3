@@ -1,0 +1,1105 @@
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa08762;
+          23 Feb 1998 03:24 EST
+Received: by SPANNEN with Internet Mail Service (5.0.1457.3)
+	id <F3G90QAB>; Mon, 23 Feb 1998 09:24:08 +0100
+Message-ID: <4E98A9686499D011BC9900805FA638784968E5@SPANNEN>
+From: Kenneth Jaldehag <kenneth.jaldehag@sp.se>
+To: "'stenn@whimsy.udel.edu'" <stenn@whimsy.udel.edu>
+Subject: SV: SV: compilation problems? 
+Date: Mon, 23 Feb 1998 09:24:05 +0100
+X-Priority: 3
+MIME-Version: 1.0
+X-Mailer: Internet Mail Service (5.0.1457.3)
+Content-Type: multipart/mixed;
+	boundary="---- =_NextPart_000_01BD403C.CB44A190"
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------ =_NextPart_000_01BD403C.CB44A190
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Harlan,
+
+I tried 4.0.72 this morning. During the "make" I got a=20
+compilation error and the compilation stops. The error=20
+is:=20
+
+cc: Error: ntp_proto.c, line 1004: In this declaration, the type
+of "poll_update" is not compatible with the type of a previous
+declaration of "poll_update" at line number 153 in file
+../include/ntpd.h
+
+In the config.log (attached below) created by "./configure"
+there are a few files not found. Two of these, minix/config.h and
+timex.h, are located in sys/config.h and sys/timex.h in our
+system. The other files are not present at all in our system, for
+example the confdefs.h file.
+
+=20
+Kenneth Jaldehag
+SP=20
+
+
+> ----------
+> Fr=E5n: 	stenn@whimsy.udel.edu[SMTP:stenn@whimsy.udel.edu]
+> Skickat: 	 den 21 februari 1998 05:19
+> Till: 	Kenneth Jaldehag
+> Ang=E5ende: 	Re: SV: compilation problems?=20
+>=20
+> Kenneth,
+>=20
+> Have you tried 4.0.72?  How does it work for you?
+>=20
+> Harlan
+>=20
+
+------ =_NextPart_000_01BD403C.CB44A190
+Content-Type: application/octet-stream;
+	name="config.log"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="config.log"
+
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:658: checking for a BSD compatible install
+configure:711: checking whether build environment is sane
+configure:768: checking whether make sets ${MAKE}
+configure:814: checking for working aclocal
+configure:827: checking for working autoconf
+configure:840: checking for working automake
+configure:853: checking for working autoheader
+configure:866: checking for working makeinfo
+configure:907: checking host system type
+configure:928: checking target system type
+configure:946: checking build system type
+configure:998: checking for gcc
+configure:1027: checking for cc
+configure:1075: checking whether the C compiler (cc  ) works
+configure:1089: cc -o conftest    conftest.c  1>&5
+configure:1109: checking whether the C compiler (cc  ) is a =
+cross-compiler
+configure:1114: checking whether we are using GNU C
+configure:1123: cc -E conftest.c
+configure:1166: checking how to run the C preprocessor
+configure:1187: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:1248: checking for mawk
+configure:1248: checking for gawk
+configure:1277: checking whether make sets ${MAKE}
+configure:1380: checking whether ln -s works
+configure:1448: checking for AIX
+configure:1473: checking for minix/config.h
+configure:1483: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 1479: Cannot find file <minix/config.h> =
+specified in #include directive.
+#include <minix/config.h>
+-^
+configure: failed program was:
+#line 1478 "configure"
+#include "confdefs.h"
+#include <minix/config.h>
+configure:1521: checking for POSIXized ISC
+configure:1544: checking for ranlib
+configure:1588: checking for a BSD compatible install
+configure:1655: checking for nlist in -lelf
+configure:1674: cc -o conftest -g   conftest.c -lelf   1>&5
+ld:
+Can't locate file for: -lelf
+configure: failed program was:
+#line 1663 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char nlist();
+
+int main() {
+nlist()
+; return 0; }
+configure:1753: checking for main in -lkvm
+configure:1768: cc -o conftest -g   conftest.c -lkvm   1>&5
+ld:
+Can't locate file for: -lkvm
+configure: failed program was:
+#line 1761 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+configure:1795: checking for nlist in -lld
+configure:1814: cc -o conftest -g   conftest.c -lld   1>&5
+ld:
+Can't locate file for: -lld
+configure: failed program was:
+#line 1803 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char nlist();
+
+int main() {
+nlist()
+; return 0; }
+configure:1842: checking for nlist in -lmld
+configure:1861: cc -o conftest -g   conftest.c -lmld   1>&5
+configure:1891: checking for gethostbyaddr in -lnsl
+configure:1910: cc -o conftest -g   conftest.c -lnsl -lsocket -lmld  =
+1>&5
+ld:
+Can't locate file for: -lnsl
+configure: failed program was:
+#line 1899 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char gethostbyaddr();
+
+int main() {
+gethostbyaddr()
+; return 0; }
+configure:1940: checking for main in -lposix4
+configure:1955: cc -o conftest -g   conftest.c -lposix4  -lmld  1>&5
+ld:
+Can't locate file for: -lposix4
+configure: failed program was:
+#line 1948 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+configure:1984: checking for socket in -lsocket
+configure:2003: cc -o conftest -g   conftest.c -lsocket  -lmld  1>&5
+ld:
+Can't locate file for: -lsocket
+configure: failed program was:
+#line 1992 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char socket();
+
+int main() {
+socket()
+; return 0; }
+configure:2034: checking for ANSI C header files
+configure:2047: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2114: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:2141: checking for errno.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2141: checking for fcntl.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2141: checking for memory.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2141: checking for poll.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2141: checking for sched.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2141: checking for sgtty.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2141: checking for stdlib.h
+configure:2151: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2181: checking for string.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2181: checking for termio.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2181: checking for termios.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2181: checking for timex.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2187: Cannot find file <timex.h> specified =
+in #include directive.
+#include <timex.h>
+-^
+configure: failed program was:
+#line 2186 "configure"
+#include "confdefs.h"
+#include <timex.h>
+configure:2181: checking for unistd.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2181: checking for utmp.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2181: checking for utmpx.h
+configure:2191: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2221: checking for net/if.h
+configure:2231: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2221: checking for netinet/in.h
+configure:2231: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2221: checking for netinet/ip.h
+configure:2231: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2261: checking for sun/audioio.h
+configure:2271: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2267: Cannot find file <sun/audioio.h> =
+specified in #include directive.
+#include <sun/audioio.h>
+-^
+configure: failed program was:
+#line 2266 "configure"
+#include "confdefs.h"
+#include <sun/audioio.h>
+configure:2261: checking for sys/audioio.h
+configure:2271: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2267: Cannot find file <sys/audioio.h> =
+specified in #include directive.
+#include <sys/audioio.h>
+-^
+configure: failed program was:
+#line 2266 "configure"
+#include "confdefs.h"
+#include <sys/audioio.h>
+configure:2301: checking for sys/chudefs.h
+configure:2311: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2307: Cannot find file <sys/chudefs.h> =
+specified in #include directive.
+#include <sys/chudefs.h>
+-^
+configure: failed program was:
+#line 2306 "configure"
+#include "confdefs.h"
+#include <sys/chudefs.h>
+configure:2301: checking for sys/clkdefs.h
+configure:2311: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2307: Cannot find file <sys/clkdefs.h> =
+specified in #include directive.
+#include <sys/clkdefs.h>
+-^
+configure: failed program was:
+#line 2306 "configure"
+#include "confdefs.h"
+#include <sys/clkdefs.h>
+configure:2301: checking for sys/file.h
+configure:2311: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2343: checking for sys/ioctl.h
+configure:2353: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2385: checking for sys/lock.h
+configure:2395: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2385: checking for sys/mman.h
+configure:2395: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2385: checking for sys/modem.h
+configure:2395: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2391: Cannot find file <sys/modem.h> =
+specified in #include directive.
+#include <sys/modem.h>
+-^
+configure: failed program was:
+#line 2390 "configure"
+#include "confdefs.h"
+#include <sys/modem.h>
+configure:2385: checking for sys/param.h
+configure:2395: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2385: checking for sys/ppsclock.h
+configure:2395: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2391: Cannot find file <sys/ppsclock.h> =
+specified in #include directive.
+#include <sys/ppsclock.h>
+-^
+configure: failed program was:
+#line 2390 "configure"
+#include "confdefs.h"
+#include <sys/ppsclock.h>
+configure:2425: checking for sys/proc.h
+configure:2435: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2425: checking for sys/resource.h
+configure:2435: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2511: checking for sys/select.h
+configure:2521: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2553: checking for sys/sockio.h
+configure:2563: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2559: Cannot find file <sys/sockio.h> =
+specified in #include directive.
+#include <sys/sockio.h>
+-^
+configure: failed program was:
+#line 2558 "configure"
+#include "confdefs.h"
+#include <sys/sockio.h>
+configure:2553: checking for sys/stat.h
+configure:2563: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2553: checking for sys/stream.h
+configure:2563: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2553: checking for sys/stropts.h
+configure:2563: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2593: checking for sys/sysctl.h
+configure:2603: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2599: Cannot find file <sys/sysctl.h> =
+specified in #include directive.
+#include <sys/sysctl.h>
+-^
+configure: failed program was:
+#line 2598 "configure"
+#include "confdefs.h"
+#include <sys/sysctl.h>
+configure:2593: checking for sys/time.h
+configure:2603: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2593: checking for sys/timers.h
+configure:2603: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2593: checking for sys/timex.h
+configure:2603: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2593: checking for sys/tpro.h
+configure:2603: cc -E  conftest.c >/dev/null 2>conftest.out
+cc: Error: configure, line 2599: Cannot find file <sys/tpro.h> =
+specified in #include directive.
+#include <sys/tpro.h>
+-^
+configure: failed program was:
+#line 2598 "configure"
+#include "confdefs.h"
+#include <sys/tpro.h>
+configure:2633: checking for sys/types.h
+configure:2643: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2670: checking whether time.h and sys/time.h may both be =
+included
+configure:2684: cc -c -g  conftest.c 1>&5
+configure:2793: checking for nlist.h
+configure:2803: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:2824: checking for n_un in struct nlist
+configure:2836: cc -c -g  conftest.c 1>&5
+cc: Error: configure, line 2832: In this statement, "n_un" is not a =
+member of "n".
+struct nlist n; n.n_un.n_name =3D 0;
+----------------^
+configure: failed program was:
+#line 2829 "configure"
+#include "confdefs.h"
+#include <nlist.h>
+int main() {
+struct nlist n; n.n_un.n_name =3D 0;
+; return 0; }
+configure:2861: checking for basic volatile support
+configure:2874: cc -c -g  conftest.c 1>&5
+configure:2899: checking for working const
+configure:2953: cc -c -g  conftest.c 1>&5
+configure:2976: checking whether byte ordering is bigendian
+configure:2994: cc -c -g  conftest.c 1>&5
+configure:3009: cc -c -g  conftest.c 1>&5
+cc: Error: configure, line 3004: Missing ";".
+ not big endian
+-----^
+configure: failed program was:
+#line 2998 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/param.h>
+int main() {
+
+#if BYTE_ORDER !=3D BIG_ENDIAN
+ not big endian
+#endif
+; return 0; }
+configure:3082: checking return type of signal handlers
+configure:3104: cc -c -g  conftest.c 1>&5
+configure:3123: checking for off_t
+configure:3156: checking whether struct tm is in sys/time.h or time.h
+configure:3169: cc -c -g  conftest.c 1>&5
+configure:3191: checking for a fallback value for HZ
+configure:3213: checking if we need to override the system's value for =
+HZ
+configure:3247: checking struct sockaddr for sa_len
+configure:3263: cc -c -g  conftest.c 1>&5
+cc: Error: configure, line 3259: In this statement, "sa_len" is not a =
+member of "ps".
+return ps->sa_len;
+-------^
+configure: failed program was:
+#line 3252 "configure"
+#include "confdefs.h"
+
+#include <sys/types.h>
+#include <sys/socket.h>
+int main() {
+
+extern struct sockaddr *ps;
+return ps->sa_len;
+; return 0; }
+configure:3285: checking struct clockinfo for hz
+configure:3300: cc -c -g  conftest.c 1>&5
+cc: Error: configure, line 3296: In this statement, "hz" is not a =
+member of "pc".
+return pc->hz;
+-------^
+configure: failed program was:
+#line 3290 "configure"
+#include "confdefs.h"
+
+#include <sys/time.h>
+int main() {
+
+extern struct clockinfo *pc;
+return pc->hz;
+; return 0; }
+configure:3322: checking struct clockinfo for tickadj
+configure:3337: cc -c -g  conftest.c 1>&5
+cc: Error: configure, line 3333: In this statement, "tickadj" is not a =
+member of "pc".
+return pc->tickadj;
+-------^
+configure: failed program was:
+#line 3327 "configure"
+#include "confdefs.h"
+
+#include <sys/time.h>
+int main() {
+
+extern struct clockinfo *pc;
+return pc->tickadj;
+; return 0; }
+configure:3367: checking for cc option to accept ANSI C
+configure:3420: cc  -c -g  conftest.c 1>&5
+configure:3445: checking for function prototypes
+configure:3606: checking if C compiler permits function prototypes
+configure:3621: cc -c -g  conftest.c 1>&5
+configure:3643: checking whether char is unsigned
+configure:3682: cc -o conftest -g   conftest.c -lmld  1>&5
+configure: failed program was:
+#line 3672 "configure"
+#include "confdefs.h"
+/* volatile prevents gcc2 from optimizing the test away on sparcs.  */
+#if !defined(__STDC__) || __STDC__ !=3D 1
+#define volatile
+#endif
+main() {
+  volatile char c =3D 255; exit(c < 0);
+}
+configure:3707: checking size of signed char
+configure:3726: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:3797: checking size of int
+configure:3816: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:3887: checking size of long
+configure:3906: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:3975: checking for s_char
+configure:4038: checking for uid_t in sys/types.h
+configure:4134: checking for clock_settime
+configure:4162: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+clock_settime
+configure: failed program was:
+#line 4139 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char clock_settime(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char clock_settime();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_clock_settime) || defined (__stub___clock_settime)
+choke me
+#else
+clock_settime();
+#endif
+
+; return 0; }
+configure:4134: checking for daemon
+configure:4162: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+daemon
+configure: failed program was:
+#line 4139 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char daemon(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char daemon();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_daemon) || defined (__stub___daemon)
+choke me
+#else
+daemon();
+#endif
+
+; return 0; }
+configure:4134: checking for getbootfile
+configure:4162: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+getbootfile
+configure: failed program was:
+#line 4139 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char getbootfile(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char getbootfile();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_getbootfile) || defined (__stub___getbootfile)
+choke me
+#else
+getbootfile();
+#endif
+
+; return 0; }
+configure:4134: checking for getdtablesize
+configure:4162: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4134: checking for getrusage
+configure:4162: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4189: checking for gettimeofday
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4189: checking for getuid
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4189: checking for K_open
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+K_open
+configure: failed program was:
+#line 4194 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char K_open(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char K_open();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_K_open) || defined (__stub___K_open)
+choke me
+#else
+K_open();
+#endif
+
+; return 0; }
+configure:4189: checking for kvm_open
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+kvm_open
+configure: failed program was:
+#line 4194 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char kvm_open(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char kvm_open();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_kvm_open) || defined (__stub___kvm_open)
+choke me
+#else
+kvm_open();
+#endif
+
+; return 0; }
+configure:4189: checking for memcpy
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4189: checking for memmove
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4189: checking for memset
+configure:4217: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4244: checking for mkstemp
+configure:4272: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4303: checking for mlockall
+configure:4331: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+mlockall
+configure: failed program was:
+#line 4308 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char mlockall(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char mlockall();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_mlockall) || defined (__stub___mlockall)
+choke me
+#else
+mlockall();
+#endif
+
+; return 0; }
+configure:4360: checking for nice
+configure:4388: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4360: checking for nlist
+configure:4388: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4360: checking for ntp_adjtime
+configure:4388: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+ntp_adjtime
+configure: failed program was:
+#line 4365 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char ntp_adjtime(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char ntp_adjtime();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_ntp_adjtime) || defined (__stub___ntp_adjtime)
+choke me
+#else
+ntp_adjtime();
+#endif
+
+; return 0; }
+configure:4360: checking for ntp_gettime
+configure:4388: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+ntp_gettime
+configure: failed program was:
+#line 4365 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char ntp_gettime(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char ntp_gettime();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_ntp_gettime) || defined (__stub___ntp_gettime)
+choke me
+#else
+ntp_gettime();
+#endif
+
+; return 0; }
+configure:4360: checking for plock
+configure:4388: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4415: checking for pututline
+configure:4443: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4415: checking for pututxline
+configure:4443: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4415: checking for rtprio
+configure:4443: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+rtprio
+configure: failed program was:
+#line 4420 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char rtprio(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char rtprio();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_rtprio) || defined (__stub___rtprio)
+choke me
+#else
+rtprio();
+#endif
+
+; return 0; }
+configure:4470: checking for random
+configure:4498: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4470: checking for srandom
+configure:4498: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4470: checking for mrand48
+configure:4498: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4470: checking for srand48
+configure:4498: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4529: checking for sched_setscheduler
+configure:4557: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+sched_setscheduler
+configure: failed program was:
+#line 4534 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char sched_setscheduler(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char sched_setscheduler();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_sched_setscheduler) || defined =
+(__stub___sched_setscheduler)
+choke me
+#else
+sched_setscheduler();
+#endif
+
+; return 0; }
+configure:4586: checking for setlinebuf
+configure:4614: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4641: checking for setpgid
+configure:4669: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4641: checking for setpriority
+configure:4669: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4641: checking for setsid
+configure:4669: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4641: checking for settimeofday
+configure:4669: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4641: checking for setvbuf
+configure:4669: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4641: checking for sigaction
+configure:4669: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for sigvec
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for sigset
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for sigsuspend
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for stime
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for strchr
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for sysconf
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4696: checking for sysctl
+configure:4724: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+sysctl
+configure: failed program was:
+#line 4701 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char sysctl(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char sysctl();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_sysctl) || defined (__stub___sysctl)
+choke me
+#else
+sysctl();
+#endif
+
+; return 0; }
+configure:4751: checking for strerror
+configure:4779: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4808: checking for timer_create
+configure:4836: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+timer_create
+configure: failed program was:
+#line 4813 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char timer_create(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char timer_create();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_timer_create) || defined (__stub___timer_create)
+choke me
+#else
+timer_create();
+#endif
+
+; return 0; }
+configure:4808: checking for timer_settime
+configure:4836: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+timer_settime
+configure: failed program was:
+#line 4813 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char timer_settime(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char timer_settime();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_timer_settime) || defined (__stub___timer_settime)
+choke me
+#else
+timer_settime();
+#endif
+
+; return 0; }
+configure:4808: checking for umask
+configure:4836: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4808: checking for uname
+configure:4836: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4808: checking for updwtmp
+configure:4836: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+updwtmp
+configure: failed program was:
+#line 4813 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char updwtmp(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char updwtmp();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_updwtmp) || defined (__stub___updwtmp)
+choke me
+#else
+updwtmp();
+#endif
+
+; return 0; }
+configure:4808: checking for updwtmpx
+configure:4836: cc -o conftest -g   conftest.c -lmld  1>&5
+ld:
+Unresolved:
+updwtmpx
+configure: failed program was:
+#line 4813 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char updwtmpx(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char updwtmpx();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_updwtmpx) || defined (__stub___updwtmpx)
+choke me
+#else
+updwtmpx();
+#endif
+
+; return 0; }
+configure:4863: checking for vsprintf
+configure:4891: cc -o conftest -g   conftest.c -lmld  1>&5
+configure:4917: checking number of arguments to gettimeofday()
+configure:4932: cc -c -g  conftest.c 1>&5
+configure:4954: checking number of arguments taken by setpgrp()
+configure:4973: cc -c -g  conftest.c 1>&5
+configure:4998: checking argument pointer type of qsort()'s compare =
+function and base
+configure:5026: cc -c -g -I./include  conftest.c 1>&5
+cc: Error: ./include/l_stdlib.h, line 38: Invalid declaration.
+extern	char *	getpass		P((const char *));
+--------------------------------^
+configure: failed program was:
+#line 5003 "configure"
+#include "confdefs.h"
+
+#include "l_stdlib.h"
+
+#ifdef HAVE_PROTOTYPES
+#define P(x) x
+#else
+#define P(x) ()
+#endif
+
+extern void *base;
+extern sortfunc P((const void *, const void *));
+int sortfunc(a, b)
+  const void *a;
+  const void *b; { return 0; }
+
+int main() {
+
+qsort(base, 2, sizeof(char *), sortfunc);
+
+; return 0; }
+configure:5052: checking if declaring 'char *sys_errlist' is ok
+configure:5068: cc -c -g  conftest.c 1>&5
+configure:5089: checking if declaring 'syscall()' is ok
+configure:5113: cc -c -g  conftest.c 1>&5
+configure:5297: checking if we should use a streams device for ifconfig
+configure:5307: checking if we need extra room for SO_RCVBUF
+configure:5329: checking if we will open the broadcast socket
+configure:5354: checking if we want the HPUX version of FindConfig()
+configure:5376: checking if process groups are set with -pid
+configure:5412: checking if we need a ctty for F_SETOWN
+configure:5442: checking if we'll use clock_settime or settimeofday or =
+stime
+configure:5471: checking if we have a losing syscall()
+configure:5494: checking for Streams/TLI
+configure:5526: checking for SIGIO
+configure:5554: checking if we want to use signalled IO
+configure:5602: checking for SIGPOLL
+configure:5630: checking for SIGSYS
+configure:5658: checking if we can use SIGPOLL for UDP I/O
+configure:5710: checking if we can use SIGPOLL for TTY I/O
+configure:5762: checking if nlist() values might require extra =
+indirection
+configure:5784: checking for a minimum recommended value of tickadj
+configure:5807: checking if the TTY code permits PARENB and IGNPAR
+configure:5829: checking if we're including debugging code
+configure:5847: checking if we have the tty_clk line discipline/streams =
+module
+configure:5863: checking for the ppsclock streams module
+configure:5879: checking for kernel multicast support
+configure:5913: checking availability of ntp_{adj,get}time()
+configure:5967: checking if sys/timex.h has STA_FLL
+configure:5995: checking if we have kernel PLL support
+configure:6019: checking if SIOCGIFCONF returns buffer size in the =
+buffer
+configure:6047: checking if we want GDT surveying code
+configure:6071: checking if we want to use MD5 authentication
+configure:6095: checking if we want to use DES authentication
+configure:6134: checking Datum/Bancomm bc635/VME interface
+configure:6158: checking TrueTime GPS receiver/VME interface
+configure:6181: checking for PCL720 clock support
+configure:6197: checking for SHM clock attached thru shared memory
+configure:6216: checking for ONCORE Motorola UT Oncore GPS
+configure:6235: checking for default inclusion of all suitable =
+non-PARSE clocks
+configure:6247: checking if we have support for PARSE clocks
+configure:6259: checking ACTS modem service
+configure:6299: checking Arbiter 1088A/B GPS receiver
+configure:6318: checking Arcron MSF receiver
+configure:6337: checking Arcron MSF receiver
+configure:6356: checking Austron 2200A/2201A GPS receiver
+configure:6375: checking PPS interface
+configure:6394: checking CHU modem/decoder
+configure:6423: checking Datum Programmable Time System
+configure:6449: checking Heath GC-1000 WWV/WWVH receiver
+configure:6489: checking HP 58503A GPS receiver
+configure:6508: checking Sun IRIG audio decoder
+configure:6536: checking Leitch CSD 5300 Master Clock System Driver
+configure:6555: checking local clock reference
+configure:6574: checking EES M201 MSF receiver
+configure:6594: checking Magnavox MX4200 GPS receiver
+configure:6621: checking NMEA GPS receiver
+configure:6640: checking for Palisade clock
+configure:6659: checking PST/Traconex 1020 WWV/WWVH receiver
+configure:6679: checking Rockwell Jupiter GPS receiver
+configure:6707: checking PTB modem service
+configure:6747: checking KSI/Odetics TPRO/S GPS receiver/IRIG interface
+configure:6775: checking TRAK 8810 GPS receiver
+configure:6795: checking Kinemetrics/TrueTime receivers
+configure:6824: checking Spectracom 8170/Netclock/2 WWVB receiver
+configure:6844: checking USNO modem service
+configure:6884: checking for default inclusion of all suitable PARSE =
+clocks
+configure:6910: checking Diem Computime Radio Clock
+configure:6935: checking ELV/DCF7000 clock
+configure:6960: checking HOPF 6021 clock
+configure:6985: checking Meinberg clocks
+configure:7010: checking DCF77 raw time code
+configure:7089: checking RCC 8000 clock
+configure:7114: checking Schmid DCF77 clock
+configure:7139: checking Trimble GPS receiver/TAIP protocol
+configure:7164: checking Trimble GPS receiver/TSIP protocol
+configure:7191: checking if we need to make and use the parse libraries
+configure:7209: checking if we need dcf parse utilities
+configure:7224: checking if we can build kernel streams modules for =
+parse
+configure:7249: checking if we need basic refclock support
+configure:7261: checking if we want HP-UX adjtimed support
+configure:7279: checking if we can read kmem
+configure:7332: checking if adjtime is accurate
+configure:7384: checking the name of 'tick' in the kernel
+configure:7428: checking for the units of 'tick'
+configure:7452: checking the name of 'tickadj' in the kernel
+configure:7505: checking for the units of 'tickadj'
+configure:7529: checking half-heartedly for 'dosynctodr' in the kernel
+configure:7582: checking half-heartedly for 'noprintf' in the kernel
+configure:7632: checking for a default value for 'tick'
+configure:7674: checking for a default value for 'tickadj'
+configure:7784: checking if we want and can make the ntptime utility
+configure:7807: checking if we want UDP wildcard delivery
+configure:7886: checking if we should always slew the time
+configure:7926: checking if we should step and slew the time
+configure:7969: checking if ntpdate should step the time
+configure:8000: checking if we should sync TODR clock every hour
+
+------ =_NextPart_000_01BD403C.CB44A190--

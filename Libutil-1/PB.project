@@ -1,0 +1,26 @@
+{
+    BUILDDIR = ""; 
+    BUILDTOOL = /bin/gnumake; 
+    COMPILEROPTIONS = ""; 
+    DOCUMENTEXTENSIONS = (); 
+    FILESTABLE = {
+	C_FILES = (); 
+	HEADERSEARCH = (); 
+	H_FILES = (); 
+	LIBRARYSEARCH = (); 
+	OTHER_LIBS = (); 
+	OTHER_LINKED = (login.c, login_tty.c, logout.c, logwtmp.c, pty.c); 
+	OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+	PRECOMPILED_HEADERS = (); 
+	PROJECT_HEADERS = (); 
+	PUBLIC_HEADERS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    INSTALLDIR = /usr/local/lib; 
+    LANGUAGE = English; 
+    LINKEROPTIONS = ""; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = util; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.0; 
+}

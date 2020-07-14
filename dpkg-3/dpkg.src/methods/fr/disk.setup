@@ -1,0 +1,565 @@
+#!/bin/sh
+
+set -e
+vardir="$1"
+method=$2
+option=$3
+
+cd "$vardir/methods/disk"
+tp=/tmp/ddm$$
+
+iarch=`dpkg --print-installation-architecture`
+
+xit=1
+trap '
+	rm -f $tp.?
+	if [ -n "$umount" ]
+	then
+		umount "$umount" >/dev/null 2>&1
+	fi
+	exit $xit
+' 0
+
+if ls -d "$tp.?" >/dev/null 2>&1
+then
+	rm $tp.?
+fi
+
+yesno () {
+	while true
+	do
+		echo -n "$2 [$1]  "
+		read response
+		if [ -z "$response" ]
+		then
+			response="$1"
+		fi
+		case "$response" in
+		[Nn]*)	yesno=no ; return ;;
+		[Oo]*)	yesno=yes ; return ;;
+		esac
+	done
+}
+
+getblockdev () {
+	mountpoint="$vardir/methods/mnt"
+	if [ -z "$defaultdevice" ]
+	then
+		defaultdevice="$newdefaultdevice"
+	elif [ "$defaultdevice" != "$newdefaultdevice" ]
+	then
+		echo "
+La dernière fois, vous avez fait l'installation à partir de $defaultdevice."
+	fi
+	promptstring="$1"
+	while [ -z "$blockdevice" ]
+	do
+		echo -n "$promptstring [$defaultdevice]:  "
+		read response
+		if [ -z "$response" ]
+		then
+			response="$defaultdevice"
+		fi
+		if ! [ -b "$response" ]
+		then
+			echo "$response n'est pas un \"device\" bloc."; continue
+		fi
+		tryblockdevice="$response"
+		if [ $option = cdrom ]
+		then
+			fstype=iso9660
+		elif [ $option = harddisk ]
+		then
+			blockbase="`echo \"$tryblockdevice\" | sed -e 's/[0-9]\{1,\}$//'`"
+			set +e
+			echo -e "p\nq\n" | fdisk "$blockbase" 2>/dev/null >$tp.f
+			set -e
+			proposeddevice="$tryblockdevice" perl -ne '
+next unless /^ *Device +Boot +Begin +Start +End +Blocks +Id +System *$/i .. !/\S/;
+next unless s:^/\S+:: && $& eq $ENV{"proposeddevice"};
+next unless s/^ +(\* +)?\d+ +\d+ +\d+ +\d+\+? +//;
+next unless m/^([0-9a-f]{1,2}) /i;
+%types= ( "1","msdos", "4","msdos", "6","msdos", "7","hpfs", "80","minix",
+          "81","minix", "83","ext2" );
+print $types{$1}; exit(0);	' <$tp.f >$tp.m
+			defaultfstype="`cat $tp.m`"
+			if [ -n "$defaultfstype" ]
+			then
+				cat <<END
+La table de partition de $blockbase prétend que $tryblockdevice
+contient un système de fichiers de type $defaultfstype.
+END
+				if ! grep "	$defaultfstype$" /proc/filesystems >/dev/null
+				then
+					echo "
+Votre noyau ne semble pas supporter ce type de système de fichiers."
+					defaultfstype=""
+				fi
+			fi
+			echo -n "Systèmes de fichiers supportés : "
+			sed -e 's/^.*	/ /' /proc/filesystems | tr '\n' ' '
+			echo -n "
+Enter filesystem type (for $tryblockdevice) [$defaultfstype]:  "
+			read fstype
+			if [ -z "$fstype" ]
+			then
+				fstype="$defaultfstype"
+			fi
+		fi
+		umount="$mountpoint"
+		if mount -rt "$fstype" -o nosuid,nodev "$tryblockdevice" "$mountpoint"
+		then
+			echo
+			blockdevice="$tryblockdevice"
+		else
+			umount=""
+			echo "
+Impossible de monter $tryblockdevice avec un type $fstype sur $mountpoint."
+		fi
+	done
+}
+
+outputparam () {
+	echo "$2" | sed -e "s/'/'\\\\''/; s/^/$1='/; s/$/'/" >&3
+}
+
+intrkey="`stty -a | sed -n 's/.*intr = \([^;]*\);.*/\1/p'`"
+echo "
+En cas d'erreur, utilisez la touche d'interruption ($intrkey) pour abandonner."
+
+# State variables, `best first'
+#  {main,ctb,nf,lcl}_{packages,binary}
+#   Empty before we've found them or if they're not available,
+#   set to the relevant bit under mountpoint otherwise.
+#  hierbase
+#   A directory containing a Debian FTP site mirror tree.
+#  mountpoint
+#   The mountpoint for the filesystem containing the stuff
+#   empty or unset if we don't know yet, or if we haven't mounted anything;
+#   may also be empty if `directory' was set.
+#  blockdevice
+#   The actual block device to mount.
+#  fstype
+#   The filesystem type to use.
+#  defaultdevice
+#   The default block device to mount.
+
+p_usedevel=no
+if [ -f shvar.$option ]
+then
+	. ./shvar.$option
+	defaultdevice="$p_blockdev"
+	defaultnfsserver="$p_nfsserver"
+	defaultnfsrempath="$p_nfsrempath"
+	usedevel="$p_usedevel"
+fi
+
+if [ $option = cdrom ]
+then
+	mount >$tp.m
+	sed -n 's/ ([^)]*)$//; s/^[^ ]* on //; s/ type iso9660$//p' <$tp.m >$tp.l
+	ncdroms=`wc -l <$tp.l`
+	if [ $ncdroms -gt 1 ]
+	then
+		response=""
+		while [ -z "$response" ]
+		do
+			echo "
+Plusieurs CDROMs (ou autres systèmes de fichiers ISO9660) sont montés :"
+			egrep 'type iso9660 \([^)]*\)$' <$tp.m | nl
+			echo -n "
+Est-ce l'un de ceux-ci ?  Entrer son numéro, ou 'a' pour aucun.  "
+			read response
+			response="`echo \"$response\" | sed -e 's/[ 	]*$//'`"
+			if expr "$response" : '[0-9][0-9]*$' >/dev/null && \
+			   [ $response -ge 1 -a $response -le $ncdroms ]
+			then
+				mountpoint="`sed -n $response'p' <$tp.l`"
+				echo
+			elif expr "$response" : '[Aa]' >/dev/null
+			then
+				mountpoint=""
+			else
+				response=""
+			fi
+		done
+	elif [ $ncdroms = 1 ]
+	then
+		mountpoint="`cat $tp.l`"
+		perl -ne 'print if s/ type iso9660 \([^)]*\)$// && s/ on .*$//;' \
+			<$tp.m >$tp.d
+		blockdevice="`cat $tp.d`"
+		yesno yes "
+Je vois un CDROM : $blockdevice, monté sur $mountpoint.  Est-ce celui-ci ?"
+		if [ $yesno = no ]
+		then
+			echo 'Je le démonte ...'
+			umount="$mountpoint"
+			while true
+			do
+				echo -n "
+Veuillez insérer le bon disque, puis presser ENTRÉE :  "
+				read response
+				if mount -rt iso9660 -o nosuid,nodev \
+					"$blockdevice" "$mountpoint"
+				then
+					echo
+					break
+				fi
+			done
+		fi
+	fi
+	if [ -z "$mountpoint" ]
+	then
+		if [ -b /dev/cdrom ]
+		then
+			echo "
+Je vois que /dev/cdrom existe et est un \"device\" bloc."
+			newdefaultdevice=/dev/cdrom
+		fi
+		getblockdev "Insérez le CDROM et entrez le nom du \"device\" bloc."
+	fi
+fi
+
+if [ $option = nfs ]
+then
+	mountpoint="$vardir/methods/mnt"
+	while [ -z "$nfsserver" ]
+	do
+		echo -n "
+Quel est le nom du serveur NFS ? [$defaultnfsserver]  "
+		read response
+		if [ -z "$response" -a -n "$defaultnfsserver" ]
+		then
+			response="$defaultnfsserver"
+		fi
+		if [ -z "$response" ]; then continue; fi
+		if [ -x /usr/bin/rpcinfo ]
+		then
+			if rpcinfo -u "$response" mountd >/dev/null
+			then
+				nfsserver="$response"
+			else
+				echo "$response à l'air de ne pas être un serveur NFS."
+			fi
+		elif [ -x /bin/ping ]
+		then
+			if ping -q -c 1 "$response" | grep -q ', 1 packets received'
+			then
+				nfsserver="$response"
+			else
+				echo "$response semble arrêté ou non-existant."
+			fi
+		else
+			echo "
+(Je ne peux pas vérifier cela maintenant je n'ai ni /usr/bin/rpcinfo ni /bin/ping.)"
+			nfsserver="$response"
+		fi
+	done
+	while [ -z "$nfsrempath" ]
+	do
+		echo -n "
+Quel est le nom sur le serveur NFS du système de fichiers
+contenant les fichiers Debian ? [$defaultnfsrempath]  "
+		read response
+		if [ -z "$response" -a -n "$defaultnfsrempath" ]
+		then
+			response="$defaultnfsrempath"
+		else
+			response="`echo \"$response\" | sed -e 's:/$::; s:^/*:/:'`"
+		fi
+		umount="$mountpoint"
+		if mount -rt nfs -o nosuid,nodev "$nfsserver:$response" "$mountpoint"
+		then
+			echo
+			nfsrempath="$response"
+		else
+			umount=""
+			echo "
+Impossible de monter le système de fichiers NFS $nfsserver:$response."
+		fi
+	done
+	nfs="$nfsserver:$nfsrempath"
+fi
+
+if [ $option = harddisk ]
+then
+	set +e
+	echo -e 'p\nq\n' | fdisk /dev/hda 2>/dev/null >$tp.f
+	if [ $? != 0 ]
+	then
+		echo -e 'p\nq\n' | fdisk /dev/sda 2>/dev/null >$tp.f
+	fi
+	set -e
+	perl -ne '
+next unless /^ *Device +Boot +Begin +Start +End +Blocks +Id +System *$/i .. !/\S/;
+next unless / [146] +DOS \d+-bit \S+$/;
+next unless m:^/\S+:;
+print $&;		' <$tp.f >$tp.d
+	newdefaultdevice="`cat $tp.d`"
+	echo "
+J'ai besoin de savoir quelle partition du disque contient les fichiers
+de la distribution ; sous Linux, les partitions sont désignées par le nom
+du \"device\" bloc."
+	if [ -n "$newdefaultdevice" ]
+	then
+		echo "
+Au fait, $newdefaultdevice a l'air d'une partition DOS."
+	fi
+	getblockdev "Entrez le nom du \"device\" bloc de la partition"
+fi
+
+if [ -n "$mountpoint" ]
+then
+	# We must have $mountpoint
+	if [ $option = cdrom ]
+	then
+		echo "
+Tous les noms de répertoires doivent être spécifiés relativement à la
+racine du CDROM."
+	elif [ $option = nfs ]
+	then
+		echo "
+Tous les noms de répertoires doivent être spécifiés relativement à la
+racine du système de fichiers NFS, c'est à dire relativement à 
+$nfsrempath sur le serveur."
+	else
+		echo "
+Tous les noms de répertoires doivent être spécifiés relativement à la
+racine du système de fichiers situé sur $blockdevice."
+	fi
+fi
+
+while true
+do
+	if [ $option = cdrom ]
+	then
+		echo "
+J'aimerais savoir dans quel répertoire du CDROM se trouve la racine de la
+distribution Debian - il contient en général le fichier 'Packages-Master'.
+
+Si le CDROM est mal organisé et n'a pas une copie directe de la distribution,
+vous pouvez répondre 'aucun' et nous en parcoureront individuellement les
+parties dont j'ai besoin."
+	else
+		echo "
+Pour me faciliter la tâche de trouver les fichiers pertinents, je préfèrerais
+faire l'installation à partir d'une copie directe de la distribution Debian.
+Pour continuer, j'ai besoin de savoir où trouver la racine de la distribution
+Debian - ce répertoire contient en général le fichier 'Packages-Master'.
+
+Si vous n'avez pas de disponible une copie directe de la distribution,
+vous pouvez répondre 'aucun' et nous parcoureront individuellement les
+parties dont j'ai besoin."
+	fi
+	defhierbase=none
+	if [ -n "$p_hierbase" ]
+	then
+		if [ -d "$mountpoint/$p_hierbase/stable/binary-$iarch" ]
+		then
+			echo "
+La dernière fois, vous avez dit '$p_hierbase', et ça semble plausible."
+			defhierbase="$p_hierbase"
+		else
+			echo "
+La dernière fois, vous avez dit '$p_hierbase', mais ça ne semble pas
+plausible, car '$p_hierbase/stable/binary' n'a pas l'air d'exister."
+		fi
+	fi
+	if [ none = "$defhierbase" -a -d "$mountpoint/debian/stable/binary-$iarch" ]
+	then
+		echo "
+'/debian' existe et semble plausible ; c'est donc la valeur par défaut."
+		defhierbase=/debian
+	fi
+	echo -n \
+"Racine de la distribution ? [$defhierbase]  "
+	read response
+	if [ -z "$response" ]
+	then
+		response="$defhierbase"
+	fi
+	if [ "aucun" = "$response" ]
+	then
+		hierbase=""
+		break
+	elif [ -d "$mountpoint/$response/stable/binary-$iarch" ]
+	then
+		hierbase="`echo \"$response\" | sed -e 's:/$::; s:^/*:/:'`"
+		break
+	fi
+	echo "
+$response/stable/binary-$iarch n'existe pas."
+done
+
+whichmain=stable
+if [ -n "$hierbase" ]
+then
+	if [ -d "$mountpoint/$hierbase/unstable/binary-$iarch" ]
+	then
+		echo "
+Une distribution stable et une arborescence en cours de dévelopement sont
+toutes deux disponibles pour l'installation.  Voulez-vous utiliser
+l'arborescence non-testée ? (celle-ci est aux experts qui aiment vivre
+dangeureusement et veulent aider aux tests)"
+		yesno "$p_usedevel" "Utiliser l'arboresence de dévelopement ?'
+		usedevel="$yesno"
+		if [ "$usedevel" = yes ]
+		then
+			whichmain=development
+		fi
+	else
+		usedevel=no
+	fi
+	echo
+fi
+
+case "$hierbase" in
+/* )	;;
+'' )	;;
+* )	hierbase="/$hierbase" ;;
+esac
+
+check_binary () {
+	# args: area-in-messages directory
+	if ! [ -d "$mountpoint$2" ]
+	then
+		echo "\`$2' n'existe pas."
+		return
+	fi
+	if ! find "$mountpoint$2" -follow -name '*.deb' -print \
+		2>/dev/null | head -1 | grep . >/dev/null
+	then
+		echo "\`$2' ne contient pas de paquets *.deb.  Hmmpf."
+		return
+	fi
+	echo "J'utilise '$2' comme répertoire '$1'."
+	this_binary="$2"
+}
+
+find_area () {
+	# args: area-in-messages area-in-vars subdirectory-in-hier
+	#       last-time-binary last-time-packages
+	this_binary=''
+	this_packages=''
+	if [ -n "$hierbase" ]
+	then
+		check_binary $1 "$hierbase/$3/binary-$iarch"
+	fi
+	if [ $option = cdrom -a $2 = nf -a -z "$this_binary" ]
+	then
+		echo "
+Note: la plupart des distributions sur CDROM de la Debian n'incluent pas
+les programmes disponibles dans le répertoire 'non-free' du site FTP.
+La raison en est que ces programmes ont des copyrights qui en empêchent
+la distribution sur CDROM engendrant un profit - c'est à dire que ce ne
+sont pas des logiciels libres.  Si vous voulez installer ces programmes,
+vous devrez vous les procurer par d'autres moyens."
+
+	fi
+	while [ -z "$this_binary" ]
+	do
+		defaultbinary="$4"
+		echo "
+Quel répertoire contient les fichiers *.deb de la distribution '$1' ?
+(ce répertoire s'appelle '$3/binary' sur le site FTP)  Répondez 'aucun'
+si cette distribution n'est pas disponible."
+		if [ $2 != main -a -z "$defaultbinary" ]
+		then
+			defaultbinary=none
+		fi
+		echo -n "Entrez le répertoire binaire de '$1' [$4]  "
+		read response
+		if [ -z "$response" -a -n "$defaultbinary" ]
+		then
+			response="$defaultbinary"
+		fi
+		if [ none = "$response" ]
+		then
+			break
+		fi
+		case "$response" in
+		'' | none)	continue		;;
+		esac
+		check_binary $1 "`echo \"$response\" | sed -e 's:/$::; s:^/*:/:'`"
+	done
+	if [ -n "$this_binary" ]
+	then
+		for f in Packages.gz packages.gz Packages packages
+		do
+			if [ -f "$mountpoint/$this_binary/$f" ]
+			then
+				echo "J'utilise \`$this_binary/$f' pour '$1'."
+				this_packages="$this_binary/$f"
+				break
+			fi
+		done
+		while [ -z "$this_packages" ]
+		do
+			echo -n "
+Je ne peux pas trouver le fichier 'Packages' de '$1'. Les informations
+qu'il contient sont importantes pour la sélection des paquets lors d'une
+nouvelle installation, et sont très utiles pour les mises à jour.
+
+Si vous l'avez laissé de côté lors du téléchargement, vous devriez le
+récupérer maintenant et revenir ensuite à cette installation : vous
+trouverez un fichier 'Packages' et un fichier 'Packages.gz' -- l'un comme
+l'autre fera l'affaire -- dans le sous-répertoire 'binary' de chaque
+distribution du site FTP et des CDROMs.  Sinon (mais ça sera plutôt
+lent), je peut analyser les packages de la distribution - répondez
+'scan' si vous voulez que je le fasse.
+
+Vous avez besoin d'un fichier 'Packages' différent pour chacune des
+distributions que vous désirez installer.
+
+Où se trouve le fichier 'Packages' ? (si aucun n'est disponible,
+répondez 'aucun')  [$5]  "
+			read response
+			if [ -z "$response" -a -n "$5" ]
+			then
+				response="$5"
+			fi
+			case "$response" in
+			'')		continue			;;
+			aucun)		break				;;
+			scan)		this_packages=scan		;;
+			/*)		this_packages="$response"	;;
+			*)		this_packages="/$response"	;;
+			esac
+		done
+	fi
+	eval $2'_binary="$this_binary"'
+	eval $2'_packages="$this_packages"'
+}
+
+find_area main main "$whichmain" "$p_main_binary" "$p_main_packages"
+find_area contrib ctb contrib "$p_ctb_binary" "$p_ctb_packages"
+find_area non-free nf non-free "$p_nf_binary" "$p_nf_packages"
+find_area local lcl local "$p_lcl_binary" "$p_lcl_packages"
+
+echo -n '
+Hit RETURN to continue.  '
+read response
+
+exec 3>shvar.$option.new
+
+outputparam p_blockdev "$blockdevice"
+outputparam p_fstype "$fstype"
+outputparam p_mountpoint "$mountpoint"
+outputparam p_nfsserver "$nfsserver"
+outputparam p_nfsrempath "$nfsrempath"
+outputparam p_nfs "$nfs"
+outputparam p_hierbase "$hierbase"
+outputparam p_usedevel "$usedevel"
+outputparam p_main_packages "$main_packages"
+outputparam p_main_binary "$main_binary"
+outputparam p_ctb_packages "$ctb_packages"
+outputparam p_ctb_binary "$ctb_binary"
+outputparam p_nf_packages "$nf_packages"
+outputparam p_nf_binary "$nf_binary"
+outputparam p_lcl_packages "$lcl_packages"
+outputparam p_lcl_binary "$lcl_binary"
+
+mv shvar.$option.new shvar.$option
+
+xit=0

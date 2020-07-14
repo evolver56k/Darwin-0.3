@@ -1,0 +1,58 @@
+logical disk issues - setFormatted, writeLabel, eject
+
+formatted flag
+	DiskObject subclass - must be maintained by subclass!
+	LogicalDisk - should be a don't care. Implement the method by
+	    passing up thru logicalDisk chain.
+	UnixDisk - should be a don't care, labelValid is the only 
+		interesting flag.
+		
+setFormatted - 
+	-- invalidates label and destroys block devs
+	-- public version only valid for raw dev (true of ALL ioctls)
+	-- DiskObject public version
+	   if [logicalDisk is open]
+	   	reject
+	   set formatted 0/1
+	   [self getPhysParams];
+	   [logicalDisk setFormattedInt]
+	   
+	-- UnixDisk setFormattedInt
+	   if any block devs open
+	   	reject -- shouldn't happen
+	   destroy block devs
+	   set formatted 0/1
+
+writeLabel 
+        -- UnixDisk raw device only...
+	-- 
+	   {	
+	   	if [logicalDisk isOpen] (block devices...)
+			reject
+	   	destroy block devs
+	   	write the label
+	   	probe label (updtae raw dec params, create block devs)
+	   }
+	   
+ejectDisk
+	-- DiskObject
+	    {
+		-- if [logicalDev isOpen]
+			reject
+		   else
+		   	[self devEjectDisk];
+	    }
+	    
+	-- UnixDisk devEjectDisk
+	    {
+		if any block devs open
+	   		reject -- shouldn't happen
+		else {
+			destroy blockd devs
+			labelValid = 0
+			[physDev devEjectDisk]
+		}
+
+		
+	   
+	   

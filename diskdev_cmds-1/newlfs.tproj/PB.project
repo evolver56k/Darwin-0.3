@@ -1,0 +1,19 @@
+{
+    APPCLASS = NSApplication; 
+    COMPILEROPTIONS = "-DMACH_USER_API"; 
+    FILESTABLE = {
+	FRAMEWORKS = (); 
+	H_FILES = (config.h, extern.h); 
+	M_FILES = (); 
+	OTHER_LIBS = (); 
+	OTHER_LINKED = (lfs.c, misc.c, newfs.c); 
+	OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.dist, newlfs.8); 
+    }; 
+    INSTALLDIR = /sbin; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAINNIB = newlfs; 
+    PROJECTNAME = newlfs; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.0; 
+}

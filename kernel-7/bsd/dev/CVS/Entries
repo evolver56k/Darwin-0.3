@@ -1,0 +1,28 @@
+/SCSIDiskKern.m/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/SCSIGenericKern.m/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/adb.h/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/audioTypes.h/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/busvar.h/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/ccd.c/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/ccdvar.h/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/disk.h/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/disk_label.h/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/ev.c/1.1.1.2/Thu Jul 22 22:55:26 1999/-kb/Tkernel-7
+/ev_keymap.h/1.1.1.2/Thu Jul 22 22:55:27 1999/-kb/Tkernel-7
+/ev_types.h/1.1.1.2/Thu Jul 22 22:55:27 1999/-kb/Tkernel-7
+/event.h/1.1.1.2/Thu Jul 22 22:55:27 1999/-kb/Tkernel-7
+/evio.h/1.1.1.2/Thu Jul 22 22:55:27 1999/-kb/Tkernel-7
+/evsio.h/1.1.1.2/Thu Jul 22 22:55:27 1999/-kb/Tkernel-7
+/fd_extern.h/1.1.1.2/Thu Jul 22 22:55:29 1999/-kb/Tkernel-7
+/kmreg_com.h/1.1.1.2/Thu Jul 22 22:55:29 1999/-kb/Tkernel-7
+/ldd.h/1.1.1.2/Thu Jul 22 22:55:29 1999/-kb/Tkernel-7
+/scsireg.h/1.2/Fri Jul 30 10:07:47 1999/-kb/Tkernel-7
+/snd_msgs.h/1.1.1.2/Thu Jul 22 22:55:29 1999/-kb/Tkernel-7
+/vnd.c/1.1.1.2/Thu Jul 22 22:55:29 1999/-kb/Tkernel-7
+/vndioctl.h/1.1.1.2/Thu Jul 22 22:55:30 1999/-kb/Tkernel-7
+/vol.c/1.1.1.2/Thu Jul 22 22:55:30 1999/-kb/Tkernel-7
+/voldev.h/1.1.1.2/Thu Jul 22 22:55:30 1999/-kb/Tkernel-7
+/zsio.h/1.1.1.2/Thu Jul 22 22:55:30 1999/-kb/Tkernel-7
+D/i386////
+D/machine////
+D/ppc////

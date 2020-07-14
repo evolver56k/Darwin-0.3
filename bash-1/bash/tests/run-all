@@ -1,0 +1,27 @@
+#! /bin/sh
+
+PATH=.:$PATH	# just to get recho/zecho/printenv if not run via `make tests'
+export PATH
+
+# unset BASH_ENV only if it is set
+[ "${BASH_ENV+set}" = "set" ] && unset BASH_ENV
+# ditto for SHELLOPTS
+#[ "${SHELLOPTS+set}" = "set" ] && unset SHELLOPTS
+
+: ${THIS_SH:=../bash}
+export THIS_SH
+
+${THIS_SH} ./version
+
+echo Any output from any test, unless otherwise noted, indicates a possible anomaly
+
+for x in run-*
+do
+	case $x in
+	$0|run-minimal)	;;
+	*.orig|*~) ;;
+	*)	echo $x ; sh $x ;;
+	esac
+done
+
+exit 0

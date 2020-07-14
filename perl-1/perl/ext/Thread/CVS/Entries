@@ -1,0 +1,23 @@
+/Makefile.PL/1.1.1.1/Fri Apr 23 01:32:11 1999//Tperl-1
+/Notes/1.1.1.1/Fri Apr 23 01:32:11 1999//Tperl-1
+/README/1.1.1.1/Fri Apr 23 01:32:11 1999//Tperl-1
+/Thread.pm/1.1.1.1/Fri Apr 23 01:32:11 1999//Tperl-1
+/Thread.xs/1.1.1.1/Fri Apr 23 01:32:11 1999//Tperl-1
+/create.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/die.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/die2.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/io.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/join.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/join2.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/list.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/lock.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/queue.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/specific.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/sync.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/sync2.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/typemap/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/unsync.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/unsync2.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/unsync3.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+/unsync4.t/1.1.1.1/Fri Apr 23 01:32:12 1999//Tperl-1
+D/Thread////

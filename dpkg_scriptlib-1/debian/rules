@@ -1,0 +1,46 @@
+#! /usr/bin/make -f
+
+.PHONY: build clean binary binary-indep binary-arch checkdir checkroot
+
+d = ./debian/tmp
+perl = $(d)/perl
+python = $(d)/python
+
+build: checkdir
+
+clean: checkdir
+	$(RM) -r debian/{files,substvars,tmp}
+	find . -name \*~ -print0 | xargs -0 $(RM)
+	find . -name \*.pyc -print0 | xargs -0 $(RM)
+	find . -name \*.pyo -print0 | xargs -0 $(RM)
+
+binary: binary-arch binary-indep
+
+binary-arch:
+
+binary-indep: checkdir build checkroot
+
+	$(RM) -r debian/{files,substvars,tmp}
+
+	install -d $(python)/DEBIAN
+	install -d $(perl)/DEBIAN
+
+	install -c debian/python.postinst $(python)/DEBIAN/postinst
+	install -c debian/python.prerm $(python)/DEBIAN/prerm
+
+	$(MAKE) install DSTROOT=$(d) perl=$(perl) python=$(python)
+
+	chmod a+x $(d)/*/DEBIAN/postinst
+	chmod a+x $(d)/*/DEBIAN/prerm
+
+	dpkg-gencontrol -pdpkg-python -P$(python)
+	dpkg --build $(python) ..
+
+	dpkg-gencontrol -pdpkg-perl -P$(perl)
+	dpkg --build $(perl) ..
+
+checkdir:
+	test -f perl5/Dpkg/Archive/FTP.pm
+
+checkroot:
+	test "`whoami`" = "root"

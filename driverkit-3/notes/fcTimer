@@ -1,0 +1,80 @@
+			fc timer notes
+			
+states
+	idle				TS_IDLE
+	running, t/o msg enabled	TS_RUN_MSG
+	running, t/o msg disabled	TS_RUN_POLL
+	timeout, no msg sent		TS_TIMEOUT
+	timeout, msg sent		TS_TIMEOUT_MSG
+	
+transitions
+
+	TS_IDLE
+		==> TS_RUN_MSG     : startTimer(TRUE)
+		==> TS_RUN_POLL    : startTimer(FALSE)
+	TS_RUN_MSG
+		==> TS_IDLE        : stopTimer
+		==> TS_TIMEOUT_MSG : floppyTimeout()
+	TS_RUN_POLL
+		==> TS_IDLE	   : stopTimer
+		==> TS_TIMEOUT	   : floppyTimeout()
+	TS_TIMEOUT_MSG
+		==> TS_IDLE	   : stopTimer
+		==> TS_IDLE	   : waitIntr
+	XXX
+		==> TS_IDLE	   : stopTimer
+	timeout, no msg sent
+	timeout, msg sent
+
+startTimer(seconds, boolean_t msg) 
+{
+	IOTimeout();
+	timerState = TS_RUN_POLL or TS_RUN_MSG;
+}
+
+stopTimer()
+{
+	switch(timerState) {
+	    case TS_TIMEOUT_MSG:
+	    	get the message from timerPort;
+	    case TS_RUN_POLL:
+	    case TS_RUN_MSG:
+		IOUnTimeout();
+ 	    case TS_TIMEOUT:
+	    case TS_IDLE:
+	    	nop;
+	}
+	timerState = TS_IDLE;
+}
+
+timerInit() {
+	timerState = TS_IDLE;
+}
+
+floppyTimeout(id)
+{
+	switch(timerState) {
+	    case TS_RUN_MSG:
+	   	send timeout msg to timeoutPort;
+		timerState = TS_TIMEOUT_MSG;
+	    case TS_RUN_POLL:
+	    	timerState = TS_TIMEOUT;
+	    default:
+	    	huh?
+}
+
+waitIntr(seconds)
+{	
+	startTimer(seconds, TRUE);
+	msg_receive on fcPortSet;
+	if msg from timeoutPort {
+		timerInit();
+		rtn = timeout;		
+	}
+	else {
+		timerStop();
+		rtn = OK;
+		/* old fc interrupt code to get status, etc.? */
+	}
+}
+

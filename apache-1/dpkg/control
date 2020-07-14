@@ -1,0 +1,6 @@
+Package: apache
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apache Group
+Version: 1.3.6
+Description: Apache HTTP server
+Build-Depends: build-base, perl

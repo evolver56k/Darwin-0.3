@@ -1,0 +1,383 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+/*
+ * audio.defs
+ *	MIG interface to audio driver kernel server.
+ */
+subsystem audio 700;
+
+#include <mach/std_types.defs>
+
+type audio_time_t = struct [2] of int;
+type u_int = MSG_TYPE_INTEGER_32;
+type audio_var_array_t = array [*:256] of int;
+type audio_array_t = array [256] of int;
+type audio_name_t = array [*:256] of char;
+
+/*
+ * Mig calls these to convert the port a message is
+ * received on into each routine's first argument.
+ */
+type audio_device_t = port_t
+  intran: audio_device_t audio_port_to_device(port_t);
+type audio_stream_t = port_t
+  intran: audio_stream_t audio_port_to_stream(port_t);
+
+import <bsd/dev/audioTypes.h>;
+
+serverprefix _NXAudio;
+userprefix _NXAudio;
+
+/**************************
+ * Generic device routines.
+ **************************/
+
+/*
+ * Establish exclusive use of streams.
+ */
+routine GetExclusiveUser (
+			devicePort	: audio_device_t;
+	out		streamOwner	: port_t;
+	waittime	timeout		: int);
+
+routine SetExclusiveUser (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+	waittime	timeout		: int);
+
+/*
+ * Get and set dma buffer and memory wiring options.
+ */
+routine GetBufferOptions (
+			devicePort	: audio_device_t;
+	out		dmaSize		: u_int;
+	out		dmaCount	: u_int;
+	waittime	timeout		: int);
+
+routine SetBufferOptions (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+			dmaSize		: u_int;
+			dmaCount	: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Stream control of owned streams.
+ */
+routine ControlStreams (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+			action		: int;
+	waittime	timeout		: int);
+
+/*
+ * Add a stream.
+ */
+routine AddStream (
+			devicePort	: audio_device_t;
+	out		streamPort	: port_t;
+			streamOwner	: port_t;
+			streamId	: int;
+			streamType	: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Get and set peak detection options.
+ */
+routine GetDevicePeakOptions (
+			devicePort	: audio_device_t;
+	out		enabled		: u_int;
+	out		history		: u_int;
+	waittime	timeout		: int);
+
+routine SetDevicePeakOptions (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+			enabled		: u_int;
+			history		: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Get last peak.
+ */
+routine GetDevicePeak (
+			devicePort	: audio_device_t;
+	out		peakLeft	: u_int;
+	out		peakRight	: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Get clip count.
+ */
+routine GetClipCount (
+			devicePort	: audio_device_t;
+	out		count		: u_int;
+	waittime	timeout		: int);
+
+/********************
+ * Soundout routines.
+ ********************/
+
+/*
+ * Get and set soundout options.
+ */
+routine GetSndoutOptions (
+			devicePort	: audio_device_t;
+	out		bits		: u_int;
+	waittime	timeout		: int);
+
+routine SetSndoutOptions (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+			bits		: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Get and set speaker attenuation.
+ */
+routine GetSpeaker (
+			devicePort	: audio_device_t;
+	out		left		: int;
+	out		right		: int;
+	waittime	timeout		: int);
+
+routine SetSpeaker (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+			left		: int;
+			right		: int;
+	waittime	timeout		: int);
+
+/**************************
+ * Generic stream routines.
+ **************************/
+
+/*
+ * Set stream gain.
+ */
+routine SetStreamGain (
+			streamPort	: audio_stream_t;
+			left		: int;
+			right		: int;
+	waittime	timeout		: int);
+	
+/*
+ * Change owner of a stream.
+ */
+routine ChangeStreamOwner (
+			streamPort	: audio_stream_t;
+			streamOwner	: port_t;
+	waittime	timeout		: int);
+
+/*
+ * Stream control.
+ */
+routine StreamControl (
+			streamPort	: audio_stream_t;
+			action		: int;
+			actionTime	: audio_time_t;
+	waittime	timeout		: int);
+
+/*
+ * Stream info.
+ */
+routine StreamInfo (
+			streamPort	: audio_stream_t;
+	out		bytesProcessed	: u_int;
+	out		timeStamp	: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Remove a stream.
+ */
+routine RemoveStream (
+			streamPort	: audio_stream_t;
+	waittime	timeout		: int);
+
+/***************************
+ * Playback stream routines.
+ ***************************/
+
+/*
+ * Enqueue play request to stream.
+ */
+routine PlayStream (
+			streamPort	: audio_stream_t;
+			data		: pointer_t;
+			/* dataCnt	: int; */	/* invisible mig arg */
+			tag		: int;
+			channelCount	: u_int;
+			sampleRate	: int;
+			leftGain	: u_int;
+			rightGain	: u_int;
+			lowWater	: u_int;
+			highWater	: u_int;
+			streamReply	: port_t;
+			messages	: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Set peak detection options.
+ */
+routine SetStreamPeakOptions (
+			streamPort	: audio_stream_t;
+			enabled		: u_int;
+			history		: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Get last peak.
+ */
+routine GetStreamPeak (
+			streamPort	: audio_stream_t;
+	out		peakLeft	: u_int;
+	out		peakRight	: u_int;
+	waittime	timeout		: int);
+
+/****************************
+ * Recording stream routines.
+ ****************************/
+
+/*
+ * Enqueue record request to stream.
+ */
+routine RecordStream (
+			streamPort	: audio_stream_t;
+			count		: u_int;
+			tag		: int;
+			lowWater	: u_int;
+			highWater	: u_int;
+			streamReply	: port_t;
+			messages	: u_int;
+	waittime	timeout		: int);
+
+/****************************
+ * New for 3.1.
+ ****************************/
+
+/*
+ * Play and record with current parameters.
+ */
+
+routine PlayStreamData (
+			streamPort	: audio_stream_t;
+			data		: pointer_t;
+			/* dataCnt	: int; */	/* invisible mig arg */
+			tag		: int;
+			streamReply	: port_t;
+			messages	: u_int;
+	waittime	timeout		: int);
+
+routine RecordStreamData (
+			streamPort	: audio_stream_t;
+			count		: u_int;
+			tag		: int;
+			streamReply	: port_t;
+			messages	: u_int;
+	waittime	timeout		: int);
+
+/*
+ * Generic parameter api.
+ */
+
+routine GetDeviceName (
+			devicePort	: audio_device_t;
+	out		name		: audio_name_t;
+			/* out nameCnt	: u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);
+
+routine SetDeviceParameters (
+			devicePort	: audio_device_t;
+			streamOwner	: port_t;
+			params		: audio_var_array_t;
+			/* paramsCnt	: u_int; */	/* invisible mig arg */
+			values		: audio_array_t;
+	waittime	timeout		: int);
+
+routine GetDeviceParameters (
+			devicePort	: audio_device_t;
+			params		: audio_var_array_t;
+			/* paramsCnt	: u_int; */	/* invisible mig arg */
+	out		values		: audio_array_t;
+	waittime	timeout		: int);
+
+routine GetDeviceSupportedParameters (
+			devicePort	: audio_device_t;
+	out		params		: audio_var_array_t;
+			/* out paramsCnt: u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);
+
+routine GetDeviceParameterValues (
+			devicePort	: audio_device_t;
+			param		: int;
+	out		values		: audio_var_array_t;
+			/* out valuesCnt: u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);
+
+routine GetSamplingRates (
+			devicePort	: audio_device_t;
+	out		continuous	: int;
+	out		low		: int;
+	out		high		: int;
+	out		rates		: audio_var_array_t;
+			/* out ratesCnt	: u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);
+
+routine GetDataEncodings (
+			devicePort	: audio_device_t;
+	out		encodings	: audio_var_array_t;
+			/* out encodingsCnt : u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);
+
+routine GetChannelCountLimit (
+			devicePort	: audio_device_t;
+	out		count		: u_int;
+	waittime	timeout		: int);
+
+routine SetStreamParameters (
+			streamPort	: audio_stream_t;
+			params		: audio_var_array_t;
+			/* paramsCnt	: u_int; */	/* invisible mig arg */
+			values		: audio_array_t;
+	waittime	timeout		: int);
+
+routine GetStreamParameters (
+			streamPort	: audio_stream_t;
+			params		: audio_var_array_t;
+			/* paramsCnt	: u_int; */	/* invisible mig arg */
+	out		values		: audio_array_t;
+	waittime	timeout		: int);
+
+routine GetStreamSupportedParameters (
+			streamPort	: audio_stream_t;
+	out		params		: audio_var_array_t;
+			/* out paramsCnt: u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);
+
+routine GetStreamParameterValues (
+			streamPort	: audio_stream_t;
+			param		: int;
+	out		values		: audio_var_array_t;
+			/* out valuesCnt: u_int; */	/* invisible mig arg */
+	waittime	timeout		: int);

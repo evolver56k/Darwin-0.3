@@ -1,0 +1,262 @@
+{\rtf0\ansi{\fonttbl\f0\fswiss Helvetica;\f1\fmodern Ohlfs;}
+\paperw9840
+\paperh8400
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f0\b\i0\ulnone\fs28\fc0\cf0 DRIVERKIT Project Release Notes.
+\b0\fs24 \
+\
+
+\b driverkit-40 (integrated 11 Mar 93 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  Moved IOEISADirectDevice and IOEISADeviceDescription here from\
+    the kernel project. Bug 32476.\
+·  Fixed IOConvertPort(). Bug 32361.\
+·  Moved -attachInterruptPort to IODirectDevice from IOEISADirectDevice. \
+    Bug 32477.\
+·  Moved private typedefs from driverkit/i386/driverTypes.h to \
+    driverkit/i386/driverTypesPrivate.h. Bug 32478.\
+·  Added user-specifiable VPATH component in Makefile.device_common.\
+    Bug  32479.\
+·  Cleaned symlink created by lipoize target in Makefile.device_common.\
+    Bug 32022.\
+    \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-36 (integrated 27 Jan 93 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  Massive API changes. See ~osdev/DRIVERKIT/driverkit/doc/API_Change_log for details.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-30 (integrated 23-Nov dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  All get/set parameter methods and functions, as well as IODoInquire() and IODoLookup(), in IODevice now return IOReturn instead of IODeviceReturn.\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-27 (integrated 27-Oct)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  Added IOGetDevicePorts() (see prototype in <driverkit/ConfigPublic.h>).\
+·  IOSleep() now uses ns_timeout(CALLOUT_PRI_THREAD).\
+·  
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc1\cf1 uxprPrivate.h, IODiskRwDistributed.h, 
+\pard\tx740\fi-180\li720\fc1\cf1 and I
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc1\cf1 ODeviceParams.h
+\pard\tx740\fi-180\li720\fc1\cf1  are\
+   now installed
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc1\cf1  in /LocalDeveloper/Headers/driverkit.
+\pard\tx740\fi-180\li720\fc1\cf1 \
+·  Changes to Makefile.device_common and Makefile.device_template:\
+    ·  D
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc1\cf1 eleted LOADABLE_CFILES and LOADABLE_MFILES macros. \
+
+\pard\tx740\fi-180\li720\fc1\cf1 	 ·  Deleted kernrelease and kerndebug targets.\
+	 ·  Added lipoize target to allow building fat drivers.\
+	 ·  Modified install rule to invoke lipoize.\
+·  libDriver_g.a is now installed in /usr/local/lib (was /usr/local/).\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-26 (integrated 14-Oct dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  The destination of several installed binaries has changed:\
+    · libDriver.a and libDriver_g.a are now installed in /usr/lib/.\
+    · libDriver_\{kern,kern_g\}.o are now installed in /usr/local/lib/.\
+    · Config is now installed in /usr/bin/. \
+    · Makefile fragments and templates are now installed in \
+       NextDevloper/Makefiles/driverkit. \
+·  Makefile.device_common's install rule now depends on other_install, which must be defined in the client's Makefile. See Makefile.device_template for usage.\
+·  Minor bug fixes in volCheck module. Removable disks present at boot time are now registered even if they are ready. \
+·  NXDisk's setFormatted: method now does a setFormattedInt: on the physDev subsequent to calling getPhysParams.\
+·  Changed the name of this file from Driverkit_Internal.rtf to Driverkit.rtf. \
+·  Kernel version of IOTimeout() now schedules a callout at priority CALLOUT_PRI_THREAD to avoid running at softint.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 \
+driverkit-25 (integrated 1-Oct-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  Cleaned up NXDisk's handling of unformatted and "Not Ready"\
+	 volumes.\
+	  \
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-23 (integrated 10-Sep-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc1\cf1 ·  Deleted following functionality (affects many files): \
+	·  IOSERVER, IODEVICE_LOCKS (these have been ifdef'd \
+	    out for a long time). Test programs now all use distributed object I/F.\
+	·  IODevice's -query method and _queryFlags instance variable.\
+	·  all 'open' and 'close' state and methods in IODevice.\
+·  Changes to IODiskDevice:\
+	·  Added _writeProtect instance variable, added -writeProtect \
+	   and -setWriteProtect methods.\
+	·  Deleted _diskIsOpen instance variable and associated get/set methods.\
+	·  -registerLogicalDisk is a nop if _logicalDisk is already valid.\
+·  Changes to NXDisk:\
+	· blockSize and deviceSize set to same as physDevice for NXDisk\
+	   partition with no valid label.\
+	·  -probeLabel: now does registerLogicalDisk with both end of \
+	   logicalDisk chain and with physDevice.\
+·  Changes to libIO:\
+	·  IOForkThread() now creates thread in IOTask, not current_task().\
+·  Deleted query flags and intentions flags fro <driverkit/deviceCommon.h>\
+·  Deleted "undef private" from <driverkit/*.h> necessitated by old kernel\
+    bogosities.\
+·	 configutil is now installed in /usr/bin.\
+·  m88k xprServer_reloc (kernel uxpr server) is now installed in /usr/Devices.\
+·  Added RC_ARCHS_LOCAL macro to Makefile.device_common to\
+   allow project Makefiles to override RC_ARCHS.\
+·  Added IOPhysDevicePage() RPC to user_driver server.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-22 (integrated 26-Aug-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Deleted <driverkit/NXLock.h>. This was a duplicate of the same file in <machkit>.\
+·	Moved IONetDeviceKern.m to the kernel project. \
+·	Compiled a vers_string output file into libDriver*.a.\
+·	UXPR timestamps are now 32 bits of half-microseconds.\
+·	Improved Config's handling of driver death - devicePort(s) now destroyed before restarting driver.\
+·	Makefile.device_common now uses user-overwritable LOAD_COMMANDS and UNLOAD_COMMANDS macros as names for load/unload commands files.\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-21 (integrated 13-Aug-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Makefile fragments and templates in MakefileDir are now installed in /NextDevloper/Headers/driverkit. Their use is recommended for user-level drivers. \
+
+\fc1\cf1 ·	Added install rule to MakefileDir/Makefile.device_common.\
+
+\fc0\cf0 ·	Header files now installed in /NextDevloper/Headers/driverkit instead of /LocalDeveloper/...\
+·	Removed Printer/ directory.\
+
+\fc1\cf1 ·	Added per-channel DMA XPR enable command to driverkit/kern_driver.\
+·	Updated Config app notes (doc/Config.rtf) per current project status.\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-20 (integrated 28-Jul-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Removed most IOSERVER and IODEVICE_LOCKS code from IODevice. IOSERVER was a temporary version of Distributed Objects which has now been discarded. IODEVICE_LOCKS was dependent on IOSERVER and was never used in "real" drivers up to this point. All test programs in driverkit/tests now use Distributed Objects (DO) to access targets.\
+   One highly visible side effect of this change is that no public methods of any driverkit classes have ownerPort as an argument.   \
+·	IODiskDeviceRw protocol specifies 'pending' argument as an unsigned instead of a void *.\
+·	DiskDeviceSubclass protocol has been modified; it is now usable with Distributed Objects.
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\pard\tx740\fi-180\li720\fc0\cf0 ·	Added DiskRwDistributed.h, a DO-safe disk protocol. Kernel drivers do not implement this, but IOStub and UnixDisk (the example user-level disk drivers) do.
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\pard\tx740\fi-180\li720\fc0\cf0 ·	Added IO_R_OFFLINE and IO_R_NOTREADY IOReturn values to <driverkit/deviceCommon.h>.\
+·	Made NXDisk DO-safe.\
+·	Added Printer/ directory, the user-level NRW printer driver. This will move to a separate project soon.\
+· Makefile tweaks to allow native i386 build.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-19 (integrated 25-Jun-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Altered parameter ordering in IOSetParameter\{Char,Int\}() to match MiG's expectations.\
+·  Added iostat subproject.\
+·  Added getParameterChar parameters to IODevice: IO_CLASS_NAME, \
+	IO_DEVICE_NAME, IO_DEVICE_TYPE.\
+·  Added getParameterInt parameters to IODiskDevice: IO_ISA_DISK, \
+	IO_ISA_PHYSDEVICE.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-17 (integrated 15-May-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Altered parameter ordering in IOSetParameter\{Char,Int\}() to match MiG's expectations.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-16 (integrated 24-Apr-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Jasper Makefile tweaks.\
+·	Avodied building kernl-loadable modules (KStub, uxpr server, NXLockTest) to avoid dependency on kernloader.\
+·	Build and install 88k user libDriver libraries by default.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-15 (integrated 22-Apr-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	IOLogicalDisk now implements isDiskPresent: and kernel version of DiskDeviceRw protocol.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-14 (integrated 07-Apr-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	IOMap(Board,Slot,DevicePage) now take an addition argument, 'cache' to specify the cachablity of the mapped memory region.\
+·	IOMap(Board,Slot,DevicePage) now take a task_t instead of a vm_task_t to specify the target task.\
+·	Moved all device-dependent header files (driverkit/\{adb,SCSI*\}.h) to kernel project.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-13 (integrated 14-Mar-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	IODequeueDma() has changed to return a userStatus and dmaStatus. dmaStatus is now machine-independnet and is returned on m88k.  dmaStatus is defined in <driverkit/user_driver_types.h>.\
+·	Built m88k binaries with -fno-delayed-branch.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b driverkit-12 (integrated 02-Mar-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	IOTimeStamp() now generates an ns_time_t instead of a struct tsval.\
+·	The statistics instance variables and methods in IODiskDevice have been revamped. \
+·	Most of the methods in the IODeviceNRW category have been replaced by more efficient static inline functions in <architecture/m88k/dma_macros.h>. \
+·	The IOChannelReturn type, used in channel-specific RPCs in <driverkit/user_driver.h>, has been merged with IODeviceReturn. All RPCs in <driverkit/user_driver.h> now return an IODeviceReturn. \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 driverkit-11 (integrated 18-Feb-92 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Drivers which have versions in the m88k kernel (e.g., SCSIDisk, adb, etc.) have been deleted from the driverkit project. \
+·	Added install_only target to allow simple install without rebuilding. \
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b devices-4 (integrated 26-Sep-91 dmitch)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	ADB driver completed, including adbDriver, adbDevice, adbKeyboard,\
+   and adbPointer objects. \
+·	Compatible with mk-117 header file changes.  \
+·	Added get/set parameter mechanism to IODevice and to kern_dev server.\
+·	Minor changes to NRWDeviceDriver.frame, see the document's revision \
+    history dated 24-Sep-91.\
+·	This version of driverkit will not build in the pre-mk-117 build environment. \
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 \
+
+\b devices-3 (copied from dmitch's devices-3 29-Aug-91)\
+\
+
+\pard\tx740\b0\fi-180\li720\fc0\cf0 ·	Major nomenclature changes in both libDev and in libIO per feedback\
+   from Tech Pubs on initial release of Device Driver Developer Guide. Very\
+   few functional changes.\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\b\fc0\cf0 \
+devices-2 (integrated 08-Aug-91 dmitch)
+\b0 \
+\
+
+\pard\tx740\fi-180\li720\fc0\cf0 ·	libIO and libDev functional per 06-Aug-91 revision of NRW Device Driver\
+   Developer Guide, with the addition of NXLock, NXSpinLock, and\
+   NXConditionLock classes. User versions of libraries tested, Kernel versions\
+   untested.\
+·	Floppy, SCSIController, SCSIDisk, and Ethernet drivers completed.\
+
+}

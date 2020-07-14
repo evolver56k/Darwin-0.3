@@ -1,0 +1,56 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            chardefs.h, 
+            history.h, 
+            keymaps.h, 
+            readline.h, 
+            rldefs.h, 
+            "sysdep-aix.h", 
+            "sysdep-cxux7.h", 
+            "sysdep-irix.h", 
+            "sysdep-linux.h", 
+            "sysdep-norm.h", 
+            "sysdep-obsd.h", 
+            "sysdep-sco.h", 
+            "sysdep-solaris2.h", 
+            "sysdep-sysv4.h", 
+            tilde.h
+        ); 
+        OTHER_LINKED = (
+            bind.c, 
+            complete.c, 
+            display.c, 
+            emacs_keymap.c, 
+            funmap.c, 
+            history.c, 
+            isearch.c, 
+            keymaps.c, 
+            parens.c, 
+            readline.c, 
+            rltty.c, 
+            search.c, 
+            signals.c, 
+            tilde.c, 
+            vi_keymap.c, 
+            vi_mode.c, 
+            xmalloc.c
+        ); 
+        OTHER_SOURCES = (COPYING, ChangeLog, Makefile.in, configure.bat, configure.in); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = readline; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

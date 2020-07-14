@@ -1,0 +1,57 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        HEADERSEARCH = (.., "$(SYMROOT)/Headers"); 
+        H_FILES = (); 
+        OTHER_LINKED = (
+            mach_traps.s, 
+            compat.c, 
+            exception.c, 
+            exc_catcher.c, 
+            mach_data.c, 
+            mach_error.c, 
+            mach_init.c, 
+            mach_msg.c, 
+            mig_allocate.c, 
+            mig_deallocate.c, 
+            mig_reply_setup.c, 
+            mig_strncpy.c, 
+            msg.c, 
+            sbrk.c, 
+            slot_name.c, 
+            ts_convert.c, 
+            mach_msg_receive.c, 
+            mach_msg_send.c
+        ); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            bootstrap.defs, 
+            exc.defs, 
+            mach.defs, 
+            mach_host.defs, 
+            mach_port.defs, 
+            netname.defs
+        ); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (servers.subproj, headers.subproj); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_INSTALLDIR = /lib; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = mach; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_INSTALLDIR = /lib; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

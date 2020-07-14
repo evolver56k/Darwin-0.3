@@ -1,0 +1,33 @@
+#! /usr/bin/make -f
+
+.PHONY: build clean binary binary-indep binary-arch checkdir checkroot
+
+d = ./debian/tmp
+p = darwin-buildtools
+
+build: checkdir
+
+clean: checkdir
+	$(RM) -r debian/files debian/substvars debian/tmp
+	find . -name \*~ -print0 | xargs -0 $(RM)
+
+binary: binary-arch binary-indep
+
+binary-arch:
+
+binary-indep: checkdir build checkroot
+
+	$(RM) -r debian/files debian/substvars debian/tmp
+
+	install -d $(d)/DEBIAN
+
+	$(MAKE) install DSTROOT=$(d)
+
+	dpkg-gencontrol -p$(p) -P$(d)
+	dpkg --build $(d) ..
+
+checkdir:
+	test -f tools/darwin-buildpackage.pl
+
+checkroot:
+	test "`whoami`" = "root"

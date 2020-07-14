@@ -1,0 +1,35 @@
+/GenCAPI.pl/1.1.1.1/Fri Apr 23 01:34:10 1999//Tperl-1
+/Makefile/1.1.1.2/Fri Apr 23 01:34:10 1999//Tperl-1
+/TEST/1.1.1.1/Fri Apr 23 01:28:54 1999//Tperl-1
+/autosplit.pl/1.1.1.1/Fri Apr 23 01:28:54 1999//Tperl-1
+/config.bc/1.1.1.2/Fri Apr 23 01:34:11 1999//Tperl-1
+/config.gc/1.1.1.1/Fri Apr 23 01:34:11 1999//Tperl-1
+/config.vc/1.1.1.2/Fri Apr 23 01:34:11 1999//Tperl-1
+/config_H.bc/1.1.1.2/Fri Apr 23 01:34:11 1999//Tperl-1
+/config_H.gc/1.1.1.1/Fri Apr 23 01:34:12 1999//Tperl-1
+/config_H.vc/1.1.1.2/Fri Apr 23 01:34:12 1999//Tperl-1
+/config_h.PL/1.1.1.2/Fri Apr 23 01:34:13 1999//Tperl-1
+/config_sh.PL/1.1.1.2/Fri Apr 23 01:34:13 1999//Tperl-1
+/des_fcrypt.patch/1.1.1.1/Fri Apr 23 01:34:13 1999//Tperl-1
+/dl_win32.xs/1.1.1.2/Fri Apr 23 01:34:13 1999//Tperl-1
+/genxsdef.pl/1.1.1.1/Fri Apr 23 01:28:55 1999//Tperl-1
+/makedef.pl/1.1.1.2/Fri Apr 23 01:34:13 1999//Tperl-1
+/makefile.mk/1.1.1.2/Fri Apr 23 01:34:14 1999//Tperl-1
+/makemain.pl/1.1.1.1/Fri Apr 23 01:28:55 1999//Tperl-1
+/makeperldef.pl/1.1.1.1/Fri Apr 23 01:28:55 1999//Tperl-1
+/perlglob.c/1.1.1.2/Fri Apr 23 01:34:14 1999//Tperl-1
+/perlhost.h/1.1.1.1/Fri Apr 23 01:34:14 1999//Tperl-1
+/perllib.c/1.1.1.2/Fri Apr 23 01:34:14 1999//Tperl-1
+/pod.mak/1.1.1.2/Fri Apr 23 01:34:14 1999//Tperl-1
+/runperl.c/1.1.1.2/Fri Apr 23 01:34:15 1999//Tperl-1
+/splittree.pl/1.1.1.1/Fri Apr 23 01:28:55 1999//Tperl-1
+/win32.c/1.1.1.2/Fri Apr 23 01:34:15 1999//Tperl-1
+/win32.h/1.1.1.2/Fri Apr 23 01:34:15 1999//Tperl-1
+/win32io.c/1.1.1.1/Fri Apr 23 01:28:55 1999//Tperl-1
+/win32io.h/1.1.1.1/Fri Apr 23 01:28:55 1999//Tperl-1
+/win32iop.h/1.1.1.2/Fri Apr 23 01:34:16 1999//Tperl-1
+/win32sck.c/1.1.1.2/Fri Apr 23 01:34:16 1999//Tperl-1
+/win32thread.c/1.1.1.1/Fri Apr 23 01:34:16 1999//Tperl-1
+/win32thread.h/1.1.1.1/Fri Apr 23 01:34:16 1999//Tperl-1
+D/bin////
+D/include////

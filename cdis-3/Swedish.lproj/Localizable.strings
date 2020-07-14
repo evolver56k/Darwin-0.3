@@ -1,0 +1,69 @@
+/* Making sure they really want to do this */
+"REALLY_INSTALL" = "Detta program ar till for att installera OPENSTEP pa en harddisk.\nOm du ska installera OPENSTEP maste du svara pa ett par fragor.\n\nDETTA AR INTE EN UPPGRADERING.  DET AR EN FULLSTANDIG INSTALLATION FRAN BORJAN.\nSkriv 1 for att forbereda installation av OPENSTEP.\nSkriv 2 for att avsluta.";
+
+/* Displayed above the list of disks */
+"AVAILABLE_DISKS" = "Foljande diskar ar tillgangliga pa den har datorn:";
+
+/* Displayed below the list of disks */
+/*
+ 123456789012345678901234567890123456789012345678901234567890123456789012345
+*/
+"WHICH_DISK" = "Skriv 1 om du vill installera OPENSTEP pa den har disken.\n\nSkriv 2 for avancerade installationsalternativ.";
+
+"ALL_DISKS" = "Den forsta disken i listan ar startdisken. Du kan installera\nden vasentliga programvaran for OPENSTEP pa en annan disk i listan,\nmen om du gor det kommer OPENSTEP inte att starta automatiskt nar\ndu startar om datom. Du maste ocksa gora den disken till startdisk\nfor att kunna slutfora installationen av OPENSTEP.\n\nSkriv im siffran for disken du vill installera OPENSTEP pa.";
+
+/* Asked when there is a valid OPENSTEP partition on the disk */
+"OVERWRITE" = "Vill du behalla eventuella filer du lagt till eller radera dem innan\ndu installerar de grundlaggande delarna av OPENSTEP?\nSkriv 1 for att behalla filerna. Skriv 2 for att radera dem.";
+
+/* Options for partitioning the disk */
+"FDISK_MENU1" = "echo \"Skriv 1 for att radera hela disken och anvanda alla $disksize Mb\\nfor OPENSTEP.\"";
+"FDISK_MENU2" = "echo \"Skriv 2 for att reservera utrymme for DOS och anvanda resten for OPENSTEP.\"";
+"FDISK_MENU3" = "echo \"Skriv $currentnum for att radera OPENSTEP-partitionen pa $currentsize Mb och anvanda den\\nfor OPENSTEP.\"";
+"FDISK_MENU4" = "echo \"Skriv $freenum for att behalla befintliga partitioner och anvanda det fria\\nutrymmet $freesize Mb for OPENSTEP.\"";
+"FDISK_MENU5" = "echo \"Skriv $enum for att anvanda den utokade DOS-partitionen pa $esize Mb\\nfor OPENSTEP.\"";
+"FDISK_MENU6" = "echo \"Skriv $choices for att valja avancerade alternativ (endast pa engelska).\"";
+
+/* Displayed when they type 2 */
+"HOW_MUCH" = "Ange storleken pa den DOS-partition du vill ha (i megabyte): ";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"NO_EXTENDED" = "Det finns ingen utokad DOS-partition pa denna disk.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"TOO_SMALL" = "Det finns inte tillrackligt utrymme for att partitionera disken\npa detta satt.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"CHOOSE_AGAIN" = "Gor ett annat val.";
+
+/* Last chance to abort */
+"READY" = "Nu kan installationen av OPENSTEP paborjas\n\nSkriv 1 om du vill installera OPENSTEP.\nSkriv 2 om du vill avsluta installationsprogrammet.";
+
+/* Displayed in lieu of cryptic commands passing by... */
+"GOING" = "Forbereder disken for installation av OPENSTEP.\nDetta kan ta nagra minuter...";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INITFAILED" = "FORMATERINGEN MISSLYCKADES.\n\nInstallationsprogrammet kunde inte formatera harddisken.\nInstallationen kan inte fortsatta.";
+
+"Installing " = "Installerar ";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INSTALLFAILED" = "Hittade ingen disk.\nKan inte fortsatta med installationen.\n\n";
+
+/* Displayed when the user aborts, or something goes wrong */
+"QUITTING" = "Avslutar installationsprogrammet. Detta kan ta en stund...";
+
+"Completed." = "Installationen slutford.";
+
+"DONE" = "Nu kan du anvanda harddisken som startdisk for att slutfora installationen\nav OPENSTEP.";
+
+/* Forces them to eject the floppy right before rebooting */
+"REMOVE_FLOPPY" = "Mata ut disketten ur enheten och tryck pa Retur.";
+
+/* When we don't have a floppy */
+"RESTART" = "Starta om datorn genom att trycka pa Retur.";
+
+/* Displayed right before rebooting */
+"RESTARTING" = "Startar om datorn. Detta kan ta en stund...";
+
+/* Displayed when selecting the disk for installation */
+"BOOT_DISK" = "Datorns startdisk ar:";

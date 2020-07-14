@@ -1,0 +1,49 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        OTHER_LINKED = (
+            index.c, 
+            memccpy.c, 
+            memchr.c, 
+            memcmp.c, 
+            memset.c, 
+            rindex.c, 
+            strcasecmp.c, 
+            strcoll.c, 
+            strcspn.c, 
+            strdup.c, 
+            strerror.c, 
+            strftime.c, 
+            strmode.c, 
+            strpbrk.c, 
+            strsep.c, 
+            strspn.c, 
+            strstr.c, 
+            strtok.c, 
+            strxfrm.c, 
+            swab.c, 
+            strchr.c, 
+            rindix.c, 
+            strcmp.s
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = string; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,75 @@
+			Disk Statistics notes
+			
+int 	dk_ndrive = DK_NDRIVE;
+int 	dk_busy;
+long	dk_time[DK_NDRIVE];
+long	dk_seek[DK_NDRIVE];
+long	dk_xfer[DK_NDRIVE];
+long	dk_wds[DK_NDRIVE];
+float	dk_mspw[DK_NDRIVE];		// never Used!!!!!!
+long	dk_bps[DK_NDRIVE];
+
+SCSI Disk Driver
+
+	dk_bps[dk] set once, in sdsetbratio. Calculated from values in 
+		label (dlp->nsect, dlp->dl_secsize, dlp->rpm)
+	sdstart:
+		dk_busy |= 1 << device;
+		dk_xfer[device]++;
+		dk_seek[device]++;
+		dk_wds[device] += bp->b_bcount >> 6;
+		
+	sdintr:
+		dk_busy &=~ (1 << device);
+		
+OD driver
+
+	od_read_label:
+		dk_bps[dk] = l->dl_secsize * l->dl_nsect *
+				l->dl_rpm / 60;
+
+	od_go:
+		dk_busy |= 1 << dk;
+		dk_xfer[dk]++;
+		dk_wds[dk] += bp->b_bcount >> 6;
+	
+	od_done:
+		dk_busy &= ~(1 << dk);
+		
+	state machine starting seek:
+		dk_seek[dk]++;
+
+In gatherstats(), every hardclock (hz times per second?)
+
+	for (s = 0; s < DK_NDRIVE; s++)
+		if (dk_busy & (1 << s))
+			dk_time[s]++;
+
+In mach table() syscall:
+
+	ti.io_dkbusy = dk_busy;
+	ti.io_ndrive = dk_ndrive;	// don't know any better
+	
+In bsd machine_table() syscall:
+
+	ti.io_dkbusy = dk_busy;
+	ti.io_ndrive = 0;
+	for (i = 0; bus_dinit[i].bd_driver; i++)
+		if (bus_dinit[i].bd_dk >= 0)
+			ti.io_ndrive++;
+
+Proposed IODiskDevice counters (all unsigned int's)
+	readOps		
+	bytesRead
+	timeReading
+	writeOps
+	timeWriting
+	bytesWritten
+	
+methods
+	- (void)startRead;
+	- (void)endRead : (int)bytesTransferred;
+	- (void)startWrite;
+	- (void)endWrite : (int)bytesTransferred;
+
+..also, in kernel, current dk_XXX variables will be supported for a while.

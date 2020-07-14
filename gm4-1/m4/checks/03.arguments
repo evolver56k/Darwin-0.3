@@ -1,0 +1,7 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:973: Origin of test
+define(`exch', `$2, $1')
+dnl @result{}
+define(exch(``expansion text'', ``macro''))
+dnl @result{}
+macro
+dnl @result{}expansion text

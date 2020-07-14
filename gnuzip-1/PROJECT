@@ -1,0 +1,9 @@
+Project		: gzip
+Description	: GNU Zip
+Distribution	: 1.2.4
+Source		: Free Software Foundation
+Location	: ftp://prep.ai.mit.edu/pub/gnu/gzip-1.2.4.tar.gz
+Owner		: wsanchez
+Releases	: 
+Dependancies	: 
+

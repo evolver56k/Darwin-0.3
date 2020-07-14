@@ -1,0 +1,24 @@
+/ar.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/diff.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_certdb.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_certificate.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_certserver.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_debsums.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_filedb.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_index.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_lint.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_log.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_message.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_newformat.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_oldformat.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_packages.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_util.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_verify.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/dpkg_version.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/outstr.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/pgp.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/procfilter.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/strfile.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/subfile.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+/tar.py/1.1.1.1/Thu Aug  5 00:43:25 1999//Tdpkg_scriptlib-1
+D

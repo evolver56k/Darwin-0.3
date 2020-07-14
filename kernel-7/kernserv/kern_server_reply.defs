@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+
+/* 
+ * Copyright (c) 1989 NeXT, Inc.
+ *
+ * HISTORY
+ * 17-Sep-90  Gregg Kellogg (gk) at NeXT
+ *	Changed log_entry_array_t to be out-of-line.  The data structure's
+ *	too big to be sent in-line.
+ *
+ * 24-May-89  Gregg Kellogg (gk) at NeXT
+ *	Created.
+ *
+ */
+
+/*
+ * interface for kern_server to kern_loader communication.
+ */
+subsystem kern_server_reply 200;
+
+#include <mach/std_types.defs>
+
+type panic_msg_t = (MSG_TYPE_STRING,8*256);
+type log_entry_t = struct[8] of int;
+type log_entry_array_t = ^array[] of log_entry_t;
+type vm_address_t = int;
+type vm_size_t = int;
+type macho_header_name_t = (MSG_TYPE_STRING,8*16);
+
+import <kernserv/kern_server_reply_types.h>;
+
+userprefix kern_serv_;
+
+/*
+ * Send panic message to kern_server and suspend.
+ */
+routine panic (
+		boot_port	: port_t;
+		panic_msg	: panic_msg_t);
+
+/*
+ * Retreive Mach-O header information (not available directly to loadable.
+ */
+routine section_by_name (
+		boot_port	: port_t;
+		segname		: macho_header_name_t;
+		sectname	: macho_header_name_t;
+	out	addr		: vm_address_t;
+	out	size		: vm_size_t);
+
+/*
+ * Returned log information.
+ */
+simpleroutine log_data (
+		log_port	: port_t;
+		log		: log_entry_array_t, dealloc);
+
+/*
+ * Request notification on this port.
+ */
+skip;

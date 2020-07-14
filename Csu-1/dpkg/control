@@ -1,0 +1,6 @@
+Package: csu
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 23.1
+Description: C startup library
+Build-Depends: build-base

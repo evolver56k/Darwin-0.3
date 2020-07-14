@@ -1,0 +1,7 @@
+Package: zlib
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Info-ZIP
+Version: 1.1.3
+URL: http://www.cdrom.com/pub/infozip/zlib/
+Description: Zip library
+Build-Depends: build-base

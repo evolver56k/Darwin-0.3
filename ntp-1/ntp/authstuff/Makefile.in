@@ -1,0 +1,408 @@
+# Makefile.in generated automatically by automake 1.2h from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+#AUTOMAKE_OPTIONS = ../ansi2knr no-dependencies
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DISTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+AUTHCERT = @AUTHCERT@
+AUTHSPEED = @AUTHSPEED@
+AWK = @AWK@
+CC = @CC@
+CFLAGS = @CFLAGS@
+CHUTEST = @CHUTEST@
+CLKTEST = @CLKTEST@
+CPP = @CPP@
+DCFD = @DCFD@
+DESOBJS = @DESOBJS@
+KEYPARITY = @KEYPARITY@
+LDFLAGS = @LDFLAGS@
+LIBPARSE = @LIBPARSE@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MAKEIPFP = @MAKEIPFP@
+MAKEPC1 = @MAKEPC1@
+MAKEPC2 = @MAKEPC2@
+MAKESP = @MAKESP@
+MAKE_ADJTIMED = @MAKE_ADJTIMED@
+MAKE_LIBPARSE = @MAKE_LIBPARSE@
+MAKE_LIBPARSE_KERNEL = @MAKE_LIBPARSE_KERNEL@
+MAKE_NTPTIME = @MAKE_NTPTIME@
+MAKE_PARSEKMODULE = @MAKE_PARSEKMODULE@
+MAKE_TICKADJ = @MAKE_TICKADJ@
+MD5DRIVER = @MD5DRIVER@
+MKRANDKEYS = @MKRANDKEYS@
+OMAKEIPFP = @OMAKEIPFP@
+PACKAGE = @PACKAGE@
+PROPDELAY = @PROPDELAY@
+RANLIB = @RANLIB@
+TESTDCF = @TESTDCF@
+U = @U@
+UNIXCERT = @UNIXCERT@
+VERSION = @VERSION@
+
+AUTOMAKE_OPTIONS = ../util/ansi2knr
+EXTRA_PROGRAMS = authcert authspeed md5driver keyparity makeIPFP makePC1 makePC2 \
+	makeSP mkrandkeys omakeIPFP unixcert
+INCLUDES = -I$(top_srcdir)/include
+LDADD = ../libntp/libntp.a
+#EXTRA_DIST = README TAGS auth.samplekeys auth.speed certdata md5_sample_output results
+EXTRA_DIST = auth.samplekeys auth.speed certdata md5_sample_output results
+ETAGS_ARGS = Makefile.am
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
+CPPFLAGS = @CPPFLAGS@
+LIBS = @LIBS@
+ANSI2KNR = ../util/ansi2knr
+authcert_SOURCES = authcert.c
+authcert_OBJECTS =  authcert$U.o
+authcert_LDADD = $(LDADD)
+authcert_DEPENDENCIES =  ../libntp/libntp.a
+authcert_LDFLAGS = 
+authspeed_SOURCES = authspeed.c
+authspeed_OBJECTS =  authspeed$U.o
+authspeed_LDADD = $(LDADD)
+authspeed_DEPENDENCIES =  ../libntp/libntp.a
+authspeed_LDFLAGS = 
+md5driver_SOURCES = md5driver.c
+md5driver_OBJECTS =  md5driver$U.o
+md5driver_LDADD = $(LDADD)
+md5driver_DEPENDENCIES =  ../libntp/libntp.a
+md5driver_LDFLAGS = 
+keyparity_SOURCES = keyparity.c
+keyparity_OBJECTS =  keyparity$U.o
+keyparity_LDADD = $(LDADD)
+keyparity_DEPENDENCIES =  ../libntp/libntp.a
+keyparity_LDFLAGS = 
+makeIPFP_SOURCES = makeIPFP.c
+makeIPFP_OBJECTS =  makeIPFP$U.o
+makeIPFP_LDADD = $(LDADD)
+makeIPFP_DEPENDENCIES =  ../libntp/libntp.a
+makeIPFP_LDFLAGS = 
+makePC1_SOURCES = makePC1.c
+makePC1_OBJECTS =  makePC1$U.o
+makePC1_LDADD = $(LDADD)
+makePC1_DEPENDENCIES =  ../libntp/libntp.a
+makePC1_LDFLAGS = 
+makePC2_SOURCES = makePC2.c
+makePC2_OBJECTS =  makePC2$U.o
+makePC2_LDADD = $(LDADD)
+makePC2_DEPENDENCIES =  ../libntp/libntp.a
+makePC2_LDFLAGS = 
+makeSP_SOURCES = makeSP.c
+makeSP_OBJECTS =  makeSP$U.o
+makeSP_LDADD = $(LDADD)
+makeSP_DEPENDENCIES =  ../libntp/libntp.a
+makeSP_LDFLAGS = 
+mkrandkeys_SOURCES = mkrandkeys.c
+mkrandkeys_OBJECTS =  mkrandkeys$U.o
+mkrandkeys_LDADD = $(LDADD)
+mkrandkeys_DEPENDENCIES =  ../libntp/libntp.a
+mkrandkeys_LDFLAGS = 
+omakeIPFP_SOURCES = omakeIPFP.c
+omakeIPFP_OBJECTS =  omakeIPFP$U.o
+omakeIPFP_LDADD = $(LDADD)
+omakeIPFP_DEPENDENCIES =  ../libntp/libntp.a
+omakeIPFP_LDFLAGS = 
+unixcert_SOURCES = unixcert.c
+unixcert_OBJECTS =  unixcert$U.o
+unixcert_LDADD = $(LDADD)
+unixcert_DEPENDENCIES =  ../libntp/libntp.a
+unixcert_LDFLAGS = 
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  README Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP = --best
+SOURCES = authcert.c authspeed.c md5driver.c keyparity.c makeIPFP.c makePC1.c makePC2.c makeSP.c mkrandkeys.c omakeIPFP.c unixcert.c
+OBJECTS = authcert$U.o authspeed$U.o md5driver$U.o keyparity$U.o makeIPFP$U.o makePC1$U.o makePC2$U.o makeSP$U.o mkrandkeys$U.o omakeIPFP$U.o unixcert$U.o
+
+all: Makefile
+
+.SUFFIXES:
+.SUFFIXES: .S .c .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps authstuff/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+.c.o:
+	$(COMPILE) -c $<
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+../util/ansi2knr: ../util/ansi2knr.o
+	cd ../util && $(MAKE) ansi2knr
+
+../util/ansi2knr.o:
+	cd ../util && $(MAKE) ansi2knr.o
+
+
+mostlyclean-kr:
+	-rm -f *_.c
+
+clean-kr:
+
+distclean-kr:
+
+maintainer-clean-kr:
+
+authcert: $(authcert_OBJECTS) $(authcert_DEPENDENCIES)
+	@rm -f authcert
+	$(LINK) $(authcert_LDFLAGS) $(authcert_OBJECTS) $(authcert_LDADD) $(LIBS)
+
+authspeed: $(authspeed_OBJECTS) $(authspeed_DEPENDENCIES)
+	@rm -f authspeed
+	$(LINK) $(authspeed_LDFLAGS) $(authspeed_OBJECTS) $(authspeed_LDADD) $(LIBS)
+
+md5driver: $(md5driver_OBJECTS) $(md5driver_DEPENDENCIES)
+	@rm -f md5driver
+	$(LINK) $(md5driver_LDFLAGS) $(md5driver_OBJECTS) $(md5driver_LDADD) $(LIBS)
+
+keyparity: $(keyparity_OBJECTS) $(keyparity_DEPENDENCIES)
+	@rm -f keyparity
+	$(LINK) $(keyparity_LDFLAGS) $(keyparity_OBJECTS) $(keyparity_LDADD) $(LIBS)
+
+makeIPFP: $(makeIPFP_OBJECTS) $(makeIPFP_DEPENDENCIES)
+	@rm -f makeIPFP
+	$(LINK) $(makeIPFP_LDFLAGS) $(makeIPFP_OBJECTS) $(makeIPFP_LDADD) $(LIBS)
+
+makePC1: $(makePC1_OBJECTS) $(makePC1_DEPENDENCIES)
+	@rm -f makePC1
+	$(LINK) $(makePC1_LDFLAGS) $(makePC1_OBJECTS) $(makePC1_LDADD) $(LIBS)
+
+makePC2: $(makePC2_OBJECTS) $(makePC2_DEPENDENCIES)
+	@rm -f makePC2
+	$(LINK) $(makePC2_LDFLAGS) $(makePC2_OBJECTS) $(makePC2_LDADD) $(LIBS)
+
+makeSP: $(makeSP_OBJECTS) $(makeSP_DEPENDENCIES)
+	@rm -f makeSP
+	$(LINK) $(makeSP_LDFLAGS) $(makeSP_OBJECTS) $(makeSP_LDADD) $(LIBS)
+
+mkrandkeys: $(mkrandkeys_OBJECTS) $(mkrandkeys_DEPENDENCIES)
+	@rm -f mkrandkeys
+	$(LINK) $(mkrandkeys_LDFLAGS) $(mkrandkeys_OBJECTS) $(mkrandkeys_LDADD) $(LIBS)
+
+omakeIPFP: $(omakeIPFP_OBJECTS) $(omakeIPFP_DEPENDENCIES)
+	@rm -f omakeIPFP
+	$(LINK) $(omakeIPFP_LDFLAGS) $(omakeIPFP_OBJECTS) $(omakeIPFP_LDADD) $(LIBS)
+
+unixcert: $(unixcert_OBJECTS) $(unixcert_DEPENDENCIES)
+	@rm -f unixcert
+	$(LINK) $(unixcert_LDFLAGS) $(unixcert_OBJECTS) $(unixcert_LDADD) $(LIBS)
+authcert_.c: authcert.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/authcert.c; then echo $(srcdir)/authcert.c; else echo authcert.c; fi` | $(ANSI2KNR) - authcert_.c
+authspeed_.c: authspeed.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/authspeed.c; then echo $(srcdir)/authspeed.c; else echo authspeed.c; fi` | $(ANSI2KNR) - authspeed_.c
+keyparity_.c: keyparity.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/keyparity.c; then echo $(srcdir)/keyparity.c; else echo keyparity.c; fi` | $(ANSI2KNR) - keyparity_.c
+makeIPFP_.c: makeIPFP.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/makeIPFP.c; then echo $(srcdir)/makeIPFP.c; else echo makeIPFP.c; fi` | $(ANSI2KNR) - makeIPFP_.c
+makePC1_.c: makePC1.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/makePC1.c; then echo $(srcdir)/makePC1.c; else echo makePC1.c; fi` | $(ANSI2KNR) - makePC1_.c
+makePC2_.c: makePC2.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/makePC2.c; then echo $(srcdir)/makePC2.c; else echo makePC2.c; fi` | $(ANSI2KNR) - makePC2_.c
+makeSP_.c: makeSP.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/makeSP.c; then echo $(srcdir)/makeSP.c; else echo makeSP.c; fi` | $(ANSI2KNR) - makeSP_.c
+md5driver_.c: md5driver.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/md5driver.c; then echo $(srcdir)/md5driver.c; else echo md5driver.c; fi` | $(ANSI2KNR) - md5driver_.c
+mkrandkeys_.c: mkrandkeys.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/mkrandkeys.c; then echo $(srcdir)/mkrandkeys.c; else echo mkrandkeys.c; fi` | $(ANSI2KNR) - mkrandkeys_.c
+omakeIPFP_.c: omakeIPFP.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/omakeIPFP.c; then echo $(srcdir)/omakeIPFP.c; else echo omakeIPFP.c; fi` | $(ANSI2KNR) - omakeIPFP_.c
+unixcert_.c: unixcert.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(INCLUDES) $(CPPFLAGS) `if test -f $(srcdir)/unixcert.c; then echo $(srcdir)/unixcert.c; else echo unixcert.c; fi` | $(ANSI2KNR) - unixcert_.c
+authcert_.o authspeed_.o keyparity_.o makeIPFP_.o makePC1_.o makePC2_.o \
+makeSP_.o md5driver_.o mkrandkeys_.o omakeIPFP_.o unixcert_.o : \
+$(ANSI2KNR)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $(SOURCES) $(HEADERS) $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  gawk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = authstuff
+
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: 
+	@$(NORMAL_INSTALL)
+
+install-data: 
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: 
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs:
+
+
+mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(DISTCLEANFILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-compile mostlyclean-kr mostlyclean-tags \
+		mostlyclean-generic
+
+clean:  clean-compile clean-kr clean-tags clean-generic mostlyclean
+
+distclean:  distclean-compile distclean-kr distclean-tags \
+		distclean-generic clean
+	-rm -f config.status
+
+maintainer-clean:  maintainer-clean-compile maintainer-clean-kr \
+		maintainer-clean-tags maintainer-clean-generic \
+		distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-kr distclean-kr clean-kr \
+maintainer-clean-kr tags mostlyclean-tags distclean-tags clean-tags \
+maintainer-clean-tags distdir info dvi installcheck install-exec \
+install-data install uninstall all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+../libntp/libntp.a:
+	cd ../libntp && $(MAKE)
+
+check-local-rsn: authcert authspeed
+	./authcert < $(srcdir)/certdata
+	./authspeed -d -n 30000 $(srcdir)/auth.samplekeys
+	./authspeed -m -n 30000 $(srcdir)/auth.samplekeys
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

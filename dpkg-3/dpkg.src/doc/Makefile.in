@@ -1,0 +1,411 @@
+# Makefile.in generated automatically by automake 1.3 from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DISTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+CATALOGS = @CATALOGS@
+CATOBJEXT = @CATOBJEXT@
+CC = @CC@
+CWARNS = @CWARNS@
+CXX = @CXX@
+DATADIRNAME = @DATADIRNAME@
+EMACS = @EMACS@
+GENCAT = @GENCAT@
+GMOFILES = @GMOFILES@
+GMSGFMT = @GMSGFMT@
+GT_NO = @GT_NO@
+GT_YES = @GT_YES@
+INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
+INSTOBJEXT = @INSTOBJEXT@
+INTLDEPS = @INTLDEPS@
+INTLLIBS = @INTLLIBS@
+INTLOBJS = @INTLOBJS@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MKINSTALLDIRS = @MKINSTALLDIRS@
+MSGFMT = @MSGFMT@
+NM = @NM@
+OPTCFLAGS = @OPTCFLAGS@
+PACKAGE = @PACKAGE@
+POFILES = @POFILES@
+POSUB = @POSUB@
+RANLIB = @RANLIB@
+USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
+USE_NLS = @USE_NLS@
+VERSION = @VERSION@
+dselect_SUBDIRS = @dselect_SUBDIRS@
+l = @l@
+lispdir = @lispdir@
+perlpath = @perlpath@
+
+AUTOMAKE_OPTIONS	= 1.1 foreign
+
+docdir			= $(prefix)/doc
+pkgdocdir		= $(docdir)/@PACKAGE@
+
+man_MANS		= deb.5 deb-old.5 deb-control.5
+pkgdoc_DATA		= developer-keys.pgp
+
+HTMLDOCSTAMPS		= internals.html-stamp packaging.html-stamp
+HTMLDIRS		= internals.html packaging.html
+SGMLFILES		= internals.sgml packaging.sgml
+HARDCOPY		= internals.ps internals.dvi packaging.ps
+
+CLEANFILES		= $(srcdir)/manuals-version.new \
+			  $(srcdir)/*.aux \
+			  $(srcdir)/*.cp \
+			  $(srcdir)/*.fn \
+			  $(srcdir)/*.fns \
+			  $(srcdir)/*.ky \
+			  $(srcdir)/*.log \
+			  $(srcdir)/*.pg \
+			  $(srcdir)/*.toc \
+			  $(srcdir)/*.tp \
+			  $(srcdir)/*.vr \
+			  $(srcdir)/*.sgmls \
+			  $(srcdir)/*.internals.texi \
+			  $(srcdir)/*.bak
+
+EXTRA_DIST		= database-structure.fig \
+			  ChangeLog \
+			  manuals-version \
+			  developer-keys.pgp \
+			  $(SGMLFILES) \
+			  $(man_MANS) \
+			  texinfo.dtd \
+			  texinfo.texi_mapping \
+			  texinfo.debian_mapping
+
+DISTCLEANFILES		= 
+
+INFOFILES		= internals.info
+
+SUFFIXES		= .html-stamp .sgml .ps .fig .monops
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+man5dir = $(mandir)/man5
+MANS = $(man_MANS)
+
+NROFF = nroff
+DATA =  $(pkgdoc_DATA)
+
+DIST_COMMON =  ChangeLog Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+all: Makefile $(MANS) $(DATA)
+
+.SUFFIXES:
+.SUFFIXES: .fig .html-stamp .monops .ps .sgml
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign doc/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+install-man5:
+	$(mkinstalldirs) $(DESTDIR)$(man5dir)
+	@list='$(man5_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.5*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man5dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man5dir)/$$inst; \
+	done
+
+uninstall-man5:
+	@list='$(man5_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.5*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man5dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man5dir)/$$inst; \
+	done
+install-man: $(MANS)
+	@$(NORMAL_INSTALL)
+	$(MAKE) install-man5
+uninstall-man:
+	@$(NORMAL_UNINSTALL)
+	$(MAKE) uninstall-man5
+
+install-pkgdocDATA: $(pkgdoc_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)
+	@list='$(pkgdoc_DATA)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(pkgdocdir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(pkgdocdir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(pkgdocdir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(pkgdocdir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-pkgdocDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(pkgdoc_DATA)'; for p in $$list; do \
+	  p=`basename $$p`; \
+	  rm -f $(DESTDIR)$(pkgdocdir)/$$p; \
+	done
+tags: TAGS
+TAGS:
+
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = doc
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign doc/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+	$(MAKE) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-hook
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: 
+	@$(NORMAL_INSTALL)
+
+install-data: install-man install-pkgdocDATA install-data-local
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: uninstall-man uninstall-pkgdocDATA uninstall-local
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(mandir)/man5 $(DATADIR)$(pkgdocdir)
+
+
+mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(DISTCLEANFILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-generic
+
+clean:  clean-generic mostlyclean
+
+distclean:  distclean-generic clean
+	-rm -f config.status
+	-rm -f libtool
+
+maintainer-clean:  maintainer-clean-generic distclean \
+		maintainer-clean-local
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: install-man5 uninstall-man5 install-man uninstall-man \
+uninstall-pkgdocDATA install-pkgdocDATA tags distdir info dvi \
+installcheck install-exec install-data install uninstall all \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+.PHONY: all install-data-local uninstall-local dist-hook clean-local
+
+all:
+	if [ -f /usr/bin/debiandoc2ps ]; then \
+		$(MAKE) $(HTMLDOCSTAMPS) $(HARDCOPY) $(INFOFILES); \
+	fi
+
+$(srcdir)/manuals-version: $(top_srcdir)/debian/changelog
+	v=`dpkg-parsechangelog -l$< | sed -n 's/^Version: //p'` && \
+	echo "<!entity manuals-version \"$$v\">" >$@.new
+	echo "<!entity dpkg-version \"$(VERSION)\">" >>$@.new
+	(cmp -s $@.new $@ || mv -f $@.new $@) && rm -f $@.new
+
+$(srcdir)/packaging.html-stamp: packaging.sgml manuals-version
+	cd $(srcdir) && rm -rf packaging.thml/*.html
+	cd $(srcdir) && debiandoc2html packaging.sgml
+	touch $@
+
+$(srcdir)/packaging.ps: packaging.sgml manuals-version
+	cd $(srcdir) && debiandoc2ps -pletter packaging.sgml
+
+$(srcdir)/internals.texi: internals.sgml texinfo.dtd texinfo.texi_mapping manuals-version
+	cd $(srcdir) && nsgmls internals.sgml > internals.sgmls || ($(RM) internals.sgmls && false)
+	cd $(srcdir) && sgmlsasp texinfo.texi_mapping < internals.sgmls > internals.texi || ($(RM) internals.texi && false)
+	cd $(srcdir) && perl -pi -e 's/printindex FN/printindex fn/' internals.texi || ($(RM) internals.texi && false)
+
+$(srcdir)/internals.ps: internals.dvi
+	cd $(srcdir) && dvips -t letter -o internals.ps internals.dvi
+
+$(srcdir)/internals.dvi: internals.texi
+	cd $(srcdir) && texi2dvi internals.texi
+
+$(srcdir)/internals.info: internals.texi
+	cd $(srcdir) && makeinfo internals.texi
+
+$(srcdir)/internals.html-stamp: internals.texi
+	cd $(srcdir) && $(RM) -r internals.html/*.html
+	-cd $(srcdir) && mkdir internals.html
+	cd $(srcdir)/internals.html && texi2html -monolithic internals.texi
+	cd $(srcdir) && mv internals.html/internals.html internals.html/index.html
+	touch $@
+
+$(srcdir)/database-structure.ps: database-structure.fig
+	fig2dev -L ps -c -l _ -P < $< > ps
+	mv -f ps $@
+
+$(srcdir)/database-structure.mono.ps: database-structure.ps
+	perl -pe 's:^/(col[0-7]) \{[01 ]*1[01 ]* setrgbcolor\}\
+ bind def$$::/$$1 {} bind def:' $< > ps
+	mv -f ps $@
+
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign doc/Makefile
+	perl -ni -e \
+		'print; if (/p in \$$\$$list\; do/) { print "\t  p=`basename \$$\$$p`; \\\n"; }' \
+		$(srcdir)/Makefile.in
+
+install-data-local:
+	if [ -f /usr/bin/debiandoc2ps ]; then \
+		$(MAKE) $(HTMLDOCSTAMPS); \
+	fi
+	$(mkinstalldirs) $(pkgdocdir)
+	$(INSTALL_DATA) $(top_srcdir)/debian/changelog $(pkgdocdir)/changelog
+	$(INSTALL_DATA) $(srcdir)/ChangeLog $(pkgdocdir)/changelog.manuals
+	set -e; for f in $(HTMLDOCSTAMPS); do \
+		g=`echo $$f | sed -e 's/-stamp$$//'`; \
+		cp -r $(srcdir)/$$g $(pkgdocdir)/`basename $$g`; \
+	done
+
+uninstall-local:
+	-$(RM) $(pkgdocdir)/changelog.manuals $(pkgdocdir)/changelog
+	-cd $(pkgdocdir) && rm -rf $(HTMLDIRS)
+
+dist-hook:
+	if [ -f /usr/bin/debiandoc2ps ]; then \
+		$(MAKE) $(HTMLDOCSTAMPS) $(HARDCOPY) internals.texi internals.info; \
+	fi
+	cp -p $^ $(distdir)
+	for f in `echo $^ | tr ' \t' '\n\n' | sed -ne 's:.html-stamp::gp'`; do set -e; \
+		$(RM) -r $(distdir)/`basename $$f.html`; \
+		mkdir $(distdir)/`basename $$f.html`; \
+		cp -p $$f.html/* $(distdir)/`basename $$f.html`; \
+	done
+	$(RM) -r $(distdir)/obsolete
+	cp -rp $(srcdir)/obsolete $(distdir)/
+	cp -p $(HARDCOPY) $(distdir)/
+
+maintainer-clean-local: doc-clean
+	-$(RM) $(srcdir)/Makefile.in 
+
+doc-clean:
+	cd $(srcdir) && $(RM) *.aux *.cp *.dvi *.fn *.ky *.log *.pg *.toc *.tp *.vr *.bak
+	cd $(srcdir) && $(RM) internals.FN internals.fns internals.sgmls internals.texi internals.info*
+	cd $(srcdir) && $(RM) packaging.texi packaging.html packaging.html-stamp
+	cd $(srcdir) && $(RM) packaging.text packaging.ps packaging.lout
+	cd $(srcdir) && $(RM) internals.texi internals.html internals.html-stamp
+	cd $(srcdir) && $(RM) internals.text internals.ps packaging.lout
+	cd $(srcdir) && $(RM) manuals-version*
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

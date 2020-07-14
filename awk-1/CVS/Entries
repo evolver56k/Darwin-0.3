@@ -1,0 +1,22 @@
+/FIXES/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+/Makefile/1.1.1.1/Thu Apr 15 17:25:26 1999//Tawk-1
+/Makefile.postamble/1.1.1.1/Thu Apr 15 17:25:28 1999//Tawk-1
+/Makefile.preamble/1.1.1.1/Thu Apr 15 17:25:28 1999//Tawk-1
+/PB.project/1.1.1.1/Thu Apr 15 17:25:26 1999//Tawk-1
+/README/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+/awk.1/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+/awk.h/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+/awkgram.y/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+/b.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/lex.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/lib.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/main.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/maketab.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/missing95.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/parse.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/proto.h/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/run.c/1.1.1.2/Thu Apr 15 17:25:27 1999//Tawk-1
+/tran.c/1.1.1.2/Thu Apr 15 17:25:28 1999//Tawk-1
+/ytab.c/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+/ytab.h/1.1.1.1/Thu Apr 15 17:24:41 1999//Tawk-1
+D/dpkg////

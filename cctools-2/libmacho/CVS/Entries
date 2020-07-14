@@ -1,0 +1,17 @@
+/Makefile/1.1.1.1/Fri May  7 17:47:15 1999//Tcctools-2
+/arch.c/1.1.1.1/Fri May  7 17:47:13 1999//Tcctools-2
+/dylib.ofileList/1.1.1.1/Fri May  7 17:47:15 1999//Tcctools-2
+/get_end.c/1.1.1.1/Fri May  7 17:47:14 1999//Tcctools-2
+/getsecbyname.c/1.1.1.1/Fri May  7 17:47:13 1999//Tcctools-2
+/getsegbyname.c/1.1.1.1/Fri May  7 17:47:13 1999//Tcctools-2
+/hppa_swap.c/1.1.1.1/Fri May  7 17:47:14 1999//Tcctools-2
+/i386_swap.c/1.1.1.1/Fri May  7 17:47:14 1999//Tcctools-2
+/i860_swap.c/1.1.1.1/Fri May  7 17:47:15 1999//Tcctools-2
+/m68k_swap.c/1.1.1.1/Fri May  7 17:47:14 1999//Tcctools-2
+/m88k_swap.c/1.1.1.1/Fri May  7 17:47:15 1999//Tcctools-2
+/notes/1.1.1.1/Fri May  7 17:47:16 1999//Tcctools-2
+/ppc_swap.c/1.1.1.1/Fri May  7 17:47:15 1999//Tcctools-2
+/shlib.ofileList/1.1.1.1/Fri May  7 17:47:15 1999//Tcctools-2
+/sparc_swap.c/1.1.1.1/Fri May  7 17:47:14 1999//Tcctools-2
+/swap.c/1.1.1.1/Fri May  7 17:47:14 1999//Tcctools-2
+D

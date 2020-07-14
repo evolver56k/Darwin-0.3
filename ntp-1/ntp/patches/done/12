@@ -1,0 +1,102 @@
+Replied: Wed, 07 Jan 1998 20:22:29 -0500
+Replied: "Poul-Henning Kamp <phk@critter.freebsd.dk> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa19193;
+          7 Jan 1998 16:04 EST
+Received: from critter.freebsd.dk (localhost.cybercity.dk [127.0.0.1])
+	by critter.freebsd.dk (8.8.7/8.8.7) with ESMTP id WAA04591;
+	Wed, 7 Jan 1998 22:01:08 +0100 (CET)
+	(envelope-from phk@critter.freebsd.dk)
+To: stenn@whimsy.udel.edu
+cc: Dave Mills <mills@huey.udel.edu>, mills@udel.edu
+Subject: Re: probably a bug... 
+In-reply-to: Your message of "Mon, 05 Jan 1998 16:33:37 EST."
+             <10260.884036017@whimsy.udel.edu> 
+Date: Wed, 07 Jan 1998 22:01:08 +0100
+Message-ID: <4589.884206868@critter.freebsd.dk>
+From: Poul-Henning Kamp <phk@critter.freebsd.dk>
+
+In message <10260.884036017@whimsy.udel.edu>, stenn@whimsy.udel.edu writes:
+>PH,
+>
+>I'm about to cut over a new tarball for 4.71.  If you want me to put the
+>new oncore stuff in there, please send it in.
+
+Here are two more patches, if I'm not too late:
+
+patch.loop_config:
+	Leaving out the "driftfile" keyword would result in the
+	kernel PLL not being used.
+
+diff -u -r -x Makefile.in -I AUTOMAKE_OPTIONS -x configure -x aclocal.m4 -x *.orig -x *.rej ref/ntpd/ntp_config.c phk/ntpd/ntp_config.c
+--- ref/ntpd/ntp_config.c	Mon Nov  3 06:14:25 1997
++++ phk/ntpd/ntp_config.c	Wed Jan  7 21:56:35 1998
+@@ -658,6 +658,11 @@
+ 	set_sys_var(line, strlen(line)+1, RO);
+ 
+ 	/*
++	 * Initialize the loop.
++	 */
++	loop_config(LOOP_DRIFTINIT, 0.);
++
++	/*
+ 	 * Decode argument list
+ 	 */
+ 	while ((c = ntp_getopt(argc, argv, xntp_options)) != EOF) {
+diff -u -r -x Makefile.in -I AUTOMAKE_OPTIONS -x configure -x aclocal.m4 -x *.orig -x *.rej ref/ntpd/ntp_util.c phk/ntpd/ntp_util.c
+--- ref/ntpd/ntp_util.c	Wed Jan  7 21:53:23 1998
++++ phk/ntpd/ntp_util.c	Wed Jan  7 21:56:50 1998
+@@ -341,13 +341,11 @@
+ 		 * Open drift file and read frequency
+ 		 */
+ 		if ((fp = fopen(stats_drift_file, "r")) == NULL) {
+-		        loop_config(LOOP_DRIFTINIT, 0.);
+ 			break;
+ 		}
+ 		if (fscanf(fp, "%lf", &old_drift) != 1) {
+ 			msyslog(LOG_ERR, "invalid frequency from %s", 
+ 			    stats_drift_file);
+-			loop_config(LOOP_DRIFTINIT, 0.);
+ 			(void) fclose(fp);
+ 			break;
+ 		}
+
+
+patch.filegen.decimals:
+	Add more decimals to the numbers in the filegen datasets.
+
+diff -u -r -x Makefile.in -I AUTOMAKE_OPTIONS -x configure -x aclocal.m4 -x *.orig -x *.rej ref/ntpd/ntp_util.c phk/ntpd/ntp_util.c
+--- ref/ntpd/ntp_util.c	Sat Oct 18 06:33:40 1997
++++ phk/ntpd/ntp_util.c	Wed Jan  7 21:40:07 1998
+@@ -454,7 +454,7 @@
+ 	filegen_setup(&peerstats, (u_long)(tv.tv_sec + JAN_1970));
+ 	if (peerstats.fp != NULL) {
+ 		fprintf(peerstats.fp,
+-		    "%lu %lu.%03lu %s %x %.6f %.6f %.6f %.6f\n",
++		    "%lu %lu.%03lu %s %x %.9f %.9f %.9f %.9f\n",
+ 		    day, sec, msec, ntoa(addr), status, offset,
+ 		    delay, dispersion, skew);
+ 		fflush(peerstats.fp);
+@@ -494,7 +494,7 @@
+ 
+ 	filegen_setup(&loopstats, (u_long)(tv.tv_sec + JAN_1970));
+ 	if (loopstats.fp != NULL) {
+-		fprintf(loopstats.fp, "%lu %lu.%03lu %.6f %.3f %.6f %d\n",
++		fprintf(loopstats.fp, "%lu %lu.%03lu %.9f %.5f %.6f %d\n",
+ 		    day, sec, msec, last_offset, drift_comp * 1e6,
+ 		    SQRT(sys_error), sys_poll);
+ 		fflush(loopstats.fp);
+@@ -586,8 +586,8 @@
+ 	if (rawstats.fp != NULL) {
+                 fprintf(rawstats.fp, "%lu %lu.%03lu %s %s %s %s %s %s\n",
+ 		    day, sec, msec, ntoa(srcadr), ntoa(dstadr),
+-		    ulfptoa(t1, 6), ulfptoa(t2, 6), ulfptoa(t3, 6),
+-		    ulfptoa(t4, 6));
++		    ulfptoa(t1, 9), ulfptoa(t2, 9), ulfptoa(t3, 9),
++		    ulfptoa(t4, 9));
+ 		fflush(rawstats.fp);
+ 	}
+ }
+
+--
+Poul-Henning Kamp             FreeBSD coreteam member
+phk@FreeBSD.ORG               "Real hackers run -current on their laptop."

@@ -1,0 +1,158 @@
+/Artistic/1.1.1.1/Fri Apr 23 01:27:36 1999//Tperl-1
+/Changes/1.1.1.2/Fri Apr 23 01:31:00 1999//Tperl-1
+/Changes5.000/1.1.1.1/Fri Apr 23 01:27:37 1999//Tperl-1
+/Changes5.001/1.1.1.1/Fri Apr 23 01:27:37 1999//Tperl-1
+/Changes5.002/1.1.1.1/Fri Apr 23 01:27:37 1999//Tperl-1
+/Changes5.003/1.1.1.1/Fri Apr 23 01:27:37 1999//Tperl-1
+/Changes5.004/1.1.1.1/Fri Apr 23 01:31:06 1999//Tperl-1
+/Configure/1.1.1.2/Fri Apr 23 01:31:07 1999//Tperl-1
+/Copying/1.1.1.1/Fri Apr 23 01:27:37 1999//Tperl-1
+/EXTERN.h/1.1.1.2/Fri Apr 23 01:31:07 1999//Tperl-1
+/INSTALL/1.1.1.2/Fri Apr 23 01:31:08 1999//Tperl-1
+/INTERN.h/1.1.1.2/Fri Apr 23 01:31:08 1999//Tperl-1
+/MANIFEST/1.1.1.2/Fri Apr 23 01:31:08 1999//Tperl-1
+/Makefile.SH/1.1.1.2/Fri Apr 23 01:31:09 1999//Tperl-1
+/Policy_sh.SH/1.1.1.1/Fri Apr 23 01:31:09 1999//Tperl-1
+/README/1.1.1.2/Fri Apr 23 01:31:09 1999//Tperl-1
+/README.amiga/1.1.1.1/Fri Apr 23 01:27:38 1999//Tperl-1
+/README.beos/1.1.1.1/Fri Apr 23 01:31:09 1999//Tperl-1
+/README.cygwin32/1.1.1.1/Fri Apr 23 01:27:38 1999//Tperl-1
+/README.dos/1.1.1.1/Fri Apr 23 01:31:10 1999//Tperl-1
+/README.mpeix/1.1.1.1/Fri Apr 23 01:31:10 1999//Tperl-1
+/README.os2/1.1.1.2/Fri Apr 23 01:31:10 1999//Tperl-1
+/README.os390/1.1.1.1/Fri Apr 23 01:31:10 1999//Tperl-1
+/README.plan9/1.1.1.1/Fri Apr 23 01:27:38 1999//Tperl-1
+/README.qnx/1.1.1.1/Fri Apr 23 01:27:38 1999//Tperl-1
+/README.threads/1.1.1.1/Fri Apr 23 01:31:10 1999//Tperl-1
+/README.vms/1.1.1.2/Fri Apr 23 01:31:11 1999//Tperl-1
+/README.win32/1.1.1.2/Fri Apr 23 01:31:11 1999//Tperl-1
+/Todo/1.1.1.2/Fri Apr 23 01:31:10 1999//Tperl-1
+/Todo-5.005/1.1.1.1/Fri Apr 23 01:30:58 1999//Tperl-1
+/XSUB.h/1.1.1.2/Fri Apr 23 01:31:11 1999//Tperl-1
+/XSlock.h/1.1.1.1/Fri Apr 23 01:31:11 1999//Tperl-1
+/av.c/1.1.1.2/Fri Apr 23 01:31:12 1999//Tperl-1
+/av.h/1.1.1.2/Fri Apr 23 01:31:12 1999//Tperl-1
+/bytecode.h/1.1.1.1/Fri Apr 23 01:31:11 1999//Tperl-1
+/bytecode.pl/1.1.1.1/Fri Apr 23 01:31:12 1999//Tperl-1
+/byterun.c/1.1.1.1/Fri Apr 23 01:31:12 1999//Tperl-1
+/byterun.h/1.1.1.1/Fri Apr 23 01:31:12 1999//Tperl-1
+/cc_runtime.h/1.1.1.1/Fri Apr 23 01:31:12 1999//Tperl-1
+/cflags.SH/1.1.1.2/Fri Apr 23 01:31:12 1999//Tperl-1
+/compat3.sym/1.1.1.1/Fri Apr 23 01:27:38 1999//Tperl-1
+/config_H/1.1.1.1/Fri Apr 23 01:27:38 1999//Tperl-1
+/config_h.SH/1.1.1.2/Fri Apr 23 01:31:12 1999//Tperl-1
+/configpm/1.1.1.2/Fri Apr 23 01:31:13 1999//Tperl-1
+/configure/1.1.1.1/Fri Apr 23 01:27:39 1999//Tperl-1
+/configure.com/1.1.1.1/Fri Apr 23 01:31:13 1999//Tperl-1
+/configure.gnu/1.1.1.2/Fri Apr 23 01:31:13 1999//Tperl-1
+/cop.h/1.1.1.2/Fri Apr 23 01:31:13 1999//Tperl-1
+/cv.h/1.1.1.2/Fri Apr 23 01:31:14 1999//Tperl-1
+/deb.c/1.1.1.2/Fri Apr 23 01:31:14 1999//Tperl-1
+/doio.c/1.1.1.2/Fri Apr 23 01:31:14 1999//Tperl-1
+/doop.c/1.1.1.2/Fri Apr 23 01:31:14 1999//Tperl-1
+/dosish.h/1.1.1.2/Fri Apr 23 01:31:15 1999//Tperl-1
+/dump.c/1.1.1.2/Fri Apr 23 01:31:15 1999//Tperl-1
+/ebcdic.c/1.1.1.1/Fri Apr 23 01:31:15 1999//Tperl-1
+/embed.h/1.1.1.2/Fri Apr 23 01:31:15 1999//Tperl-1
+/embed.pl/1.1.1.2/Fri Apr 23 01:31:16 1999//Tperl-1
+/embedvar.h/1.1.1.1/Fri Apr 23 01:31:16 1999//Tperl-1
+/fakethr.h/1.1.1.1/Fri Apr 23 01:31:16 1999//Tperl-1
+/form.h/1.1.1.1/Fri Apr 23 01:27:39 1999//Tperl-1
+/global.sym/1.1.1.2/Fri Apr 23 01:31:16 1999//Tperl-1
+/globals.c/1.1.1.2/Fri Apr 23 01:31:17 1999//Tperl-1
+/gv.c/1.1.1.2/Fri Apr 23 01:31:17 1999//Tperl-1
+/gv.h/1.1.1.2/Fri Apr 23 01:31:17 1999//Tperl-1
+/handy.h/1.1.1.2/Fri Apr 23 01:31:17 1999//Tperl-1
+/hv.c/1.1.1.2/Fri Apr 23 01:31:18 1999//Tperl-1
+/hv.h/1.1.1.2/Fri Apr 23 01:31:18 1999//Tperl-1
+/installhtml/1.1.1.2/Fri Apr 23 01:31:18 1999//Tperl-1
+/installman/1.1.1.2/Fri Apr 23 01:31:18 1999//Tperl-1
+/installperl/1.1.1.2/Fri Apr 23 01:31:19 1999//Tperl-1
+/interp.sym/1.1.1.2/Fri Apr 23 01:31:19 1999//Tperl-1
+/intrpvar.h/1.1.1.1/Fri Apr 23 01:31:19 1999//Tperl-1
+/iperlsys.h/1.1.1.1/Fri Apr 23 01:31:19 1999//Tperl-1
+/keywords.h/1.1.1.2/Fri Apr 23 01:31:20 1999//Tperl-1
+/keywords.pl/1.1.1.2/Fri Apr 23 01:31:21 1999//Tperl-1
+/makeaperl.SH/1.1.1.1/Fri Apr 23 01:27:40 1999//Tperl-1
+/makedepend.SH/1.1.1.2/Fri Apr 23 01:31:21 1999//Tperl-1
+/makedir.SH/1.1.1.1/Fri Apr 23 01:27:40 1999//Tperl-1
+/malloc.c/1.1.1.2/Fri Apr 23 01:31:21 1999//Tperl-1
+/mg.c/1.1.1.2/Fri Apr 23 01:31:22 1999//Tperl-1
+/mg.h/1.1.1.2/Fri Apr 23 01:31:22 1999//Tperl-1
+/minimod.pl/1.1.1.1/Fri Apr 23 01:27:41 1999//Tperl-1
+/miniperlmain.c/1.1.1.2/Fri Apr 23 01:31:22 1999//Tperl-1
+/mv-if-diff/1.1.1.2/Fri Apr 23 01:31:22 1999//Tperl-1
+/myconfig/1.1.1.2/Fri Apr 23 01:31:23 1999//Tperl-1
+/nostdio.h/1.1.1.1/Fri Apr 23 01:27:41 1999//Tperl-1
+/objXSUB.h/1.1.1.1/Fri Apr 23 01:31:23 1999//Tperl-1
+/objpp.h/1.1.1.1/Fri Apr 23 01:31:23 1999//Tperl-1
+/op.c/1.1.1.2/Fri Apr 23 01:31:23 1999//Tperl-1
+/op.h/1.1.1.2/Fri Apr 23 01:31:24 1999//Tperl-1
+/opcode.h/1.1.1.2/Fri Apr 23 01:31:24 1999//Tperl-1
+/opcode.pl/1.1.1.2/Fri Apr 23 01:31:25 1999//Tperl-1
+/patchlevel.h/1.1.1.2/Fri Apr 23 01:31:25 1999//Tperl-1
+/perl.c/1.1.1.2/Fri Apr 23 01:31:25 1999//Tperl-1
+/perl.h/1.1.1.2/Fri Apr 23 01:31:26 1999//Tperl-1
+/perl_exp.SH/1.1.1.2/Fri Apr 23 01:31:26 1999//Tperl-1
+/perlio.c/1.1.1.2/Fri Apr 23 01:31:26 1999//Tperl-1
+/perlio.h/1.1.1.2/Fri Apr 23 01:31:27 1999//Tperl-1
+/perlio.sym/1.1.1.1/Fri Apr 23 01:27:42 1999//Tperl-1
+/perlsdio.h/1.1.1.2/Fri Apr 23 01:31:27 1999//Tperl-1
+/perlsfio.h/1.1.1.1/Fri Apr 23 01:27:42 1999//Tperl-1
+/perlsh/1.1.1.1/Fri Apr 23 01:27:42 1999//Tperl-1
+/perlvars.h/1.1.1.1/Fri Apr 23 01:31:27 1999//Tperl-1
+/perly.c/1.1.1.2/Fri Apr 23 01:31:27 1999//Tperl-1
+/perly.c.diff/1.1.1.1/Fri Apr 23 01:27:42 1999//Tperl-1
+/perly.fixer/1.1.1.2/Fri Apr 23 01:31:28 1999//Tperl-1
+/perly.h/1.1.1.2/Fri Apr 23 01:31:28 1999//Tperl-1
+/perly.y/1.1.1.2/Fri Apr 23 01:31:28 1999//Tperl-1
+/perly_c.diff/1.1.1.1/Fri Apr 23 01:31:29 1999//Tperl-1
+/pp.c/1.1.1.2/Fri Apr 23 01:31:29 1999//Tperl-1
+/pp.h/1.1.1.2/Fri Apr 23 01:31:29 1999//Tperl-1
+/pp_ctl.c/1.1.1.2/Fri Apr 23 01:31:30 1999//Tperl-1
+/pp_hot.c/1.1.1.2/Fri Apr 23 01:31:30 1999//Tperl-1
+/pp_proto.h/1.1.1.1/Fri Apr 23 01:31:31 1999//Tperl-1
+/pp_sys.c/1.1.1.2/Fri Apr 23 01:31:31 1999//Tperl-1
+/proto.h/1.1.1.2/Fri Apr 23 01:31:32 1999//Tperl-1
+/regcomp.c/1.1.1.2/Fri Apr 23 01:31:32 1999//Tperl-1
+/regcomp.h/1.1.1.2/Fri Apr 23 01:31:33 1999//Tperl-1
+/regcomp.pl/1.1.1.1/Fri Apr 23 01:31:33 1999//Tperl-1
+/regcomp.sym/1.1.1.1/Fri Apr 23 01:31:33 1999//Tperl-1
+/regexec.c/1.1.1.2/Fri Apr 23 01:31:33 1999//Tperl-1
+/regexp.h/1.1.1.2/Fri Apr 23 01:31:34 1999//Tperl-1
+/regnodes.h/1.1.1.1/Fri Apr 23 01:31:34 1999//Tperl-1
+/run.c/1.1.1.2/Fri Apr 23 01:31:34 1999//Tperl-1
+/scope.c/1.1.1.2/Fri Apr 23 01:31:34 1999//Tperl-1
+/scope.h/1.1.1.2/Fri Apr 23 01:31:35 1999//Tperl-1
+/sv.c/1.1.1.2/Fri Apr 23 01:31:35 1999//Tperl-1
+/sv.h/1.1.1.2/Fri Apr 23 01:31:36 1999//Tperl-1
+/taint.c/1.1.1.2/Fri Apr 23 01:31:36 1999//Tperl-1
+/thrdvar.h/1.1.1.1/Fri Apr 23 01:31:36 1999//Tperl-1
+/thread.h/1.1.1.1/Fri Apr 23 01:31:36 1999//Tperl-1
+/thread.sym/1.1.1.1/Fri Apr 23 01:31:36 1999//Tperl-1
+/toke.c/1.1.1.2/Fri Apr 23 01:31:37 1999//Tperl-1
+/universal.c/1.1.1.2/Fri Apr 23 01:31:38 1999//Tperl-1
+/unixish.h/1.1.1.2/Fri Apr 23 01:31:38 1999//Tperl-1
+/util.c/1.1.1.2/Fri Apr 23 01:31:38 1999//Tperl-1
+/util.h/1.1.1.1/Fri Apr 23 01:27:44 1999//Tperl-1
+/writemain.SH/1.1.1.1/Fri Apr 23 01:27:44 1999//Tperl-1
+D/Porting////
+D/beos////
+D/cygwin32////
+D/djgpp////
+D/eg////
+D/emacs////
+D/ext////
+D/h2pl////
+D/hints////
+D/lib////
+D/mpeix////
+D/os2////
+D/plan9////
+D/pod////
+D/qnx////
+D/t////
+D/utils////
+D/vms////
+D/win32////
+D/x2p////

@@ -1,0 +1,22 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = (); 
+        FRAMEWORKS = (); 
+        H_FILES = (defs.h, mdb.h); 
+        OTHER_LINKED = (avl.c, main.c, mdb.c, parse.y, scan.l, util.c, y.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, menuc.1, menu_sys.def); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = /tmp/developer_cmds/Build; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PROJECTNAME = menuc; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+}

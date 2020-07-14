@@ -1,0 +1,1 @@
+<p>Our <code>glob.h</code> doesn't define GLOB_NOMATCH, so uses of it are #if'ed out. Libraries update should fix that up.</p>

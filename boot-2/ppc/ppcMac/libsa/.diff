@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DIR=/private/Net/seaport/projects/mk/evershen/BOOT/boot-17/ppc/libsa
+
+ldiff $DIR

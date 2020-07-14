@@ -1,0 +1,96 @@
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa03879;
+          21 Dec 1997 10:16 EST
+Received: from copland.udel.edu by huey.udel.edu id aa13104;
+          21 Dec 1997 10:16 EST
+Received: from critter.freebsd.dk (critter.freebsd.dk [195.8.129.26]) by copland.udel.edu (8.8.5/8.7.3) with ESMTP id KAA05969 for <mills@udel.edu>; Sun, 21 Dec 1997 10:16:25 -0500 (EST)
+Received: from critter.freebsd.dk (localhost.cybercity.dk [127.0.0.1])
+	by critter.freebsd.dk (8.8.7/8.8.7) with ESMTP id QAA11766
+	for <mills@udel.edu>; Sun, 21 Dec 1997 16:13:44 +0100 (CET)
+	(envelope-from phk@critter.freebsd.dk)
+To: mills@udel.edu
+Subject: xntp patches
+From: Poul-Henning Kamp <phk@freebsd.org>
+Date: Sun, 21 Dec 1997 16:13:44 +0100
+Message-ID: <11764.882717224@critter.freebsd.dk>
+Sender: phk@critter.freebsd.dk
+
+
+Hi Dave,
+
+Here are three small patches relative to ntp-4.0.70a-export
+
+Poul-Henning
+
+/*******************************************************************/
+FreeBSD has what is considered a "unusable SIGIO".
+
+diff -ur ntp-4.0.70a-export/configure.in oncore/configure.in
+--- ntp-4.0.70a-export/configure.in	Wed Nov  5 06:01:03 1997
++++ oncore/configure.in	Sun Dec 21 14:57:50 1997
+@@ -775,6 +775,9 @@
+      *-*-irix6*)
+ 	ans=no
+ 	;;
++     *-*-freebsd*)
++	ans=no
++	;;
+      *-*-linux*)
+ 	ans=no
+ 	;;
+
+
+/*******************************************************************/
+Do not call clock_filter if we have never reached the peer.  
+Otherwise this triggers a divide by zero for a refclock peer that 
+doesn't answer.
+
+diff -ur ntp-4.0.70a-export/ntpd/ntp_refclock.c oncore/ntpd/ntp_refclock.c
+--- ntp-4.0.70a-export/ntpd/ntp_refclock.c	Sat Oct 18 06:33:39 1997
++++ oncore/ntpd/ntp_refclock.c	Sun Dec 21 15:54:02 1997
+@@ -378,7 +378,7 @@
+ 			report_event(EVNT_UNREACH, peer);
+ 			peer_clear(peer);
+ 			peer->timereachable = current_time;
+-		} else if ((oreach & 3) == 0) {
++		} else if (oreach && (oreach & 3) == 0) {
+ 			if (peer->valid > 0)
+ 				peer->valid--;
+ 			clock_filter(peer, 0, 0, MAXDISPERSE);
+
+
+/*******************************************************************/
+Add a LDISC_RAW which doesn't do anything magic.  This is useful for
+binary data formats.  I have only implemented it for the TERMIOS
+case, I can't test the other cases.  I need this for the 
+refclock_oncore I'm working on.
+
+diff -ur ntp-4.0.70a-export/include/ntp_refclock.h oncore/include/ntp_refclock.h
+--- ntp-4.0.70a-export/include/ntp_refclock.h	Sun Oct 19 08:13:40 1997
++++ oncore/include/ntp_refclock.h	Sun Dec 21 15:08:57 1997
+@@ -147,6 +147,7 @@
+ #define LDISC_ACTS	0x4	/* tty_clk #* intercept */
+ #define LDISC_CHU	0x8	/* tty_chu */
+ #define LDISC_PPS	0x10	/* ppsclock */
++#define LDISC_RAW	0x20	/* raw binary */
+ 
+ struct refclockproc {
+ 	struct	refclockio io;	/* I/O handler structure */
+diff -ur ntp-4.0.70a-export/ntpd/ntp_refclock.c oncore/ntpd/ntp_refclock.c
+--- ntp-4.0.70a-export/ntpd/ntp_refclock.c	Sat Oct 18 06:33:39 1997
++++ oncore/ntpd/ntp_refclock.c	Sun Dec 21 15:54:02 1997
+@@ -790,6 +790,10 @@
+ 	(void)cfsetospeed(&ttyb, speed);
+ 	ttyp->c_lflag = ICANON;
+ 	ttyp->c_cc[VERASE] = ttyp->c_cc[VKILL] = '\0';
++	if (flags & LDISC_RAW) {
++		ttyp->c_iflag = 0;
++		ttyp->c_lflag = 0;
++	}
+ #ifdef TIOCMGET
+ 	/*
+ 	 * If we have modem control, check to see if modem leads are
+
+
+--
+Poul-Henning Kamp             FreeBSD coreteam member
+phk@FreeBSD.ORG               "Real hackers run -current on their laptop."

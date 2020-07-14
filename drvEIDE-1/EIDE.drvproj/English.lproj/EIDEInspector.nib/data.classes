@@ -1,0 +1,64 @@
+IODeviceInspector = {
+    ACTIONS = {
+	"channelOrInterruptPicked:" = "channelOrInterruptPicked:"; 
+	"rangeDidChange:" = "rangeDidChange:"; 
+	"showInfo:" = "showInfo:"; 
+    }; 
+    OUTLETS = {
+	accessoryHolder = accessoryHolder; 
+	dmaBox = dmaBox; 
+	dmaMatrix = dmaMatrix; 
+	infoPanel = infoPanel; 
+	infoText = infoText; 
+	inspectionView = inspectionView; 
+	irqBox = irqBox; 
+	irqMatrix = irqMatrix; 
+	memoryBox = memoryBox; 
+	memoryController = memoryController; 
+	origWindow = origWindow; 
+	portsBox = portsBox; 
+	portsController = portsController; 
+	statusTitle = statusTitle; 
+	versionTitle = versionTitle; 
+    }; 
+    SUPERCLASS = Object; 
+};
+EIDEInspector = {
+    ACTIONS = {
+	"multipleSectors:" = "multipleSectors:"; 
+	"ok:" = "ok:"; 
+	"selectOverrides:" = "selectOverrides:"; 
+	"setDMAMode:" = "setDMAMode:"; 
+    }; 
+    OUTLETS = {
+	boundingBox = boundingBox; 
+	boxPriDual = boxPriDual; 
+	boxSecDual = boxSecDual; 
+	boxSingle = boxSingle; 
+	enableDMAMaster = enableDMAMaster; 
+	enableDMAMasterPrimary = enableDMAMasterPrimary; 
+	enableDMAMasterSecondary = enableDMAMasterSecondary; 
+	enableDMASlave = enableDMASlave; 
+	enableDMASlavePrimary = enableDMASlavePrimary; 
+	enableDMASlaveSecondary = enableDMASlaveSecondary; 
+	multipleSectors = multipleSectors; 
+	optionsBox = optionsBox; 
+	overrideButton = overrideButton; 
+	panelDualChannel = panelDualChannel; 
+	panelSingleChannel = panelSingleChannel; 
+	popUpMasterDual = popUpMasterDual; 
+	popUpMasterSec = popUpMasterSec; 
+	popUpMasterSingle = popUpMasterSingle; 
+	popUpSlaveDual = popUpSlaveDual; 
+	popUpSlaveSec = popUpSlaveSec; 
+	popUpSlaveSingle = popUpSlaveSingle; 
+	titleMasterDual = titleMasterDual; 
+	titleMasterSec = titleMasterSec; 
+	titleMasterSingle = titleMasterSingle; 
+	titleSlaveDual = titleSlaveDual; 
+	titleSlaveSec = titleSlaveSec; 
+	titleSlaveSingle = titleSlaveSingle; 
+    }; 
+    SUPERCLASS = IODeviceInspector; 
+};
+FirstResponder = {ACTIONS = {}; SUPERCLASS = Object; };

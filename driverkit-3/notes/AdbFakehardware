@@ -1,0 +1,11 @@
+FAKE_HARDWARE testing of AdbDriver
+
+* have one "device" which generates reasonable data and an interrupt when:
+  -- autopoll gets enabled, or maybe a second after that
+  -- any talk register n, n!=0 is executed for that address
+  -- any listen register 0 - more TBD
+  
+  mods to 
+	enableAutoPoll
+	doUserCommand
+	waitForInterrupt - need to generate timeouts

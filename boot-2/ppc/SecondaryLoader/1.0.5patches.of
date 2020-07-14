@@ -1,0 +1,12 @@
+4180FFF0 ' msr! 44 + code!				\ Fix rounding in $SYNC-CACHE
+
+dev /packages/xcoff-loader
+: p&+ ['] open 600 - + ;
+
+: p1 { _a _s }
+	_a -1000 and _a _s + over - FFF ( + -1000 and )
+;
+
+60000000 dup 8 p&+ code! C p&+ code!	\ NOPs after (local@) for _adr
+18 p&+ ' p1 BLpatch
+device-end

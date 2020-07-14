@@ -1,0 +1,30 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (rpc.ypupdated.c); 
+        OTHER_SOURCES = (Makefile.preamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    NEXTSTEP_COMPILEROPTIONS = ""; 
+    NEXTSTEP_INSTALLDIR = /usr/libexec; 
+    NEXTSTEP_LINKEROPTIONS = ""; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = ""; 
+    PDO_UNIX_INSTALLDIR = /usr/libexec; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = rpc.ypupdated; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_COMPILEROPTIONS = ""; 
+    WINDOWS_INSTALLDIR = /usr/libexec; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

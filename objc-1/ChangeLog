@@ -1,0 +1,1253 @@
+Changes from Ali to all the string class files. (12/23/92)
+Changes from Derek to deal with name conflicts.
+
+Cleaned up some warnings (7/23/91):
+
+	* Makefile (COMMONFLAGS):  Changed -Wimplicit to -Wall.
+	Let's make this compile	without warnings!
+
+	* List.m, Storage.m (read:, write:):  Changed to return self.
+
+	* <various files>:  Removed all unused local variables.
+
+Added support for string objects (7/23/91):
+
+	* NXString.m, NXCharacterSet.m, unichar.h, StringTest.m:  New files.
+
+	* Makefile (LOCAL_CLASSES):  Added NXString.m and NXCharacterSet.m
+
+	* Makefile (LOCAL_INCFILES):  Added unichar.h
+
+	* objc-runtime.m (_objc_fixup_string_object_class):  New routine.
+	If NXConstantString is present in class hash table, copy it to
+	_NXConstantString_class and insert this address in class hashtable.
+
+	* objc-runtime.m (_objcInit):  Call new routine after classes have
+	been fixed up (in _objc_map_selectors).
+
+	* objc-globaldata.m (_NXConstantString_class):  New global variable.
+	Reduce pad by 36 bytes to compensate.
+
+	* spec_sys:  Added slots for NXCompareCharacters(), NXEmptyString(),
+	and NXFindCharacters().  Added files NXString.o and NXCharacterSet.o
+	These changes will need to be integrated into libsys's copy.
+
+Changed -[Object copy] (7/24/91):
+
+	* Object.m (copy):  Chnaged to return [self copyFromZone: [self zone]]
+	rather than using _copy.  The function object_copy() is no longer used
+	by the runtime system, and could probably be removed.
+
+	* List.[hm] (copy):  Deleted redundant method.
+
+	* Storage.[hm] (copy):  Deleted redundant method.
+
+	* HashTable.[hm] (copy):  Deleted redundant method.
+
+	* NXString.[hm] (copy):  Deleted redundant method.
+
+	* NXCharacterSet.[hm] (copy):  Deleted redundant method.
+
+Changed method names in Storage (7/24/91):
+
+	* Storage.[hm] (replaceElementAt:with:)  Changed from replace:at:
+	and added 2.0 compatibility method in implementation only.
+
+	* Storage.[hm] (insertElement:at:)  Changed from insert:at:
+	and added 2.0 compatibility method in implementation only.
+
+	* Storage.[hm] (removeElementAt:)  Changed from removeAt:
+	and added 2.0 compatibility method in implementation only.
+
+Cleaned up Makefile slightly (7/24/91):
+
+	* Makefile (BY_PRODUCTS):  Added objcopt so that make clean removes
+	all files not installed by make installsrc.
+
+Fixed bug #14923 in HashTable (7/24/91):
+
+	* HashTable.m (nextState:key:value:):  Set key and value to NULL
+	when returning NO.
+
+Fixed bug #14309 in Storage (7/24/91):
+
+	* Storage.m (setNumSlots:):  Changed incorrect test
+	(numSlots > maxElements) to (maxElements > old).
+
+	* Storage.m (setNumSlots:):  Changed to use a single realloc.
+
+Fixed bug #5687 in hashtable (7/24/91):
+
+	* hashtable.h (NXHashInsertIfAbsent):  Improved comment.
+
+Added appendList: method (dmoore 7/24/91)
+
+	* List.m, List.h added method.
+	
+Added maptable functionality (dmoore 7/24/91)
+
+	* maptable.c maptable.m
+
+Removed typedef for id when compiling Objective-C (7/26/91):
+
+	* objc.h (id):  Do not define typedef for id when compiling
+	Objective-C (when __OBJC__ is predefined).
+	
+Made Objective C check for duplicate classes and use the one in the application
+	(dmoore 7/27/91)
+	
+	* objc-runtime.m:  Added following functions:
+		_objc_inform:	Just prints message for now.
+		_resolveClassConflict: Makes sure that old class goes back in
+			if it's from the app.
+		_nameForHeader:	Returns the name of an image.
+		_getExecHeader:	Picks out the app header.
+		_headerForClass: Finds the mach_header containing a class.
+		
+		Modified _objc_get_classes to check for duplicates.
+		
+Added maptable prototypes to objc-globaltext.m (dmoore 7/27/91)
+
+Modified spec_sys to include NXString and maptable stuff.
+
+snaroff (7/31/91):
+
+Integrate blaines kernel mods in a rational way.
+
+Renamed "_objc_internal_error" to "_objc_inform"...removed "_objc_inform",
+they were nearly identical (snaroff 7/31/91)
+
+Create file "objc-errors.m"...it includes _objc_fatal, _objc_inform,
+__objc_error, and _objc_error. MUST ADD _objc_inform and NXLogError to list 
+of private externs!!!!!
+
+Call _objc_fatal() instead of perror() in objc-sel.m...callings perror in these situations is bogus.
+
+Have hashtable use NXLogError instead of fprintf(). 
+
+Add field to objc_class for protocols...add protocol templates to objc-class.h
+
+Installed new NXString files from ali (8/3/91):
+
+	* NXString.[hm]:  Most methods are now statically typed.
+	
+	* NXStringTest.m  Changes to match.
+
+Changes for clean compilation with new compiler (8/3/91):
+
+	* Makefile (objcopt):  Use -ObjC flag with objc-edit.c
+
+	* objcedit.c (round):  Made declaration global as well as definition.
+
+	* objcedit.c (map_input):  Cast third arg to map_fd().
+
+	* objcopt.c (get_objc):  Cast to (SEL *) two places.
+
+	* objc-sel.m (_sel_writeHashTable):  Cast to (POHASH) two places.
+
+	* objc-class.m (cache_flush, _cache_expand, _cache_flush):
+	Made iteration variable unsigned.
+
+	* hashtable.m (CopyIntoReadOnly):  Made iteration variable unsigned.
+
+	* typedstream.m (InternalWriteObject):  Cleaned up printf format
+	specifiers to match args.
+
+	* typedstreamprivate.h:  Changed all function declarations to static.
+
+	* objc-utils.m:  Cleaned up printf format specifiers to match args.
+
+	* NXString.m (getBytes:range:, getCharacters:range:, NXFindCharacters,
+	find:range:flags:usingTable:, _debugPrint):
+	Made iteration variable unsigned.
+
+	* NXCharacterSet.m (init, addCharacters:length:,
+	removeCharacters:length:):  Made iteration variable unsigned.
+
+Improvements to NXConstantString's (8/12/91):
+
+	* NXString.[hm] (new):  Add version which raises exception.
+
+	* NXString.[hm] (copyFromZone:):  Return an NXReadOnlyString copy
+	instead of self, since our code might be unloaded.
+
+	* NXString.[hm] (write:):  Write an NXReadOnlyString copy.
+
+	* NXString.[hm] (finishUnarchiving):  Removed.
+
+	* NXString.[hm] (free):  This now raises an error, since copyFromZone:
+	no longer returns self.  You never allocate NXConstantString's, so you
+	should never free them.
+
+	* NXString.m (LENGTHFROMSTRING):  Removed, since it is no longer used.
+
+Fix for crashers with NULL symtab in module descriptors (8/12/91):
+
+	* objc-runtime.m (_objc_add_categories, _objc_get_classes,
+	_objc_map_selectors, _objc_callLoads):  Check symtab for NULL.
+
+	* objc-runtime.m:  Changed more iteration variables to unsigned.
+
+Split up NXString.m (8/12/91):
+
+	* NXStringPrivate.h:  New private header file.
+	* NXMutableString.m:  New file.
+	* NXSimpleReadOnlyString.m  New file.
+	* NXReadOnlyString.m  New file.
+	* NXReadOnlySubstring.m  New file.
+	* NXUniquedString.m  New file.
+	* NXConstantString.m  New file.
+	* NXReadWriteString.m  New file.
+
+	* Makefile (PRIVATE_INCFILES, LOCAL_CLASSES):  Added new files.
+
+	* spec_sys:  Added new files, and new function _NXStringZone().
+
+Added runtime support for Protocols (snaroff 8/21/91):
+
+	* Protocol.h, Protocol.m: additions.
+
+	* objc-class.h: removed temporary structs that described protocols.
+
+	* Changed Makefile for libkobjc.a
+
+== New version objc-39 ==
+
+Renamed release notes file (9/3/91):
+
+	* ObjCNotes.rtf:  Renamed from ReleaseNotes-3.0.rtf
+
+	* ObjC.rtf-2.0:  Renamed from ReleaseNotes-2.0.rtf
+
+	* Makefile:  Install ObjCNotes.rtf instead of ReleaseNotes-3.0.rtf.
+
+Fixed bugs with NXString's (9/3/91):
+
+	* NXString.m (isEqual:):  Check [anObject isKindOf: NXString]
+	before going too far.  Also return quickly when self and string are
+	the same pointer.
+
+Fixed problems with local include files (9/3/91):
+
+	* <all header files>:  Use <objc/foo.h> rather than "foo.h" when
+	including objc header files.
+
+	* Makefile:  Add "-I." flag to be sure that local copies of header
+	files are used.  This relies on the fact that there is symlink from
+	objc to ".".  I hope that SGS can handle this.
+
+Added new NXString release notes from Ali (9/6/91):
+
+	* ObjCNotes.rtf
+
+Picked up fixes to NXString from Ali (9/6/91):
+
+	* NXMutableString.m NXReadWriteString.m NXSimpleReadOnlyString.m
+	NXString.[hm] StringTest.m:  Use new versions.
+
+	* spec_sys:  Removed entry for NXEmptyString().
+
+Fix for order dependency in objc_loadModules (9/6/91):
+
+	* objc-load.m (objc_loadModules):  Place all classes in class
+	hashtable before trying to install relationships.  (Bug #15804)
+
+Installed improved messenger (9/26/91):
+
+	* objc-msg.s:  New file.  Increases speed 30% on '040 while decreasing
+	it 20% on '030.
+
+	* objc-class.m (_cache_create):  Also install new cache into class.
+
+	* objc-class.m (class_respondsToMethod, class_lookupMethod,
+	_class_lookupMethodInCache):  No longer install new cache, since
+	_cache_create now does this.
+
+Fixed minor memory leak with Protocols (9/26/91):
+
+	* Protocol.m (load):  Free space returned by getmachheaders().
+
+Integrated latest NXString classes from Ali (9/26/91)
+
+Made maptable API private (9/26/91):
+
+	* (Makefile):  Install maptable.h into /LocalDeveloper/Headers/objc.
+
+Removed obsolete third arg to _class_lookupMethodAndLoadCache (10/4/91):
+
+	* objc-class.m (_class_lookupMethodAndLoadCache):  Use objc_getClass
+	to get class object from meta-class object, rather than relying on
+	old selfref arg.
+
+	* objc-msg.s, objc-dispatch.c, objc-class.m, objc-private.h:
+	Delete third arg to _class_lookupMethodAndLoadCache().
+
+Restored broken detection of messages sent to freed objects (10/4/91):
+
+	* objc-class.m (freedObjectClass, emptyCache):  New static
+	class object which has a permanently empty cache.
+
+	* objc-class.m (_class_lookupMethodAndLoadCache):  Check for dummy
+	freed object class rather than Nil.
+
+	* objc-class.m, objc-private.h (_objc_getFreedObjectClass):  Function
+	to return new dummy freed object class (private extern).
+
+	* Object.m (_object_dispose, _object_reallocFromZone):  Set isa
+	pointer to freed object class rather than Nil.
+
+	* spec_sys:  Make _objc_getFreedObjectClass() a private extern.
+
+Removed call to _cache_create() in messenger (10/4/91):
+
+	* objc-class.m (_class_install_relationships):  Initialize all
+	classes and meta-classes to point to emptyCache.
+
+	* objc-class.m (_cache_expand):  Call _cache_create if old cache
+	is emptyCache.
+
+	* objc-class.m (_cache_fill):  Check to see if cache must be expanded
+	before inserting method into existing cache.
+
+	* objc-msg.s (objc_msgSend, objc_msgSendSuper):  No longer check
+	class->cache for NULL and call _cache_create().
+
+Modify cache flushing to handle emptyCache (10/7/91):
+
+	* objc-class.m (_cache_flush):  Check for emptyCache.
+
+	* objc-class.m (cache_flush):  Removed duplicate function.
+	(This version didn't reset the occupied count correctly.)
+
+	* objc-class.m (flush_caches):  Use _cache_flush() rather than
+	cache_flush().
+
+Make sure dynamically added classes have caches (10/7/91):
+
+	* objc-runtime.m (objc_addClass):  Call _cache_create() if needed
+	for both the class and its metaclass.
+
+Change strategy for archiving NXConstantString's (10/8/91):
+
+	* NXConstantString.m:  Allow NXConstantString's to be alloc'ed,
+	but raise in the designated initializer.  Simply inherit read and
+	write methods from NXSimpleReadOnlyString, but create a
+	finishUnarchiving method which returns an NXReadOnlyString.
+
+	* NXString.h:  Update comments regarding NXConstantString's.
+
+Fixes for shlib problems (10/8/91):
+
+	* NXString.m, NXStringPrivate.h:  Renamed errorRaise() to
+	_NXStringErrorRaise().
+
+	* spec_sys:  Make _NXStringErrorRaise() a private extern.
+
+	* spec_sys:  Create branch slots for NXHashCharacters() and
+	NXLoadLocalStringFromTableInBundle().
+
+Added wrapping #ifndef's to all header files (10/9/91)
+
+Added support for initializing string objects (10/11/91):
+
+	* objc-runtime.m (_objc_fixup_string_objects):  Initialize isa
+	pointers of all NXConstantString objects in __string_object section.
+
+	* objc-runtime.m (_objcInit):  Call _objc_fixup_string_objects().
+
+Simplify code for objc_getMetaClass() (10/14/91):
+
+	* objc-runtime.m (objc_getMetaClass):  Call objc_getClass()
+	rather than duplicating logic.  This avoids a potential bug
+	where objc_getMetaClass() wasn't checking for class aliases.
+
+== New version objc-45 ==
+
+Removed support for old string object strategy (10/28/91):
+
+	* objc-globaldata.m (_NXConstantString_class):  Removed.
+
+	* objc-private.h (_NXConstantString_class):  Removed.
+
+	* objc-runtime.m (objc_fixup_string_object_class):  Removed.
+
+	* objc-runtime.m (_objcInit):  Removed call to
+	objc_fixup_string_object_class().
+
+	* objc-runtime.m (_objcInit):  Removed bogus arg to _objcInit(),
+	since crto0 calls _objcInit with no args.
+
+Fix to account for changes with common makefiles (10/28/91)
+
+	* Makefile:  Default SHLIBIDIR to /usr/local/src/libsys.  Also added
+	-DSHLIB and defined VERSFLAGS.
+
+Support for thread safety (11/13/91):
+
+	* objc-private.h (_objc_multithread_mask):  Declare.
+
+	* objc-runtime.m h (_objc_multithread_mask):  Initialize to -1.
+
+	* objc-private.h (OBJC_LOCK, OBJC_UNLOCK):  New macros.  Test
+	_objc_multithread_mask before using locks.  For now, log a message
+	whenever an attempt to gain a lock fails.
+
+	* objc-runtime.m (_objc_multithreaded): Set _objc_multithread_mask
+	to 0 or -1.
+
+	* spec_sys:  Make _objc_multithread_mask a private extern.
+	Also add branch table slot for _objc_multithreaded.
+
+Changes to lock access to selector hashtable (11/13/91):
+
+	* objc-sel.m (selectorLock):  Initialize.
+
+	* objc-sel.m (sel_isMapped, _sel_getMaxUid, sel_getName,
+	  _sel_registerName, _sel_registerNameUseString,
+	  _sel_unloadSelectors, sel_getUid):  Protect operations with lock.
+
+Changes to lock access to class hashtable (11/13/91):
+
+	* objc-sel.m (classLock):  Initialize.
+
+	* objc-runtime.m (objc_getClass, objc_getClassWithoutWarning,
+	  objc_addClass):  Protect operations with lock.
+
+	* objc-class.m (flush_caches, class_poseAs):  Protect operations with
+	lock.
+
+	* objc-load.m (objc_loadModules, objc_unloadModules):  Lock class
+	hashtable while inserting new classes.
+
+	* Protocol.m (fixup_classes):  Protect operations with lock.
+
+	* spec_sys:  Make selectorLock a private extern.
+
+Changes to lock dynamic loading/unloading (11/13/91):
+
+	* objc-sel.m (loadLock):  Initialize.
+
+	* objc-load.m (objc_loadModules, objc_unloadModules):
+	Protect operations with lock.
+
+Changes to lock messaging (11/13/91):
+
+	* objc-class.m (messageLock):  Initialize.
+
+	* objc-class.m (class_initialize, class_respondsToMethod,
+	class_lookupMethod):  Protect operations with lock.
+
+	* objc-msg-m68k.s:  Protect operations with lock.
+
+	* spec_sys:  Make messageLock a private extern.
+
+Removed obsolete kruft (11/11/91):
+
+	* objc-load.m (objc_loadModule, objc_unloadLastModule):  Removed.
+
+	* spec_sys (objc_loadModule, objc_unloadLastModule):  Removed
+	branch table slots.
+
+	* objc-class.m (_freedName, _nilName):  Removed.
+
+	* objc-class.m (_class_lookupMethodInCache):  Removed (unused).
+
+Reduced read/write data size (11/12/91):
+
+	* objc-class.m:  Made error messages const.
+
+	* objc-error.m (_objc_error, __objc_error, _objc_fatal, _objc_inform):
+	Take const char *'s rather than char *'s.
+
+	* objc-runtime.h (_error):  Take const char * rather than char *.
+
+	* Object.m:  Made error messages const.
+
+	* Object.[hm] (error:):  Take const char * rather than STR.
+
+Removed all precompiled header warnings in debug version (11/12/91)
+
+Eliminated warnings about functions not returning values (11/18/91):
+
+	* objc-errors.m (__objc_error, _objc_error, _objc_fatal):
+	Declare volatile.
+
+	* objc-errors.m (__objc_error):  Call _objc_error() if (*_error)()
+	returns.
+
+	* Object.m (error:,...):Call _objc_error() if (*_error)() returns.
+
+	* except.c (NXDefaultExceptionRaiser):  Declared volatile.
+
+	* except.c (_NXRaiseError):  Call abort() if (*ExceptionRaiser)()
+	returns.
+
+	* typedstream.m (classError, typeDescriptorError, writeRefError):
+	Declared volatile.
+
+Don't assume that ints may be addressed on short boundaries (11/18/91):
+
+	* objc-runtime.m (classIsEqual):  Only check first char before
+	calling strcmp().
+
+Fix cache flushing when removing category class methods (11/18/91):
+
+	* objc-runtime.m (flush_caches):  Flush instance methods for classes
+	and class methods for metaclasses.  Delete obsolete meta argument.
+
+	* objc-runtime.m (class_addInstanceMethods, class_removeMethods):
+	Delete obsolete meta arg in calls to flush_caches().
+
+	* objc-runtime.m (class_addClassMethods):  Simply call
+	class_addInstanceMethods() with the metaclass.
+
+Fix for cache size bug (11/18/91):
+
+	* objc-class.m (_cache_fill):  Fix bug whereby the cache occupied count
+	wasn't reset when caches were grown.  This bug was introduced when
+	the emptyCache code was added.
+
+API changes for Don (11/19/91):
+
+Fixes to dynamic loading (11/20/91):
+
+	* objc-load.m (objc_loadModules):  Insert all classes into class
+	hashtable before calling _class_install_relationships() to avoid
+	order probelms.  Also improved error handling greatly.  All code
+	is unloaded on errors, and the class hashtable is left unmodified.
+
+Changes to lock protocols (11/21/91):
+
+	* Protocol.m (protocolLock):  Initialize.
+
+	* Protocol.m (fixup_classes, _register:numElements:,
+	_fixup:numElements:, getProtocolNamed:):  Protect operations with lock.
+
+Fix for NX_VALRETURN problem (11/21/91):
+
+	* error.h (NX_VALRETURN):  Evaluate argument inside current exception
+	context.
+
+	* error.h (NX_VALRETURN, NX_VOIDRETURN):  Use do {...} while (0) to
+	swallow the semicolon.
+
+Added "extern" to all function prototypes in header files (11/21/91)
+
+Fix for deadlock problem (12/2/91):
+
+	* objc-load.m (objc_loadModules):  Avoid deadlock problem with
+	string objects.  Do not lock class hashtable at all.  Removed direct
+	access to class hashtable.
+
+== New version objc-49 ==
+
+Fix for NXBundle load-error messages (12/19/91):
+
+	* NXBundle.m (ensureLoaded):  Error message was backwards.
+
+== New version objc-50 ==
+
+Fix for NXBundle load-error messages (1/2/92):
+
+	* NXString.h (NXSTRING_ERROR_BASE):  Renamed to NX_STRING_ERROR_BASE
+	per FCC change (Bug #17201).
+
+Added support for C++ runtime startup (1/14/92):
+
+	* cplus_init.c:  New file.  Contains one entry point, _cplus_init()
+	which calls all the constructors in the image and registers all of
+	the destructors with atexit().  It also contains the definition of
+	the symbols .constructors_used and .destructors_used, so that this
+	function can be pulled in as needed by the compiler.
+
+	* Makefile:  Added new file cplus_init.c to Makefile.
+
+	* spec_sys:  Added new file cplus_init.o and new entry point
+	_cplus_init().
+
+	* spec_sys:  Also mark .constructors_used and .destructors_used as
+	 nobranch_text symbols, since they don't need branch table entries
+	 (they are just flag symbols).
+
+Added new string optimizations from Ali (1/24/92):
+
+	* NXString.[hm], NXSimpleReadOnlyString.m, NXReadWriteString.m
+
+	* StringTest.m:  New tests from Ali also.
+
+Fixed minor leak in +[NXString initialize] (1/27/92):
+
+	* NXString.m (initialize):  Test static variable to avoid initializing
+	twice.  Testing for [self class] == [NXString class] isn't good
+	enough since users may explicitly call [NXString initialize] more
+	than once (Workspace was doing this).
+
+Added Makefile target for StringTest (1/27/92):
+
+	* Makefile:  Just say make stringtest after using make debug.
+
+Added support for protocols in categories (1/30/92):
+
+	* objc-class.h (struct objc_category):  Added new protocols field to
+	record protocols adopted by a category.
+
+	* objc-class.h (struct objc_protocol_list):  Added new next field to
+	allow Protocols in categories to be chained on to the class just
+	like methods are.
+
+Added runtime support for protocols in categories (1/31/92):
+
+	* Protocol.m (fixup_classes), objc-load.m (objc_loadModules):
+	 Adjust protocols pointer to compensate	for new "next" field in
+	 struct objc_protocol_list.
+
+	* Object.m (conformsTo:, conformsToProtocolNamed:,
+	descriptionForMethod:, descriptionForInstanceMethod:):
+	Look for protocols adopted by categories by walking new "next" field.
+	Be sure not to reference "next" field in old versions.
+
+	* Protocol.m (_fixup:numElements:):  Adjust protocol_list pointer to
+	compensate for new "next" field in struct objc_protocol_list.  Note
+	that this field is always ignored in the protocol_list's attached to
+	protocols, since there is no way to make a protocol adopt additional
+	protocols using some sort of category on a protocol.  We could even
+	have used a separate struct here to save space, but this is easier
+	and more consistent.
+
+	* objc-runtime.m (_objc_add_category):  Append category protocols to
+	class protocol list.  Added new version argument to deal with version
+	madness.
+	
+	* objc-runtime.m (_objc_add_categories):  Call __objc_add_category()
+	with new version argument.
+
+	* objc-load.m (objc_loadModules):  Call _objc_add_category()
+	with new version argument.
+
+	* objc-class.m (_class_removeProtocols):  New function.
+
+	* objc-runtime.m (_objc_remove_category):  Call new function.
+	Added new version argument to deal with version madness.
+
+	* objc-load.m (objc_unloadModules):  Call _objc_remove_category() with
+	new version argument.
+
+	* objc-private.h (_objc_add_category, _objc_remove_category):
+	Add new version argument to prototypes.
+
+	* objc-private.h (_class_removeProtocols):  Add new prototype.
+
+	* spec_sys:  Make _class_removeProtocols() a private extern.
+
+Improved format of objc syslog messages (1/31/92):
+
+	* objc-error.m (NXVLogError):  Deleted.
+
+	* objc-error.m (_objc_error, _objc_inform):  Rewrote to only call
+	_NXLogError() once.
+
+Removed compatibility alias stuff (2/6/92):
+
+	* objc-runtime.m (alias_map, _objc_addClassAlias,
+	_objcAddAppkitAliases):  Removed.
+
+Plugged memory leak in caches (2/6/92):
+
+	* objc-class.m (emptyCache):  Made global.
+
+	* objc-private.h (emptyCache):  Declare.
+
+	* spec_sys:  Made emptyCache a private extern.
+
+	* objc-runitime.m (objc_addClass):  Use emptyCache rather than
+	calling _cache_create().
+
+	* objc-class.m (_class_install_relationships):  Only set caches if
+	NULL.  They may have already been set by objc_addClass().
+
+Removed internal compatibility code (2/6/92):
+
+	* Object.m (conformsToProtocolNamed, conformsToGivenName):
+	Removed.
+
+	* Protocol.m (getProtocolNamed:, conformsToProtocolNamed:):  Removed.
+
+Integrated NXBundle changes from Dave (2/6/92):
+
+	* NXBundle.m
+
+	* NXBundlePrivate.h:  New file.
+
+	* Makefile:  Added NXBundlePrivate.h to PRIVATE_INCFILES.
+
+Removed diagnostic from Objective-C locking (2/8/92):
+
+	* objc-private.h (OBJC_LOCK):  No longer call _objc_inform().
+
+Update release notes (2/6/92):
+
+	* ObjCNotes.rtf.
+
+Fixed bogus comment which leads to leaks (2/8/92):
+
+	* hashtable.h:  Changed the comment to say that when the free argument
+	is NULL, objects are not freed.
+
+== New version objc-51 ==
+
+Fixed problems with objcopt (2/15/92):
+
+	* objc-sel.m (_sel_writeHashTable):  Be sure to zero empty hashtable
+	entries and next pointers!
+
+	* objcopt.c (get_objc, print_method_list2):  Enter protocol strings
+	into hashtable also!
+
+Added new debug tool for objcopt (2/15/92):
+
+	* objcopt_print.c:  New testing program.
+
+	* objc-sel.m (_sel_writeSelectors):  New function (#ifdef FREEZE).
+
+	* Makefile:  Added objcopt_print.c
+
+Fixed versioning bug in changes for protocols in categories (2/15/92):
+
+	* Object.m (descriptionForMethod:, descriptionForInstanceMethod):
+	Check cls->isa->version rather than cls->version.  This bug caused
+	protocols not to be searched.
+
+Changes for new string sections (2/21/92):
+
+	* objc-runtime.m (_objc_map_selectors):  Use strings from either
+	or both new-style and old-style string sections.
+
+	* objcopt.c (main):  Use strings form either (but not both) string
+	sections.
+
+Performance enhancements to execption handlers (2/21/92):
+
+	* except.c (Base, findme):  Allocate first thread's exception stack
+	statically so that we don't keep an extra page of the heap hot.
+	These changes require an extra 20 bytes of static data.
+
+	* except.c (BaseAltHandlers, _NXAddAltHandler):  Also statically
+	allocate a small number of altHandlers so that we never malloc them
+	in normal usage.  This number is based on the maximum typical depth
+	of lockFocus'es.  The current value is 12, which requires an extra
+	144 bytes of static data.
+
+Fixed small leak in _cplus_init() (2/22/92):
+
+	* cplus_init.c (call_constructors, call_destructors):  Free
+	header list after processing it.
+
+Added warnings in preparation for removing protocol hash table (2/22/92):
+
+	* Protocol.m (fixup_classes, _fixup:numElements:):  Warn about any
+	reference to protocols by name.
+
+Removed protocol hash table (2/6/92):
+
+	* Protocol.m (protocolHash, protocolLock):  Removed all references.
+
+	* Protocol.m (_register:numElements:):  Removed.
+
+	* objc-load.m (objc_loadModules):  No longer need to call
+	[Protocol _register:numElements:].
+
+	* Protocol.m (load):  Only make one pass over protocols (to look for
+	old versions, and to adjust protocol_list pointers for "next" field.
+	Don't attempt to install protocols by name.
+
+	* objc-load.m (objc_loadModules):  Don't attempt to install protocols
+	by name.  Just zero the protocol list field in this case.
+
+Moved class and selector hashtables into ObjC zone (2/22/92):
+
+	* objc-class.m (_objc_create_zone):  Now return ObjC zone.
+
+	* objc-runtime.m (_objcInit):  Record ObjC zone in new static.
+
+	* objc-runtime.m (_objc_get_classes):  Place class hashtable in
+	ObjC zone.
+
+== New version objc-52 ==
+
+More performance enhancements to execption handlers (2/21/92):
+
+	* except.c (findme):  Added new handler argument which is used when
+	removing handlers.  This allows us to eliminate half of the calls to
+	cthread_self().  Changed all callers.
+
+	* except.c (Lock, mylock):  Allocate both locks statically.
+
+Fix for deadlock bug in recent exception handler changes (2/24/92):
+
+	* except.c (findme):  Fix deadlock bug in recent changes.
+
+== New version objc-53 ==
+
+Fix for compatibility bug in recent string changes (2/25/92):
+
+	* objc-runtime.m (_objc_map_selectors):  Don't use the largest header
+	optimization if it contains both new and old style string sections,
+	since the selectors will not have been uniqued properly.
+
+== New version objc-54 ==
+
+Changes to improve cache utilization (2/24/92):
+
+	* objc-class.m (CACHE_SIZE, META_CACHE_SIZE):  Try using 8 and 4
+	rather than 16 and 8, to see if we can save some space.
+
+	* objc-class.m (_cache_fill):  Allow caches to be exactly 3/4 full
+	without growing.  This allows 3 entries in a 4 slot cache, 6 entries
+	in an 8 slot cache, and 12 entries in a 16 slot cache.  For larger
+	caches the change is insignificant.  This should result in more
+	efficient usage of small caches, where chain lengths are small anyway.
+
+Fix for second bug in recent exception handler changes (2/24/92):
+
+	* except.c (_NXAddAltHandler):  When switching from static to heap
+	allocated alt-handlers, make sure to copy over static data.
+
+	* except.c (BaseAltHandlers):  After testing bug fix, increased
+	number of statically allocated handlers to 16.  (The color panel
+	uses 13.)
+
+== New version objc-55 ==
+
+Changes to cache flushing/growing strategy (2/24/92):
+
+	* objc-class.h (CLS_FLUSH_CACHE):  New bit in class data structure
+	indicates whether the cache should be flushed rather than grown.
+
+	* objc-class.m (_cache_fill):  If the CLS_FLUSH_CACHE bit is set,
+	flush the cache, otherwise expand it as	usual.
+
+	* objc-class.m (_cache_create):  Clear the CLS_FLUSH_CACHE bit.
+
+	* objc-class.m (_cache_flush):  Clear the CLS_FLUSH_CACHE bit.
+	Changed the argument from a cache pointer to a class pointer.
+
+	* objc-class.m (_cache_expand):  Don't implicitly flush the cache
+	when expanding it.  Insert the old entries into the new cache.
+	This is so we don't flush any more than we used to.  Set the
+	CLS_FLUSH_CACHE bit.
+
+Fixed a latent memory leak in cache flushing (2/24/92):
+
+	* objc-class.m (_cache_flush):  Free any negative cache entries.
+
+Fixed a latent cache bug (2/24/92):
+
+	* objc-class.m (_cache_fill):  Update the mask when expanding the cache
+	so that we don't insert the entry using the wrong hash.
+
+Changes to reduce maximum chain lengths (2/25/92):
+
+	* objc-class.m (_cache_fill):  Insert new entries at the head of the
+	chain rather than the tail.  This causes us to add 1 to n chains rather
+	than adding n to 1 chain.
+
+Removed obsolete functions (2/25/92):
+
+	* objc-sel.m (_sel_registerName):  Removed.  This was present only
+	for internal shlib compatibility while it was renamed to
+	sel_registerName().  This obsolete dependency has been removed.
+
+	* objc-sel.m (_sel_getMaxUid):  Removed.  This was only used by debug
+	routines in objc-utils.m.  It doesn't make sense any more.
+
+Changes to allow freeze-drying of all selector hashtables (2/25/92):
+
+	* objc-sel.m:  A complete rewrite.
+
+	* objc-runtime.m (struct header_info):  Added size and freeze fields.
+
+	* objc-runtime.m (_objc_get_modules):  Sort headers by size, but place
+	all headers which have a freeze-dried hashtable before all others.
+
+	* objc-runtime.m (_objc_map_selectors):  A complete rewrite.
+
+Changes to reduce the size of the class hashtable (2/28/92):
+
+	* objc-runtime.m (_objc_get_classes):  Create hashtable with an initial
+	size of class_count rather than 2 * class_count.  This is the criterion
+	which the hashtable uses internally to decide when to grow.  The
+	hashtable code also rounds this size up to a power of two.
+
+More changes to reduce the selector hashtable (2/29/92):
+
+	* objc-sel.m (HASH_ALLOC_LIST_SIZE):  Reduced to 40 from 170.
+	For Draw, this reduces wastage from 688 bytes to 256 bytes.
+	With this change we call malloc 10 times instead of 3, which
+	shouldn't be significant.
+
+More changes to reduce method cache size (2/29/92):
+
+	* objc-class.m (CACHE_SIZE):  Reduced from 8 to 4.  After using Draw
+	heavily, 23% of all instance-method caches are still the minimum size.
+	They have an average of 3.63 entries, and have a lower efficiency than
+	other caches.
+
+== New version objc-56 ==
+
+Changes to eliminate separate string zone (3/3/92):
+
+	* NXString.m (initialize):  Just use the default zone for now,
+	since creating a separate zone seems to hurt more than it helps.
+	We should probably put this back for 4.0 when it will be used
+	much more heavily.
+
+Changes to reduce hashing overhead (3/3/92):
+
+	* objc-private.h (_objc_strhash):  New static inline version of old
+	_sel_hash().
+
+	* objc-sel.m (_sel_hash):  Removed.  Use _objc_strhash() instead.
+
+	* objc-runtime.m (classHash):  Use _objc_strhash() directly rather
+	than using _strhash().  This avoids one function call per hash.
+
+	* HashTable.m (HASHSTR):  Use _objc_strhash() directly rather
+	than using _strhash().  This avoids one function call per hash.
+
+	* objc-private.h (_strhash):  Removed.  This function is no longer
+	used within objc_proj.  It is left only in case it is being used
+	elsewhere (since it is not a private extern).
+
+Changes to fully implement class references (3/4/92):
+
+	* objc-load.m (objc_loadModules):  Fixup class references.
+
+	* objc-class.m (class_poseAs):  Run through class references
+	substituting the imposter for the original.
+
+	* objc-runtime.m (_objc_headerVector, _objc_headerCount,
+	_objc_addHeader, _objc_removeHeader):  New private externs.
+
+	* objc-load.m (objc_loadModules, objc_unloadModules):  Call
+	new functions _objc_addHeader() and _objc_removeHeader().
+
+Fix for NXBundle bug (3/6/92):
+
+	* NXBundle.m (loadCallback):  Installed Bertrand's fix to correct
+	problems with categories.
+
+== New version objc-57 ==
+
+More performance enhancements for exceptions (3/16/92):
+
+	* except.c (addme):  New routine to handle allocation portion of
+	findme().
+
+	* except.c (findme):  Made inline.  Now calls addme() to handle
+	uncommon cases.
+
+	* except.c (trickyRemoveHandler):  Inlined most common case of
+	trickyRemoveHandler() into both callers.  Now trickyRemoveHandler()
+	is only called when the handler to be removed isn't on the top of
+	the handler stack.
+
+== New version objc-58 ==
+
+Fix for spurious messages introduced with last change (3/19/92):
+
+	* except.c (_NXRemoveHandler, _NXRemoveAltHandler):  Don't call
+	trickyRemoveHandler() for case which is handled inline.
+
+== New version objc-59 ==
+
+Fix for crasher in bundles (3/20/92):
+
+	* NXBundle.m (ensureLoaded):  Limit error messages from rld() to
+	3000 characters, since _NXLogError() has a 4K fixed size buffer.
+	Error messages this long are not really appropriate for syslog.
+	(Bug #20035)
+
+Fix for crasher when reloading modules after unloading them (3/20/92):
+
+	* objc-load.m (objc_unloadModules):  Unload selectors from both
+	new-style and old-style string sections.  (Bug #20414)
+
+Fix for problem with type descriptors (3/23/92):
+
+	* objc-class.m (SkipFirstType):  Treat 'oneway' as a type-qualifier
+	rather than as a type.  The compiler now encodes 'oneway void' as
+	"Vv" rather than just "v".  This is consistent with how it treats
+	'bycopy'.
+
+Removed obsolete methods from NXBundle (3/24/92):
+
+	* NXBundle.h (Compatability):  Removed Compatability category which
+	contained the initForPath: and path methods.
+
+== New version objc-60 ==
+
+Fix for problems reading strings files (4/20/92):
+
+	* NXStringTable.m (parseWord, writeWord):  Handle all escape sequences
+	exactly the same way that the compiler's lexer does.  Also print
+	backslashes such that they will be read back correctly.  (Bug #21634)
+
+Improved error handling of exceptions (4/20/92):
+
+	* except.c (trickyRemoveHandler):  Check for exception frames which are
+	not in the valid portion of the stack.  Log an error when popping
+	a mismatched non-alt handler.  use NXLogError() rather than calling
+	syslog() directly.  (Bug #22200)
+
+Fix for malloc not being overrideable (5/7/92):
+
+	* cplus_init.c:  Must #include shlib.h!  (Bug #23152)
+
+== New version objc-61 ==
+
+Fix for string hashtable problems in typedstreams (6/3/92):
+
+        * typedstream.m (freeStrToInt):  New function to free uniqued strings.
+
+        * typedstream.m (_NXOpenEncodingStream):  When creating string
+        hashtable, use freeStrToInt as free method.
+
+        * typedstream.m (_NXEncodeSharedString):  Copy strings before inserting
+        them into the string hashtable.
+
+        * typedstream.m (NXWriteArray):  No longer need to unique type string
+        before calling _NXEncodeSharedString().
+
+Improvements to release notes (6/3/92):
+
+        * ObjCNotes.rtf:  Fixed numerous spelling mistakes.  Described new
+        thread safe exceptions.  Mentioned new incompatibilities between
+        @encode and typedstreams.
+
+== New version objc-62 ==
+
+Improvements to release notes (6/12/92):
+
+        * ObjCNotes.rtf:  Removed incorrect comment about NXCtype.h moving
+        to /NextDeveloper/Headers/objc.  (Bug #25517)
+
+Fix for problems with cthread_exit() and exceptions (6/12/92):
+
+        * except.c (_NXClearExceptionStack):  New function to clear exception
+        stack.  This will be called from cthread_free(), since the cthread
+        package re-uses cthread_self id's.  (Bug #25562)
+
+        * spec_sys (_NXClearExceptionStack):  New private extern.
+
+Fix for problems with cache flushing and dynamic loading (6/16/92):
+
+        * objc-runtime.m (_objc_add_category):  Flush method caches of class
+        to which category is added.  Otherwise incorrect negative cache entries
+        may persist.  Note that _objc_remove_category() was already handling
+        this.  (Bug #25801)
+
+        * objc-class.m (_objc_flush_caches):  New function to flush both
+        instance and class method caches of a class and its subclasses.
+
+        * objc-private.h (_objc_flush_caches):  Declare new function.
+
+        * spec_sys (_objc_flush_caches):  New private extern.
+
+== New version objc-63 ==
+
+Fix for crasher in appkit server (6/24/92):
+
+        * typedstream.m (NXReadObjectFromBufferWithZone):  Raise an exception
+        if NXOpenTypedStream() returns nil (rather than crashing).  After 3.0
+        we should probably make NXOpenTypedStream() rasie the exception itself
+        rather than returning nil (it raises exceptions in other cases).
+        (Bug #26058)
+
+== New version objc-64 ==
+
+Fix for awkward library dependency introduced by recent change (6/26/92):
+
+        * except.c (addme):  Pass address of _NXClearExceptionStack() to
+        cthreads using new private extern _set_cthread_free_callout().
+        This avoids a link time dependency of cthreads on exceptions.
+
+        * except.c (_NXClearExceptionStack):  Now static.
+
+        * spec_sys (_NXClearExceptionStack):  Removed private extern.
+
+        * Makfile (objcopt.cmd):  Use -lc_static when linking objcopt
+        since we are overriding lots of shlib symbols.
+
+== New version objc-65 ==
+
+Changes to fix ISSELECTOR binary compatibility problem (7/10/92):
+
+	* objc-sel.m (sel_isMapped):  Rewrote to provide correct functionality
+	for backward compatibility.  This function is not used by 3.0 Apps,
+	and was essentially broken.  (Bug #23479)
+
+Fix for unloading bug (7/10/92):
+
+	* objc-sel.m (_sel_unloadSelectors):  Algorithm to delete entries
+	from linked list was broken.  Use new simpler loop.
+
+== New version objc-100 ==
+
+Integrated Doug's changes for the nrw kernel (3/25/92):
+
+	* objc-runtime.m (objc_msgSendv):  Rather than refusing to compile
+	this routine on the 88k, panic if it is ever called.  This routine
+	must be rewritten in assembly!
+
+	* objc-class.m (_forward):  Don't refuse to compile on the m88k.
+	It won't work as written, but hopefully it won't be needed for a while.
+	This routine must be rewritten in assembly!
+
+	* objc-private.h (OBJC_LOCK, OBJC_UNLOCK):  Turn off kernel locks until
+	the m88k messenger uses locks.
+
+	* hashtable.m (CopyIntoReadOnly):  Use valloc() rather than
+	vm_allocate() for kernel builds.
+
+Minor bug fix (3/25/92):
+
+	* Object.m (error:):  Call va_end after last use of ap.
+
+Chnages to get typedstream.m to compile for m88k (3/30/92):
+
+	* typedstream.m (WriteValue, ReadValue):  Rewritten versions of
+	WriteValues() and ReadValues().  Removed "align" argument. These
+	functions now only handle one object at a time, and do not handle
+	varargs at all.  This has been moved up to NXWriteTypes() and
+	NXReadTypes().
+
+	* typedstream.m (NXWriteType, NXReadType):  Modified to use
+	WriteValue() and ReadValue().
+
+	* typedstream.m (NXWriteTypes, NXReadTypes):  Rewrote to use
+	WriteValue() and ReadValue().  Iteration over variable arguments is
+	now performed here rather than in WriteValues() and ReadValues().
+	All arguments are assumed to be void *'s.
+
+	* typedstream.m (NXWriteArray, NXReadArray):  Rewrote to match
+	the array case of WriteValue() and ReadValue().
+
+	* typedstream.m (SizeOfType):  New routine to compute sizes and
+	alignments of arbitrary C types.  This uses "sizeof" and "__alignof"
+	for the basic types, and makes assumptions about how structs, unions
+	and arrays are layed out given these.  This is slightly (but not
+	too horribly) machine-dependent.
+
+	* typedstream.m (roundUp, max):  New support routines.
+
+	* typedstream.m (SubTypeUntil, SizeOfSimpleType, SizeOfUnion, buffer):
+	Deleted obsolete support routines.
+
+	* typedstream.m (next_field_addr, next_field, next_arg, next_addr):
+	Deleted old varargs support which was non-portable and buggy.
+
+	* typedstreamTest.m:  New test program for typedstreams.
+
+Simple Makefile changes (4/2/92):
+
+	* Makefile:  Use make typedstreamtest after using make debug.
+
+	* Makefile:  Added Protocol.o to libkobjc.
+
+== New version objc-101 ==
+
+Changes to implement forwarding for the m88k (4/2/92):
+
+	* objc-class.m (_forward, _errDoesntRecognize):  #ifdef'ed out.
+
+	* objc-class.m:  Changed all references to _forward() to
+	_objc_msgForward().
+
+	* objc-private.h (_objc_msgForward):  Declare.
+
+	* spec_sys:  New private extern _objc_msgForward().
+
+	* objc-msg-m68k.s (_objc_msgForward):  New function.
+
+	* objc-msg-m88k.s (_objc_msgForward):  New function.
+
+	* objc-class.m (objc_msgSendv):  #ifdef'ed out.
+
+	* objc-msg-m68k.s (objc_msgSendv):  New function.
+
+	* objc-msg-m88k.s (objc_msgSendv):  New function.
+
+Integrated i386 mods (4/14/92):
+
+	* objc-msg-i386.s:  New file.
+
+	* objc-msg.s:  Also support i386 architecture.
+
+Minor cleanups (4/14/92):
+
+	* Created new Test directory, and moved all test files there.
+
+	* StreamTable.m (write:):  Use "(void **) &pick" rather than
+	"&((void *) pick)" to avoid problems in GCC-2.0.
+
+	* Object.m (_object_reallocFromZone):  Declare newObject to Object *
+	rather than id to avoid warning.
+
+== New version objc-102 ==
+
+Fixes for problems passing structs by value to methods (6/3/92):
+
+	* objc-msg-m88k.s (objc_msgSend, objc_msgSendSuper):  Preserve both
+	argument registers and argument area on the stack since strcuts
+	passed by value are placed on the stack rather than in registers even
+	if their stack offset is less than 32.
+
+Fix for initial problems with forwarding (6/3/92):
+
+	* objc-msg-m88k.s (_objc_msgForward):  Fixed incorrect branch sense
+	in recursion detection.
+
+	* objc-msg-m88k.s (_objc_msgForward):  Must save and restore pc
+	while sending forward:: to self!
+
+== New version objc-103 ==
+
+Fix for further problems with forwarding (6/3/92):
+
+	* objc-msg-m88k.s (_objc_msgForward):  Store parameter stack area
+	in addition to parameter registers, since we don't know which
+	will be used.
+
+	* objc-msg-m88k.s (_objc_msgForward):  Restore parameter stack area.
+
+	* objc-msg-m88k.s (_objc_msgForward):  Use "and" rather than "mask"
+	to align stack pointer.
+
+== New version objc-104 ==
+
+Added support for Objective-C in loadable kernel servers (6/8/92):
+
+	* Makefile:  Added objc-load.o to kernel library.
+
+	* objc-load.m (objc_registerModule):  New routine to process a
+	previously loaded module.
+
+	* objc-load.m (objc_loadModules):  Use new routine after calling
+	rld_load().
+
+	* objc-load.m (objc_unregisterModule, objc_unloadModules):  Similar for
+	unloading.
+
+New optimized i386 messager from Bruce (6/17/92):
+
+	* objc-msg-i386.s:  New optimized version.
+
+
+== New version objc-107 ==
+
+Change typedstream byteswapping to use new architecture-project API
+
+	* typedstream.m: add swap routines, and modify consumers of these
+	routines.
+
+	* objc-msg-m88k.s: pick up Dave's changes

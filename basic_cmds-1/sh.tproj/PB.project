@@ -1,0 +1,102 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        FRAMEWORKS = (); 
+        H_FILES = (
+            alias.h, 
+            arith.h, 
+            bltin.h, 
+            cd.h, 
+            error.h, 
+            eval.h, 
+            exec.h, 
+            expand.h, 
+            init.h, 
+            input.h, 
+            jobs.h, 
+            machdep.h, 
+            mail.h, 
+            main.h, 
+            memalloc.h, 
+            myhistedit.h, 
+            mystring.h, 
+            nodes.h, 
+            options.h, 
+            output.h, 
+            parser.h, 
+            redir.h, 
+            shell.h, 
+            show.h, 
+            trap.h, 
+            var.h, 
+            syntax.h, 
+            builtins.h, 
+            token.h
+        ); 
+        OTHER_LINKED = (
+            alias.c, 
+            arith.y, 
+            builtins.c, 
+            cd.c, 
+            echo.c, 
+            error.c, 
+            eval.c, 
+            exec.c, 
+            expand.c, 
+            histedit.c, 
+            init.c, 
+            initarith_lex.c, 
+            input.c, 
+            jobs.c, 
+            libyywrap.c, 
+            mail.c, 
+            main.c, 
+            memalloc.c, 
+            miscbltin.c, 
+            mystring.c, 
+            nodes.c, 
+            options.c, 
+            output.c, 
+            parser.c, 
+            printf.c, 
+            redir.c, 
+            show.c, 
+            syntax.c, 
+            trap.c, 
+            var.c
+        ); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            nodes.c.pat, 
+            nodetypes, 
+            mknodes.c, 
+            mkinit.c, 
+            mksyntax.c, 
+            mkbuiltins, 
+            mktokens, 
+            builtins.def
+        ); 
+        PUBLIC_HEADERS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/$(USER)/BUILD"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-DSHELL"; 
+    NEXTSTEP_INSTALLDIR = /bin; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_MAINNIB = sh; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = sh; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

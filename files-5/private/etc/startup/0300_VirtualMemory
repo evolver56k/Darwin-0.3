@@ -1,0 +1,36 @@
+#!/bin/sh
+
+##
+# Start the virtual memory system.
+##
+
+. /etc/rc.common
+
+ConsoleMessage "Starting virtual memory"
+
+swapfile=/private/var/vm/swapfile
+
+# Make sure the swapfile exists
+if [ ! -f ${swapfile} ]; then
+    ConsoleMessage "Creating default swapfile"
+    swapdir=$(dirname ${swapfile})
+    mount -uw /
+    mkdir -p -m 755 ${swapdir}
+    chown root:wheel ${swapdir}
+    touch ${swapfile}
+    chmod 1600 ${swapfile}
+fi
+
+rm -f /mach.sym
+
+mach_swapon -av
+
+if [ -f /mach.sym ]; then
+    # Booted kernel != kernel on root device
+    rm -f /mach
+    ln -s mach.sym /mach
+else
+    rm -f /mach
+    ln -s mach_kernel /mach
+fi
+sync

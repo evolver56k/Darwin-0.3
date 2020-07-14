@@ -1,0 +1,67 @@
+{
+    BUNDLE_EXTENSION = bundle; 
+    English_RESOURCES = {}; 
+    FILESTABLE = {
+        BUNDLES = (); 
+        CLASSES = (); 
+        English_OTHER_RESOURCES = (Localizable.strings); 
+        FRAMEWORKS = (); 
+        FRAMEWORKSEARCH = (
+            "$(NEXT_ROOT)/System/Library/PrivateFrameworks", 
+            "$(NEXT_ROOT)/System/Library/Frameworks"
+        ); 
+        H_FILES = (); 
+        OTHER_LINKED = (placeholder.m); 
+        OTHER_RESOURCES = (
+            French.lproj, 
+            German.lproj, 
+            Italian.lproj, 
+            Spanish.lproj, 
+            Swedish.lproj, 
+            fixdisk, 
+            install_tools, 
+            dicedrives.pl, 
+            diceprtname.pl, 
+        ); 
+        OTHER_SOURCES = (
+            Makefile.preamble, 
+            Makefile, 
+            Makefile.postamble, 
+            rc.cdrom, 
+            rc.cdrom.PPC, 
+            rc.cdrom.x86
+        ); 
+        STRINGS_FILES = (); 
+        SUBPROJECTS = (
+            getpath.tproj, 
+            findroot.tproj, 
+            checkflop.tproj, 
+            pickdisk.tproj, 
+            gc.tproj, 
+            slamloaderbits.tproj, 
+            sgmove.tproj, 
+            popconsole.tproj
+        ); 
+        TOOLS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/objects/$(USER)/$(NAME)"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /System/Installation; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_INSTALLDIR = /System/Installation; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = CDIS; 
+    PROJECTTYPE = Bundle; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_INSTALLDIR = /System/Installation; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

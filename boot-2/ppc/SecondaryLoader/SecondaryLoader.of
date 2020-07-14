@@ -1,0 +1,423 @@
+\
+\	File:		SecondaryLoader.of
+\
+\	Contains:	
+\
+\	Copyright:	© 1996 by Apple Computer, Inc., all rights reserved.
+\
+\	Version:	Maxwell
+\
+\	File Ownership:
+\
+\		DRI:				Alan Mimms
+\
+\		Other Contact:		Stanford Au
+\
+\		Technology:			MacOS
+\
+\	Writers:
+\
+\		(ABM)	Alan Mimms
+\
+\	Change History (most recent first):
+\
+\	   <11*>	 12/9/96	ABM		Failure to open bootIH is fatal and should be bailing but isn't.
+\		<11>	11/25/96	ABM		Fix MAP request to map withOUT memory coherency required bit.
+\		<10>	10/11/96	ABM		Fix comment for RB as per Ted Burge. Use "read" instead of
+\									"read-blocks" to work properly with devices w/block size <> 512.
+\									Initially clear the entire stack we allocate for the loader.
+\		 <8>	 5/17/96	ABM		Switch to use "dev" property on /macosboot to pass device name
+\									to secondary loader.
+\		 <7>	 5/17/96	ABM		Fix comments made bogus by last edit
+\		 <6>	 5/16/96	ABM		Permit boot-file to contain stuff after the partition number.
+\									Add support for flag in pmPartStatus that says "boot from this
+\									partition".
+\		 <5>	  5/7/96	ABM		#1347480. Ignore partitions that aren't valid.
+\		 <4>	  5/3/96	ABM		#1347171. Handle case where index node record we find GREATER
+\									than the key we're looking for is at record #0 and return "not
+\									found" instead of trying to following record #-1's link.
+\		 <3>	 4/19/96	ABM		#1342939.  Follow left-most index record pointer links properly.
+\		 <2>	 4/16/96	ABM		#1341692: Switch back from the bu# sick hack. Use my-self to
+\									save some space.
+\		 <1>	 4/16/96	ABM		First checked in.
+\	   <11+>	 4/15/96	ABM		#1339239: Needs to show broken system folder icon here if all
+\									partitions on specified disk are bogus.
+\		<11>	 4/15/96	ABM		#1340785: Add copyright as a string.
+\		<10>	  4/8/96	ABM		#1337253: Handle completely non-fragmented disks properly by
+\									checking for a NIL root node number in the extents B*Tree
+\									traversal.  Duh.
+\		 <9>	 3/28/96	ABM		Handle fragmented catalog B*Tree and Mac OS Loader files
+\									properly.
+\		 <8>	 3/26/96	ABM		Add more robust mechanism for exiting on error conditions
+\		<6+>	 3/22/96	ABM		Recover from missing Mac OS Loader file gracefully
+\
+
+\ To Do:
+\	¥ Add support for loading "patch" code from partitions before the tertiary
+\	  loader image is loaded.
+
+\ --------------------------------------------------------------------------------------
+\ This is the secondary loader, which is invoked by a prefix of machine code via CI "interp".
+\ It assumes that a valid disk device path name is in "dev" property on /macosboot.  This is
+\ the disk device from which the loader is loaded.  It tries first the partition number
+\ specified by boot-file as a hex string, and if no successful, tries each partition
+\ on the disk that is Apple_HFS flavor.  Note that boot-file can contain a hex partition
+\ number followed by a comma and a boot-device specification.  This is used to restore
+\ the Mac OS 8 boot-device value after System 7.x or the boot-time GUI has nailed it.
+\
+\ When/if a valid loader is found on some volume, we load its data fork at load-base
+\ and return ( -- load-base load-size stack-base bootIH partition# | 0 ).
+\ The assumption is that the machine code prefix will then take these return values
+\ and prepare the runtime environment for the loader to run.
+\ We return zero as the sole value on the stack if we fail.
+\ --------------------------------------------------------------------------------------
+
+\ This is done as a string so it doesn't get stripped out by the comment stripper
+" Copyright © 1996 by Apple Computer, Inc., all rights reserved." 2drop
+
+0 value bootIH
+." hi" cr	' u. to .
+hex							\ This is REQUIRED for this code to work
+
+\ This makes sure we get memory aligned to a page boundary so the various
+\ misaligned fetches and stores herein don't cross a page boundary and thus
+\ require alignment handler functionality which isn't installed until the
+\ tertiary loader runs.
+1200 alloc-mem FFF + -1000 and constant blk
+
+0 value /BLK				\ Bytes per alblk
+0 value s/blk				\ Disk blocks per alblk
+0 value BLK0				\ Offset into volume in blocks to first alblk start
+0 value n#					\ B*Tree node number we are operating on
+0 value #r					\ # of records in node we are operating on
+
+\ In both extent record buffers below, the first longword is the count of entries
+\ that are valid in the array.  This is normally 3 for the eExts one but may
+\ be any value for the Catalog B*Tree extents if it is very fragmented.
+\ This size (1004 hex) is determined by the assumption that a maximum 512k file
+\ can have no more than d#1024 extents, which fits in h#1000 bytes plus 4 for the
+\ leading extent record count.
+1004 buffer: Exts			\ Buffer for Catalog B*Tree extents and (later) file extents
+10 buffer: eExts			\ Buffer for Extents B*Tree extents
+
+create NG			\ The broken system folder ICN#
+" "(0000000000000000000000000000000000000000000000000000000007F00000)" $c,
+" "(0808000010040000200200007FFF3FFE800240018004800180048001803DF801)" $c,
+" "(80450401805DF4018052940180549401805254018054940180525401805EF401)" $c,
+" "(80450401804284018042F40180450401803DF801803DF801800A0001FFFDFFFF)" $c,
+" "(0000000000000000000000000000000000000000000000000000000007F00000)" $c,
+" "(0FF800001FFC00003FFE00007FFF3FFEFFFE7FFFFFFCFFFFFFFCFFFFFFFDFFFF)" $c,
+" "(FFFDFFFFFFFDFFFFFFFEFFFFFFFCFFFFFFFE7FFFFFFCFFFFFFFE7FFFFFFEFFFF)" $c,
+" "(FFFDFFFFFFFEFFFFFFFEFFFFFFFDFFFFFFFDFFFFFFFDFFFFFFFBFFFFFFFDFFFF)" $c,
+
+: $CM $call-method ;		\ Saves space
+
+: BAIL ( msg msglen -- ) type cr -1 throw ;
+
+\ Get property from iHandle as an assumed integer-formatted property, or zero if none
+( propname propnamelen -- propvalue )
+: GMP get-my-property not if decode-int -rot 2drop else 0 then ;
+
+0 value DIH					\ Display device iHandle
+
+\ Set color index _in on iHandle _ih to intensity _i
+: SC { _i _in } _i _i _i _in " color!" DIH $CM ;
+
+: RD rot drop ;				\ Saves space
+: 2RD RD RD ;				\ Saves space
+
+\ Walk the device tree looking for display devices that open successfully.
+\ Leaves open iHandle in DIH and returns nonzero if successful.
+: walk
+	dup " device_type" rot get-package-property not if
+		decode-string 2RD " display" drop swap comp 0= if
+			dup 0 0 rot open-package ?dup if
+				to DIH 1 exit
+			then
+		then
+	then
+	child dup if
+		begin dup recurse if drop 1 exit then peer ?dup 0= until 0
+	then
+;
+
+\ Display the broken system folder icon on the boot display device.  Also
+\ writes the string specified by _s _l onto the stdout for debugging purposes.
+: OOPS { _s _l ; _w _h _ic }
+	_s _l type cr
+	" /AAPL,boot-display" open-dev dup to DIH 0= if 0 peer walk drop then
+	DIH 0= abort" FATAL"
+	clear ( Simon )
+	DIH to my-self
+	" width" GMP ?dup 0= if 280 then -> _w
+	" height" GMP ?dup 0= if 1E0 then -> _h
+	00 FF SC	60 F8 SC	FF 00  SC
+	F8 0 0 _w _h " fill-rectangle" DIH $CM
+	400 alloc-mem -> _ic
+	NG
+	20 0 do
+		20 0 do
+			dup @ i << 0< if FF else dup 80 + @ i << 0< if 0 else F8 then
+			then _ic j 20 * + i + c!
+		loop
+		4 +
+	loop
+	drop
+	_ic _w 20 - 2/ _h 20 - 2/ 20 20 " draw-rectangle" DIH $CM
+	abort
+;
+
+0 value pOff			\ Block number of start of this HFS partition 
+
+20 buffer: ldr			\ Filename of loader we're loading as a Pascal string
+0 value sysID			\ Dir ID of system folder we're loading from
+0 value fID				\ File ID of loader we're loading
+
+: B+ blk + ;			\ Saves space
+: S2B w@ s/blk * ;		\ Converts alblk count (w@) to block count
+
+\ Read specified block from our partition on bootIH.
+: RB ( buf 512-byte-block# blk-count -- )
+	200 *						\ Convert blk-count to a byte count
+	swap pOff + 200 um*			( seek.lo seek.hi )
+	" seek" bootIH $CM drop		\ Seek to specified 512-byte block
+\ ." RB read: " .s cr
+	" read" bootIH $CM drop		\ This can't fail.  Right.
+\ ." blk: " cr blk 200 dumpl cr
+;
+
+\ Read node number n# from the file whose extents are specified by
+\ the _e extent record array.  Returns # records in node.
+: RN { _e ; _t _n }
+	-1 -> _n
+	_e @ 1+ 1 do				\ Get count of extent recs (use 1 origin to skip count)
+		_e i la+ -> _t			\ Point _t at this extent rec
+		n# _t 2+ S2B < if
+			_t S2B n# + -> _n
+			leave
+		else
+			n# _t 2+ S2B - to n#
+		then
+	loop
+	_n 0< if " ?node#" OOPS then
+	blk _n BLK0 + 1 RB			\ Read node
+	0A B+ w@					\ Get # recs in this node
+;
+
+\ Returns the address of record number rec# (zero origin) in our block buffer.
+: &rec ( rec# -- addr ) 2* 1FE B+ swap - w@ B+ ;
+
+\ Compare keys for catalog B*Tree records looking only at the parent ID
+\ part of the key.  This is used to follow the index links to find the
+\ left-most leaf node containing the sysID parent ID.  This is the first
+\ record in the sequence of records for the sysID directory.
+: #cmp { _k }
+	_k 2+ @ sysID - dup 0< if drop -1 else
+	0= if _k 6 + c@ if 1 else 0 then else 1 then then
+;
+
+\ Get the root node number of the specified B*Tree file into n#
+: rtN# ( extents-array ) 0 to n# RN drop 10 B+ @ to n# ;
+
+\ Walk the specified extents (_e) starting with node n# downward through
+\ index node downlinks using _cmp (an execution token) to compare as keys.
+\ Returns with leaf node in our node buffer, the node's number in n#
+\ and # recs in that node in #r.
+: toLeaf { _e _cmp ; _z }
+	_e rtN#								\ Get root node number for this B*Tree
+	n# 0= if exit then
+	begin
+		_e RN to #r						\ Read new cur node and get # recs in it
+		8 B+ c@ FF <> while				\ Loop while non-leaf node
+		#r 1- -> _z
+		#r 0 do
+			i &rec _cmp execute ?dup 0= if
+				i -> _z 				\ Follow found index node's downward link
+				leave
+			else
+				0> if
+					i 0> if
+						i 1- -> _z
+						leave
+					else
+						0 to n#				\ No such key in this B*Tree
+						0 to #r
+						exit
+					then
+				then
+			then
+		loop
+		_z &rec dup c@ + 1+ @ to n#
+	repeat
+;
+
+\ Compare the sysID and the specified key's parent ID field and if the IDs are equal
+\ return the result of comparison based on the equality of the name strings.
+\ If the name strings are unequal, assume the _k key value is greater
+\ than the one we're looking for, causing our caller to keep looking.  This
+\ is done because we can't do sorting-order-correct comparison.
+\ Uses BAIL to get out if it is discovered that the file is definitely not there.
+: $cmp { _k }
+	_k 2+ @ sysID - dup 0< if
+		drop -1
+	else
+		0= if
+			ldr _k 6 + dup c@ 1+ comp 0= if
+				0
+			else
+				1
+			then
+		else
+			" file not found" BAIL
+		then
+	then
+;
+
+\ Now that we know the node number containing the first sysID parent ID record,
+\ follow the forward node links through successive nodes until we find the loader
+\ by exactly matching the filename or until we run out of forward links or until we find
+\ a record with a parent ID different from the sysID.  Relies on $cmp exiting
+\ via BAIL if we discover the parent ID has gotten too high and we still haven't
+\ found the file by name match.
+: findFile
+	begin
+		Exts RN 0 do
+			i &rec dup $cmp 0= if exit then
+			drop
+		loop
+		blk @ to n#
+	again
+;
+
+\ Compare record keys of Extents B*Tree with the fID key.
+\ Returns -1 for <, 0 for =, and +1 for >.
+: eCmp { _k }
+	_k 2+ @ fID - ?dup 0= if
+		_k 1+ c@ if
+			1						\ Resource fork is always greater
+		else
+			_k 6 + w@ negate		\ File matches; result is -alblk number
+		then
+	then
+;
+
+\ Walk the Extents B*Tree finding all nodes pertaining to the data fork of file whose ID is fID.
+\ The resulting array is always copied into the Exts buffer.
+\ For each found pertinent node, append the contents thereof to the Exts array.  This
+\ builds up in Exts the complete list of extents for the file in alblk sorted order.
+\ Assumes that Exts already contains 3 extent records (obtained from the MDB or Catalog) if
+\ any matching records are found in the Extents B*Tree.
+: getExts { ; _r _p }
+	Exts 1004 erase					\ Be clear
+	Exts 4 + 0C move				\ Copy initial threesome
+	3 Exts !						\ Count initial threesome
+	Exts 10 + -> _p					\ Point at first free slot in Exts array
+	eExts ['] eCmp toLeaf			\ Find leaf node containing first extents tree record
+	n# 0= if exit then				\ Don't do anything if no such record exists
+	begin
+		#r 0 do						\ Walk through this node gathering extent records
+			i &rec -> _r			\ Get start of this record
+			_r 2+ @ fID - ?dup		\ Compare file ID in this record w/one in fID
+			0= if
+				_r 8 + _p 0C move	\ Copy contents of this record into array
+				_p 0C + -> _p		\ Increment to point to next slots in array
+				3 Exts +!			\ Increment record count at start of Exts
+			else
+				0> if exit then		\ If we're past the interesting records, exit
+				\ Otherwise, we're still skipping forward looking for the first record pertaining
+				\ to the fID file.  Do nothing until the first one is encountered.
+			then
+		loop
+		blk @ dup to n# while		\ Keep on truckin' til the last leaf node
+		eExts RN to #r				\ Read new cur node and get # recs in it
+	repeat
+;
+
+\ Try partition # _n as a boot partition.  Returns false if successful.  Only returns
+\ unsuccessfully via "BAIL".  This can happen if the Mac OS Loader file doesn't
+\ exist on the volume's Mac OS Folder or loading from the specified volume is somehow
+\ impossible.  Otherwise, if no error occurs, returns with result values
+\ on the stack for the runtime setup for the next phase of loading (the Tertiary Loader).
+: tryP { _n ; _r _b _s _e _size }	( part# -- base size sp diskIH part# | 0 )
+	0 to pOff blk _n 1 RB			\ Read partition map entry for part# partition
+	58 B+ @ 37 and 37 <> if " part marked invalid" BAIL then	\ Don't try partitions w/o 0x08 VALID on
+	30 B+ " Apple_HFS" comp if " not Apple_HFS" BAIL then	\ Don't buy anything but genuine Apple_HFS
+	8 B+ @ to pOff blk 2 1 RB		\ Offset to our partition and get MDB
+	1C B+ w@ to BLK0				\ Get first block # of alblk array
+	14 B+ @ dup to /BLK				\ Get alblk size in bytes
+		200 / to s/blk				\ and in blocks
+	70 B+ @ to sysID				\ System folder directory ID
+	3 eExts ! 86 B+ eExts 4 + 0C move	\ Extents B*Tree extent records
+	4 to fID						\ Catalog B*Tree file is ID #4
+	96 B+ getExts					\ Add all fragmented extents to Cat B*Tree Exts
+	blk 0 1 RB 8A B+ ldr 20 move	\ Get name of Mac OS Loader file from boot blocks
+	." Loading from part# " _n . ldr 1+ dup 1- c@ type cr
+	Exts ['] #cmp toLeaf			\ Find catalog leaf node containing system folder dir ID
+	n# 0= if " no dir" BAIL then	\ Can't find directory's leaf node in catalog
+	findFile						\ Find file by walking forward along leaf links
+		dup c@ 1+ -2 and + -> _r	\ Get past key to catalog record returned by findFile
+	load-base -> _b					\ Initialize where we're loading
+	_r 14 + @ to fID				\ File ID we're loading
+	_r 1E + @ dup -> _size			\ Size of physical image
+			  dup -> _s				\ Once more with feeling (our loading downcounter)
+	_b dup rot 0 do-map				\ Map space for entire image
+	_r 4A + getExts					\ Get all extent records for file's data fork
+	Exts -> _e						\ Extent record array base
+	begin _s while					\ Loop while there's more file to load
+		_e 4 + -> _e				\ Move to next extent descriptor
+		_b _e S2B BLK0 + _e 2+ S2B RB		\ Read next file extent
+		_e 2+ w@ /BLK * dup			\ Get byte count transferred in this chunk
+( byte-count byte-count ) 
+			_s swap - -> _s			\ Decrement size by this chunk's size
+( byte-count )
+			_b + -> _b				\ Increment load buffer pointer by this chunk's size
+	repeat
+
+	\ File has been loaded.  Return our info so the caller can prepare and run loader.
+	load-base _size
+	\ Allocate an entirely zero-filled stack
+	8000 dup alloc-mem 2dup swap
+	( load-base _size 32k stack stack 32k )		0 fill
+	( load-base _size 32k stack )				+ 100 -
+	( load-base _size SP )						bootIH _n
+;
+
+
+\ In a function so we can use "exit" to return on success
+: findPart { ; _cnt }
+	" /macosboot" open-dev to my-self		\ Open our special boot 'device'
+	" dev" get-my-property if " No /macosboot dev property" OOPS then
+		decode-string 2- open-dev to bootIH	\ Open the raw device we were loaded from
+		2drop								\ Lose the prop-encoded-array garbage
+	bootIH 0= if " Can't open for boot" OOPS then	\ Bail if none
+
+	0 to pOff
+	blk 1 1 RB 4 B+ @ -> _cnt				\ Get partition map block count from first PM entry
+	boot-file parse-2int nip				\ Try to use boot-file as partition number to load from
+		dup 1 _cnt between if				\ Make sure it's valid
+			['] tryP catch 0= if exit then	\ TryP uses BAIL to exit if load from vol is impossible
+		else
+			drop
+		then
+	clear									\ "catch" leaves junk on the stack above throw-code?
+	
+	\ Now try to boot from a partition marked with pmPartStatus bit #31 on
+	_cnt 1+ 1 do							\ Loop for all partitions
+		0 to pOff blk i 1 RB				\ Read partition map entry for partition #i
+		58 B+ @ 80000000 and if				\ Try this one if it has bit #31 on
+			i ['] tryP catch 0= if exit then	\ Try to load from this vol (ignores non-HFS partitions)
+			clear							\ "catch" leaves junk on the stack above throw-code?
+		then
+	loop
+	
+	\ Finally try to find any old partition with a blessed Mac OS Folder containing a Mac OS Loader
+	0 to pOff								\ Reset to read first block of disk
+	_cnt 1+ 1 do							\ Loop for all partitions
+		i ['] tryP catch 0= if exit then	\ Try to load from this vol (ignores non-HFS partitions)
+		clear							\ "catch" leaves junk on the stack above throw-code?
+	loop
+	0
+	" No bootable partition" OOPS
+;
+
+findPart

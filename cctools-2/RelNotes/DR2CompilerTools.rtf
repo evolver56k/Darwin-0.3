@@ -1,0 +1,210 @@
+{\rtf0\ansi{\fonttbl\f0\fnil Times-Roman;\f1\ftech Symbol;\f2\fswiss Helvetica;\f3\fmodern Ohlfs;}
+\paperw11440
+\paperh18340
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f0\b0\i0\ulnone\fs24\fc0\cf0 Rhapsody Developer Release  Copyright 
+\f1 ã
+\f0 1997 by Apple Computer, Inc.  All Rights Reserved.\
+
+\pard\f2\fs30\fc0\cf0 \
+\
+\
+
+\f0\fs48\li1440 Rhapsody Premier Release Notes: \
+Compiler Tools
+\fs30 \
+
+\fs28 \
+\
+\
+
+\pard\tx1800\li1440\fc0\cf0 This file contains release notes for the Premier Release of the Compiler Tools.  It contains information about the following topics:\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-360\li1800\fc0\cf0 ·	The Rhapsody Mach-O GNU-based assemblers\
+·	The Rhapsody Mach-O static link editor\
+·	The Rhapsody Mach-O dynamic link editor\
+·	Mach-O object tools (
+\b nm
+\b0 , 
+\b otool
+\b0 , and so on)\
+\
+
+\pard\b\fs36\fc0\cf0 Notes Specific to Premier Release\
+\
+
+\pard\tx0\tx2520\tx2880\tx3240\fs28\li720\fc0\cf0 New Features \
+\
+
+\pard\tx1800\b0\li1440\fc0\cf0 The following new features have been added to the Compiler Tools since the 5.0 Rhapsody Developer Release.\
+\
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-360\li1800\fc0\cf0 ·	The VMX opcodes have been added to the Rhapsody PowerPC assembler (reference 2004760).
+\fi0\li1440 \
+
+\pard\tx1800\li1440\fc0\cf0 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc0\cf0 Known Problems
+\b0 \
+
+\pard\tx3620\f2\fs18\fi-1680\li3620\fc0\cf0 Reference	
+\f0\fs28 1670513\
+
+\fs16 \
+
+\f2\fs18 Problem	
+\f0\fs28 4.4bsd ar extended format #1 not compatible with cctools.\
+
+\fs16 \
+
+\f2\fs18 Description	
+\f0\fs28 The 4.4 ar command can be used to create an archive with the base names of object file name longer that 16 characters and produce a format (using the -L option) that makes the object file in the archive not seen by various tools including the static link editor.  This can lead to undefined symbols when linking against this archive.  Other tools like nm, ranlib also don't see the long named object files in the archive.   To avoid this the -T option that truncates names is the default in the Premier release. 
+\fc1\cf1 The 
+\fc0\cf0 compiler tools will understand the extended format for the Rhapsody Unified release.\
+\
+
+\f2\fs18 Workaround
+\f0\fs28 	Do not use the -L option with ar when creating archive libraries.  Use the -T option (the default for the Premier release) to tuncate file names or use libtool -static to create archive libraries.\
+\
+
+\f2\fs18 Reference	
+\f0\fs28 None\
+
+\fs16 \
+
+\f2\fs18 Problem	
+\f0\fs28 Profiling did not work in the Developer release.\
+
+\fs16 \
+
+\f2\fs18 Description	
+\f0\fs28 There were many bugs in trying to compile, run and produce the profiling information for a program in the Developer release.  Among them were kernel panics, gprof(1) not understanding the gmon.out format produced, add_profil(2) system call not working, etc.\
+\
+
+\f2\fs18 Workaround
+\f0\fs28 	Profiling should now work correctly in the Premier release.\
+
+\pard\li1440\fc0\cf0 \
+\
+\
+
+\b\fs36\li0 Notes Specific to Developer Release\
+
+\b0\fs28\li1440 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc0\cf0 New Features \
+
+\pard\b0\li1440\fc0\cf0 \
+
+\pard\tx1800\li1440\fc0\cf0 The following new features have been added to the Compiler Tools since the 4.2 OPENSTEP Release.\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx1800\tx2160\tx2520\tx2880\fi-360\li1800\fc0\cf0 ·	The 
+\fc1\cf1 PowerPC architecture
+\fc0\cf0  is now supported via the 
+\b\fc1\cf1 -arch ppc 
+\b0\fc0\cf0 switch.
+\fi0\li1440 \
+
+\fi-360\li1800 \
+
+\pard\tx0\tx2520\tx2880\tx3240\b\li720\fc0\cf0 Known Problems
+\b0 \
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx0\tx1800\tx2160\tx2540\tx2880\tx7920\fi-360\li1800\fc0\cf0 These new bugs have appeared since the 4.2 OPENSTEP Release.\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx3620\f2\fs18\fi-1680\li3620\fc0\cf0 Reference	
+\f0\fs28 1666993\
+
+\fs16 \
+
+\f2\fs18 Problem	
+\f0\fs28 The Rhapsody assembler is different than ppcasm.\
+
+\fs16 \
+
+\f2\fs18 Description	
+\f0\fs28 The major difference is that Rhapsody assembler is not TOC based and uses two instructions to load a global or static item.  The directives and syntax of lables and directives of the two assemblers are very different. Also the Rhapsody assembler is more strict in it's parameter types and ranges for instructions. \
+\
+
+\f2\fs18 Workaround
+\f0\fs28 	The major difference with the non-TOC based model, directives and syntax may cause major re-writing of assembly code for the Developer release.  The more strict in parameter requirements will also cause re-writing of assembly code for the Developer release but the resulting code should work with ppcasm.\
+
+\f2\fs18 \
+Reference	
+\f0\fs28 1670513\
+
+\fs16 \
+
+\f2\fs18 Problem	
+\f0\fs28 4.4bsd ar format not compatible with cctools.\
+
+\fs16 \
+
+\f2\fs18 Description	
+\f0\fs28 The 4.4 ar command used to create an archive with object file names longer that 16 characters produces a format that makes the object file not seen by various tools including the static link editor.  This can lead to undefined symbols when linking against this archive.  Other tools like nm, ranlib also don't see the long named object files in the archive. \
+\
+
+\f2\fs18 Workaround
+\f0\fs28 	Use the -T option with ar to tuncate file names or use libtool -static to create archive libraries.\
+
+\pard\li1440\fc0\cf0 \
+
+\pard\tx0\tx1800\tx2160\tx2540\tx2880\tx7920\b\fi-360\li1800\fc0\cf0 ·	
+\b0 Instruction parameter differences include: \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fi-1920\li1920\fc0\cf0 		Register names can't be used with just a number.  They must be use by their register name.  This includes general registers (rN), floating point registers, (fN), condition registers (crN) and segment registers (srN).  Special register may be used by their register number or their special register names.  The special register names are in lower case only (mq, xer, lr, ctr, dsisr, etc.).\
+		For example a move from segment register instruction could be coded as:\
+			mfsr    r24,9   ; for the ppcasm assembler\
+		but would be coded like:\
+			mfsr    r24,sr9 ; for the Rhapsody assembler\
+\
+		For instructions that take the value 0 or a register, seen in the processor manual as (rA|0), r0 can't be used and 0 must be coded.  The Rhapsody assembler will generate an error messages in these cases.\
+\
+		Where a numeric value is expected as a parameter, a register name can't be use.\
+		For example:\
+			lwz     r1,r2(r3)       ; allowed by the ppcasm assembler\
+		must be coded like:\
+			lwz     r1,2(r3)        ; for the Rhapsody assembler\
+\
+		The Rhapsody assembler generates a warning if branch prediction is coded with an unconditional branch.\
+\
+		The Rhapsody assembler checks all fields for range errors and generates error messages if the expression out of range.  The ppcasm assembler will simply use the low N bits of the expression (where N is the field width) if the value is greater than zero.  For example the simplified mnemonic "inslwi rA,rS,n,b" is equivalent to "rlwimi rA,rS,32-b,b,(b+n)-1" and if the following is coded:\
+			inslwi  r17,r18,19,20 ; equivalent to rlwimi r17,r18,32-20,20,(20+19)-1\
+		assembles to:\
+			rlwimi  r17,r18,12,20,6 ; where the low 5 bits (20+19)-1 is 6\
+		with ppcasm.  This generates an out of range error with the Rhapsody assembler.\
+\
+		For fields less that zero the ppcasm assembler will use the value of zero.  For example the simplified mnemonic "clrlslwi rA,rS,b,n" is equivalent to "rlwinm rA,rB,n,b-n,31-b" and if the following is coded:\
+			clrlslwi r5,r6,7,8 ; equivalent to rlwinm r5,r6,8,7-8,31-7\
+		assembles to:\
+			rlwinm r5,r6,7,0,24 ; where 7-8 gets turned into 0\
+		with ppcasm.  This generates an out of range error with the Rhapsody assembler.\
+\
+		All integer expressions in the Rhapsody assembler are signed 32 bit values. Parameters that are sixteen bit signed or unsigned immediate values must agree in their upper sixteen bits or an out of range error message is generated.\
+		For example:\
+			addi    r1,r2,0xffff    ; out of range for a 16 bit signed immediate\
+		will generate "Parameter error: expression out of range (parameter 3)".  The addi instruction takes a signed immediate value so it will sign extend it's parameter to 32 bits before preforming the operation.  If the value 0xffffffff is what is intended it would be coded as:\
+			addi    r1,r2,0xffffffff\
+		or it this is half a two instruction 32-bit add it should be coded as:\
+			addis   r1,0,ha16(expression)\
+			addi    r1,r2,lo16(expression)\
+		Many of the simplified mnemonics are implemented as Rhapsody assembler macros (as noted in the listing of PowerPC assembler instructions in the assember manual).  Like all macros the macro is expanded and assembled.  This can lead to errors being generated for the expanded macro which can be confusing when looking at the coded macro.  For example The simplified mnemonic "extldi rA,rS,n,b" is equivalent to "rldicr rA,rS,b,n-1".  So if the following is coded:\
+			extldi  r1,r2,0,2\
+		an error message is generated:\
+			Parameter error: expression out of range (parameter 4)\
+		Which is referring to "n-1" or "0-1" which is parameter 4 of the expanded macro.\
+\
+		The instruction tlbiex, which has been removed from the PowerPC architecture, is not supported by the Rhapsody assembler.  This instruction is assembled by ppcasm.\
+
+}

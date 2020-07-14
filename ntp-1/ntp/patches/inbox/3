@@ -1,0 +1,110 @@
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa10199;
+          11 Dec 1997 10:28 EST
+Received: from mumps.pfcs.com (mumps.pfcs.com [192.52.69.11])
+	by pcpsj.pfcs.com (8.8.8/8.8.8) with SMTP id KAA08478
+	for <stenn@whimsy.udel.edu>; Thu, 11 Dec 1997 10:26:17 -0500 (EST)
+Received: from localhost by mumps.pfcs.com with SMTP id AA24482
+  (5.67b/IDA-1.5 for <stenn@whimsy.udel.edu>); Thu, 11 Dec 1997 10:26:16 -0500
+Prev-Resent: Thu, 11 Dec 1997 10:26:13 -0500
+Prev-Resent: "stenn@whimsy.udel.edu "
+Received: from pcpsj.pfcs.com by mumps.pfcs.com with SMTP id AA24239
+  (5.67b/IDA-1.5 for <harlan@pfcs.com>); Thu, 11 Dec 1997 07:31:12 -0500
+Received: from gondor.apana.org.au (uucp@localhost)
+	by pcpsj.pfcs.com (8.8.8/8.8.8) with UUCP id HAA08106
+	for harlan@pfcs.com; Thu, 11 Dec 1997 07:31:10 -0500 (EST)
+Received: from gondor.apana.org.au (herbert@gondor.apana.org.au [203.14.152.114])
+	by uustar.starnet.net (8.8.8/8.8.8) with ESMTP id DAA03976
+	for <harlan@pfcs.com>; Thu, 11 Dec 1997 03:53:43 -0600 (CST)
+Received: (from herbert@localhost)
+	by gondor.apana.org.au (8.8.8/8.8.8/Debian/GNU) id UAA05566
+	for harlan@pfcs.com; Thu, 11 Dec 1997 20:53:17 +1100
+From: Herbert Xu <herbert@gondor.apana.org.au>
+Message-Id: <199712110953.UAA05566@gondor.apana.org.au>
+Subject: xntpd broken on Linux with glibc2 (aka libc6)
+To: harlan@pfcs.com
+Date: Thu, 11 Dec 1997 20:53:16 +1100 (EST)
+X-Mailer: ELM [version 2.4ME+ PL37 (25)]
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Resent-To: stenn@whimsy.udel.edu
+Resent-Date: Thu, 11 Dec 1997 10:26:15 -0500
+Resent-Message-Id: <24480.881853975@mumps.pfcs.com>
+Resent-From: Harlan Stenn <Harlan.Stenn@pfcs.com>
+
+This patch is needed because __ntp_gettime is nolonger in libc.  Thanks.
+-- 
+Debian GNU/Linux 1.3 is out! ( http://www.debian.org/ )
+Email:  Herbert Xu ~{PmV>HI~} <herbert@gondor.apana.org.au>
+Home Page: http://greathan.apana.org.au/~herbert/
+PGP Key: http://greathan.apana.org.au/~herbert/pubkey.txt
+--
+diff -ur xntp3-5.91.orig/configure.in xntp3-5.91/configure.in
+--- xntp3-5.91.orig/configure.in	Wed Oct  1 13:11:27 1997
++++ xntp3-5.91/configure.in	Thu Dec 11 20:17:39 1997
+@@ -952,8 +952,8 @@
+ 
+ AC_CACHE_CHECK([availability of ntp_{adj,get}time()], ac_cv_var_ntp_syscalls,
+  [ac_cv_var_ntp_syscalls=no
+- case "$ac_cv_func___adjtimex$ac_cv_func___ntp_gettime" in
+-  yesyes)
++ case "$ac_cv_func___adjtimex" in
++  yes)
+     ac_cv_var_ntp_syscalls=libc
+     ;;
+   *) case "$ac_cv_func_ntp_adjtime$ac_cv_func_ntp_gettime" in
+diff -ur xntp3-5.91.orig/util/ntptime.c xntp3-5.91/util/ntptime.c
+--- xntp3-5.91.orig/util/ntptime.c	Wed Sep 24 14:27:00 1997
++++ xntp3-5.91/util/ntptime.c	Thu Dec 11 20:45:09 1997
+@@ -29,20 +29,37 @@
+ # define BADCALL -1		/* this is supposed to be a bad syscall */
+ #endif /* SYS_DECOSF1 */
+ 
+-#ifdef KERNEL_PLL
+-# include <sys/timex.h>
+-# ifdef NTP_SYSCALLS_STD
+-#  define ntp_gettime(t)  syscall(SYS_ntp_gettime, (t))
+-#  define ntp_adjtime(t)  syscall(SYS_ntp_adjtime, (t))
+-# else /* NOT NTP_SYSCALLS_STD */
+-#  ifdef HAVE___NTP_GETTIME
+-#   define ntp_gettime(t)  __ntp_gettime((t))
+-#  endif
+-#  ifdef HAVE___ADJTIMEX
+-#   define ntp_adjtime(t)  __adjtimex((t))
+-#  endif
+-# endif /* NOT NTP_SYSCALLS_STD */
+-#endif /* KERNEL_PLL */
++#include <sys/timex.h>
++#if defined(linux) && __GLIBC__ > 1
++struct ntptimeval {
++  struct timeval time;  /* current time */
++  long maxerror;        /* maximum error (usec) */
++  long esterror;        /* estimated error (usec) */
++};
++static int __ntp_gettime(struct ntptimeval *ntv) {
++  struct timex tntx;
++  int result;
++
++  tntx.modes = 0;
++  result = __adjtimex(&tntx);
++  ntv->time = tntx.time;
++  ntv->maxerror = tntx.maxerror;
++  ntv->esterror = tntx.esterror;
++  return result;
++}
++# define HAVE___NTP_GETTIME
++#endif
++#ifdef NTP_SYSCALLS_STD
++# define ntp_gettime(t)  syscall(SYS_ntp_gettime, (t))
++# define ntp_adjtime(t)  syscall(SYS_ntp_adjtime, (t))
++#else /* NOT NTP_SYSCALLS_STD */
++# ifdef HAVE___NTP_GETTIME
++#  define ntp_gettime(t)  __ntp_gettime((t))
++# endif
++# ifdef HAVE___ADJTIMEX
++#  define ntp_adjtime(t)  __adjtimex((t))
++# endif
++#endif /* NOT NTP_SYSCALLS_STD */
+ 
+ #ifndef SHIFT_USEC
+ # define SHIFT_USEC 16		/* frequency offset scale (shift) */

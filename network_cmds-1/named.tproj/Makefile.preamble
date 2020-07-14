@@ -1,0 +1,11 @@
+XFERDIR=/usr/libexec
+PIDDIR=/var/run
+
+OTHER_INITIAL_TARGETS = named-xfer named.reload named.restart ndc
+OTHER_GENERATED_OFILES = version.o $(VERS_OFILE)
+OTHER_CFLAGS = \
+	-D_PATH_XFER=\"${PATH_XFER}\" -D_PATH_PIDFILE=\"${PIDDIR}/named.pid\"
+
+XFER_OFILES = named-xfer.o db_glue.o storage.o dmalloc.o $(OTHER_GENERATED_OFILES)
+
+-include ../Makefile.include

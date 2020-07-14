@@ -1,0 +1,16 @@
+{
+    BUNDLE_EXTENSION = config; 
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+	FRAMEWORKS = (appkit.framework);
+	FRAMEWORKSEARCH = ("$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks");
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, m.template, h.template); 
+        SUBPROJECTS = (PostLoad.tproj, PreLoad.tproj); 
+    }; 
+    LANGUAGE = English; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = "$(NEXT_ROOT)/private/Drivers";
+    PROJECTTYPE = Driver; 
+    PROJECTVERSION = 2.6; 
+}

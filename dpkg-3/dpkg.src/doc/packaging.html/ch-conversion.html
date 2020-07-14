@@ -1,0 +1,116 @@
+<html><head>
+<title>Debian packaging manual - Conversion procedure from old source packages</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 14<br>
+Conversion procedure from old source packages
+</h1>
+
+This is a brief summary of the procedure for converting a
+pre-2.0.0.0-format source package into the new format.<P>
+
+You are strongly advised to download and examine the <kbd>hello</kbd>
+package, and to read the section in the <kbd>dpkg</kbd> programmers'
+manual describing the source packaging tools.  More detail about the
+exact functionality of these tools is available in <code>dpkg-source(1)</code>.<P>
+
+<ul>
+<li>Download the original source code from wherever it can be found and do
+any rearrangement required to make it look like the original tree of
+the Debian source.  Put it in
+<code></code><var>package</var><code>-</code><var>upstream-version</var><code>.orig/</code> or
+<code></code><var>package</var><code>_</code><var>upstream-version</var><code>.orig.tar.gz</code>.
+<p><li>Rename all files <code>debian.*</code> to <code>debian/*</code>.  There may be some
+exceptions to this, but this is a good start.
+<p><li>Edit the <code>debian/changelog</code> - create or rename it if necessary.
+Add a new revision to the top with the appropriate details, and a
+local variables entry to the bottom to set Emacs to the right mode:
+<pre>Local variables:
+mode: debian-changelog
+End:</pre>
+<p><li>Edit/create <code>debian/control</code>:
+<ul compact>
+<li>Remove the <code>Version</code> field.  If it is generated unusually (not
+equal to the source version) you must use the -v option to
+dpkg-gencontrol (see below).  <code>Section</code>, <code>Priority</code>,
+<code>Maintainer</code> go above the first blank line, most of the rest below.
+<li>Reorder the fields and add a blank line at an appropriate point,
+separating the source package fields from the binary package
+fields.
+<li>Add the <code>Source</code> field.
+<li>Add the <code>Standards-Version</code> field.  See the Debian Policy Manual
++for details.
+<li>Change the <code>Architecture</code> field for each package to <code>any</code>,
+<code>all</code> or whatever.  If there isn't an <code>Architecture</code> field add
+one.
+<li>If any other use of sed or things used to happen to make the binary
+control files use <kbd>dpkg-gencontrol</kbd>'s variable substitution
+features to achieve the same effect.  Use <code>debian/substvars</code> if
+you need to put unusally-generated information (apart from details of
+<code>.deb</code> files) in the <code>.changes</code> file too.</ul>
+
+<li>Edit the <code>debian/rules</code>:
+<ul compact>
+<li>Remove the <kbd>source</kbd> and <kbd>diff</kbd> and any <kbd>changes</kbd> and
+<kbd>dist</kbd> targets.  These things now happen in a package-independent
+way and are not done by <code>debian/rules</code>.<li>Split the <kbd>binary</kbd> target into <kbd>binary-arch</kbd> and
+<kbd>binary-indep</kbd>; in many cases all of <kbd>binary</kbd> should go into
+<kbd>binary-arch</kbd>.  Create the <kbd>binary</kbd> target and the unused of
+the two other <kbd>binary-*</kbd> targets if there is one - you can copy
+the ones from the <kbd>hello</kbd> package.<li>Change the <kbd>binary</kbd> target to use <kbd>dpkg-gencontrol</kbd> to make
+the package control file(s).  Move it to after all the files have been
+installed but just before the last <kbd>chown</kbd> and <kbd>chmod</kbd> in
+the target.<li>Change occurrences of <code>debian-tmp</code> to <code>debian/tmp</code>.<li>Change occurrences of <code>debian.{post,pre}{inst,rm}</code> to
+<code>debian/*</code>.<li>Remove the version number setting at the top, if there is one.<li>Ensure that the package's Debian-specific and upstream changelogs are
+installed.</ul>
+
+<li>Change the package to use <kbd>dpkg-shlibdeps</kbd> to determine its
+shared library dependencies and substitute them in.  Shared library
+dependencies should no longer be hardwired in the source package.
+<li>Check that the <code>debian/README</code> is really the copyright file, and
+if so rename it to <code>debian/copyright</code> and edit
+<code>debian/rules</code> to cope with this and to change the installation
+of the copyright file from <code>/usr/doc/</code><var>package</var><code>/copyright</code>
+to <code>/usr/doc/copyright/</code><var>package</var><code></code>.  If it isn't then
+find <code>debian/copyright</code> and decide what to do with the
+<code>README</code>.
+<li>Check for various other anachronisms and problems:
+<ul compact>
+<li>Remove any <code>Package_Revision</code>, <code>Package-Revision</code> or
+<code>Revision</code> fields.<li>Rename <code>Optional</code> to <code>Suggests</code>, <code>Recommended</code> to
+<code>Recommends</code>.<li>Change <code>/usr/doc/examples/</code><var>package</var><code></code> to
+<code>/usr/doc/</code><var>package</var><code>/examples</code>.<li>Make sure that manpages are installed compressed.<li>Check that the description has an extended description, is
+well-formatted and meaningful and helpful to people wanting to know
+whether to install a package.</ul>
+
+<li>Look everything over.
+<li>Do a test build using <code>dpkg-buildpackage -us -uc -sa
+-r</code><var>whatever</var><code></code>.  Check the permissions and locations of files in
+the resulting package by examining the output of <code>dpkg-deb
+--contents</code>, and check that the source build happened OK.  Test
+install the binary package(s) and test extract the source package(s).
+<li>Sign the release: either rebuild everything with <code>dpkg-buildpackage
+-sa</code>, or PGP-sign the <code>.dsc</code>, rebuild the <code>.changes</code> using
+<code>dpkg-genchanges -sa</code>, and then PGP-sign the <code>.changes</code>.
+</ul>
+<P>
+
+The use of <code>-sa</code> on <kbd>dpkg-buildpackage</kbd> and
+<kbd>dpkg-genchanges</kbd> is important when doing the first
+build/uploading of a new-format source package.  Unless this happens
+to be Debian revision <code>0</code> or <code>1</code> by default the original source
+tarfile will not be included in the uploaded files listed in the
+<code>.changes</code> file, and so it won't be installed on the FTP site.
+<code>-sa</code> requests that the original source be included regardless.
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-methif.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

@@ -1,0 +1,62 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            "nm-aix.h", 
+            "nm-linux.h", 
+            "nm-macos.h", 
+            "nm-ppc-next.h", 
+            "nm-solaris.h", 
+            "tm-cygwin32.h", 
+            "tm-linux.h", 
+            "tm-macos.h", 
+            "tm-ppc-aix.h", 
+            "tm-ppc-eabi.h", 
+            "tm-ppc-next.h", 
+            "tm-ppc-nw.h", 
+            "tm-ppc-sim.h", 
+            "tm-ppcle-eabi.h", 
+            "tm-ppcle-sim.h", 
+            "tm-solaris.h", 
+            "xm-aix.h", 
+            "xm-cygwin32.h", 
+            "xm-linux.h", 
+            "xm-mpw.h", 
+            "xm-ppc-next.h", 
+            "xm-solaris.h"
+        ); 
+        OTHER_SOURCES = (
+            aix.mh, 
+            aix.mt, 
+            cygwin32.mh, 
+            cygwin32.mt, 
+            gdbserve.mt, 
+            linux.mh, 
+            linux.mt, 
+            macos.mh, 
+            macos.mt, 
+            "ppc-eabi.mt", 
+            "ppc-nw.mt", 
+            "ppc-sim.mt", 
+            "ppcle-eabi.mt", 
+            "ppcle-sim.mt", 
+            rhapsody.mh, 
+            rhapsody.mt, 
+            solaris.mh, 
+            solaris.mt
+        ); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = powerpc; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

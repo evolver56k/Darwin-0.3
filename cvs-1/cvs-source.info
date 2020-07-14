@@ -1,0 +1,20 @@
+##
+# cvs
+##
+
+Title		Concurrent Versions System (source code)
+BuildDiskTitle	Concurrent Versions System (source code)
+Version		1.9.20
+Description	This package contains CVS, the Concurrent Versions System.
+
+DefaultLocation		/NextDeveloper/Source/GNU/cvs
+Relocatable		YES
+Diskname		cvs #%d
+
+NeedsAuthorization	YES
+Application		NO
+LibrarySubdirectory	Standard
+InstallOnly 		YES
+DisableStop		NO
+LongFilenames		YES
+#DeleteWarning		Deleting this may be a bad thing because...

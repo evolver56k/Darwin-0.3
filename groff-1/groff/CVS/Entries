@@ -1,0 +1,68 @@
+/BUG-REPORT/1.1.1.1/Fri Apr 23 01:11:51 1999//Tgroff-1
+/COPYING/1.1.1.1/Fri Apr 23 01:11:51 1999//Tgroff-1
+/ChangeLog/1.1.1.1/Fri Apr 23 01:11:51 1999//Tgroff-1
+/INSTALL/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/INSTALL.gen/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile.ccpg/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile.comm/1.1.1.2/Fri Apr 23 01:13:23 1999//Tgroff-1
+/Makefile.cpg/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile.dev/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile.in/1.1.1.2/Fri Apr 23 01:13:23 1999//Tgroff-1
+/Makefile.init/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile.lib/1.1.1.1/Fri Apr 23 01:11:52 1999/-kb/Tgroff-1
+/Makefile.man/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/Makefile.sub/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/NEWS/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/PROBLEMS/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/PROJECTS/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/README/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/TODO/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/VERSION/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/aclocal.m4/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/configure/1.1.1.2/Fri Apr 23 01:13:25 1999//Tgroff-1
+/configure.in/1.1.1.1/Fri Apr 23 01:11:52 1999//Tgroff-1
+/gendef.sh/1.1.1.1/Fri Apr 23 01:11:53 1999//Tgroff-1
+/install-sh/1.1.1.1/Fri Apr 23 01:11:53 1999//Tgroff-1
+/mdate.sh/1.1.1.1/Fri Apr 23 01:11:53 1999//Tgroff-1
+/test-groff/1.1.1.1/Fri Apr 23 01:11:53 1999//Tgroff-1
+D/addftinfo////
+D/afmtodit////
+D/devX100////
+D/devX100-12////
+D/devX75////
+D/devX75-12////
+D/devascii////
+D/devdvi////
+D/devlatin1////
+D/devlj4////
+D/devps////
+D/doc////
+D/eqn////
+D/grodvi////
+D/groff////
+D/grog////
+D/grolj4////
+D/grops////
+D/grotty////
+D/hpftodit////
+D/include////
+D/indxbib////
+D/libbib////
+D/libdriver////
+D/libgroff////
+D/lkbib////
+D/lookbib////
+D/man////
+D/mm////
+D/nroff////
+D/pfbtops////
+D/pic////
+D/psbb////
+D/refer////
+D/soelim////
+D/tbl////
+D/tfmtodit////
+D/tmac////
+D/troff////
+D/xditview////

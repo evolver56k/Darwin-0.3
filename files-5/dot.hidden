@@ -1,0 +1,16 @@
+bin
+cores
+dev
+etc
+lib
+local
+lost+found
+mach
+mach_kernel
+Net
+private
+root
+sbin
+tmp
+usr
+var

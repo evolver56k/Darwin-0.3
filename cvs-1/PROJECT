@@ -1,0 +1,10 @@
+Project		: CVS
+Description	: CVS - Concurrent Versions System
+Distribution	: 1.9.26
+Source		: Cyclic Software (for Free Software Foundation)
+Location	: http://download.cyclic.com/pub/cvs-1.9.14/cvs-1.9.14.tar.gz
+Owner		: wsanchez
+Releases	: Titan
+Dependancies	: 
+
+We've added wrapper code for client/server (b.bum).

@@ -1,0 +1,23 @@
+{
+    BUILDDIR = ""; 
+    BUILDTOOL = /bin/make; 
+    COMPILEROPTIONS = "-DCRYPT # -DKERBEROS"; 
+    FILESTABLE = {
+	C_FILES = (); 
+	H_FILES = (krb.h); 
+	OTHER_LIBS = (); 
+	OTHER_LINKED = (des_rw.c, kcmd.c, krcmd.c, rlogin.c); 
+	OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, rlogin.1); 
+	PRECOMPILED_HEADERS = (); 
+	PROJECT_HEADERS = (); 
+	PUBLIC_HEADERS = (); 
+    }; 
+    INSTALLDIR = /usr/bin; 
+    LANGUAGE = English; 
+    LINKEROPTIONS = ""; 
+    LOCALIZABLE_FILES = {}; 
+    MAINNIB = rlogin; 
+    PROJECTNAME = rlogin; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.0; 
+}

@@ -1,0 +1,183 @@
+This is TeX, Version 3.14159 (Web2C 7.2) (format=tex 1998.4.24)  25 APR 1998 18:37
+**\input /tmp/txi2d.13497/internals.texi
+(/tmp/txi2d.13497/internals.texi (/usr/lib/texmf/tex/texinfo/texinfo.tex
+Loading texinfo package [Version 2.227]: Basics,
+\bindingoffset=\dimen16
+\normaloffset=\dimen17
+\pagewidth=\dimen18
+\pageheight=\dimen19
+\cornerlong=\dimen20
+\cornerthick=\dimen21
+\topandbottommargin=\dimen22
+\outerhsize=\dimen23
+\outervsize=\dimen24
+\headlinebox=\box16
+\footlinebox=\box17
+\margin=\insert252
+\EMsimple=\toks12
+\singlespaceskip=\skip18
+\groupinvalidhelp=\toks13
+\mil=\dimen25
+\exdentamount=\skip19
+\inmarginspacing=\skip20
+ fonts,
+\sffam=\fam8
+\mainmagstep=\count26
+\fontdepth=\count27
+ page headings,
+\titlepagetopglue=\skip21
+\titlepagebottomglue=\skip22
+\evenheadline=\toks14
+\oddheadline=\toks15
+\evenfootline=\toks16
+\oddfootline=\toks17
+ tables,
+\tableindent=\dimen26
+\itemindent=\dimen27
+\itemmargin=\dimen28
+\itemmax=\dimen29
+\itemno=\count28
+\multitableparskip=\skip23
+\multitableparindent=\skip24
+\multitablecolspace=\dimen30
+\multitablelinespace=\skip25
+\colcount=\count29
+
+indexing,
+\initialskipamount=\skip26
+\secondaryindent=\skip27
+\partialpage=\box18
+\doublecolumnhsize=\dimen31
+ sectioning,
+\chapno=\count30
+\secno=\count31
+\subsecno=\count32
+\subsubsecno=\count33
+\appendixno=\count34
+\contentsfile=\write0
+\absseclevel=\count35
+\secbase=\count36
+\chapheadingskip=\skip28
+\secheadingskip=\skip29
+\subsecheadingskip=\skip30
+ toc printing,
+\contentsrightmargin=\skip31
+\shortappendixwidth=\dimen32
+\tocindent=\dimen33
+ environments,
+\dblarrowbox=\box19
+\longdblarrowbox=\box20
+\pushcharbox=\box21
+\bullbox=\box22
+\equivbox=\box23
+\errorbox=\box24
+\lispnarrowing=\skip32
+\envskipamount=\skip33
+\circthick=\dimen34
+\cartouter=\dimen35
+\cartinner=\dimen36
+\normbskip=\skip34
+\normpskip=\skip35
+\normlskip=\skip36
+\lskip=\skip37
+\rskip=\skip38
+ defuns,
+\defbodyindent=\skip39
+\defargsindent=\skip40
+\deftypemargin=\skip41
+\deflastargmargin=\skip42
+\parencount=\count37
+ cross reference,
+\auxfile=\write1
+\footnoteno=\count38
+
+(/usr/lib/texmf/tex/plain/dvips/epsf.tex
+This is `epsf.tex' v2.7 <25 October 1996>
+\epsffilein=\read0
+\epsfframemargin=\dimen37
+\epsfframethickness=\dimen38
+\epsfrsize=\dimen39
+\epsftmp=\dimen40
+\epsftsize=\dimen41
+\epsfxsize=\dimen42
+\epsfysize=\dimen43
+\pspoints=\dimen44
+)
+\noepsfhelp=\toks18
+ and turning on texinfo input format.
+\defaultparindent=\dimen45
+) (internals.aux)
+@cpindfile=@write2
+@fnindfile=@write3
+@vrindfile=@write4
+@tpindfile=@write5
+@kyindfile=@write6
+@pgindfile=@write7
+ [1
+\openout1 = `internals.aux'.
+
+\openout0 = `internals.toc'.
+
+\openout2 = `internals.cp'.
+
+\openout3 = `internals.fn'.
+
+\openout4 = `internals.vr'.
+
+\openout5 = `internals.tp'.
+
+\openout6 = `internals.ky'.
+
+\openout7 = `internals.pg'.
+
+] Chapter1 Chapter2
+[1]
+Overfull \hbox (17.00008pt too wide) in paragraph at lines 98--103
+@textrm tory names, it now sup-ports @texttt configure --sharedstatedir[]@textr
+m , and @texttt configure --localstatedir[]@textrm .|
+
+@hbox(7.60416+2.43333)x433.62, glue set - 1.0
+.@textrm t
+.@textrm o
+.@textrm r
+.@textrm y
+.@glue 3.65 plus 1.825 minus 1.21666
+.etc.
+
+[2]
+Overfull \hbox (24.55019pt too wide) in paragraph at lines 132--136
+[]@textrm The new `@texttt dist[]@textrm '[] tar-gets will build a dis-tri-bu-t
+ion in-clud-ing all files built by the @texttt debiandoc2html[]@textrm ,|
+
+@hbox(7.60416+2.12917)x433.62, glue set - 1.0
+.@hbox(0.0+0.0)x15.0
+.@textrm T
+.@textrm h
+.@textrm e
+.@glue 3.65 plus 1.825 minus 1.21666
+.etc.
+
+[3] [4]
+Overfull \hbox (95.42339pt too wide) in paragraph at lines 302--302
+ []@texttt if (!file) ohshite(_("failed to open `%s' for writing %s information
+"),filename,which); |
+
+@hbox(7.60416+2.43333)x433.62
+.@glue(@leftskip) 28.90755
+.@hbox(0.0+0.0)x0.0
+.@texttt i
+.@texttt f
+.@penalty 10000
+.etc.
+
+[5] Chapter3 [6] [7] [8] [9] [10] (internals.toc) [-1] (internals.fns) [-2] ) 
+Here is how much of TeX's memory you used:
+ 1063 strings out of 13016
+ 11080 string characters out of 97296
+ 31347 words of memory out of 263001
+ 1945 multiletter control sequences out of 10000+0
+ 29919 words of font info for 103 fonts, out of 200000 for 1000
+ 19 hyphenation exceptions out of 1000
+ 12i,6n,11p,249b,230s stack positions out of 300i,100n,500p,30000b,4000s
+
+Output written on internals.dvi (13 pages, 33052 bytes).

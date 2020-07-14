@@ -1,0 +1,3 @@
+#!/bin/csh -f
+# scan and start up printer driver
+./configutil c ffff0000 30000

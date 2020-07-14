@@ -1,0 +1,10 @@
+ETCDIR = /private/etc
+
+after_install:: $(DSTROOT)$(ETCDIR)
+	$(CP) -p swaptab $(DSTROOT)$(ETCDIR)/swaptab
+	-$(CHGRP) $(INSTALL_AS_GROUP) $(DSTROOT)$(ETCDIR)/swaptab
+	-$(CHOWN) $(INSTALL_AS_USER) $(DSTROOT)$(ETCDIR)/swaptab
+	$(CHMOD) 644 $(DSTROOT)$(ETCDIR)/swaptab
+
+$(DSTROOT)$(ETCDIR)::
+	@$(MKDIRS) $@

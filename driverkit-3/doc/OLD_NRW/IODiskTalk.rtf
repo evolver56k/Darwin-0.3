@@ -1,0 +1,369 @@
+{\rtf0\nextcset {\fonttbl{\f41487\fnil Ohlfs;}{\f21\fswiss 
+Helvetica;}{\f3\fswiss Helvetica;}}
+\paperw12240\paperh15840 \margl1800\margr1800\margt0\margb0 
+\pgnstart1\ftnstart1 \deftab31680 \sectd\sbknone \linemod0\linex0 
+\ftnbj \headery0\footery0 \cols1 {\header \pard \li0\ri0\fi0\qc\sl320 
+\plain \f3 \par 
+\par 
+\par 
+\par 
+}{\footer \pard \li0\ri0\fi0\qc\sl320 \plain \f3 \par 
+\par 
+\par 
+\par 
+}\pard \li0\ri0\fi0\qc\sl280 \tx360 \tx6120 \plain \f21\fs36\b 
+Driverkit Disk Classes\par 
+16 April, 1993\par 
+\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\par 
+\par 
+Outline:\par 
+\par 
+\'b7 Introduction\par 
+\par 
+\'b7 The volCheck module\par 
+\par 
+\'b7 IODiskReadingAndWriting protocol\par 
+\par 
+\'b7 IOPhysicalDiskMethods protocol\par 
+\par 
+\'b7 Interfacing to cdevsw and bdevsw\par 
+\par 
+\'b7 I/O thread architecture\par 
+\par 
+\'b7 Q & A\par 
+\par 
+\par 
+\page \pard \li0\ri0\fi0\qc\sl280 \tx360 \tx1080 \tx1800 
+\tx2520 \tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 
+\tx7560 \tx8260 \par 
+Class Hierarchy\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\par 
+\par 
+\par 
+\par 
+\pard \keep \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\pard \keep \li0\ri0\fi0\qc\sl280 \tx360 \tx1080 \tx1800 
+\tx2520 \tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 
+\tx7560 \tx8260    \par 
+\pard \keep \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\par 
+\page \pard \li0\ri0\fi0\qc\sl280 \tx360 \tx1080 \tx1800 
+\tx2520 \tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 
+\tx7560 \tx8260 \par 
+\par 
+The volCheck module\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\par 
+\par 
+\par 
+\par 
+\'b7 Disk Insertion detection\par 
+\par 
+\'b7 Automount\par 
+\par 
+\'b7 Alert panels\par 
+\par 
+\'b7 abort notification\par 
+\par 
+\par 
+\page IODiskReadingAndWriting protocol\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\par 
+\f-24049\fs24\b0 @protocol IODiskReadingAndWriting\par 
+\par 
+- (IOReturn) readAt\tab \tab : (unsigned)offset \par 
+\tab \tab \tab \tab   length : (unsigned)length \par 
+\tab \tab \tab \tab   buffer : (unsigned char *)buffer\par 
+\tab \tab \tab \tab   actualLength : (unsigned *)actualLength 
+\par 
+\tab \tab \tab \tab   client : (vm_task_t)client;\par 
+\par 
+- (IOReturn) readAsyncAt\tab : (unsigned)offset \par 
+\tab \tab \tab \tab   length : (unsigned)length \par 
+\tab \tab \tab \tab   buffer : (unsigned char *)buffer\par 
+\tab \tab \tab \tab   pending : (void *)pending\par 
+\tab \tab \tab \tab   client : (vm_task_t)client;\par 
+\tab \tab \par 
+- (IOReturn) writeAt\tab \tab : (unsigned)offset \par 
+\tab \tab \tab \tab   length : (unsigned)length \par 
+\tab \tab \tab \tab   buffer : (unsigned char *)buffer\par 
+\tab \tab \tab \tab   actualLength : (unsigned *)actualLength 
+\par 
+\tab \tab \tab \tab   client : (vm_task_t)client;\par 
+\tab \tab   \par 
+- (IOReturn) writeAsyncAt\tab : (unsigned)offset \par 
+\tab \tab \tab \tab   length : (unsigned)length \par 
+\tab \tab \tab \tab   buffer : (unsigned char *)buffer\par 
+\tab \tab \tab \tab   pending : (void *)pending\par 
+\tab \tab \tab \tab   client : (vm_task_t)client;\par 
+\par 
+@end\par 
+\f21\fs36\b \par 
+\par 
+\page \pard \li0\ri0\fi0\qc\sl280 \tx360 \tx1080 \tx1800 
+\tx2520 \tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 
+\tx7560 \tx8260 IOPhysicalDiskMethods protocol\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\f-24049\fs24\b0 @protocol IOPhysicalDiskMethods\par 
+\par 
+/*\par 
+ * Get physical parameters (dev_size, block_size, etc.) 
+from\par 
+ * new disk. Called upon disk insertion detection, or 
+other\par 
+ * transition to RS_READY, or other change of state 
+of\par 
+ * disk (like a transition to "formatted").\par 
+ */\par 
+- (IOReturn)updatePhysicalParameters;\par 
+\par 
+/*\par 
+ * Called by volCheck thread when WS has told us that 
+a\par 
+ * requested disk is not present. Pending I/Os which 
+require\par 
+ * a disk to be present must be aborted.\par 
+ */\par 
+- (void)abortRequest;\par 
+\par 
+/*\par 
+ * Called by the volCheck thread when a transition 
+to\par 
+ * "ready" is detected. Pending I/Os which require a 
+disk\par 
+ *  may proceed.\par 
+ */\par 
+- (void)diskBecameReady;\par 
+\par 
+/*\par 
+ * Inquire if disk is present; if not, and 'prompt' 
+is TRUE,\par 
+ * ask for it. \par 
+ * Returns IO_R_NODISK if:\par 
+ *    prompt TRUE, disk not present, and user cancels\par 
+ *        request for disk.\par 
+ *    prompt FALSE, disk not present.\par 
+ * Else returns IO_R_SUCCESS.\par 
+ */\par 
+- (IOReturn)isDiskReady\tab : (BOOL)prompt;\par 
+\par 
+\page \par 
+/*\par 
+ * Device-specific eject method, only called on physical\par 
+ * device.\par 
+ */\par 
+- (IOReturn) ejectPhysical;\par 
+\par 
+/*\par 
+ * Determine basic state of device. This method should 
+NOT\par 
+ * implement any retries. It also should not return\par 
+ * RS_EJECTING (That's only used in the lastReadyState\par 
+ * instance variable).\par 
+ */\par 
+- (IODiskReadyState)updateReadyState;\par 
+\par 
+@end\par 
+\f21\fs36\b \par 
+\par 
+\f-24049\fs24\b0 /*\par 
+ * Basic "usefulness" state of drive.\par 
+ */\par 
+typedef enum \{\par 
+\tab IO_Ready, \tab \tab // Ready for r/w operations\par 
+\tab IO_NotReady,\tab \tab // not ready (spinning up 
+or busy)\par 
+\tab IO_NoDisk, \tab \tab // no disk present\par 
+\tab IO_Ejecting\tab \tab // eject in progress\par 
+\} IODiskReadyState;\par 
+\f21\fs36\b \par 
+\page \pard \li0\ri0\fi0\qc\sl280 \tx360 \tx1080 \tx1800 
+\tx2520 \tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 
+\tx7560 \tx8260 Kernel "Glue" Layer\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\par 
+This struct provides mapping between dev_t and id:\par 
+\par 
+\f-24049\fs24\b0 typedef struct \{\par 
+\tab id liveId;\tab \tab \tab // instance for live partition\par 
+\tab id partitionId[NPART-1];\tab // for block and raw 
+devices\par 
+\tab dev_t rawDev;\tab \tab \tab // used by volCheck 
+logic\par 
+\tab dev_t blockDev;\tab \tab // ditto\par 
+\} IODevAndIdInfo;\par 
+\f21\fs36\b \par 
+\par 
+\'b7 Allocated in glue layer module, one per physical\par 
+  disk\par 
+\par 
+\'b7 Each instance of IODisk (or subclass) contains a 
+\par 
+  pointer to the associated IODevAndIdInfo.\par 
+\par 
+\'b7 rawDev and blockDev initialized in device-\par 
+  specific routine in kernel glue layer, typically\par 
+  called from +probe or +initialize.\par 
+\par 
+\'b7 Id fields initialized by IODiskPartition (drivers\par 
+  don't need to worry about these).\par 
+\par 
+\par 
+\page \pard \li0\ri0\fi0\qc\sl280 \tx360 \tx1080 \tx1800 
+\tx2520 \tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 
+\tx7560 \tx8260 I/O Threads\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+Instance variables:\par 
+\par 
+\pard \li380\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \f-24049\fs24\b0 queue_head_t\tab ioQueueDisk;\tab 
+// for I/Os requiring disk \par 
+queue_head_t\tab ioQueueNodisk;\tab // for other I/O\par 
+id \tab \tab \tab ioQLock;\tab \tab // NXConditionLock 
+- \par 
+\tab \tab \tab \tab \tab \tab // protects the queues; 
+I/O\par 
+\tab \tab \tab \tab \tab \tab // thread(s) sleeps on 
+this\par 
+\par 
+/*\par 
+ * Values for ioQLock.condition.\par 
+ */\par 
+ typedef enum \{ IOQueuesEmpty, WorkAvailable \}; \par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\f21\fs36\b \par 
+Command Buffer:\par 
+\f-24049\fs24\b0 \par 
+\pard \li380\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 typedef struct \{\par 
+\tab /* \par 
+ \tab  * device-specific stuff here which defines one 
+I/O.\par 
+\tab  * For example, block number, transfer count,\par 
+\tab  * return status, etc.\par 
+\tab  */\par 
+\par 
+\tab /* \par 
+\tab  * cmdLock is what an exported method blocks on\par 
+ \tab  * when waiting for the I/O thread to process 
+this\par 
+\tab  * command.\par 
+\tab  */\par 
+\tab NXConditionLock\tab cmdLock;\par 
+\par 
+\tab /*\par 
+\tab  * This determines whether the operation is \par 
+   \tab  * synchronous or async.\par 
+\tab  */\par 
+\tab void \tab \tab \tab *pending;\par 
+\} commandBuf;\par 
+\page \pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \par 
+\f21\fs36\b Exported method:\par 
+\par 
+\pard \li380\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \f-24049\fs24\b0 \{\par 
+\tab Cons up a commandBuffer for this I/O;\par 
+\par 
+\tab /*\par 
+\tab  * Enqueue on appropriate I/O queue and wake up 
+I/O\par 
+\tab  * thread.\par 
+\tab  */\par 
+\tab if this I/O requires disk \{\par 
+\tab \tab enqueue on ioQueueDisk;\par 
+\tab \}\par 
+\tab else \{\par 
+\tab \tab enqueue on ioQueueNodisk;\par 
+\tab \}\par 
+\tab [ioQLock lock];\par 
+\tab [ioQLock unlockWith:WorkAvailable];\par 
+\par 
+\tab /*\par 
+\tab  * Wait for I/O complete.\par 
+\tab  */\par 
+\tab [commandBuffer.cmdLock lockWhen:YES];\par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \}\par 
+\par 
+\f21\fs36\b \par 
+\page \par 
+I/O thread:\par 
+\par 
+\par 
+\pard \li380\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \f-24049\fs24\b0 \{\par 
+\tab initialize;\par 
+\tab while(1) \{\par 
+\tab \tab [ioQLock lockWhen: WorkAvailable];\par 
+\tab \tab [ioQLock unlock];\par 
+\tab \tab process everything on ioQueueNodisk;\par 
+\tab \tab if((lastReadyState != IO_RS_NODISK) &&\par 
+      \tab   (lastReadyState != IO_RS_EJECTING)) 
+\{\par 
+\tab \tab \tab process everything in ioQueueDisk;\par 
+\tab \tab else \{\par 
+\tab \tab \tab if ioQueueDisk non-empty \{\par 
+\tab \tab \tab   [self requestInsertionPanelForDiskType];\par 
+\tab \tab \tab \}\par 
+\tab \tab \}\par 
+\tab \tab [ioQLock unlockWith:<current queue state>];\par 
+\tab \}\par 
+ \}\par 
+\par 
+\page \par 
+\pard \li0\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \f21\fs36\b To process one commandBuf:\par 
+\par 
+\pard \li380\ri0\fi0\sl280 \tx360 \tx1080 \tx1800 \tx2520 
+\tx3240 \tx3960 \tx4680 \tx5400 \tx6120 \tx6840 \tx7560 
+\tx8260 \f-24049\fs24\b0 \{\par 
+\tab perform device-specific I/O described in\par 
+\tab \tab commandBuf;\par 
+\tab if(commandBuf.pending) \{\par 
+\tab \tab /*\par 
+\tab \tab  * Async operation. \par 
+\tab \tab  */\par 
+\tab \tab [self completeTransfer:commandBuf.pending\par 
+\tab \tab \tab \tab \tab withStatus:...\par 
+\tab \tab \tab \tab \tab actualLength:...];\par 
+\tab \}\par 
+\tab else \{\par 
+\tab \tab /*\par 
+\tab \tab  * Wake up client.\par 
+\tab \tab  */\par 
+\tab \tab [commandBuf.cmdLock lock];\par 
+\tab \tab [commandBuf.cmdLock unlockWith:YES];\par 
+\tab \} \par 
+\}\par 
+}

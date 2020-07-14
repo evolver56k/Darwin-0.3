@@ -1,0 +1,1527 @@
+# Dpkg --- the Debian GNU/Linux package maintenance system.
+#
+# Copyright (C) 1994,1995,1996 Ian Jackson <ian@chiark.chu.cam.ac.uk>
+# Copyright (C) 1995,1996 Erick Branderhorst <branderhorst@heel.fgg.eur.nl>
+# Copyright (C) 1996 Miquel van Smoorenburg <miquels@cistron.nl>
+# Copyright (C) 1996 Kim-Minh Kaplan <kkaplan@cdfhp3.in2p3.fr>
+# Copyright (C) 1996 Michael Shields <shields@crosslink.net>
+# Copyright (C) 1995 Bruce Perens <bruce@pixar.com>
+# Copyright (C) 1994 Carl Streeter <streeter@cae.wisc.edu>
+# Copyright (C) 1994 Matt Welsh <mdw@sunsite.unc.edu>
+# Copyright (C) 1994 Ian Murdock <imurdock@debian.org>
+# Parts written by Colin Plumb and Branko Lankester in 1993.
+#
+# Japanese messages for dpkg (Debian GNU/Linux)
+# Copyright (C) 1997 A. Yoshiyam <yosshy@jedi.seg.kobe-u.ac.jp>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dpkg-1.4.0.21\n"
+"POT-Creation-Date: 1998-03-02 16:26-0800\n"
+"PO-Revision-Date: 1997-07-20 20:48 PDT\n"
+"Last-Translator: A. Yoshiyam <yosshy@jedi.seg.kobe-u.ac.jp>\n"
+"Language-Team: Japanese <dpkg@packages.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=x-euc-jp\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: dselect/basecmds.cc:100
+msgid "Search for ? "
+msgstr ""
+
+#: dselect/basecmds.cc:131
+msgid "Help: "
+msgstr ""
+
+#: dselect/basecmds.cc:137
+msgid ""
+"? = help menu    Space = exit help    . = next help    or a help page key "
+msgstr ""
+"[?] ¥Ø¥ë¥×¥á¥Ë¥å¡¼ [Space] ¥Ø¥ë¥×¤ò½ªÎ» [.] ¼¡¤òÉ½¼¨¡¡[¥Ø¥ë¥×¥Ú¡¼¥¸¥­¡¼]  "
+
+#: dselect/basecmds.cc:145
+msgid "Help information is available under the following topics:"
+msgstr "¥Ø¥ë¥×¾ðÊó¤Ï°Ê²¼¤Î¤â¤Î¤¬ÍøÍÑ¤Ç¤­¤Þ¤¹¡£"
+
+#: dselect/basecmds.cc:153
+msgid ""
+"Press a key from the list above, Space to exit help,\n"
+"  or `.' (full stop) to read each help page in turn. "
+msgstr ""
+"¾å¥ê¥¹¥È¤Î¥­¡¼(¥Ø¥ë¥×¥Ú¡¼¥¸¥­¡¼)¤ò²¡¤·¤Æ²¼¤µ¤¤¡£[Space] ¤Ç¥Ø¥ë¥×¤ò½ªÎ»¡¢\n"
+"[.] (full stop) ¤Ç³Æ¥Ø¥ë¥×¥Ú¡¼¥¸¤ò½ç¤ËÉ½¼¨¤·¤Þ¤¹¡£"
+
+#: dselect/baselist.cc:299
+msgid "  -- %d%%, press "
+msgstr ""
+
+#: dselect/baselist.cc:302
+#, c-format
+msgid "%s for more"
+msgstr "[%s] ¤ÇÂ³¤­¤òÉ½¼¨"
+
+#: dselect/baselist.cc:306
+#, c-format
+msgid "%s to go back"
+msgstr "[%s] ¤ÇÁ°¤òÉ½¼¨"
+
+#. Actions which apply to both types of list.
+#: dselect/bindings.cc:133
+msgid "Scroll onwards through help/information"
+msgstr ""
+
+#: dselect/bindings.cc:134
+msgid "Scroll backwards through help/information"
+msgstr ""
+
+#: dselect/bindings.cc:135
+msgid "Move up"
+msgstr ""
+
+#: dselect/bindings.cc:136
+msgid "Move down"
+msgstr ""
+
+#: dselect/bindings.cc:137
+msgid "Go to top of list"
+msgstr ""
+
+#: dselect/bindings.cc:138
+msgid "Go to end of list"
+msgstr ""
+
+#: dselect/bindings.cc:139
+msgid "Request help (cycle through help screens)"
+msgstr ""
+
+#: dselect/bindings.cc:140
+#, fuzzy
+msgid "Cycle through information displays"
+msgstr "²èÌÌ¤½¤Î£²¡§¥ê¥¹¥È¤ÎÈ¿Å¾É½¼¨¡¢¾ðÊó²èÌÌ"
+
+#: dselect/bindings.cc:141
+msgid "Redraw display"
+msgstr ""
+
+#: dselect/bindings.cc:142
+msgid "Scroll onwards through list by 1 line"
+msgstr ""
+
+#: dselect/bindings.cc:143
+msgid "Scroll backwards through list by 1 line"
+msgstr ""
+
+#: dselect/bindings.cc:144
+msgid "Scroll onwards through help/information by 1 line"
+msgstr ""
+
+#: dselect/bindings.cc:145
+msgid "Scroll backwards through help/information by 1 line"
+msgstr ""
+
+#: dselect/bindings.cc:146
+msgid "Scroll onwards through list"
+msgstr ""
+
+#: dselect/bindings.cc:147
+msgid "Scroll backwards through list"
+msgstr ""
+
+#. Actions which apply only to lists of packages.
+#: dselect/bindings.cc:150
+msgid "Mark package(s) for installation"
+msgstr ""
+
+#: dselect/bindings.cc:151
+msgid "Mark package(s) for deinstallation"
+msgstr ""
+
+#: dselect/bindings.cc:152
+msgid "Mark package(s) for deinstall and purge"
+msgstr ""
+
+#: dselect/bindings.cc:153
+msgid "Make highlight more specific"
+msgstr ""
+
+#: dselect/bindings.cc:154
+msgid "Make highlight less specific"
+msgstr ""
+
+#: dselect/bindings.cc:155
+msgid "Search for a package whose name contains a string"
+msgstr ""
+
+#: dselect/bindings.cc:156
+msgid "Repeat last search."
+msgstr ""
+
+#: dselect/bindings.cc:157
+msgid "Swap sort order priority/section"
+msgstr ""
+
+#: dselect/bindings.cc:158
+msgid "Quit, confirming, and checking dependencies"
+msgstr ""
+
+#: dselect/bindings.cc:159
+msgid "Quit, confirming without check"
+msgstr ""
+
+#: dselect/bindings.cc:160
+#, fuzzy
+msgid "Quit, rejecting conflict/dependency suggestions"
+msgstr "¾×ÆÍ¡¿°ÍÂ¸´Ø·¸²ò·è¥µ¥Ö¥ê¥¹¥È¤Î¾Ò²ð"
+
+#: dselect/bindings.cc:161
+msgid "Abort - quit without making changes"
+msgstr ""
+
+#: dselect/bindings.cc:162
+#, fuzzy
+msgid "Revert to old state for all packages"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëºÑºÇ¿·¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/bindings.cc:163
+msgid "Revert to suggested state for all packages"
+msgstr ""
+
+#: dselect/bindings.cc:164
+msgid "Revert to directly requested state for all packages"
+msgstr ""
+
+#. Actions which apply only to lists of methods.
+#: dselect/bindings.cc:167
+#, fuzzy
+msgid "Select currently-highlighted access method"
+msgstr "dselect ¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¥ê¥¹¥È"
+
+#: dselect/bindings.cc:168
+msgid "Quit without changing selected access method"
+msgstr ""
+
+#: dselect/main.cc:52
+msgid "Type dselect --help for help."
+msgstr ""
+
+#: dselect/main.cc:68
+msgid "access"
+msgstr ""
+
+#: dselect/main.cc:68
+msgid "Choose the access method to use."
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¤ÎÁªÂò"
+
+#: dselect/main.cc:69
+msgid "update"
+msgstr ""
+
+#: dselect/main.cc:69
+msgid "Update list of available packages, if possible."
+msgstr ""
+
+#: dselect/main.cc:70
+msgid "select"
+msgstr ""
+
+#: dselect/main.cc:70
+msgid "Request which packages you want on your system."
+msgstr "¥·¥¹¥Æ¥à¤ËÉ¬Í×¤Ê¥Ñ¥Ã¥±¡¼¥¸¤ÎÁªÂò"
+
+#: dselect/main.cc:71 dselect/pkgdisplay.cc:40
+msgid "install"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë"
+
+#: dselect/main.cc:71
+msgid "Install and upgrade wanted packages."
+msgstr "Í×µá¤·¤¿¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¿¹¹¿·"
+
+#: dselect/main.cc:72
+msgid "config"
+msgstr ""
+
+#: dselect/main.cc:72
+msgid "Configure any packages that are unconfigured."
+msgstr "Ì¤ÀßÄê¥Ñ¥Ã¥±¡¼¥¸¤ÎÀßÄê"
+
+#: dselect/main.cc:73 dselect/pkgdisplay.cc:42
+msgid "remove"
+msgstr "°ìÉô¾Ãµî"
+
+#: dselect/main.cc:73
+msgid "Remove unwanted software."
+msgstr "ÉÔÉ¬Í×¤Ê¥Ñ¥Ã¥±¡¼¥¸¤Î¾Ãµî"
+
+#: dselect/main.cc:74
+msgid "quit"
+msgstr ""
+
+#: dselect/main.cc:74
+msgid "Quit dselect."
+msgstr "dselect ¤Î½ªÎ»"
+
+#: dselect/main.cc:75
+msgid "menu"
+msgstr ""
+
+#: dselect/main.cc:83
+#, c-format
+msgid ""
+"Debian GNU/Linux `%s' package handling frontend version %s.\n"
+"Copyright (C) 1994-1996 Ian Jackson.   This is free software; see the\n"
+"GNU General Public Licence version 2 or later for copying conditions.\n"
+"There is NO warranty.  See `%s --licence' for details.\n"
+msgstr ""
+
+#: dselect/main.cc:95
+#, c-format
+msgid ""
+"Usage: %s [options]\n"
+"       %s [options] action ...\n"
+"Options:  --admindir <directory> (default is %s)\n"
+"          --help  --version  --licence --debug <file> | -D<file> | -D\n"
+"Actions:  access update select install config remove quit menu\n"
+msgstr ""
+
+#: dselect/main.cc:122
+#, c-format
+msgid "couldn't open debug file `%.255s'\n"
+msgstr ""
+
+#: dselect/main.cc:150
+msgid "Terminal does not appear to support cursor addressing.\n"
+msgstr ""
+
+#: dselect/main.cc:153
+msgid "Terminal does not appear to support highlighting.\n"
+msgstr ""
+
+#: dselect/main.cc:155
+#, c-format
+msgid ""
+"Set your TERM variable correctly, use a better terminal,\n"
+"or make do with the per-package management tool %s.\n"
+msgstr ""
+
+#: dselect/main.cc:157
+msgid "terminal lacks necessary features, giving up"
+msgstr ""
+
+#: dselect/main.cc:232
+#, c-format
+msgid "Debian GNU/Linux `%s' package handling frontend version %s.\n"
+msgstr ""
+
+#: dselect/main.cc:241
+msgid ""
+"\n"
+"\n"
+"Use ^P and ^N, cursor keys, initial letters, or digits to select;\n"
+"Press ENTER to confirm selection.   ^L to redraw screen.\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"[Ctrl]+[p], [Ctrl]+[n], ¥«¡¼¥½¥ë¥­¡¼¡¢ÀèÆ¬¤ÎÊ¸»ú¡¢¿ô»ú¤ÇÁªÂò¡¢\n"
+"[Enter] ¤ÇÁªÂò·èÄê¡£[Ctrl]+[L] ¤Ç²èÌÌ¤ÎºÆÉ½¼¨\n"
+"\n"
+
+#: dselect/main.cc:246
+msgid ""
+"Copyright (C) 1994-1996 Ian Jackson.   This is free software; see the\n"
+"GNU General Public Licence version 2 or later for copying conditions.\n"
+"There is NO warranty.  See `dselect --licence' for details.\n"
+msgstr ""
+"Copyright (C) 1994-1996 Ian Jackson. ¤³¤Î¥½¥Õ¥È\n"
+"¤Ï¥Õ¥ê¡¼¥½¥Õ¥È¤Ç¤¹¡£; ºÆÇÛÉÛ¾ò·ï¤Ï GNU General Public Licence version 2 \n"
+"°Ê¹ß¤ò»²¾È¤·¤Æ²¼¤µ¤¤¡£¤³¤ì¤é¤Î¥½¥Õ¥È¤ÏÌµÊÝ¾Ú¤Ç¤¹¡£¾Ü¤·¤¯¤Ï \n"
+"\"dselect --licence\" ¤ò»²¾È¤·¤Æ²¼¤µ¤¤¡£\n"
+
+#: dselect/main.cc:261
+msgid "failed to getch in main menu"
+msgstr ""
+
+#: dselect/main.cc:343
+#, c-format
+msgid "unknown action string `%.50s'"
+msgstr ""
+
+#: dselect/methlist.cc:70
+msgid "dselect - list of access methods"
+msgstr "dselect ¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¥ê¥¹¥È"
+
+#: dselect/methlist.cc:79
+#, c-format
+msgid "Access method `%s'."
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¡§`%s'."
+
+#: dselect/methlist.cc:113
+msgid "Abbrev."
+msgstr "Î¬¸ì"
+
+#. L10n: column header
+#: dselect/methlist.cc:114 dselect/pkgtop.cc:309
+msgid "Description"
+msgstr "ÀâÌÀ"
+
+#: dselect/methlist.cc:158 dselect/pkglist.cc:499
+msgid "doupdate failed"
+msgstr ""
+
+#: dselect/methlist.cc:160 dselect/pkglist.cc:501
+msgid "failed to unblock SIGWINCH"
+msgstr ""
+
+#: dselect/methlist.cc:162 dselect/pkglist.cc:503
+msgid "failed to re-block SIGWINCH"
+msgstr ""
+
+#: dselect/methlist.cc:163 dselect/pkglist.cc:504
+msgid "getch failed"
+msgstr ""
+
+#: dselect/methlist.cc:181
+msgid "explanation of "
+msgstr "ÀâÌÀ "
+
+#: dselect/methlist.cc:191
+#, fuzzy
+msgid "No explanation available."
+msgstr "ÀâÌÀ¤Ï¤¢¤ê¤Þ¤»¤ó¡£"
+
+#: dselect/method.cc:58
+msgid "unable to unlock access method area"
+msgstr ""
+
+#: dselect/method.cc:107
+msgid ""
+"No access methods are available.\n"
+"\n"
+"Press RETURN to continue."
+msgstr ""
+
+#: dselect/method.cc:132
+msgid "you do not have permission to change the access method"
+msgstr ""
+
+#: dselect/method.cc:133
+msgid "unable to open/create access method lockfile"
+msgstr ""
+
+#: dselect/method.cc:138
+msgid "the access method area is already locked"
+msgstr ""
+
+#: dselect/method.cc:139
+#, fuzzy
+msgid "unable to lock access method area"
+msgstr "dselect ¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¥ê¥¹¥È"
+
+#: dselect/method.cc:152
+#, c-format
+msgid "error un-catching signal %d: %s\n"
+msgstr ""
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:171
+#, c-format
+msgid "unable to ignore signal %d before running %.250s"
+msgstr ""
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:179
+#, c-format
+msgid "unable to run %.250s process `%.250s'"
+msgstr ""
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:184
+#, c-format
+msgid "unable to wait for %.250s"
+msgstr ""
+
+#: dselect/method.cc:186
+#, c-format
+msgid "got wrong child's status - asked for %ld, got %ld"
+msgstr ""
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:197
+#, fuzzy, c-format
+msgid ""
+"\n"
+"%s returned error exit status %d.\n"
+msgstr "ÃæÃÇ¾õÂÖ %d ¤Ç¥¨¥é¡¼¤òÊÖ¤·¤Þ¤·¤¿¡£\n"
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:202
+#, fuzzy, c-format
+msgid ""
+"\n"
+"%s was interrupted.\n"
+msgstr "¤ÏÃæÃÇ¤µ¤ì¤Þ¤·¤¿¡£\n"
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:205
+#, fuzzy, c-format
+msgid ""
+"\n"
+"%s was terminated by a signal: %s.\n"
+msgstr "¤Ï¥·¥°¥Ê¥ë %s ¤Ë¤è¤Ã¤Æ½ªÎ»¤·¤Þ¤·¤¿¡£\n"
+
+#: dselect/method.cc:208
+msgid "(It left a coredump.)\n"
+msgstr "(¥³¥¢¥À¥ó¥×¤·¤Þ¤·¤¿¡£)\n"
+
+#. supermsg: falliblesubprocess -- may also be a command line
+#: dselect/method.cc:211
+#, fuzzy, c-format
+msgid ""
+"\n"
+"%s failed with an unknown wait return code %d.\n"
+msgstr "ÉÔÌÀ¤Ê¥ê¥¿¡¼¥ó¥³¡¼¥É %d ¤Ç¼ºÇÔ¤·¤Þ¤·¤¿¡£\n"
+
+#: dselect/method.cc:213
+msgid "Press RETURN to continue.\n"
+msgstr "[Enter] ¤ò²¡¤·¤Æ²¼¤µ¤¤¡£\n"
+
+#: dselect/method.cc:215
+msgid "write error on standard error"
+msgstr ""
+
+#: dselect/method.cc:218
+msgid "error reading acknowledgement of program failure message"
+msgstr ""
+
+#: dselect/method.cc:241
+msgid ""
+"No access method is selected/configured.\n"
+"\n"
+"Press RETURN to continue."
+msgstr ""
+"¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¤¬ÁªÂò¡¿ÀßÄê¤µ¤ì¤Æ¤¤¤Þ¤»¤ó¡¥\n"
+"\n"
+"[Enter] ¤ò²¡¤·¤Æ²¼¤µ¤¤¡¥"
+
+#. submsg: falliblesubprocess
+#: dselect/method.cc:253
+msgid "update available list script"
+msgstr ""
+
+#: dselect/method.cc:257
+msgid "installation script"
+msgstr ""
+
+#. L10n: args are a command line
+#: dselect/method.cc:269
+#, c-format
+msgid "running %s %s ...\n"
+msgstr ""
+
+#. submsg: falliblesubprocess
+#: dselect/method.cc:305
+msgid "query/setup script"
+msgstr ""
+
+#: dselect/methparse.cc:60
+#, c-format
+msgid "syntax error in method options file `%.250s' -- %s"
+msgstr ""
+
+#: dselect/methparse.cc:66
+#, c-format
+msgid "error reading options file `%.250s'"
+msgstr ""
+
+#: dselect/methparse.cc:94
+#, c-format
+msgid "method `%.250s' has name that is too long (%d > %d characters)"
+msgstr ""
+
+#: dselect/methparse.cc:112
+#, fuzzy, c-format
+msgid "unable to read method options file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:178
+#, fuzzy, c-format
+msgid "unable to open option description file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:182
+#, fuzzy, c-format
+msgid "unable to stat option description file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:186
+#, c-format
+msgid "failed to read option description file `%.250s'"
+msgstr ""
+
+#: dselect/methparse.cc:189
+#, c-format
+msgid "error during read of option description file `%.250s'"
+msgstr ""
+
+#: dselect/methparse.cc:211
+#, c-format
+msgid "error during read of method options file `%.250s'"
+msgstr ""
+
+#: dselect/methparse.cc:231
+#, c-format
+msgid "unable to read `%.250s' directory for reading methods"
+msgstr ""
+
+#: dselect/methparse.cc:271
+#, fuzzy, c-format
+msgid "unable to open current option file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:278
+#, fuzzy, c-format
+msgid "unable to parse current option file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:319
+#, fuzzy, c-format
+msgid "unable to open new option file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:322
+#, c-format
+msgid "unable to write new option to `%.250s'"
+msgstr ""
+
+#: dselect/methparse.cc:325
+#, fuzzy, c-format
+msgid "unable to close new option file `%.250s'"
+msgstr "GPL ¥Õ¥¡¥¤¥ë %s ¤¬³«¤±¤Þ¤»¤ó¡£"
+
+#: dselect/methparse.cc:328
+#, c-format
+msgid "unable to install new option file as `%.250s'"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:39
+msgid "new package"
+msgstr "¿·¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:41
+msgid "hold"
+msgstr "¸½¾õ°Ý»ý"
+
+#: dselect/pkgdisplay.cc:43
+msgid "purge"
+msgstr "´°Á´¾Ãµî"
+
+#: dselect/pkgdisplay.cc:49
+msgid "REINSTALL"
+msgstr "ºÆ¥¤¥ó¥¹¥È¡¼¥ë"
+
+#: dselect/pkgdisplay.cc:54
+msgid "not installed"
+msgstr "Ì¤¥¤¥ó¥¹¥È¡¼¥ë"
+
+#: dselect/pkgdisplay.cc:55
+msgid "unpacked (not set up)"
+msgstr "Ì¤Å¸³« (Ì¤ÀßÄê)"
+
+#: dselect/pkgdisplay.cc:56
+msgid "failed config"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:57
+msgid "installed"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëºÑ"
+
+#: dselect/pkgdisplay.cc:58
+msgid "half installed"
+msgstr "È¾Ê¬¥¤¥ó¥¹¥È¡¼¥ë"
+
+#: dselect/pkgdisplay.cc:59
+msgid "removed (configs remain)"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:64
+msgid "Required"
+msgstr "É¬¿Ü"
+
+#: dselect/pkgdisplay.cc:65
+msgid "Important"
+msgstr "½ÅÍ×"
+
+#: dselect/pkgdisplay.cc:66
+msgid "Standard"
+msgstr "É¸½à"
+
+#: dselect/pkgdisplay.cc:67
+msgid "Recommended"
+msgstr "¿ä¾©"
+
+#: dselect/pkgdisplay.cc:68
+msgid "Optional"
+msgstr "¥ª¥×¥·¥ç¥ó"
+
+#: dselect/pkgdisplay.cc:69
+msgid "Extra"
+msgstr "ÆÃÊÌ"
+
+#: dselect/pkgdisplay.cc:70
+msgid "Contrib"
+msgstr "´óÍ¿"
+
+#: dselect/pkgdisplay.cc:71
+msgid "!Bug!"
+msgstr "¥Ð¥°!"
+
+#: dselect/pkgdisplay.cc:72
+msgid "Unclassified"
+msgstr "Ì¤Ê¬Îà"
+
+#: dselect/pkgdisplay.cc:77
+msgid "suggests"
+msgstr "Äó°Æ"
+
+#: dselect/pkgdisplay.cc:78
+msgid "recommends"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:79
+msgid "depends on"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:80
+msgid "pre-depends on"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:81
+msgid "conflicts with"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:82
+msgid "provides"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:83
+msgid "replaces"
+msgstr "ÃÖ´¹"
+
+#: dselect/pkgdisplay.cc:88
+msgid "Req"
+msgstr "É¬ "
+
+#: dselect/pkgdisplay.cc:89
+msgid "Imp"
+msgstr "½Å "
+
+#: dselect/pkgdisplay.cc:90
+msgid "Std"
+msgstr "É¸ "
+
+#: dselect/pkgdisplay.cc:91
+msgid "Rec"
+msgstr "¿ä "
+
+#: dselect/pkgdisplay.cc:92
+msgid "Opt"
+msgstr "¥ª "
+
+#: dselect/pkgdisplay.cc:93
+msgid "Xtr"
+msgstr "ÆÃ "
+
+#: dselect/pkgdisplay.cc:94
+msgid "Ctb"
+msgstr "´ó "
+
+#: dselect/pkgdisplay.cc:95
+msgid "bUG"
+msgstr "¥Ð "
+
+#: dselect/pkgdisplay.cc:96
+msgid "?"
+msgstr ""
+
+#. L10n: [status] not-installed/Unpacked/failed-Conf/installed/half-Inst/removed
+#: dselect/pkgdisplay.cc:101
+msgid " UC*I-"
+msgstr ""
+
+#. L10n: [Error] none/Reinstall/?/#
+#: dselect/pkgdisplay.cc:103
+msgid " R?#"
+msgstr ""
+
+#. L10n: [Wants] New/install/hold/remove/purge
+#: dselect/pkgdisplay.cc:105
+msgid "n*=-_"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:110 dselect/pkgdisplay.cc:140
+msgid "Broken"
+msgstr "ÉÔ´°Á´"
+
+#: dselect/pkgdisplay.cc:111
+msgid "New"
+msgstr "¿··¿"
+
+#: dselect/pkgdisplay.cc:112
+msgid "Updated"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:113
+msgid "Obsolete/local"
+msgstr "µì¼°/¥í¡¼¥«¥ë"
+
+#: dselect/pkgdisplay.cc:114
+msgid "Up-to-date"
+msgstr "ºÇ¿·"
+
+#: dselect/pkgdisplay.cc:115
+msgid "Available"
+msgstr "ÍøÍÑ²ÄÇ½"
+
+#: dselect/pkgdisplay.cc:116 dselect/pkgdisplay.cc:142
+msgid "Removed"
+msgstr "¾ÃµîºÑ"
+
+#: dselect/pkgdisplay.cc:121 dselect/pkgdisplay.cc:132
+msgid "Brokenly installed packages"
+msgstr "ÉÔ´°Á´¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤¿¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:122
+msgid "Newly available packages"
+msgstr "¿·¤¿¤ËÍøÍÑ²ÄÇ½¤Ê¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:123
+msgid "Updated packages (newer version is available)"
+msgstr "ºÇ¿·¥Ñ¥Ã¥±¡¼¥¸ (¿·¥Ð¡¼¥¸¥ç¥ó¤¬ÍøÍÑ²ÄÇ½)"
+
+#: dselect/pkgdisplay.cc:124
+msgid "Obsolete and local packages present on system"
+msgstr "¥·¥¹¥Æ¥àÆâ¤Îµì¼°¡¿¥í¡¼¥«¥ë¤Ê¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:125
+msgid "Up to date installed packages"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëºÑºÇ¿·¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:126
+msgid "Available packages (not currently installed)"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:127
+msgid "Removed and no longer available packages"
+msgstr "¾Ãµî¤µ¤ì»ÈÍÑÉÔ²ÄÇ½¤Ê¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:133
+msgid "Installed packages"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëºÑ¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgdisplay.cc:134
+msgid "Removed packages (configuration still present)"
+msgstr "°ìÉô¾Ãµî (ÀßÄê¤Ï»Ä¤Ã¤Æ¤¤¤ë)"
+
+#: dselect/pkgdisplay.cc:135
+msgid "Purged packages and those never installed"
+msgstr ""
+
+#: dselect/pkgdisplay.cc:141
+msgid "Installed"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëºÑ"
+
+#: dselect/pkgdisplay.cc:143
+msgid "Purged"
+msgstr "´°Á´¾Ãµî"
+
+#: dselect/pkgdisplay.cc:223
+msgid "dselect - recursive package listing"
+msgstr "dselect - ºÆµ¢¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È"
+
+#: dselect/pkgdisplay.cc:224
+msgid "dselect - inspection of package states"
+msgstr "dselect - ¥Ñ¥Ã¥±¡¼¥¸¾õÂÖ¤ÎÅÀ¸¡"
+
+#: dselect/pkgdisplay.cc:225
+msgid "dselect - main package listing"
+msgstr "dselect - ¥á¥¤¥ó¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È"
+
+#: dselect/pkgdisplay.cc:233
+msgid " (by section)"
+msgstr " (¥»¥¯¥·¥ç¥óÊÌ)"
+
+#: dselect/pkgdisplay.cc:236
+msgid " (avail., section)"
+msgstr " (ÍøÍÑ²ÄÇ½¡¤¥»¥¯¥·¥ç¥ó)"
+
+#: dselect/pkgdisplay.cc:239
+msgid " (status, section)"
+msgstr " (¾õÂÖ¡¤¥»¥¯¥·¥ç¥ó)"
+
+#: dselect/pkgdisplay.cc:248
+msgid " (by priority)"
+msgstr " (Í¥ÀèÅÙÊÌ)"
+
+#: dselect/pkgdisplay.cc:251
+msgid " (avail., priority)"
+msgstr " (ÍøÍÑ²ÄÇ½¡¤Í¥ÀèÅÙ)"
+
+#: dselect/pkgdisplay.cc:254
+msgid " (status, priority)"
+msgstr " (¾õÂÖ¡¤Í¥ÀèÅÙ)"
+
+#: dselect/pkgdisplay.cc:263 dselect/pkgdisplay.cc:275
+msgid " (alphabetically)"
+msgstr " (¥¢¥ë¥Õ¥¡¥Ù¥Ã¥È½ç)"
+
+#: dselect/pkgdisplay.cc:266
+msgid " (by availability)"
+msgstr " (ÍøÍÑ²ÄÇ½ÊÌ)"
+
+#: dselect/pkgdisplay.cc:269
+msgid " (by status)"
+msgstr " (¾õÂÖÊÌ"
+
+#: dselect/pkgdisplay.cc:283
+msgid " mark:+/=/- terse:v help:?"
+msgstr " ÁªÂò[+/=/-] ´ÊÎ¬[v] ¥Ø¥ë¥×[?]"
+
+#: dselect/pkgdisplay.cc:284
+msgid " mark:+/=/- verbose:v help:?"
+msgstr " ÁªÂò[+/=/-] ¾ÜºÙ[v] ¥Ø¥ë¥×[?]"
+
+#: dselect/pkgdisplay.cc:285
+msgid " terse:v help:?"
+msgstr " ´ÊÎ¬[v] ¥Ø¥ë¥×[?]"
+
+#: dselect/pkgdisplay.cc:286
+msgid " verbose:v help:?"
+msgstr " ¾ÜºÙ[v] ¥Ø¥ë¥×[?]"
+
+#: dselect/pkginfo.cc:83
+msgid ""
+"The line you have highlighted represents many packages; if you ask to "
+"install, remove, hold, &c it you will affect all the packages which match "
+"the criterion shown.\n"
+"\n"
+"If you move the highlight to a line for a particular package you will see "
+"information about that package displayed here.\n"
+"You can use `o' and `O' to change the sort order and give yourself the "
+"opportunity to mark packages in different kinds of groups."
+msgstr ""
+"È¿Å¾É½¼¨¤µ¤ì¤¿¹Ô¤Ï¡¢°Ê²¼¤Î¥Ñ¥Ã¥±¡¼¥¸·´Á´ÂÎ¤òÉ½¤·¤Æ¤¤¤Þ¤¹¡£\n"
+"¤³¤Î¹Ô¤ËÄÉ²Ã¡¢ºï½ü¡¢¸½¾õ°Ý»ý¤Ê¤É¤Î»Ø¼¨¤ò½Ð¤¹¤È¡¢¹Ô¤Ë¼¨¤µ¤ì¤¿\n"
+"´ð½à¤ËÅ¬¹ç¤¹¤ëÁ´¤Æ¤Î¥Ñ¥Ã¥±¡¼¥¸¤ËºîÍÑ¤·¤Þ¤¹¡£\n"
+"\n"
+"È¿Å¾É½¼¨¹Ô¤òÆÃÄê¤Î¥Ñ¥Ã¥±¡¼¥¸¤ò¼¨¤¹¹Ô¤Ë°ÜÆ°¤µ¤»¤ë¤È¡¢¤½¤³¤Ë\n"
+"È¿Å¾É½¼¨¤µ¤ì¤¿¥Ñ¥Ã¥±¡¼¥¸¤Ë´Ø¤¹¤ë¾ðÊó¤ò¸«¤ë¤³¤È¤¬¤Ç¤­¤Þ¤¹¡£\n"
+"\n"
+"[o],[O] ¤ò»È¤¦¤È¡¢½çÈÖ¤òÊÂ¤ÙÊÑ¤¨¤Æ¡¢°Û¤Ê¤ë¼ïÎà¤Î¥°¥ë¡¼¥×¤Î\n"
+"¥Ñ¥Ã¥±¡¼¥¸¤ËÂÐ¤·¤Æ»Ø¼¨¤ò½Ð¤¹¤³¤È¤¬¤Ç¤­¤Þ¤¹¡£"
+
+#: dselect/pkginfo.cc:97
+msgid "interrelationships affecting "
+msgstr "±Æ¶Á¤·¤Æ¤¤¤ë°ÍÂ¸´Ø·¸ "
+
+#: dselect/pkginfo.cc:103
+msgid "interrelationships"
+msgstr ""
+
+#: dselect/pkginfo.cc:109
+msgid "description of "
+msgstr "ÀâÌÀ "
+
+#: dselect/pkginfo.cc:113
+msgid "no description available."
+msgstr "ÀâÌÀ¤Ï¤¢¤ê¤Þ¤»¤ó¡£"
+
+#: dselect/pkginfo.cc:126
+msgid "description"
+msgstr "ÀâÌÀ"
+
+#: dselect/pkginfo.cc:133
+msgid "currently installed control info"
+msgstr "¸½ºß¥¤¥ó¥¹¥È¡¼¥ëºÑ¤ÎÀ©¸æ¾ðÊó"
+
+#: dselect/pkginfo.cc:135
+msgid "installed control info for "
+msgstr ""
+
+#: dselect/pkginfo.cc:149
+msgid "available version of control file info"
+msgstr "À©¸æ¥Õ¥¡¥¤¥ë¾ðÊó¤ÎÍøÍÑ²ÄÇ½¤Ê¥Ð¡¼¥¸¥ç¥ó"
+
+#: dselect/pkginfo.cc:151
+msgid "available version of control info for "
+msgstr "À©¸æ¾ðÊó¤ÎÍøÍÑ²ÄÇ½¤Ê¥Ð¡¼¥¸¥ç¥ó: "
+
+#: dselect/pkglist.cc:346
+msgid "failed to create larger baselist pad"
+msgstr ""
+
+#: dselect/pkglist.cc:417
+msgid "There are no packages."
+msgstr ""
+
+#: dselect/pkgsublist.cc:107
+msgid " does not appear to be available\n"
+msgstr ""
+
+#: dselect/pkgsublist.cc:124
+msgid " or "
+msgstr ""
+
+#. L10n: in sectionning headers
+#: dselect/pkgtop.cc:57
+msgid "All"
+msgstr ""
+
+#: dselect/pkgtop.cc:79
+msgid "All packages"
+msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgtop.cc:83
+#, c-format
+msgid "%s packages without a section"
+msgstr "¥»¥¯¥·¥ç¥ó¤Ê¤·¤Î %s ¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgtop.cc:85
+#, c-format
+msgid "%s packages in section %s"
+msgstr "%s ¥»¥¯¥·¥ç¥ó¤Î %s ¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgtop.cc:91
+#, c-format
+msgid "%s %s packages"
+msgstr "%s %s ¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgtop.cc:95
+#, c-format
+msgid "%s %s packages without a section"
+msgstr "¥»¥¯¥·¥ç¥ó¤Ê¤·¤Î %s %s ¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgtop.cc:97
+#, c-format
+msgid "%s %s packages in section %s"
+msgstr "%s ¥»¥¯¥·¥ç¥ó¤Î %s %s ¥Ñ¥Ã¥±¡¼¥¸"
+
+#: dselect/pkgtop.cc:118
+#, c-format
+msgid "%-*s %s%s%s;  %s (was: %s).  %s"
+msgstr "%-*s %s%s%s;  %s (Á°²ó: %s).  %s"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:271
+msgid "Error"
+msgstr "¥¨¥é¡¼"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:276
+msgid "Installed?"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëºÑ¡©"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:281
+msgid "Old mark"
+msgstr "Á°²ó¥Þ¡¼¥¯"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:286
+msgid "Marked for"
+msgstr "º£²ó¥Þ¡¼¥¯"
+
+#. L10n: column header: abbrevs for Error/Installed/Old-mark/Marked-for
+#: dselect/pkgtop.cc:290
+msgid "EIOM"
+msgstr ""
+
+#. L10n: column header
+#: dselect/pkgtop.cc:293
+msgid "Section"
+msgstr "¥»¥¯¥·¥ç¥ó"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:295
+msgid "Priority"
+msgstr "Í¥ÀèÅÙ"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:297
+msgid "Package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:302
+msgid "Inst.ver"
+msgstr "¸½ºß"
+
+#. L10n: column header
+#: dselect/pkgtop.cc:306
+msgid "Avail.ver"
+msgstr "ÍøÍÑ²ÄÇ½"
+
+#: dselect/helpmsgs.cc:13
+msgid "Keystrokes"
+msgstr "¥­¡¼Áàºî"
+
+#: dselect/helpmsgs.cc:13
+msgid ""
+"Motion keys: Next/Previous, Top/End, Up/Down, Backwards/Forwards:\n"
+"  n, Down-arrow, j      p, Up-arrow, k          move highlight\n"
+"  N, Page-down, Space   P, Page-up, Backspace   scroll list by 1 page\n"
+"  ^n                    ^p                      scroll list by 1 line\n"
+"  t, Home               e, End                  jump to top/end of list\n"
+"  u                     d                       scroll info by 1 page\n"
+"  ^u                    ^d                      scroll info by 1 line\n"
+"  B, Left-arrow         F, Right-arrow          pan display by 1/3 screen\n"
+"  ^b                    ^f                      pan display by 1 character\n"
+"\n"
+"Mark packages for later processing:\n"
+" +, Insert  install or upgrade      =, H  hold in present state\n"
+" -, Delete  remove                  :, G  unhold: upgrade or leave "
+"uninstalled\n"
+" _          remove & purge config\n"
+"                                             Miscellaneous:\n"
+"Quit, exit, overwrite (note capitals!):       ?, F1 request help (also "
+"Help)\n"
+" Return  Confirm, quit (check dependencies)   i, I  toggle/cycle info "
+"displays\n"
+"   Q     Confirm, quit (override dep.s)       o, O  cycle through sort "
+"options\n"
+" X, Esc  eXit, abandoning any changes made    v, V  change status display "
+"opts\n"
+"   R     Revert to state before this list      ^l   redraw display\n"
+"   U     set all to sUggested state             /   search (Return to "
+"cancel)\n"
+"   D     set all to Directly requested state    \\   repeat last search\n"
+msgstr ""
+"°ÜÆ°¥­¡¼¡§¼¡¡¿Á°¡¢ÀèÆ¬¡¿ºÇ¸å¡¢¾å¡¿²¼¡¢¸å¿Ê¡¿Á°¿Ê\n"
+" [n],[¢­],[j]            [p],[¢¬],[k]              È¿Å¾É½¼¨¤ò°ÜÆ°\n"
+" [N],[PageDown],[Space]  [P],[PageUp],[BackSpace]  £±¥Ú¡¼¥¸¥¹¥¯¥í¡¼¥ë\n"
+" [Ctrl]+[n]              [Ctrl]+[p]                £±¹Ô¥¹¥¯¥í¡¼¥ë\n"
+" [t],[Home]              [e],[End]                 ÀèÆ¬¡¿ºÇ¸å¤Ë¥¸¥ã¥ó¥×\n"
+" [u]                     [d]                       ¾ðÊó¤ò£±¥Ú¡¼¥¸¥¹¥¯¥í¡¼¥ë\n"
+" [Ctrl]+[u]              [Ctrl]+[d]                ¾ðÊó¤ò£±¹Ô¥¹¥¯¥í¡¼¥ë\n"
+" [B],[¢«]                [F],[¢ª]                  1/3 ²èÌÌÊ¬²£°ÜÆ°\n"
+" [Ctrl]+[b]              [Ctrl]+[f]                £±Ê¸»ú²èÌÌ¤ò²£°ÜÆ°\n"
+"\n"
+"¸å¤Î½èÍý¡Ê¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡Ë¤Î°Ù¤Î¥Þ¡¼¥­¥ó¥°¡§\n"
+" [+],{Insert]  ¥¤¥ó¥¹¥È¡¼¥ë¡¿¹¹¿·  [=],[H]  ¸½¾õ°Ý»ý\n"
+" [-],[Delete]  ºï½ü¡ÊÀßÄê¤ÏÊÝ»ý¡Ë  [:],[G]  ¹¹¿·¡¢¤Þ¤¿¤Ï¥¤¥ó¥¹¥È¡¼¥ë¤·¤Ê¤¤\n"
+" [_]           ºï½ü¡ÊÀßÄê¤âÇË´þ¡Ë\n"
+"                                             ¤½¤ÎÂ¾\n"
+"½ªÎ»¡¢Ãæ»ß¡¢¾å½ñ¤­¡ÊÂçÊ¸»ú¤ËÃí°Õ¡ª¡Ë¡§       [?],[F1]   ¥Ø¥ë¥×²èÌÌ\n"
+" [Enter]   ·èÄê¡¢½ªÎ» (°ÍÂ¸´Ø·¸¤ò¥Á¥§¥Ã¥¯¡Ë  [i],[I]    ¾ðÊó²èÌÌ¤ò½ç¤ËÉ½¼¨\n"
+"   [Q]     ·èÄê¡¢½ªÎ»¡Ê°ÍÂ¸´Ø·¸¤òÌµ»ë¡Ë      [o],[O]    ÊÂ¤ÙÊÑ¤¨½ç¤òÊÑ¹¹\n"
+" [X],[Esc] ÊÑ¹¹»Ø¼¨¤òÇË´þ¤·¤ÆÃæ»ß            [v],[V]    "
+"É½¼¨¥ª¥×¥·¥ç¥ó¤ÎÊÑ¹¹\n"
+"   [R]     ¤³¤Î¥ê¥¹¥È¤ÎÁ°¤Î¾õÂÖ¤ËÌá¤¹        [Ctrl]+[l] ²èÌÌ¤ÎºÆÉ½¼¨\n"
+"   [U]     Á´¤Æ¤òÄó°ÆÄÌ¤ê¤ËÀßÄê              [/]        "
+"¸¡º÷¡Ê[Enter]¤ÇÃæ»ß)\n"
+"   [D]     Á´¤Æ¤òÄ¾ÀÜÍ×µá¤µ¤ì¤¿¾õÂÖ¤ËÀßÄê    [\\]        ¼¡¤ò¸¡º÷\n"
+
+#: dselect/helpmsgs.cc:38
+msgid "Introduction to package list"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È¤Î¾Ò²ð"
+
+#: dselect/helpmsgs.cc:38
+msgid ""
+"Welcome to the main package listing.  Please read the help that is available "
+"!\n"
+"\n"
+"You will be presented with a list of packages which are installed or "
+"available\n"
+"for installation.  You can navigate around the list using the cursor keys,\n"
+"mark packages for installation (using `+') or deinstallation (using `-').\n"
+"\n"
+"Packages can be marked either singly or in groups; initially you will see "
+"that\n"
+"the line `All packages' is selected.  `+', `-' and so on will affect all "
+"the\n"
+"packages described by the highlighted line.  Use `o' to change the order of "
+"the\n"
+"list (this also changes which kinds of group selections are possible).\n"
+"\n"
+"(Mainly for new installations:) Standard packages will be requested by "
+"default.\n"
+"Use capital `D' or `R' key to override this - see the keybindings help "
+"screen.\n"
+"\n"
+"Some of your choices will cause conflicts or dependency problems; you will "
+"be\n"
+"given a sub-list of the relevant packages, so that you can solve the "
+"problems.\n"
+"\n"
+"When you are satisfied with your choices you should press Return to confirm\n"
+"your changes and leave the package listing.  A final check on conflicts and\n"
+"dependencies will be done - here too you may see a sublist.\n"
+"\n"
+"Press Space to leave help and enter the list; press `?' at any time for "
+"help.\n"
+msgstr ""
+"¤è¤¦¤³¤½¥á¥¤¥ó¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È¤Ø¡£Ìò¤ËÎ©¤Ä¥Ø¥ë¥×¤òÀ§ÈóÆÉ¤ó¤Ç²¼¤µ¤¤¡£\n"
+"\n"
+"¤³¤³¤Ç¤Ï¥¤¥ó¥¹¥È¡¼¥ëºÑ¡¢¤¢¤ë¤¤¤Ï¥¤¥ó¥¹¥È¡¼¥ë²ÄÇ½¤Ê¥Ñ¥Ã¥±¡¼¥¸¤Î¥ê¥¹¥È¤¬É½¼¨\n"
+"¤µ¤ì¤Þ¤¹¡£¥«¡¼¥½¥ë¥­¡¼¤ò»ÈÍÑ¤·¤Æ¥ê¥¹¥ÈÃæ¤ò°ÜÆ°¤·¡¢¥Ñ¥Ã¥±¡¼¥¸¤ËÄÉ²Ã ([+]¤ò\n"
+"»ÈÍÑ) ¤Þ¤¿¤Ïºï½ü ([-]¤ò»ÈÍÑ) ¤Î»Ø¼¨¥Þ¡¼¥¯¤òÉÕ¤±¤Æ¤¤¤Ã¤Æ²¼¤µ¤¤¡£\n"
+"\n"
+"¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ï¸ÄÊÌ¤Þ¤¿¤Ï¥°¥ë¡¼¥×Ëè¤Ë»Ø¼¨¥Þ¡¼¥¯¤òÉÕ¤±¤é¤ì¤Þ¤¹¡£¤Þ¤º¡¢ÀèÆ¬¤Î\n"
+"¡ÖÁ´¥Ñ¥Ã¥±¡¼¥¸¡×¤Î¹Ô¤¬ÁªÂò¤µ¤ì¤Æ¤¤¤Þ¤¹¡£[+],[-] ¤Ê¤É¤Î¥­¡¼¤ÇÈ¿Å¾É½¼¨¹Ô¤Ëµ­\n"
+"½Ò¤µ¤ì¤¿¥Ñ¥Ã¥±¡¼¥¸Á´¤Æ¤Ë»Ø¼¨¥Þ¡¼¥¯¤òÉÕ¤±¤é¤ì¤Þ¤¹¡£[o] ¤ò»È¤¦¤È¥ê¥¹¥È¤Î½ç½ø\n"
+"¤òÊÑ¤¨¤é¤ì¤Þ¤¹(¤¢¤é¤æ¤ëÁÈ¹ç¤»¤Î¥°¥ë¡¼¥×¥»¥¯¥·¥ç¥ó¤Ë¤âÊÑ¤¨¤é¤ì¤Þ¤¹)¡£\n"
+"\n"
+"¡Ê¼ç¤Ë¿·µ¬¥¤¥ó¥¹¥È¡¼¥ë¤Ç¡Ë¥Ç¥Õ¥©¥ë¥È¤ÇÉ¸½à¥Ñ¥Ã¥±¡¼¥¸¤¬Í×µá¤µ¤ì¤Æ¤¤¤Þ¤¹¡£\n"
+"ÂçÊ¸»ú¤Î [D],[R] ¥­¡¼¤Ç¤³¤ì¤òÌµ¸ú¤Ë¤·¤Æ²¼¤µ¤¤¡£¾Ü¤·¤¯¤Ï¥Ø¥ë¥×²èÌÌ¤ò»²¾È¡£\n"
+"\n"
+"¤¤¤¯¤Ä¤«¤ÎÁªÂò¤Ï¾×ÆÍ¤Þ¤¿¤Ï°ÍÂ¸´Ø·¸¤ÎÌäÂê¤ò°ú¤­µ¯¤³¤¹¤Ç¤·¤ç¤¦¡£´ØÏ¢¤¹¤ë¥Ñ¥Ã¥±¡"
+"¼\n"
+"¥¸¤Î¥µ¥Ö¥ê¥¹¥È¤¬É½¼¨¤µ¤ì¤Þ¤¹¤Î¤Ç¡¢¤½¤³¤ÇÌäÂê¤ò²ò·è¤·¤Æ²¼¤µ¤¤¡£\n"
+"\n"
+"´°Á´¤ËÁªÂò¤·½ª¤Ã¤¿¤é¡¢[Enter] "
+"¥­¡¼¤ò²¡¤·¤ÆÁªÂò¤ò·èÄê¤·¡¢¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È²èÌÌ\n"
+"¤ò½ªÎ»¤·¤Æ²¼¤µ¤¤¡£¾×ÆÍ¤Þ¤¿¤Ï°ÍÂ¸´Ø·¸¤ÎºÇ½ª¥Á¥§¥Ã¥¯¤¬¹Ô¤Ê¤ï¤ì¤Þ¤¹¡£¤³¤³¤ÇºÆ¤Ó"
+"\n"
+"¥µ¥Ö¥ê¥¹¥È¤¬É½¼¨¤µ¤ì¤ë¤«¤âÃÎ¤ì¤Þ¤»¤ó¡£\n"
+"\n"
+"[Space] ¤ò²¡¤·¤Æ¤³¤Î¥ê¥¹¥È¤ò½ªÎ»¤·¤Æ²¼¤µ¤¤¡£[?] "
+"¤Ç¤¤¤Ä¤Ç¤â¥Ø¥ë¥×¤¬¸«¤é¤ì¤Þ¤¹¡£\n"
+
+#: dselect/helpmsgs.cc:63
+msgid "Introduction to package list browser (read-only)"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È¥Ö¥é¥¦¥¶¤Î¾Ò²ð(read-only)"
+
+#: dselect/helpmsgs.cc:63
+msgid ""
+"Welcome to dselect's main package listing.  Since you do not have the\n"
+"privilege necessary to update package states you are in read-only mode.\n"
+"\n"
+"Much on-line help is available, please make use of it !  Press `?' for "
+"help.\n"
+"You should read the list of keys and the explanations of the display.\n"
+"\n"
+"You will be presented with a list of packages which are installed or "
+"available\n"
+"for installation.  You can navigate around the list using the cursor keys "
+"(just\n"
+"as you would be able to do if you had read/write access - see the "
+"keystrokes\n"
+"help screen) and observe the status of the packages and read information "
+"about\n"
+"them.\n"
+"\n"
+"Press Space to leave help and enter the list; press `?' at any time for "
+"help.\n"
+"When you have finished browsing, press `q' or Return to quit.\n"
+msgstr ""
+"¤è¤¦¤³¤½ dselect ¤Î¥á¥¤¥ó¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È¤Ø¡£¥Ñ¥Ã¥±¡¼¥¸¾õÂÖ¤ò¹¹¿·¤¹¤ë°Ù¤Ë¤Ï\n"
+"¥ë¡¼¥È¸¢¸Â¤¬É¬Í×¤Ç¡¢¤½¤ì¤¬¤Ê¤¤¾ì¹ç¤Ï¥ê¡¼¥É¥ª¥ó¥ê¡¼¥â¡¼¥É¤Ë¤Ê¤ê¤Þ¤¹¡£\n"
+"\n"
+"Â¿¤¯¤Î¥ª¥ó¥é¥¤¥ó¥Ø¥ë¥×¤¬ÍøÍÑ²ÄÇ½¤Ç¤¹¡£À§ÈóÌòÎ©¤Æ¤Æ²¼¤µ¤¤¡£[?] "
+"¤Ç¥Ø¥ë¥×¤Ç¤¹¡£\n"
+"¥­¡¼¤Î¥ê¥¹¥È¤È²èÌÌ¤ÎÀâÌÀ¤ÏÆÉ¤ó¤ÀÊý¤¬¤è¤¤¤Ç¤·¤ç¤¦¡£\n"
+"\n"
+"¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È²èÌÌ¤Ç¤Ï¡¢¥¤¥ó¥¹¥È¡¼¥ëºÑ¤Þ¤¿¤Ï¥¤¥ó¥¹¥È¡¼¥ë²ÄÇ½¤Ê¥Ñ¥Ã¥±¡¼¥¸¤Î"
+"\n"
+"¥ê¥¹¥È¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£¥«¡¼¥½¥ë¥­¡¼¤òÁàºî¤·¤Æ¥ê¥¹¥ÈÃæ¤ò°ÜÆ°¤·¡Ê¥ê¡¼¥É¡¿¥é¥¤¥È"
+"\n"
+"¥¢¥¯¥»¥¹¤Ç¤â²ÄÇ½¤Ç¤¹¡£¥­¡¼Áàºî¥Ø¥ë¥×²èÌÌ¤ò»²¾È¤·¤Æ²¼¤µ¤¤¡Ë¡¢¥Ñ¥Ã¥±¡¼¥¸¤Î¾õÂÖ"
+"\n"
+"¤ò³ÎÇ§¤·¡¢¤½¤ì¤é¤Î¾ðÊó¤òÆÉ¤ó¤Ç²¼¤µ¤¤¡£\n"
+"\n"
+"\n"
+"[Space] ¤Ç¥Ø¥ë¥×¤ò½ªÎ»¤·¥ê¥¹¥È²èÌÌ¤Ë°Ü¤Ã¤Æ²¼¤µ¤¤¡£[?] "
+"¤Ç¤¤¤Ä¤Ç¤â¥Ø¥ë¥×¤ò¸«¤é\n"
+"¤ì¤Þ¤¹¡£ÁªÂò¤ò½ª¤¨¤¿»þ¤Ë¤Ï¡¢[q] ¤Þ¤¿¤Ï [Enter] ¤ò²¡¤·¤Æ½ªÎ»¤·¤Æ²¼¤µ¤¤¡£\n"
+
+#: dselect/helpmsgs.cc:80
+msgid "Introduction to conflict/dependency resolution sub-list"
+msgstr "¾×ÆÍ¡¿°ÍÂ¸´Ø·¸²ò·è¥µ¥Ö¥ê¥¹¥È¤Î¾Ò²ð"
+
+#: dselect/helpmsgs.cc:80
+msgid ""
+"Dependency/conflict resolution - introduction.\n"
+"\n"
+"One or more of your choices have raised a conflict or dependency problem -\n"
+"some packages should only be installed in conjunction with certain others, "
+"and\n"
+"some combinations of packages may not be installed together.\n"
+"\n"
+"You will see a sub-list containing the packages involved.  The bottom half "
+"of\n"
+"the display shows relevant conflicts and dependencies; use `i' to cycle "
+"between\n"
+"that, the package descriptions and the internal control information.\n"
+"\n"
+"A set of `suggested' packages has been calculated, and the initial markings "
+"in\n"
+"this sub-list have been set to match those, so you can just hit Return to\n"
+"accept the suggestions if you wish.  You may abort the change(s) which "
+"caused\n"
+"the problem(s), and go back to the main list, by pressing capital `X'.\n"
+"\n"
+"You can also move around the list and change the markings so that they are "
+"more\n"
+"like what you want, and you can `reject' my suggestions by using the "
+"capital\n"
+"`D' or `R' keys (see the keybindings help screen).  You can use capital `Q' "
+"to\n"
+"force me to accept the situation currently displayed, in case you want to\n"
+"override a recommendation or think that the program is mistaken.\n"
+"\n"
+"Press Space to leave help and enter the sub-list; remember: press `?' for "
+"help.\n"
+msgstr ""
+"°ÍÂ¸´Ø·¸¡¿¾×ÆÍ¤Î²ò·è¡¡¡Ý¡¡ÀâÌÀ\n"
+"\n"
+"£±¤Ä¤¢¤ë¤¤¤ÏÊ£¿ô¤ÎÁªÂò¤¬¾×ÆÍ¤Þ¤¿¤Ï°ÍÂ¸´Ø·¸¤ÎÌäÂê¤ò°ú¤­µ¯¤³¤·¤Æ¤¤¤Þ¤¹¡£°ìÉô¤Î"
+"\n"
+"¥Ñ¥Ã¥±¡¼¥¸¤Ï¤¢¤ëÂ¾¤Î¥Ñ¥Ã¥±¡¼¥¸¤ÈÆ±»þ¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤·¤Ê¤±¤ì¤Ð¤Ê¤é¤Ê¤¤¤·¡¢°ìÉô"
+"\n"
+"¤Î¥Ñ¥Ã¥±¡¼¥¸Æ±»Î¤ÏÆ±»þ¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤³¤È¤¬½ÐÍè¤Þ¤»¤ó¡£\n"
+"\n"
+"ÌäÂê¤ò°ú¤­µ¯¤³¤·¤¿¥Ñ¥Ã¥±¡¼¥¸¤ò´Þ¤à¥µ¥Ö¥ê¥¹¥È¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£²èÌÌ²¼È¾Ê¬¤Ï¥Ñ¥Ã"
+"\n"
+"¥±¡¼¥¸¤Î¾×ÆÍ¤Þ¤¿¤Ï°ÍÂ¸´Ø·¸¤ò¼¨¤·¤Þ¤¹¡£[i] "
+"¤Ç¥Ñ¥Ã¥±¡¼¥¸¤ÎÀâÌÀ¤ÈÆâÉôÀ©¸æ¾ðÊó¤ò\n"
+"¤ò¸ò¸ß¤ËÉ½¼¨¤¹¤ë»ö¤¬½ÐÍè¤Þ¤¹¡£\n"
+"\n"
+"¤³¤³¤ÇÄó°Æ¤µ¤ì¤¿¥Ñ¥Ã¥±¡¼¥¸¤Ï·×»»¤µ¤ì¤Æ¤ª¤ê¡¢¥µ¥Ö¥ê¥¹¥È¤ÎºÇ½é¤Î¾õÂÖ¤Ï¤³¤ì¤é¤Î"
+"\n"
+"´Ø·¸¤ò²ò·è¤¹¤ë¤è¤¦¤Ë¥»¥Ã¥È¤µ¤ì¤Æ¤¤¤Þ¤¹¡£¤³¤Î¾õÂÖ¤Ç¤è¤±¤ì¤Ð¡¢[Enter] "
+"¤ò²¡¤·¤Æ\n"
+"¤³¤ÎÄó°Æ¤ò¼õ¤±Æþ¤ì¤ë»ö¤¬½ÐÍè¤Þ¤¹¡£¤Þ¤¿¡¢ÂçÊ¸»ú¤Î [X] "
+"¤ò²¡¤¹¤È¡¢ÌäÂê¤ò°ú¤­µ¯¤³\n"
+"¤·¤¿ÁªÂò¤ÎÊÑ¹¹¤òÃæ»ß¤·¤Æ¡¢¥á¥¤¥ó¥ê¥¹¥È¤ËÌá¤ë»ö¤¬¤Ç¤­¤Þ¤¹¡£\n"
+"\n"
+"¤Þ¤¿¡¢¤è¤êË¾¤ßÄÌ¤ê¤Î¾õÂÖ¤Ë¤Ê¤ë¤è¤¦¤Ë¡¢¥ê¥¹¥ÈÃæ¤ò°ÜÆ°¤·¤ÆÀßÄê¤òÊÑ¹¹¤¹¤ë»ö¤¬¤Ç"
+"\n"
+"¤­¤Þ¤¹¡£¤Þ¤¿¡¢ÂçÊ¸»ú¤Î [D] ¤Þ¤¿¤Ï [R] "
+"¤ÇÄó°Æ¤µ¤ì¤¿¾õÂÖ¤òÇË´þ¤¹¤ë»ö¤â¤Ç¤­¤Þ¤¹\n"
+"¡Ê¥­¡¼Áàºî¤Î¥Ø¥ë¥×²èÌÌ¤ò»²¾È¤·¤Æ²¼¤µ¤¤¡Ë¡£¤µ¤é¤Ë¡¢Äó¼¨¤µ¤ì¤¿¾õÂÖ¤òÌµ¸ú¤Ë¤¹¤ë"
+"\n"
+"¤«¥×¥í¥°¥é¥à¤¬¥ß¥¹¤ò¤·¤Æ¤¤¤ë¤È»×¤ï¤ì¤ë¾ì¹ç¤Ë¤Ï¡¢ÂçÊ¸»ú¤Î [Q] "
+"¤Ç¤½¤Î»þÉ½¼¨¤µ¤ì\n"
+"¤Æ¤¤¤ë¾õÂÖ¤ò¶¯À©Åª¤ËÀßÄê¤¹¤ë»ö¤¬¤Ç¤­¤Þ¤¹¡£\n"
+"\n"
+"[Space] ¤Ç¥Ø¥ë¥×¤ò½ªÎ»¤·¥µ¥Ö¥ê¥¹¥È¤Ë°Ü¤Ã¤Æ²¼¤µ¤¤¡£[?] "
+"¤Ç¥Ø¥ë¥×¡¢¤ò¤ªËº¤ì¤Ê¤¯¡£\n"
+
+#: dselect/helpmsgs.cc:105
+msgid "Display, part 1: package listing and status chars"
+msgstr "²èÌÌ¤½¤Î£±¡§¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È¤È¾õÂÖÊ¸»ú"
+
+#: dselect/helpmsgs.cc:105
+msgid ""
+"The top half of the screen shows a list of packages.  For each package you "
+"see\n"
+"four columns for its current status on the system and mark.  In terse mode "
+"(use\n"
+"`v' to toggle verbose display) these are single characters, from left to "
+"right:\n"
+"\n"
+" Error flag: Space - no error (but package may be in broken state - see "
+"below)\n"
+"              `R'  - serious error during installation, needs "
+"reinstallation;\n"
+" Installed state:   Space - not installed;\n"
+"                     `*'  - installed;\n"
+"                     `-'  - not installed but config files remain;\n"
+"       packages in { `U'  - unpacked but not yet configured;\n"
+"      these states { `C'  - half-configured (an error happened);\n"
+"        are broken { `I'  - half-installed (an error happened).\n"
+" Old mark: what was requested for this package before presenting this list;\n"
+" Mark: what is requested for this package:\n"
+"  `*': marked for installation or upgrade;\n"
+"  `-': marked for removal, but any configuration files will remain;\n"
+"  `=': on hold: package will not be processed at all;\n"
+"  `_': marked for purge completely - even remove configuration;\n"
+"  `n': package is new and has yet to be marked for install/remove/&c.\n"
+"\n"
+"Also displayed are each package's Priority, Section, name, installed and\n"
+"available version numbers (shift-V to display/hide) and summary "
+"description.\n"
+msgstr ""
+"²èÌÌ¾åÈ¾Ê¬¤Ë¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥ê¥¹¥È¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£¤É¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë¤â¡¢¸½ºß¤Î¥·"
+"\n"
+"¥¹¥Æ¥àÆâ¤Î¥Ñ¥Ã¥±¡¼¥¸¤Î¾õÂÖ¤È¥Þ¡¼¥¯¤ò¼¨¤¹£´¤Ä¤ÎÍó¤¬¤¢¤ê¤Þ¤¹¡£´ÊÎ¬¥â¡¼¥É¡Ê[v]\n"
+"¤Ç¾ÜºÙ¥â¡¼¥É¤ÈÀÚ¤êÂØ¤ï¤ê¤Þ¤¹¡Ë¤Ç¤Ï¡¢¤³¤ì¤é¤ÏÃ±°ìÊ¸»ú¤Ç¼¨¤µ¤ì¤Þ¤¹¡£º¸¤«¤é½ç¤Ë¡"
+"¢\n"
+"\n"
+" ¥¨¥é¡¼¥Õ¥é¥°¡§¶õÇò - "
+"¥¨¥é¡¼¤Ê¤·¡ÊÃ¢¤·ÉÔ´°Á´¤Ê¾õÂÖ¤«¤âÃÎ¤ì¤Þ¤»¤ó¡£°Ê²¼»²¾È¡Ë\n"
+"               `R'  - ¥¤¥ó¥¹¥È¡¼¥ëÃæ¤Ë¿¼¹ï¤Ê¥¨¥é¡¼¡£ºÆ¥¤¥ó¥¹¥È¡¼¥ë¤¬É¬Í×¡£\n"
+" ¥¤¥ó¥¹¥È¡¼¥ë¸å¤Î¾õÂÖ¡§¶õÇò - Ì¤¥¤¥ó¥¹¥È¡¼¥ë\n"
+"                        `*'   - ¥¤¥ó¥¹¥È¡¼¥ëºÑ\n"
+"                        `-'   - Èó¥¤¥ó¥¹¥È¡¼¥ë¡¢Ã¢¤·ÀßÄê¥Õ¥¡¥¤¥ë¤¢¤ê\n"
+"     ¤³¤ì¤é¤Î¾õÂÖ¤Î  /  `U'   - Å¸³«¤·¤¿¤¬ÀßÄê¤µ¤ì¤Æ¤¤¤Ê¤¤\n"
+"     ¥Ñ¥Ã¥±¡¼¥¸¤Ï   ¨¾  `C'   - È¾Ê¬ÀßÄêºÑ¡Ê¥¨¥é¡¼È¯À¸¡Ë\n"
+"     ÉÔ´°Á´¤Ç¤¹¡£    \\  `I'   - È¾Ê¬¥¤¥ó¥¹¥È¡¼¥ëºÑ¡Ê¥¨¥é¡¼È¯À¸¡Ë\n"
+" µì¥Þ¡¼¥¯¡§¤³¤Î¥ê¥¹¥È¤¬É½¼¨¤µ¤ì¤ëÁ°¤Ë¡¢¤³¤Î¥Ñ¥Ã¥±¡¼¥¸¤ËÉÕ¤±¤é¤ì¤Æ¤¤¤¿¥Þ¡¼¥¯\n"
+" ¥Þ¡¼¥¯  ¡§¸½ºß¤³¤Î¥Ñ¥Ã¥±¡¼¥¸¤ËÉÕ¤±¤é¤ì¤Æ¤¤¤ë¥Þ¡¼¥¯\n"
+"  `*'¡§¥¤¥ó¥¹¥È¡¼¥ë¤Þ¤¿¤Ï¹¹¿·(upgrade)\n"
+"  `-'¡§¾Ãµî¡¢¤¿¤À¤·ÀßÄê¥Õ¥¡¥¤¥ë¤Ï»Ä¤¹\n"
+"  `='¡§¸½¾õ°Ý»ý¡£¤³¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë´Ø¤¹¤ë½èÍý¤Ï¤Ê¤·\n"
+"  `_'¡§´°Á´¾Ãµî¡£ÀßÄê¤â´Þ¤á¤Æ¾Ãµî¤¹¤ë\n"
+"  `n`¡§¿·¤·¤¤¥Ñ¥Ã¥±¡¼¥¸¤Ç¡¢¤Þ¤À¥Þ¡¼¥¯¤¬ÉÕ¤±¤é¤ì¤Æ¤¤¤Ê¤¤¡£\n"
+"\n"
+"¤Þ¤¿¡¢¥Ñ¥Ã¥±¡¼¥¸¤ÎÍ¥ÀèÅÙ¡¢¥»¥¯¥·¥ç¥ó¡¢Ì¾¾Î¡¢¥¤¥ó¥¹¥È¡¼¥ëºÑ¤Þ¤¿¤Ï¥¤¥ó¥¹¥È¡¼¥ë"
+"\n"
+"²ÄÇ½¤Ê¥Ð¡¼¥¸¥ç¥óÈÖ¹æ¡ÊÂçÊ¸»ú¤Î [V] "
+"¤ÇÉ½¼¨¡¿ÈóÉ½¼¨¡Ë¡¢³µÎ¬ÀâÌÀ¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£\n"
+
+#: dselect/helpmsgs.cc:130
+msgid "Display, part 2: list highlight; information display"
+msgstr "²èÌÌ¤½¤Î£²¡§¥ê¥¹¥È¤ÎÈ¿Å¾É½¼¨¡¢¾ðÊó²èÌÌ"
+
+#: dselect/helpmsgs.cc:130
+msgid ""
+"* Highlight: One line in the package list will be highlighted.  It "
+"indicates\n"
+"  which package(s) will be affected by presses of `+', '-' and `_'.\n"
+"\n"
+"* The dividing line in the middle of the screen shows a brief explanation "
+"of\n"
+"  the status of the currently-highlighted package, or a description of "
+"which\n"
+"  group is highlighted if a group line is.  If you don't understand the\n"
+"  meaning of some of the status characters displayed, go to the relevant\n"
+"  package and look at this divider line, or use the `v' key for a verbose\n"
+"  display (press `v' again to go back to the terse display).\n"
+"\n"
+"* The bottom of the screen shows more information about the\n"
+"  currently-highlighted package (if there is only one).\n"
+"\n"
+"  It can show an extended description of the package, the internal package\n"
+"  control details (either for the installed or available version of the\n"
+"  package), or information about conflicts and dependencies involving the\n"
+"  current package (in conflict/dependency resolution sublists).\n"
+"\n"
+"  Use the `i' key to cycle through the displays, and `I' to hide the\n"
+"  information display or expand it to use almost all of the screen.\n"
+msgstr ""
+"¡¦È¿Å¾É½¼¨¡§¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥ÈÃæ¤Î£±¹Ô¤¬È¿Å¾É½¼¨¤µ¤ì¤Æ¤¤¤Þ¤¹¡£¤³¤ì¤Ï¤É¤Î¥Ñ¥Ã¥±¡"
+"¼\n"
+"  ¥¸¤Ë [+],[-],[_] ¤Ê¤É¤Î¥­¡¼Áàºî¤¬ºîÍÑ¤¹¤ë¤«¤ò¼¨¤·¤Æ¤¤¤Þ¤¹¡£\n"
+"\n"
+"¡¦²èÌÌ¤ò¶èÀÚ¤Ã¤Æ¤¤¤ëÃæ±û¤Î¹Ô¤Ë¤Ï¡¢¸½ºßÈ¿Å¾É½¼¨¤µ¤ì¤Æ¤¤¤ë¥Ñ¥Ã¥±¡¼¥¸¤Î¾õÂÖ¤Î´Ê"
+"\n"
+"  "
+"Ã±¤ÊÀâÌÀ¡¢¤¢¤ë¤¤¤Ï¡Ê¥°¥ë¡¼¥×¥é¥¤¥ó¤Î¾ì¹ç¤Ë¤Ï¡Ë¤É¤Î¥°¥ë¡¼¥×¤¬È¿Å¾É½¼¨¤µ¤ì¤Æ\n"
+"  "
+"¤¤¤ë¤«¤ÎÀâÌÀ¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£É½¼¨¤µ¤ì¤¿¾õÂÖÊ¸»ú¤Î¤¤¤¯¤Ä¤«¤Î°ÕÌ£¤¬Ê¬¤«¤é¤Ê¤¤\n"
+"  ¾ì¹ç¤Ë¤Ï¡¢´ØÏ¢¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤Î½ê¤Ë°ÜÆ°¤·¤Æ¡¢¤³¤Î¶èÀÚ¤ê¹Ô¤ò¸«¤ë¤«¡¢[v] "
+"¥­¡¼\n"
+"  ¤ò»È¤Ã¤Æ¾ÜºÙÉ½¼¨¥â¡¼¥É¤Ë¤·¤Æ²¼¤µ¤¤¡ÊºÆÅÙ [v] ¤ò²¡¤¹¤È´Ê°×É½¼¨¥â¡¼¥É¤ËÌá¤ê\n"
+"  ¤Þ¤¹¡Ë¡£\n"
+"\n"
+"¡¦²èÌÌ¤Î²¼Êý¤Ë¤Ï¡¢¸½ºßÈ¿Å¾É½¼¨¤µ¤ì¤Æ¤¤¤ë¥Ñ¥Ã¥±¡¼¥¸¤Î¾ðÊó¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£\n"
+" ¡Ê¥Ñ¥Ã¥±¡¼¥¸¤¬Ã±°ì¤Î¾ì¹ç¡Ë\n"
+"\n"
+"  "
+"¥Ñ¥Ã¥±¡¼¥¸¤Î¹­ÈÏ°Ï¤ÎÀâÌÀ¡¢ÆâÉô¥Ñ¥Ã¥±¡¼¥¸À©¸æ¤Î¾ÜºÙ¡Ê¥¤¥ó¥¹¥È¡¼¥ëºÑ¥Ñ¥Ã¥±¡¼\n"
+"  "
+"¥¸¡¢ÍøÍÑ²ÄÇ½¤Ê¥Ñ¥Ã¥±¡¼¥¸¥Ð¡¼¥¸¥ç¥ó¤Î¤É¤Á¤é¤Ç¤â²Ä¡Ë¡¢¸½ºß¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬°ú¤­\n"
+"  "
+"µ¯¤³¤·¤¿¾×ÆÍ¤Þ¤¿¤Ï°ÍÂ¸´Ø·¸¤Ë´Ø¤¹¤ë¾ðÊó¡Ê¾×ÆÍ¡¿°ÍÂ¸´Ø·¸¤Î¥µ¥Ö¥ê¥¹¥È¤Î¤ß¡Ë¤ò\n"
+"  É½¼¨¤µ¤»¤ë»ö¤¬¤Ç¤­¤Þ¤¹¡£\n"
+"\n"
+"  [i] ¤Ç½ç¤ËÉ½¼¨¤µ¤»¤ë»ö¤¬¤Ç¤­¤Þ¤¹¡£[I] "
+"¤Ç¾ðÊó²èÌÌ¤ò±£¤·¤¿¤ê¡¢¤Û¤Ü²èÌÌ¤¤¤Ã¤Ñ\n"
+"  ¤¤¤Ë¹­¤²¤ë¤³¤È¤¬¤Ç¤­¤Þ¤¹¡£\n"
+
+#: dselect/helpmsgs.cc:153
+msgid "Introduction to method selection display"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëÊýË¡ÁªÂò²èÌÌ¤Î¾Ò²ð"
+
+#: dselect/helpmsgs.cc:153
+msgid ""
+"dselect and dpkg can do automatic installation, loading the package files to "
+"be\n"
+"installed from one of a number of different possible places.\n"
+"\n"
+"This list allows you to select one of these installation methods.\n"
+"\n"
+"Move the highlight to the method you wish to use, and hit Enter.  You will "
+"then\n"
+"be prompted for the information required to do the installation.\n"
+"\n"
+"As you move the highlight a description of each method, where available, is\n"
+"displayed in the bottom half of the screen.\n"
+"\n"
+"If you wish to quit without changing anything use the `x' key while in the "
+"list\n"
+"of installation methods.\n"
+"\n"
+"A full list of keystrokes is available by pressing `k' now, or from the "
+"help\n"
+"menu reachable by pressing `?'.\n"
+msgstr ""
+"dselect, dpkg "
+"¤Ï¡¢ÍÍ¡¹¤Ê¥¤¥ó¥¹¥È¡¼¥ë¥á¥Ç¥£¥¢¤Î£±¤Ä¤«¤é¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤ë¥Ñ¥Ã\n"
+"¥±¡¼¥¸¥Õ¥¡¥¤¥ë¤ò¥í¡¼¥É¤·¤Æ¡¢¼«Æ°Åª¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë»ö¤¬¤Ç¤­¤Þ¤¹¡£\n"
+"\n"
+"¤³¤Î¥ê¥¹¥È¤Ç¡¢¤½¤ì¤é¤Î¥¤¥ó¥¹¥È¡¼¥ë¼êÃÊ¤ÎÆâ¤Î£±¤Ä¤òÁªÂò¤¹¤ë¤³¤È¤¬¤Ç¤­¤Þ¤¹¡£\n"
+"\n"
+"È¿Å¾É½¼¨¤ò´õË¾¤¹¤ë¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¤Ë°ÜÆ°¤µ¤»¤Æ¡¢[Enter] "
+"¤ò²¡¤·¤Æ²¼¤µ¤¤¡£¤½¤Î\n"
+"¸å¡¢¥¤¥ó¥¹¥È¡¼¥ë¤ËÉ¬Í×¤Ê¾ðÊó¤Î¼ÁÌä¤¬¹Ô¤Ê¤ï¤ì¤Þ¤¹¡£\n"
+"\n"
+"È¿Å¾É½¼¨¤ò°ÜÆ°¤µ¤»¤ë¤È¡¢¡Ê²ÄÇ½¤Ê¤é¤Ð¡Ë²èÌÌ¤Î²¼È¾Ê¬¤Ë³Æ¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¤ÎÀâÌÀ"
+"\n"
+"¤¬É½¼¨¤µ¤ì¤Þ¤¹¡£\n"
+"\n"
+"Á´¤Æ¤ÎÊÑ¹¹¤òÇË´þ¤·¤Æ½ªÎ»¤·¤¿¤¤¾ì¹ç¤Ë¤Ï¡¢¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¤Î¥ê¥¹¥ÈÃæ¤Ç [x] ¤ò\n"
+"²¡¤·¤Æ²¼¤µ¤¤¡£\n"
+"\n"
+"º£ [k] ¤ò²¡¤¹¤«¡¢[?] ¤ÇÉ½¼¨¤µ¤ì¤ë¥Ø¥ë¥×²èÌÌ¤Ç [k] "
+"¤ò²¡¤¹¤È¥­¡¼Áàºî¤ÎÁ´¥ê¥¹¥È\n"
+"¤òÉ½¼¨¤¹¤ë»ö¤¬¤Ç¤­¤Þ¤¹¡£\n"
+
+#: dselect/helpmsgs.cc:172
+msgid "Keystrokes for method selection"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëÊýË¡ÁªÂò²èÌÌ¤Ç¤Î¥­¡¼Áàºî"
+
+#: dselect/helpmsgs.cc:172
+msgid ""
+"Motion keys: Next/Previous, Top/End, Up/Down, Backwards/Forwards:\n"
+"  n, Down-arrow         p, Up-arrow             move highlight\n"
+"  N, Page-down, Space   P, Page-up, Backspace   scroll list by 1 page\n"
+"  ^n                    ^p                      scroll list by 1 line\n"
+"  t, Home               e, End                  jump to top/end of list\n"
+"  u                     d                       scroll info by 1 page\n"
+"  ^u                    ^d                      scroll info by 1 line\n"
+"  B, Left-arrow         F, Right-arrow          pan display by 1/3 screen\n"
+"  ^b                    ^f                      pan display by 1 character\n"
+"(These are the same motion keys as in the package list display.)\n"
+"\n"
+"Quit:\n"
+" Return, Enter    select this method and go to its configuration dialogue\n"
+" x, X             exit without changing or setting up the installation "
+"method\n"
+"\n"
+"Miscellaneous:\n"
+"  ?, Help, F1      request help\n"
+" ^l                redraw display\n"
+"  /                search (just return to cancel)\n"
+"  \\                repeat last search\n"
+msgstr ""
+"°ÜÆ°¥­¡¼¡§¼¡¡¿Á°¡¢ÀèÆ¬¡¿ºÇ¸å¡¢¾å¡¿²¼¡¢¸å¿Ê¡¿Á°¿Ê\n"
+" [n],[¢­]                [p],[¢¬]                  È¿Å¾É½¼¨¤ò°ÜÆ°\n"
+" [N],[PageDown],[Space]  [P],[PageUp],[BackSpace]  £±¥Ú¡¼¥¸¥¹¥¯¥í¡¼¥ë\n"
+" [Ctrl]+[n]              [Ctrl]+[p]                £±¹Ô¥¹¥¯¥í¡¼¥ë\n"
+" [t],[Home]              [e],[End]                 ÀèÆ¬¡¿ºÇ¸å¤Ë¥¸¥ã¥ó¥×\n"
+" [u]                     [d]                       ¾ðÊó¤ò£±¥Ú¡¼¥¸¥¹¥¯¥í¡¼¥ë\n"
+" [Ctrl]+[u]              [Ctrl]+[d]                ¾ðÊó¤ò£±¹Ô¥¹¥¯¥í¡¼¥ë\n"
+" [B],[¢«]                [F],[¢ª]                  1/3 ²èÌÌÊ¬²£°ÜÆ°\n"
+" [Ctrl]+[b]              [Ctrl]+[f]                £±Ê¸»ú²èÌÌ¤ò²£°ÜÆ°\n"
+"¡Ê¤³¤ì¤é¤Ï¥Ñ¥Ã¥±¡¼¥¸¥ê¥¹¥È²èÌÌ¤ÈÆ±¤¸¥­¡¼Áàºî¤Ç¤¹¡Ë\n"
+"\n"
+"½ªÎ»¡§\n"
+" [Return],[Enter]  ÊýË¡¤òÁªÂò¤·¤ÆÀßÄê¥À¥¤¥¢¥í¥°¤Ø°Ü¤ë\n"
+" [x],[X]           ¥¤¥ó¥¹¥È¡¼¥ëÊýË¡¤ÎÊÑ¹¹¤Þ¤¿¤ÏÀßÄê¤òÇË´þ¤·¤Æ½ªÎ»\n"
+"\n"
+"¤½¤ÎÂ¾¡§\n"
+" [?],[Help],[F1]     ¥Ø¥ë¥×¤òÉ½¼¨\n"
+" [Ctrl]+[l]          ²èÌÌ¤ÎºÆÉ½¼¨\n"
+" [/]                 ¸¡º÷¡Ê[Enter] ¤Ç¥­¥ã¥ó¥»¥ë¡Ë\n"
+" [\\]                 ¼¡¤ò¸¡º÷\n"

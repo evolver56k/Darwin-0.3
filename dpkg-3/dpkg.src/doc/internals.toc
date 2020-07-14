@@ -1,0 +1,29 @@
+\chapentry{Copyright}{1}{1}
+\chapentry{Build Notes}{2}{2}
+\secentry {Required Packages}{2}{1}{2}
+\secentry {Automake}{2}{2}{2}
+\secentry {Internationalization}{2}{3}{4}
+\secentry {Note to translators}{2}{4}{5}
+\chapentry{Code Internals}{3}{7}
+\secentry {Structure Definitons}{3}{1}{7}
+\subsecentry {versionrevision}{3}{1}{1}{7}
+\secentry {Functions}{3}{2}{7}
+\subsecentry {Error Handling}{3}{2}{1}{7}
+\subsubsecentry{\code {push_checkpoint}} {3}{2}{1}{1} {7}
+\subsecentry {Variable buffer functions}{3}{2}{2}{7}
+\subsecentry {Parsing translation tables}{3}{2}{3}{7}
+\subsubsecentry{\code {priorityinfos[]}} {3}{2}{3}{1} {7}
+\subsubsecentry{\code {statusinfos[]}} {3}{2}{3}{2} {8}
+\subsubsecentry{\code {eflaginfos[]}} {3}{2}{3}{3} {8}
+\subsubsecentry{\code {wantinfos[]}} {3}{2}{3}{4} {8}
+\subsubsecentry{\code {nicknames[]}} {3}{2}{3}{5} {8}
+\subsecentry {Parsing functions}{3}{2}{4}{8}
+\subsubsecentry{\code {parseerr}} {3}{2}{4}{1} {8}
+\subsubsecentry{\code {illegal_packagename}} {3}{2}{4}{2} {9}
+\subsubsecentry{\code {informativeversion}} {3}{2}{4}{3} {9}
+\subsubsecentry{\code {varbufversion}} {3}{2}{4}{4} {9}
+\subsubsecentry{\code {versiondescribe}} {3}{2}{4}{5} {9}
+\subsubsecentry{\code {parseversion}} {3}{2}{4}{6} {9}
+\subsubsecentry{\code {parsemustfield}} {3}{2}{4}{7} {10}
+\subsubsecentry{\code {skip_slash_dotslash}} {3}{2}{4}{8} {10}
+\subsubsecentry{\code {convert_string}} {3}{2}{4}{9} {10}

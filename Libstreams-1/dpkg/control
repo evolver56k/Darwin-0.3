@@ -1,0 +1,6 @@
+Package: libstreams
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 15.2
+Description: Streams library
+Build-Depends: build-base

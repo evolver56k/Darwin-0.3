@@ -1,0 +1,34 @@
+#	$Id: Makefile.dist,v 1.1.1.1 1999/05/02 03:58:18 wsanchez Exp $
+
+PROG =	rpc.rusersd
+SRCS =	rusersd.c rusers_proc.c
+MAN8 =	rpc.rusersd.0
+
+DPADD=	${LIBRPCSVC}
+LDADD=	-lrpcsvc
+
+.if exists(/usr/X11)
+XINCDIR=	/usr/X11/include
+XLIBDIR=	/usr/X11/lib
+.elif exists(/usr/X11R6)
+XINCDIR=	/usr/X11R6/include
+XLIBDIR=	/usr/X11R6/lib
+.elif exists(/usr/X11R5)
+XINCDIR=	/usr/X11R5/include
+XLIBDIR=	/usr/X11R5/lib
+.elif exists(/usr/X11R4)
+XINCDIR=	/usr/X11R4/include
+XLIBDIR=	/usr/X11R4/lib
+.elif exists(/usr/X386)
+XINCDIR=	/usr/X386/include
+XLIBDIR=	/usr/X386/lib
+.endif
+
+.if defined(XINCDIR) && exists($(XINCDIR)/X11/extensions/xidle.h)
+CFLAGS+=	-I$(XINCDIR) -DXIDLE
+LDADD+=		-L$(XLIBDIR) -lXext -lX11
+.endif
+
+
+.include <bsd.prog.mk>
+

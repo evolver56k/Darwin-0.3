@@ -1,0 +1,29 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        FRAMEWORKS = (); 
+        HEADERSEARCH = (../ktrace); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (kdump.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, kdump.1, mkioctls); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = make; 
+    NEXTSTEP_COMPILEROPTIONS = "-DMACH_USER_API"; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    NEXTSTEP_MAINNIB = kdump; 
+    PDO_UNIX_BUILDTOOL = make; 
+    PDO_UNIX_COMPILEROPTIONS = "-DMACH_USER_API"; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_MAINNIB = kdump; 
+    PROJECTNAME = kdump; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = make; 
+    WINDOWS_COMPILEROPTIONS = "-DMACH_USER_API"; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+    WINDOWS_MAINNIB = kdump; 
+}

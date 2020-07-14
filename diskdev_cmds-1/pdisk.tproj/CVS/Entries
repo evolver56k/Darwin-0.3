@@ -1,0 +1,24 @@
+/HISTORY/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/Makefile/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/Makefile.postamble/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/Makefile.preamble/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/PB.project/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/README/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/bitfield.c/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/bitfield.h/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/cmdline.c/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/convert.c/1.1.1.1/Sun May  2 01:42:38 1999//Tdiskdev_cmds-1
+/convert.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/dpme.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/dump.c/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/dump.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/errors.c/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/errors.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/io.c/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/io.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/partition_map.c/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/partition_map.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/pdisk.c/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/pdisk.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+/version.h/1.1.1.1/Sun May  2 01:42:39 1999//Tdiskdev_cmds-1
+D

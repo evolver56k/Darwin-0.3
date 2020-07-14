@@ -1,0 +1,95 @@
+/* German Localized Strings */
+
+"DOING_INIT" = "Erasing Mac OS X Server Volume (please wait)";
+
+"FDISK_HINTS" = "Darwin OS for Intel doesn't understand DOS Extended partition types. Some other PC Operating Systems may create one extended partition that claims the entire disk, while only using a portion of that partition. If that is the case for your disk, you must either use tools under that OS to shrink the extended partition enough to create a traditional partition here, or you can install Darwin OS before other Operating Systems.";
+
+"FDISK_WARNING" = "WARNING: Any changes you make to your disk using fdisk here will NOT be reversable!";
+
+"PDISK_FIND_FREE_ERR" = "A fatal error occurred while trying to find the free partition.";
+
+"PDISK_CREATE_ERR" = "A fatal error occurred while trying to create the booter partition.";
+
+"PDISK_SPLIT_4LDR_ERR" = "A fatal error occurred while trying to create the loader partition.";
+
+"PDISK_SPLIT_4UFS_ERR" = "A fatal error occurred while trying to create the UFS partition.";
+
+"DITTO_FAILED" = "Installation failed due to an unknown error. Please make sure your CD is free of scratches or fingerprints, check your SCSI termination and cabling, read the troubleshooting section of the installation instructions, and try again.";
+
+"REQUIRE_CD" = "This program is for installing Darwin OS on a hard disk when the Darwin OS CD-ROM is the startup disk. Since the Darwin OS CD-ROM isn't the startup disk, you can't use this program.";
+
+"NO_DISKS" = "The Installer was unable to find any disks to install on.";
+
+"WRONG_INSTALLER" =
+"WARNING: You must use the Mac OS 8 based Darwin OS installer\n WARNING: to Install Darwin OS. The Rhapsody DR2 installer\n WARNING: is not compatable.\n";
+
+"WARN_PPC_MSG" =
+"The installer was unable to find an preselected installation target.\n\nWhen you hear the startup chime, hold down the 'C' key to boot\nMac OS from the Darwin OS Install CD, and follow the instructions\nprovided to run the Darwin OS installation script.\n\nPress return to restart.\n";
+
+"WARN_i386_MSG" = 
+"You are about to configure a disk to install Darwin OS 1.0 for Intel.\nInstalling any OS is not risk-free, and may result in crashes, loss of\ndata, or other errors. It is strongly recomended that you back up your\nsystem and install on an external drive dedicated to Darwin OS. If at\nany point the questions asked by the installer are confusing, you\nshould refer to the printed installation manual.\n\n1 ) Ok - ready to install Darwin OS\n2 ) Cancel - do not install at this time\n";
+
+"WRONG_ARCH" = "Installation is only possible on Power Macintosh or x86 type computers.";
+"COPYING_BASE_SYSTEM" = "Copying base system...";
+"COPYING_BASE_SYSTEM_DONE" = "Copying of Files Completed";
+
+"WHICH_DISK" = 
+"Geben Sie 1 ein, um Darwin OS auf dieser Platte zu installieren.\n\nGeben Sie 2 um die erweiterten Installationsoptionen anzuzeigen.";
+
+/* Displayed above the list of disks */
+"AVAILABLE_DISKS" = "Folgende Platten sind in diesem Computer verfuegbar:";
+
+"ALL_DISKS" = 
+"Die erste Platte in dieser Liste ist die Startplatte. Sie koennen die\ngrundlegende Darwin OS-Software auch auf eine andere Platte in dieser Liste\ninstallieren. In diesem Fall wird Darwin OS jedoch nicht automatisch\ngestartet, wenn Sie den Computer neu starten. Ausserdem muessen Sie\ndie betreffende Platte zur Startplatte machen, damit Sie die Installation\nvon Darwin OS abschliessen koennen.\n\nGeben Sie die Nummer der Platte ein, auf der Sie Darwin OS installieren\nmoechten.";
+
+"ALL_DISKS_PPC" =
+"Type the number for the disk on which you want to install Darwin OS.";
+
+/* Options for partitioning the disk */
+"FDISK_MENU1" = "Geben Sie 1 ein, um die Festplatte vollstaendig zu loeschen und somit \ndie gesamten $diskSize MB fuer Darwin OS zu verwenden.";
+"FDISK_MENU2" = "Geben Sie 2 ein, koennen Sie etwas Platz fuer DOS reservieren und\\nden Rest fuer Darwin OS verwenden.";
+"FDISK_MENU3" = "Geben Sie $currentNum um die $currentsize MB der bestehenden Darwin OS Partition zu loeschen\\nund fuer Darwin OS zu verwenden.";
+"FDISK_MENU4" = "Geben Sie $freeNum ein, um bestehende Partitionen zu behalten. Den freien\\nSpeicherplatz von $freeSize MB koennen Sie dann fuer Darwin OS verwenden.";
+"FDISK_MENU5" = "Geben Sie $eNum ein, wenn Sie die erweiterte DOS Partition von $eSize MB fuer\\nDarwin OS benoetigen.";
+"FDISK_MENU6" = "Fuer weitere Optionen (nur in englischer Sprache erhaeltlich) geben Sie\\n$choices ein.";
+
+/* Displayed when they type 2 */
+"HOW_MUCH" = "Geben Sie die Groesse der gewuenschten DOS-Partition ein (in Megabyte): ";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"NO_EXTENDED" = "Auf dieser Festplatte existiert keine erweiterte DOS Partition.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"TOO_SMALL" = "Sie verfuegen nicht ueber genug Speicherplatz, um die Festplatte\nso zu partitionieren.";
+
+/* Displayed when the user makes an invalid selection to the above options */
+"CHOOSE_AGAIN" = "Waehlen Sie erneut.";
+
+/* Last chance to abort */
+"READY" = "Zur Installation von Darwin OS bereit\n\nGeben Sie 1 ein, um die Installtion von Darwin OS zu beginnen.\nGeben Sie 2 ein, um dieses Installationsprogramm zu verlassen.";
+
+/* Displayed in lieu of cryptic commands passing by... */
+"GOING" = "Vorbereitung der Festplatte zur Darwin OS-Installation im Gange.\nDieser Vorgang kann einige Minuten dauern...";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INITFAILED" = "FORMATIERUNG DER FESTPLATTE NICHT ERFOLGREICH.\n\nDas Installationsprogramm konnte die Festplatte nicht nicht formatieren.\nDie Installation kann nicht fortgesetzt werden.";
+
+/* Uh, oh.  We couldn't initialize the disk we must quit */
+"INSTALLFAILED" = "Keine Platten gefunden.\nInstallation kann nicht fortgesetzt werden.\n\n";
+
+/* Displayed when the user aborts, or something goes wrong */
+"QUITTING" = "Verlassen des Installationsprogramms. Dieser Vorgang kann\neine Weile dauern...";
+
+"DONE" = "Die Festplatte ist als Startplatte bereit,\num die Installation von Darwin OS zu beenden.";
+
+/* Forces them to eject the floppy right before rebooting */
+"REMOVE_FLOPPY" = "Nehmen Sie die Diskette aus dem Diskettenlaufwerk und druecken Sie\ndie Return-Taste.";
+
+/* When we don't have a floppy */
+"RESTART" = "Druecken Sie die Return-Taste, um den Computer neu zu starten.";
+
+/* Displayed right before rebooting */
+"RESTARTING" = "Der Computer wird neu gestartet. Dieser Vorgang kann eine Weile dauern...";
+
+/* Displayed when selecting the disk for installation */
+"BOOT_DISK" = "Die Startplatte in diesem Computer ist:";

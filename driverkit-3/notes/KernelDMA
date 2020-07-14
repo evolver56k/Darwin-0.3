@@ -1,0 +1,172 @@
+Kernel DMA notes
+
+
+Questions
+
+* Looks like the low-level interrupt code is going to have to be cognizant
+  of "is this a DMA interrupt?"....?
+  -- Need to grab chan_status? No, that can be done at chan_XX_dequeue time.
+     -- no - not valid for m88k!!!
+  -- Need to maintain separate 'done queue'? Why? Just scan thru queue of
+     kern_dma_desc_t's or kern_dma_frame_t's at chan_XX_dequeue time.
+     
+  ...so: no way!
+  
+* Where are DMA overrun and underrun reported???? Referred to at bottom on 
+  5-14, can't find the bits.
+  
+Notes
+
+* use vm_map_check_protection() in vm/vm_map.c to check access.
+  pmap_extract() to get physical address.
+  pmap_enter() to create mapping for dev_{reg,slot,board}_map().
+  
+* need another return value from dev_get_type() - 'busy'. When true, the 
+  specified dev_number is valid, but is already in use by an internal driver.
+  Don't want to return error in this case, it's nice to be able to see what's
+  there even if Config can't use it. A dev_port_create on such a busy device
+  should return a new error (DR_ATTACHED).
+  
+* kern_dev_t's - a static array of 8. Need to be able to expand? maybe only at
+  config time? No, this is too inflexible. Make a linked list, stash the
+  dev_number in the kern_dev_t. Have to map from dev_number to kern_dev very
+  seldom (get_dev_type, dev_port_create).
+  
+  -- besides, don't know size for static array ar config time - need to include
+     NextBus boards.
+  
+Pseuodocode
+
+chan_dma_enqueue() 
+{
+	check access of region, return if error;
+	return error if dma_id is zero;
+	check for other errors (channel not attached, etc.);
+	check for (stream mode && > 1 page && read) error
+	wire the region via vm_map_pageable();
+	get a dma_frame_t, init it;
+	for each page or less in vm region {
+		pmap_extract the physical address;
+		if direction == read
+			cache_invalidate() the region;
+		else
+			cache_purge() the region;
+		get a dma_descriptor_t;
+		set up address, byte_count in the descriptor;
+		link to desc_tail;
+		desc_tail = this new descriptor;
+	}
+	if(opts & CEO_EOR)
+		set eor in desc_tail's command;
+	if(opts & DESC_INTR)
+		set desc_intr in desc_tail's command;
+	if(opts & CEO_DESC_CMD) 
+		write cmd and index to desc_tail; set descCmdValid bit;
+	add frame to end of frame_queue;
+	enqueue frame's desc_head on current last_frame's desc_tail
+		using algorithm defined in DMARaces;
+	if(opts & CEO_ENABLE_INTR)
+		enable 'em;
+}
+
+chan_dma_dequeue()
+{
+	check for dumb errors (not attached, frame_queue empty, etc.);
+	got_a_desc = got_a_frame = FALSE;
+	do {
+		this_desc = desc_head of head of frame_queue;
+		
+		if this_desc can be dequeued {
+			got_a_desc = TRUE;
+			unlink it from frame.desc_head;
+			add bytes_xfr for this_desc to frame's bytes_xfr;
+			if((this is desc_tail for this frame)  ||
+			    EOR || BUFERR) {
+				got_a_frame = TRUE;
+				write caller's desc_status, eor from this_desc;
+			}
+			free this_desc;
+			if(got_a_frame) {
+				/* 
+				 * Frame completely dequeued.
+				 */
+				write caller's dma_id, bcount;
+				unwire frame's vm region;
+				dequeue frame from frame_queue, free frame;
+			}
+		}
+		else {
+			/*
+			 * No available descriptor.
+			 */
+			caller's dma_id = NULL;
+		}
+	} while(got_a_desc && !got_a_frame);
+	return success;
+}
+
+Can desc_head of head of frame_queue be dequeued?
+
+if list_not_empty {
+	if(desc_head == hw_current_desc)
+		desc not complete
+	else
+		desc complete
+}
+else {
+    	if(desc_head == hw_current_desc) {
+		if(count register == -1)
+	    		this desc is not complete
+		else
+	    		this desc is complete
+    	}
+	else
+		this desc is complete
+}
+else 
+
+ cases:
+ 1. Channel running. Easy case. Can dequeue this_desc as long as it's not
+    hw_current_desc.
+ 2. Channel not running. 
+    a. CDO_ALL: any desc can be dequeued.
+    b. CDO_DONE: how to tell what's done? if this_desc == hw_current_desc, 
+       is this_desc the last one the TE processed, or the next one (maybe
+       it's just been enqueued)?
+       
+       Can we use the TE count register to see if it's fetched a
+       descriptor since we last enqueued...?
+		
+		eg
+		
+		channel not running
+		chan_dma_enqueue 
+			build & enqueue a list (say one descriptor)
+			write -1 to count register
+		driver enables channel & loads descriptor
+		TE writes count register with something other than -1
+		DMA complete
+		chan_dma_dequeue(CDO_DONE)
+		    if channel not running {
+			if(desc_head == hw_current_desc) {
+			    if(count register == -1)
+				this desc is not complete
+			    else
+				this desc is complete
+			}
+		    }
+		    else
+		    	if(desc_head == hw_current_desc)
+				desc not complete
+			else
+				desc complete
+		    
+
+Careful - anytime you dequeue a descriptor which is the same as hw_current_desc, have to either NULL out hw_current_desc or write it with desc_head of the next *frame* (NOT the next descriptor in this frame!)
+
+What about dequeueing a whole list of descriptors (in "CDO_DONE mode") and we get to desc == hw_current_desc, and the channel isn't running?
+  -- if we have NOT done an enqueue since the channel stopped, hw_count != -1
+     ==> this desc (@ hw_curr_desc) is done! (hw_next_desc should be NULL...)
+  -- if we HAVE done enqueue since channel stopped, hw_count == -1
+     ==> this desc is head of h/w's queue. Not done.
+  

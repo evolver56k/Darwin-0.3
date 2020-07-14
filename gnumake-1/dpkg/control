@@ -1,0 +1,6 @@
+Package: gnumake
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 67
+Description: NeXT make
+Build-Depends: build-base, perl

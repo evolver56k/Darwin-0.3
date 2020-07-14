@@ -1,0 +1,168 @@
+{\rtf0\ansi{\fonttbl\f0\fswiss Helvetica;}
+\paperw7900
+\paperh15740
+\margl0
+\margr160
+{\colortbl;\red0\green0\blue0;\red167\green42\blue53;}
+\pard\tx720\tx1080\tx1440\tx1800\tx2160\tx2520\tx2880\tx3240\tx3600\tx3960\tx4320\tx4680\tx5040\tx5400\tx5760\tx6120\tx6480\tx6840\tx7200\tx7560\f0\b0\i0\ulnone\fs16\li360\fc1\cf1 \
+
+\b\fs36\fc0\cf0 IDE/EIDE/ATAPI Controller
+\fc1\cf1 \
+
+{\b0\fs12{\NeXTGraphic27 836922_PixelRule.tiff \width7180 \height60
+}
+¬}\pard\tx720\tx1080\tx1440\tx1800\tx2160\tx2520\tx2880\tx3240\tx3600\tx3960\tx4320\tx4680\tx5040\tx5400\tx5760\tx6120\tx6480\tx6840\tx7200\tx7560\f0\b0\i0\ulnone\fs12\li360\fc1\cf1 \
+
+\fs24 \
+
+{{\NeXTGraphic30 other.tiff \width880 \height880
+}
+¬}\pard\tx720\tx1080\tx1440\tx1800\tx2160\tx2520\tx2880\tx3240\tx3600\tx3960\tx4320\tx4680\tx5040\tx5400\tx5760\tx6120\tx6480\tx6840\tx7200\tx7560\f0\b0\i0\ulnone\fs24\li360\fc1\cf1  	
+\b\fs28\up20 Other Devices
+\b0\fs24\up0 \
+\
+This ISA and PCI bus device driver is designed to run on Intel-based computers running <<OS_NAME>> Release <<OS_RELEASE>>. It automatically detects and configure itself for Intel PIIX PCI IDE controllers. \
+
+\fs16 \
+
+\fs24 If you are installing <<OS_NAME>> Release <<OS_RELEASE>> for the first time, it is recommended that this EIDE driver be used even if you have IDE drives in your system. \
+
+\fs16 \
+\
+
+\b\fs24\fc0\cf0 Supported Hardware: \
+\
+
+\b0\fi-380\li740\fc1\cf1   *	The Enhanced IDE/ATAPI device driver is required for support of IDE drives, EIDE drives, and ATAPI devices. \
+  *	The EIDE/ATAPI driver supports up to two IDE controllers, primary (ports 0x1f0 to 0x1f7, IRQ 14) and secondary (ports 0x170 to 0x177, IRQ 15).  Each IDE controller can support up to two IDE drives in a master/slave configuration. \
+
+\fs16   *	
+\fs24 IDE drives of all geometries are supported as long as the system BIOS reports correctly translated geometry and drive size.  Use of PIO Modes 3 and above require support of the IORDY line by the host IDE controller.\
+
+\fs16   *	
+\fs24 An ATAPI device can be connected in place of an IDE device as long as it is not a master in a master/slave configuration where slave is an IDE disk.  It is suggested that you connect your hard drives(s) to the primary controller and your CD-ROM(s) to the secondary controller if possible.\
+  *	The Intel PIIX PCI IDE controller is supported. This allows the driver to do 32-bit data transfers and use faster timing modes if the disk supports them. In addition, bus master based DMA is also supported for Ultra DMA/33, Multiword, and Single word DMA modes.
+\fs16\fi0\li360 \
+\
+\
+
+\b\fs24\fc0\cf0 Configuration: 
+\fc1\cf1 \
+
+\b0\fs16 \
+
+\fs24\fi-380\li740 1. 	Be sure that you are running Configure as root.\
+\
+2.	Click on the Other Devices icon at the top of Configure's "Summary of Devices" window.  In the Add Other Devices panel that opens, select the radio button labeled "Show Drivers for Detected Devices" if it is not already highlighted. \
+\
+3.	Configure will present the following device drivers.   \
+	  *	EIDE and ATAPI Device Controller\
+	  *  Intel PIIX PCI EIDE/ATAPI Device Controller\
+	  *	Plug and Play EIDE/ATAPI Device Controller\
+	  *  Primary/Secondary(Dual) EIDE/ATAPI Device Controller\
+\
+	
+\b NOTE:  
+\b0 PCI devices contain an unique ID which is used for device matching. If your system has a PIIX controller, Configure will highlight the "Show Drivers for Detected Devices" button and list the PCI device found.\
+	
+\gray317\fc2\cf2 \
+
+\gray0\fc1\cf1 4.	Select the appropriate device driver from the list, and click Add.\
+\
+5.	If you have two disk controllers, add another instance of the same driver and type in correct port address and IRQ values for it.\
+\
+	
+\b NOTE:  
+\b0 The following drivers will automatically support both disk controllers, or IDE channels. It is NOT necessary to add a second instance in those cases.\
+	\
+	*  Intel PIIX PCI EIDE/ATAPI Device Controller\
+	*  Primary/Secondary(Dual) EIDE/ATAPI Device Controller\
+	\
+6.	For each instance of the disk controller, check or leave blank\
+	the "Multiple Sectors" button as follows:\
+		\
+		
+\i Multiple Sectors
+\i0  - Check this box if you want to enable\
+		the driver to read and write more than one sector at a time\
+		during data transfers. If the box is unchecked, only one\
+		sector will be  transferred during each data transfer.\
+		Enabling this option will usually increase performance and\
+		decrease the interrupt load on the CPU. Multiple sectors \
+		transfer is only relevant for PIO modes, and has no effect \
+		on DMA modes.\
+\
+7.	Click on the "Advanced settings..." button and select the type of Master and Slave device connected to the IDE interface(s). The default selection is Auto. Sometimes it may be necessary to force the type of device to ATA, ATAPI, or None in order to accelerate the device detection process, or to prevent incorrect detection.\
+\
+		
+\i Auto
+\i0  - The default selection. The driver will attempt to \
+		automatically probe and detect the type of device \
+		connected.\
+		\
+		
+\i ATA
+\i0  - Select this for IDE/EIDE hard-drives.\
+		\
+		
+\i ATAPI
+\i0  - Select this for ATAPI devices.\
+	\
+		
+\i None
+\i0  - The driver will skip the detection of this device. This\
+		is an useful setting when a device is not present. It can also\
+		be used to disable a "phantom" Slave device, which occurs\
+		when a Master ATAPI CD-ROM drive shadows itself both \
+		as a  Master and a Slave device.\
+\
+
+\pard\tx720\tx1080\tx1440\tx1800\tx2160\tx2520\tx2880\tx3240\tx3600\tx3960\tx4320\tx4680\tx5040\tx5400\tx5760\tx6120\tx6480\tx6840\tx7200\tx7560\fi-380\li740\fc1\cf1 6.	For PIIX IDE controllers, DMA modes are supported. Select the DMA Checkbox for each device as follows:
+\pard\tx720\tx1080\tx1440\tx1800\tx2160\tx2520\tx2880\tx3240\tx3600\tx3960\tx4320\tx4680\tx5040\tx5400\tx5760\tx6120\tx6480\tx6840\tx7200\tx7560\fi-380\li740\fc1\cf1 \
+\
+		
+\i DMA
+\i0  - Check this box if you want to enable the\
+		bus master IDE controller to perform DMA transfers to and\
+		from the hard drive. When enabled, the CPU is only\
+		responsible for setting up the transfer. The controller then\
+		proceed to perform DMA transfers between the hard drive\
+		and the system memory. An interrupt is generated at the \
+		end of the transfer to signal the CPU that the transfer is \
+		complete. While the transfer is taking place, the CPU is not\
+		burdened with the data transfer itself, and it is able \
+		to perform other tasks. Disk throughput may improve\
+		depending on the disk and the speed of the system.\
+		\
+9. 	Click Done, then click Save, then quit Configure.\
+
+\fs16\fi0\li360 \
+\
+
+\b\fs24\fc0\cf0 Known Problems: \
+\
+
+\b0\fi-380\li740\fc1\cf1 1.	
+\fc0\cf0 Some ATAPI CD-ROMs will not work as anything but a master in a single drive configuration.
+\fc1\cf1 \
+2.	Because of the manner in which the current version of Configure manages its drivers, drivers for primary and secondary controllers must be of the same type (for example you can not use the EIDE/ATAPI driver for the primary controller and the Plug and Play EIDE/ATAPI driver for the secondary controller).\
+
+\fs16\fi0\li360 \
+
+{\fs12{\NeXTGraphic5431 138278_PixelRule.tiff \width7180 \height20
+}
+¬}\pard\tx720\tx1080\tx1440\tx1800\tx2160\tx2520\tx2880\tx3240\tx3600\tx3960\tx4320\tx4680\tx5040\tx5400\tx5760\tx6120\tx6480\tx6840\tx7200\tx7560\f0\b0\i0\ulnone\fs12\li360\fc1\cf1 \
+
+\fs16 	\
+
+\b\fs24 See also\
+
+\b0\fs16 \
+
+\fs24\fi-360\li720 ·	"Add a Device" in Configure's on-line help.\
+
+\fs16 \
+
+\fs24 ·	See NeXTAnswer 1824_Installing_Drivers_Overview for general information on installing and configuring device drivers. \
+
+}

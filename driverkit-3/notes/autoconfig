@@ -1,0 +1,82 @@
+			Autoconfig questions
+		
+* NRW spec, IO Subsystem implies that 'device n' stuff is all relative to 
+  slot. But...all of this stuff is hard wired to slot 15! Should we 
+  assume that this stuff could work the same in other slots? Should autoconfig
+  be able to deal with NRW-type devices in other slots?
+ 
+mapping dev_type to executable
+  -- dev_type = 32 bit number - 16 bits of type, 16 bits of rev
+     == TTTTRRRR
+     
+  -- executables named dev_XXXXYYYY_<any_text>
+     XXXX = type, in ASCII hex. Must match TYPE exactly
+     YYYY = rev, in ASCII hex. Any digit can be '*'.
+     
+  -- multiple links to a given executable allow multiple dev_ports mapped 
+     into one executable.
+     
+  -- multiple dev slots with same dev_type allow multiple exec's of one 
+     executable. 
+     
+  -- Ports advertised in bootstrap server subset by config as
+     dev_port_TTTT.
+     
+  -- autoconfig searches <driver_directory> for:
+    -- XXXX must = TTTT.
+    -- Then, in order:
+       -- RRRR == YYYY
+       -- RRRR == YY**
+       -- RRRR == Y***       
+       -- RRRR == ****
+       
+struct dev_entry {
+	struct {				// one for each type associated
+	    port_t dev_port;			//   with this executable
+	    int dev_type;
+	} entry[many];	
+	int executable_fid;			// only one
+	char *one_executable_file_name;		// one of possibly many
+};
+
+autoconfig main
+{
+	register host_priv_port to get privileges;
+	map in entire physical address space (somehow);
+		
+	for each device in DMA configuration page for each of three slots {
+		examine dev_type;
+		find executable for that dev_type;
+		if none
+			continue to next device slot;
+		get dev_port from kernel for that device #;
+		if any dev_entries with this dev_type
+			make a new dev_entry;
+		else if any dev_entries with this executable_fid
+			add this dev_port, dev_type to that dev_entry;
+		else
+			make a new dev_entry;
+	}
+	for each dev_entry {
+		make a new bootstrap subset;
+		advertise each entry.dev_port in bootstrap server
+			as dev_port_TTTT under subst port;
+		exec(executable) with bootstrap = subset_port;
+	}
+}
+
+device driver task
+{
+	for each dev_type needed { 
+		get bootstrap:dev_port_TTTT
+		dev_reg_map(dev_port_TTTT, **reg_ptr_TTTT);
+	}
+	[driver probe:dev_port reg_ptr:reg_ptr];
+	...or...this is device-specific....
+	[driver probe:dev_port_TTTT 
+		next_port:dev_port_UUUU 
+		reg_ptr1:reg_ptr_1
+		reg_ptr2:reg_ptr_2];
+	/* TBD */
+}
+

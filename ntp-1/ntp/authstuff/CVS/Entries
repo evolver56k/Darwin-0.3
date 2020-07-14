@@ -1,0 +1,20 @@
+/Makefile.am/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/Makefile.in/1.1.1.2/Fri Apr 23 01:22:31 1999//Tntp-1
+/README/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/auth.samplekeys/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/auth.speed/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/authcert.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/authspeed.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/certdata/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/keyparity.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/makeIPFP.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/makePC1.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/makePC2.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/makeSP.c/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/md5_sample_output/1.1.1.1/Fri Apr 23 01:20:36 1999//Tntp-1
+/md5driver.c/1.1.1.1/Fri Apr 23 01:20:37 1999//Tntp-1
+/mkrandkeys.c/1.1.1.1/Fri Apr 23 01:20:37 1999//Tntp-1
+/omakeIPFP.c/1.1.1.1/Fri Apr 23 01:20:37 1999//Tntp-1
+/results/1.1.1.1/Fri Apr 23 01:20:37 1999//Tntp-1
+/unixcert.c/1.1.1.1/Fri Apr 23 01:20:37 1999//Tntp-1
+D

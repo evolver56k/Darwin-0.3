@@ -1,0 +1,91 @@
+{
+    FILESTABLE = {
+        H_FILES = (
+            align.h, 
+            configTableKern.h, 
+            configTablePrivate.h, 
+            ddmPrivate.h, 
+            debugging.h, 
+            debuggingMsg.h, 
+            Device_ddm.h, 
+            devsw.h, 
+            diskstruct.h, 
+            disk_label.h, 
+            displayDefs.h, 
+            driverServer.h, 
+            driverTypes.h, 
+            driverTypesPrivate.h, 
+            EventDriver.h, 
+            EventInput.h, 
+            eventProtocols.h, 
+            generalFuncs.h, 
+            interruptMsg.h, 
+            IOAudio.h, 
+            IOAudioPrivate.h, 
+            IOBufDevice.h, 
+            IOBuffer.h, 
+            IOConfigTable.h, 
+            IODevice.h, 
+            IODeviceDescription.h, 
+            IODeviceDescriptionPrivate.h, 
+            IODeviceKernPrivate.h, 
+            IODeviceMaster.h, 
+            IODeviceParams.h, 
+            IODirectDevice.h, 
+            IODirectDevicePrivate.h, 
+            IODisk.h, 
+            IODiskPartition.h, 
+            IODiskRwDistributed.h, 
+            IODisplay.h, 
+            IODisplayPrivate.h, 
+            IOEthernet.h, 
+            IOEthernetPrivate.h, 
+            IOEventSource.h, 
+            IOFrameBufferDisplay.h, 
+            IOFrameBufferShared.h, 
+            IOLogicalDisk.h, 
+            IONetbufQueue.h, 
+            IONetwork.h, 
+            IONetworkPrivate.h, 
+            IOPower.h, 
+            IOSCSIController.h, 
+            IOSVGADisplay.h, 
+            IOTokenRing.h, 
+            IOVGADisplay.h, 
+            IOVGADisplayPrivate.h, 
+            IOVGAShared.h, 
+            kernelDiskMethods.h, 
+            kernelDiskMethodsPrivate.h, 
+            kernelDriver.h, 
+            kernelDriverPrivate.h, 
+            KeyMap.h, 
+            memcpy.h, 
+            return.h, 
+            SCSIDisk.h, 
+            SCSIDiskKern.h, 
+            SCSIDiskPrivate.h, 
+            SCSIDiskThread.h, 
+            SCSIDiskTypes.h, 
+            SCSIGeneric.h, 
+            SCSIGenericPrivate.h, 
+            SCSIStructInlines.h, 
+            scsiTypes.h, 
+            userConfigServer.h, 
+            volCheck.h
+        ); 
+        OTHER_SOURCES = (Makefile); 
+        SUBPROJECTS = (machine, i386, eisa, pci, pcmcia); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = driverkit; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

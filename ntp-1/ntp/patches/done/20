@@ -1,0 +1,28 @@
+Replied: Tue, 10 Mar 1998 21:54:16 -0500
+Replied: "Sven Dietrich <Sven_Dietrich@Trimble.COM> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa19237;
+          10 Mar 1998 19:08 EST
+Received: from Trimble.COM by mothra.Trimble.COM (SMI-8.6/SMI-SVR4)
+	id QAA21943; Tue, 10 Mar 1998 16:10:33 -0800
+Received: from us01xch01.trimble.com by Trimble.COM (SMI-8.6/SMI-SVR4)
+	id QAA04435; Tue, 10 Mar 1998 16:09:11 -0800
+Received: by US01XCH01.Trimble.COM with Internet Mail Service (5.0.1458.49)
+	id <GJ3SQRVR>; Tue, 10 Mar 1998 16:07:33 -0800
+Message-ID: <69A62D0B25F3D0118A3800A0C9661F23BE35F1@US01XCH02.Trimble.COM>
+From: Sven Dietrich <Sven_Dietrich@Trimble.COM>
+To: stenn@whimsy.udel.edu
+Subject: More comments 
+Date: Tue, 10 Mar 1998 16:06:32 -0800
+X-Priority: 3
+X-Mailer: Internet Mail Service (5.0.1458.49)
+
+
+The configure in 72c breaks:
+
+configure: error: 
+Can't read kmem but no PRESET_TICK or PRESET_TICKADJ
+
+I am going to generate the diffs after running the old config script.
+
+S.
+

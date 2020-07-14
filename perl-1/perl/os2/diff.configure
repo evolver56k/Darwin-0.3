@@ -1,0 +1,29 @@
+--- Configure	Wed Feb 25 16:52:55 1998
++++ Configure.os2	Wed Feb 25 16:52:58 1998
+@@ -1602,7 +1602,7 @@
+ 	*)
+ 		echo "I don't know where '$file' is, and my life depends on it." >&4
+ 		echo "Go find a public domain implementation or fix your PATH setting!" >&4
+-		exit 1
++		#exit 1
+ 		;;
+ 	esac
+ done
+@@ -3637,7 +3637,7 @@
+ 	exit(0);
+ }
+ EOM
+-if $cc -o gccvers gccvers.c >/dev/null 2>&1; then
++if $cc -o gccvers gccvers.c $ldflags  >/dev/null 2>&1; then
+ 	gccversion=`./gccvers`
+ 	case "$gccversion" in
+ 	'') echo "You are not using GNU cc." ;;
+@@ -4434,7 +4434,7 @@
+ 	esac
+ 	;;
+ esac
+-libnames='';
++#libnames='';
+ case "$libs" in
+ '') ;;
+ *)  for thislib in $libs; do

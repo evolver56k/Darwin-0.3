@@ -1,0 +1,62 @@
+{\rtf0\ansi{\fonttbl\f0\fswiss Helvetica;\f1\fmodern Ohlfs;}
+\paperw9840
+\paperh8400
+\margl120
+\margr120
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f0\b\i0\ulnone\fs28\fc0\cf0 		Using Config during driver debug
+\b0\fs24 \
+\
+The functionality of Config is unchanged since the release of the NRW Device Driver Developer Guide, dated 9/10/91. Config does NOT run as part of any rc script at boot time (yet). You have to run it yourself. The "released" version is in /usr/local/lib/Driverkit/Config. The "latest and greatest" version is in ~osdev/DRIVERKIT/driverkit/Config/Debug/Config (integrated) or ~dmitch/Projects/DRIVERKIT/driverkit/Config/Debug/Config (in development, use at your own risk).\
+\
+You need to place a symlink in /usr/Devices which points to your driver's executable. See the NRW Device Driver Developer Guide, page 54, for detailed description of the name of the file (or link) which is to appear in /usr/Devices.  One thing which may not be clear is the value of slot_id for various ASICs. The slot_id for the CMC is ffff0000. The slot_id for the sound chip is fffd0000. Values for device index can be found in /LocalDeveloper/Headers/architecture/m88k/dev_index.h. So, for example, the symlink for the printer driver is called /usr/Devices/devr_0003_0001_printerDriver.\
+\
+
+\b configutil
+\b0 \
+\
+There is a program you can use to send commands to the Config program in an interactive manner subsequent to Config's initial autoconfig procedure. The program is called configutil, located in ~osdev/DRIVERKIT/driverkit/tests/configutil (sorry, not installed yet). This program has the following options:\
+\
+	configutil s	-- does an IORescanDriver(), which causes Config\
+			    to rescan the bus and start up any new drivers.\
+			    \
+	configutil c slot_id dev_type\
+			-- does an IOConfigDevice(). Warning, dev_type consists\
+			   of dev_index in the top 16 bits and a revision field, \
+			   typically 0000, in the low 16 bits.\
+			   \
+			   Example: configutil c ffff0001 30000\
+			   \
+	configutil t slot_id dev_type\
+			-- Causes Config to delete all state, including device ports,\
+			    associated with slot_id and dev_type. This lets you \
+			    recover from a driver crash which occurs before the \
+			    driver calls IORegisterDevice().\
+			    \
+    			   Example: configutil t ffff0001 30000\
+\
+			    This only works on DEBUG configurations of Config\
+			    (which is currently the only one installed).\
+			    \
+
+\b XPR\
+\
+
+\b0 There is no native m88k XPR viewer; the XPRViewer in ~dmitch/utils/XPRViewer/XPRViewer.app can be used across the net (run the app on an m68k for debugging a driver on an m88k). The "Device Name" field is the name you pass to xprInit(). The "Host Name" field is the name of the machine on which the driver is running. The directory containing this app has some sample .xpr files, which are used to define ASCII names for various bitfields.\
+\
+
+\b Example user-level driver
+\b0 \
+\
+~dmitch/PRINTERDRIVER/printerdriver/ contains the source for the NRW printer driver, a user-level driver. One module in this directory, getDevPort.[ch], provides all communication with the Config server at driver launch time. This code is totally generic and may be used pretty much verbatim in any user-level driver. I'll put it in libDriver eventually when it's been around the block a few times. \
+\
+
+\b Random notes
+\b0 \
+\
+* Don't forget to call IOlibIOInit() before using any functions from the libIO C library.\
+\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0\cf0 .................\
+file: ~dmitch/Projects/DRIVERKIT/driverkit/doc/Config.rtf\
+
+}

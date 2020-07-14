@@ -1,0 +1,205 @@
+			3.0 Device Driver Autoconfiguration
+dmitch 25-Jun-91
+		
+
+1. Scope 
+
+This document describes the mechanism by which user-level device drivers are bound to specific device registers and DMA channels at system boot time. This mechanism is to be used in the 3.0 release. Many of the RPCs needed to implement this scheme are described elsewhere, in a specification entitled "Kernel interface for user-level device driver support". 
+
+
+2. General Scheme
+
+There exists one user-level task, called Config, which is executed early in the boot sequence. Config is a privileged task; it communicates with the kernel via the device_master port, which it (and no other task) obtains from init via the bootstrap server. Note that drivers themselves are not privileged. It is Config's job to examine various device registers and determine which device drivers (each of which is an executable file) are to be associated with which device registers. 
+
+Each logical set of device registers (e.g., all of the SCSI registers) are associated with a port called dev_port, which is created by the kernel. Dev_port is the basic means by which a device driver gains access to a device. Config obtains the dev_port for each device via the dev_port_create() RPC. After obtaining the dev_port for a specific device, Config then exec's the appropriate driver for that device and makes dev_port available to that driver via the bootstrap server, thus enabling the driver to gain access to the registers and other resources associated with the device.
+ 
+
+3. Mapping Device Registers to Device Drivers 
+
+A logical device is a set of registers which are associated with one device (e.g., all of the registers associated with the SCSI port). Each logical device has associated with it a dev_number by which Config refers to it; dev_number is machine-dependent but is basically an index into an array of logical devices. 
+
+Each logical device also has a 32-bit attribute called dev_type. The 16 msb's of dev_type are called dev_index; the 16 lsb's are a revision number. For the purposes of this discussion, there are three basic types of devices. One is the type of device which conforms to the NRW model of 8 devices per NextBus slot; this device is referred to as an NRW DMA Device. Another type of device is a Native m68k Device, which describes all devices implemented internally on an m68k CPU board. The other type of device occupies an entire NextBus slot; this is a Slot Device. Third party boards for the m88k can contain either one Slot Device or up to eight NRW DMA Devices; third party boards for the m68k contain one Slot Device (since no DMA is available for NextBus boards on the m68k). The kernel determines which type of device a NextBus board contains by examining the Slot_ID field of the board. If bits 9 through 7 (inclusive) of the Slot_ID field are 1, then the board is assumed to contain NRW DMA Devices; otherwise it contains one S Slot Device. Native devices on both machines, by convention, are assigned a hard-coded Slot_ID of NATIVE_SLOT_ID. 
+
+There is one more significant difference between NRW DMA Devices, Native m68k Devices, and Slot Devices; that is in the type and range of memory which can be mapped in by the driver. The various ranges of memory which can be mapped in by various drivers is described elsewhere. Suffice it to say here that Config neither knows nor cares about any of this memory space; mapping and allocating this memory is peformed by RPCs between the drivers and the kernel.
+  
+
+Config obtains dev_type and slot_id for a given dev_number from the kernel via the following RPC:
+
+
+	dev_return_t get_dev_type(
+			port_t device_master,
+			dev_num_t dev_number,
+			slot_id_t *slot_id,		// returned
+			dev_type_t *dev_type);		// returned
+
+Note that this is a privileged RPC which can only be executed by a task which has acccess to device_master (i.e., only by Config). 
+ 
+It is the responsibility of machine-dependent code in the kernel to map dev_number to a slot_id and dev_type. This is done in one of three ways:
+
+*	The dev_type for NRW DMA Devices is obtained from the hardware. A simple algorithm maps dev_number to the hardware address containing dev_type.
+
+*	The dev_type for Native m68k devices is faked by the kernel; the kernel must maintain a hard-coded map of dev_number to dev_type for native devices. 
+
+*	The dev_type field for Slot Devices is defined as -1; the significant information (as far as device drivers and Config are concerned) is in slot_id.  
+
+Once Config determines the dev_type for a given dev_num (and assuming a valid slot_id and dev_type), it obtains a dev_port for that device by the following RPC:
+
+dev_return_t dev_port_create(
+		port_t device_master, 
+		dev_num_t dev_num,
+		port_name_t *dev_port);
+
+Where
+
+dev_num is the same dev_num used in get_dev_type().
+dev_port is the returned dev_port.
+
+
+Config must then locate a device driver which is capable of dealing with this particular dev_type or slot_id. This information is encoded in the filename of every executable driver in the (TBD) device driver namespace (for now, let's assume some Unix directory). The filenames of all of these drivers are of one of the following two formats:
+
+	devr_<DEV_INDEX>_<REVISION>_<human_readable_name>
+	devs_<SLOT_ID>_<REVISION>_<human_readable_name>
+
+The former is used for drivers for NRW DMA Devices and for Native m68k Devices; the latter is for Slot Devices. DEV_INDEX, SLOT_ID, and REVISION are all in ASCII hex. DEV_INDEX and REVISION are 4 hex characters; SLOT_ID is eight hex characters. <human_readable_name> is something like "LaserPrinter". For example, a printer driver might be named "devr_0002_0011_LaserPrinter". A frame buffer driver might be named "devs_00112233_3456_BigFrame".
+
+When Config is looking for a driver to handle dev_type "abcdABCD" and slot_id "_slot_", it follows the following algorithm (DEV_INDEX, SLOT_ID, and REVISION come from the filename of a prospective driver):
+
+For NRW DMA Devices and for Native m68k Devices (dev_type != -1):
+
+* 	only filenames starting with "devr_" are eligible.
+*	DEV_INDEX must match abcd exactly.
+*	The filename with the highest value of REVISION is used.
+
+For Slot Devices:
+
+* 	only filenames starting with "devs_" are eligible.
+*	SLOT_ID must match _slot_ exactly.
+*	The filename with the highest value of REVISION is used.
+
+If no driver with a filename which matches the above criteria is found, the device is skipped and the dev_port for that device is deallocated via the dev_port_destroy() RPC. This RPC is described in the Appendix. 
+
+Assuming a driver is found the match is recorded by Config in a list of the following:
+
+typedef struct {
+		typedef struct {	
+	    	port_t 		dev_port;
+	    	dev_type_t	dev_type;
+			slot_id_t 	slot_id;
+			dev_num_t	dev_num;
+		} entry[many];	
+		int 	executable_fid;	
+		char	*executable_file_name;
+		/* other cruft here */
+} dev_entry;
+
+Where
+dev_port is obtained from the kernel by dev_port_create().
+	dev_type is obtained from the kernel by get_dev_type().
+executable_fid is the File ID (inode number or its moral equivalent).
+executable_file_name is the name located in the algorithm descibed above.
+
+This mechanism allows multiple dev_port's to be associated with a single driver. In this case, the namespace containing the device drivers would contain links to one executable, one link for each additional dev_type which that driver can handle. When config detects that a file which it is examining is a link to a file which it had already recorded in a dev_entry, it merely adds the new dev_port to that dev_entry.entry[]. This allows mapping multiple dev_ports to a single driver. The significance of this will be discussed later. 
+
+
+4. Passing dev_port's to Device Drivers
+
+Once Config has mapped all available devices in the system to their associated executable drivers it performs the following for each driver to be executed:
+
+-- 	Create a bootstrap subset port which will be unique for this driver.
+-- 	Advertise each dev_port associated with that driver with the bootstrap server under the bootstrap subset port. The name to be advertised is "dev_port_<dev_num>", where <dev_num> is the device's dev_number value, in ASCII decimal.
+--  Create a unique signature port for this driver; advertise this port with the bootstrap server under the bootstrap subset port with the name "driver_sig_port". This will be used by Config to authenticate the driver in subsequent RPCs between the driver and Config.
+--	Fork and exec (or task_create or...) the driver; the driver task's bootstrap port is the bootstrap subset port under which the dev_ports are advertised. 
+
+When a driver starts running, if first obtains its dev_ports by doing a bootstrap_info() on its bootstrap port and then doing bootstrap_look_up() of all services found which have the name "dev_port_*". The result is the set of all dev_ports to which the driver has access. The driver obtains the dev_type and slot_id of each dev_port by performing the following RPC to the kernel:
+
+	dev_return_t dev_port_to_type(
+			port_t dev_port,
+			slot_id_t *slot_id,		// returned
+			dev_type_t *dev_type);		// returned
+
+Unlike get_dev_type(), this can be executed by any task which has send rights to dev_port (i.e., by any device driver, for its own dev_ports).
+
+After this, it is up to the driver to perform the binding and memory mapping of the device registers and interrupt ports for its devices. This mechanism is defined elsewhere. 
+
+Since a driver can obtain access to multiple dev_ports, it is possible for one driver task to deal with both multiple device types (e.g., Ethernet and Token Ring) and with multiple instances of the same dev_type (e.g., two SCSI ports). 
+
+
+5. Behavior of Config Subsequent to Boot Time
+
+Once the procedure above is complete, Config enters a server loop in which a number of RPCs are serviced which pertain to the maintenance of dev_ports and further (re-)configuration of the system. Config advertises a port called dev_config_port in some TBD namespace (probably the nmserver) by which various tasks in the system can make requests of the Config server. These RPCs are described below. Note that Config always maintains the state of all running drivers; it is the central housekeeper for all driver tasks. 
+
+	kern_return_t driver_register(
+			port_t dev_config_port,
+			port_t driver_sig_port,
+			port_t driver_port,
+			config_return_t *rtn);
+
+This is performed once by each driver. The purpose is to allow Config to detect the death of a driver via the notification of port death of driver_port. Upon such port death notification, Config is responsible for executing the appropriate kernel RPC(s) such as dev_port_destroy() (described in the Appendix) which instruct the kernel to clean up any queued DMA requests and delete any interrupt bindings on dev_port. Config will then attempt to restart the driver initially associated with dev_port.   
+
+
+	kern_return_t driver_delete(
+			port_t dev_config_port,
+			port_t driver_sig_port,
+			config_return_t *rtn);
+
+This allows for the graceful, controlled shutdown of a driver without causing Config to restart the driver. Config merely deletes all of its internal state associated with driver_sig_port. This is normally invoked by the driver which is being shut down.
+
+
+	kern_return_t device_delete(
+			port_t dev_config_port,
+			port_t dev_port,
+			config_return_t *rtn);
+
+This allows a driver to relinquish control over a single dev_port. This is typically used when a driver has ownership of multiple devices and wishes to give up some subset of them. A driver which wishes to relinquish control of all of its devices would use driver_delete().
+
+
+	kern_return_t driver_rescan(
+			port_t dev_config_port,
+			config_return_t *rtn);
+
+This causes Config to perform the initial autoconfiguration procedure described in the first part of this document again, skipping dev_numbers for which it currently has valid mappings. <Is this safe for any old non-privileged task to invoke??>
+  
+
+	kern_return_t driver_config(
+			dev_config_port,
+			slot_id_t slot_id,
+			dev_type_t dev_type,
+			config_return_t *rtn);
+
+This causes Config to search for a device matching the slot_id and dev_type arguments by successive calls to get_dev_type(). If such a device is found, an executable driver for the device is located using the same algorithm described in the first part of this document and the driver is exec'd (or whatever). This is the means by which a driver can be launched subsequent to boot time. A combination of driver_delete() and driver_config() is the means by which a new driver can be installed for a given device without rebooting the system. 
+
+
+Appendix
+
+Additional Kernel RPCs
+
+	dev_return_t dev_port_destroy(
+			port_t device_master,
+			dev_port_t dev_port);
+
+This is the means by which Config informs the kernel that all resources associated with dev_port (including dev_port itself) are to be freed. This is invoked upon port death notification of a driver's driver_port and when Config cannot find a driver for a given device.
+
+
+	dev_return_t dev_slot_map(
+			dev_port_t dev_port,
+			vm_task_t target_task,
+			vm_offset_t slot_offset,
+			vm_size_t length,
+			vm_offset_t *addr;		// in/out
+			boolean_t anywhere);
+
+	dev_return_t dev_board_map(
+			dev_port_t dev_port,
+			vm_task_t target_task,
+			vm_offset_t slot_offset,
+			vm_size_t length,
+			vm_offset_t *addr,		// in/out
+			boolean_t anywhere);
+
+These allows drivers to map in either slot space (up to 16 MB starting at 0xfs000000) or board space (up to 256 MB starting at 0xs000000). It is conceivable that multiple drivers can be active for one Slot Device, all sharing one dev_port, but each with a different portion of the total slot space or board space mapped in. This would be accomplished by one driver being exec'd by Config; that driver would then exec other drivers and give them send rights to dev_port. Each driver would invoke dev_slot_map() or dev_board_map() with different slot_offset and length arguments. Note that in this case, it becomes the responsibility of the driver task exec'd by Config to handle to port death of any drivers which it subsequently exec's and to which it gives send rights to dev_port. Config will only handle the port death of tasks which it execs.
+Revision History
+
+25-Jun-91	Doug Mitchell
+Changed "reg_device and slot_device" to "NRW DMA Device, Native m68k Device, and Slot Device". Section 3 extensively rewritten to reflect this change. 
+
+Modified appendix to include dev_board_map() RPC.

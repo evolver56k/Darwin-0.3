@@ -1,0 +1,78 @@
+disk I/O thread - qlock conditions
+
+work to do (ALL threads should wake up and run main loop once) when
+	anything is added to either q (q_disk, q_nodisk), or
+	-diskPresent needs to wakeup I/O thread to tell it "disk present"
+		
+another way:
+work to do when 
+	q_nodisk non-empty, or
+	((!queue_empty(q_disk)) &&
+		(lastReadyState != RS_NODISK) &&
+		(lastReadyState != RS_EJECTING) &&
+      		(!ejectPending)) 
+		
+threads sleep when
+	q_disk and q_nodisk empty
+	q_nodisk empty && no disk present
+	
+Update condition variable (WORK_TO_DO/NO_WORK_TO_DO):
+	-- enqueueIoBuf - set uncond to WORK_TO_DO
+	-- ioThreadWakeup - set uncond to WORK_TO_DO
+	-- in I/O thread - before sleeping (to end of loop, at final unlock).
+	
+@interface NXCondition
+{
+
+}
+
+- signal;
+- broadcast;
+- wait;
+
+...IOThread:
+{
+	while(1) {
+		service q_nodisk;
+		service q_disk if appropriate;
+		cal volCheckRequest if appropriate;
+		[NXcondition wait];
+	}
+}
+
+enqueueIoBuf:
+{
+	[qlock lock];
+	enqueue IOBuf;
+	[NXCondition broadcast];		// need a lock for this too?
+	[qlock unlock];
+}
+..............
+
+How about NXConditionLock..
+in IOQueue:
+	int workToDo;	
+	
+This is the "thread-work quanta" to do. Each IOBuf enqueued 
+
+enqueueIoBuf
+{
+	[qlock lock];
+	enqueue IOBuf;
+	workToDo += numThreads;
+	[qlock unlockWith:WORK_TO_DO];
+}
+
+IOThread
+{
+	while(1) {
+		[qlock lockWhen:WORK_TO_DO];
+		workToDo--;
+		if(workToDo == 0)
+			[qlock unlockWith:NO_WORK_TO_DO];
+		else
+			[qlock unlock];
+		service queues;
+		// all other unlocks leave condition variable alone.
+	}
+}

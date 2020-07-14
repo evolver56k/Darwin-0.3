@@ -1,0 +1,6 @@
+Package: nmserver
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 28
+Description: Mach network message server
+Build-Depends: build-base

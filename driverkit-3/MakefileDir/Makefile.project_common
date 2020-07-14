@@ -1,0 +1,73 @@
+#
+# Additional support for building driverkit-based driver.
+# This is the glue between ProjectBuilder's Makefiles and a driverkit-style
+# subproject. (The term "subproject" is used here loosely; PB doesn't
+# know anything about the driverkit driver). 
+#
+# This files is inlcuded by Makefile.postamble in a driver's .bproj 
+# directory; below this directory is another directory defined by
+# $(DRIVER_DIR), specified in Makefile.postamble. The DRIVER_DIR 
+# subdirectory contains all of the source for building an actual 
+# driver binary, along with a Makefile which uses a standard driverkit 
+# Makefile.device_common. 
+#
+
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+# 
+# This is interpreted as "make all" for the driverkit driver.
+#
+project::
+	@echo making all for $(NAME)/$(DRIVER_DIR)
+	@if [ "$(OBJROOT)" = "$(SRCROOT)" ] ; then \
+	   prod_root="../$(PRODUCT_ROOT)" ;\
+	else \
+	   prod_root="$(PRODUCT_ROOT)" ; \
+	fi ;\
+	(cd $(DRIVER_DIR); $(MAKE) all \
+		"OBJROOT=$(OBJROOT)" \
+		"SYMROOT=$$prod_root" \
+		"DSTROOT=$(DSTROOT)" \
+		"RC_ARCHS=$(RC_ARCHS)")
+
+installhdrs:: 
+	@echo make installhdrs for $(NAME)/$(DRIVER_DIR)
+	@(cd $(DRIVER_DIR); $(MAKE) $@ \
+		"OBJROOT=$(OBJROOT)" \
+		"SYMROOT=$(SYMROOT)" \
+		"DSTROOT=$(DSTROOT)" \
+		"RC_ARCHS=$(RC_ARCHS)")
+
+clean::
+	@echo make clean for $(NAME)/$(DRIVER_DIR)
+	@(cd $(DRIVER_DIR); $(MAKE) $@)
+
+#
+# Rename .bundle to .config, and strip driver binary.
+#
+CONFIG_EXTENSION = .config
+RELOC_SUFFIX = _reloc
+after_install::
+	$(MV) $(DSTROOT)/$(NAME)$(BUNDLE_EXTENSION) \
+	      $(DSTROOT)/$(NAME)$(CONFIG_EXTENSION)
+	@(reloc=$(DSTROOT)/$(NAME)$(CONFIG_EXTENSION)/$(NAME)$(RELOC_SUFFIX); \
+	if [ -s $$reloc ]; then \
+		echo stripping $$reloc ; \
+		$(STRIP) $(RELOCATABLE_STRIP_OPTS) $$reloc ; \
+	fi)
+
+
+#
+# App Makefiles have their own way of doing installsrc...
+#
+$(NAME).copy::	DEST $(DEST)/$(DRIVER_DIR)
+	echo installsrc for $(NAME)/$(DRIVER_DIR)
+	(cd $(DRIVER_DIR); $(MAKE) installsrc \
+		"SRCROOT=$(DEST)/$(DRIVER_DIR)")
+
+$(DEST)/$(DRIVER_DIR):
+	$(MKDIRS) $@

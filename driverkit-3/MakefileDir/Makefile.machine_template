@@ -1,0 +1,23 @@
+#
+# Machine-dependent Makefile template. This is only used for installhdrs and
+# installsrc.
+#
+# Exported and Private header files are enumerated separately for installation
+# purposes.
+#
+# .c and .m files are enumerated in the common Makefile for build purposes.
+#
+
+MAKEFILEDIR = $(MAKEFILEPATH)/pb_makefiles
+include $(MAKEFILEDIR)/platform.make
+
+PUBLIC_HFILES= 	
+PRIVATE_HFILES=	
+
+#
+# Define where in DSTDIR this source goes.
+#
+MACHINE_DIR= i386
+
+# This does the rest.
+-include $(NEXT_ROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/System.framework/Headers/driverkit/Makefile.machine_common

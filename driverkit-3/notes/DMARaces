@@ -1,0 +1,58 @@
+			DMA enqueue race condition handling
+		
+hw_next_desc = nextDescriptor hw register
+hw_curr_desc = currentDescriptor hw register
+count_reg    = 'Count' hw register
+frame_queue  = queue of kern_dma_frame_t (one per channel)
+desc_queue   = queue of kern_dma_desc_t's (one per dma_frame_t)
+last_frame   = end of frame_queue
+last_desc    = end of last_frame's desc_queue
+
+enqueue new_frame
+{
+
+	save current last_desc in old_tail;
+	create chain for new_frame;
+	link new_frame's chain onto old_tail;
+	link new_frame onto frame_queue;
+	if(hw_next_desc != NULL)
+		done;
+	else one of three cases:
+		1. Missed update, channel still working on old_tail.
+		2. Missed update, channel stopped.
+		3. Update OK, channel working on new last_frame from 
+		   (new_frame).
+	if(hw_curr_desc != old_tail)
+		return OK - case 3;
+		
+	/* 
+	 * try to catch update in h/w.
+	 */
+	hw_next_desc = new_frame;	
+	
+	/*
+	 * reading count register guarantees we avoid this race condition:
+	 *
+	 * -- TE finishes last desc, next_descriptor null, sends "clear 
+	 *    descriptorListNotEmpty" packet to device.
+	 * -- Kernel reads descriptorListNotEmpty, it's still 1 because the 
+	 *    packet just sent to the device is NOT atomic and can be 
+	 *    interrupted by a  kernel access (ONCE).
+	 * Thus reading count does two things:
+	 * -- guarantees that descriptorListNotEmpty will be valid 
+	 *    (i.e., 0) when kernel reads it in case of underrun, and
+	 * -- also tells kernel than channel is OK (running) if count is 
+	 *    non-zero, since TE clears it before sending the "clear 
+	 *    descriptorListNotEmpty" packet to the device.
+	 */
+	if((count != 0) || channel's descriptorListNotEmpty)
+		return OK - case 1, did h/w update in time;
+	if(hw_curr_desc == new last_desc)
+		return OK - h/w update in time, and new_frame is already done
+	
+	/*
+	 * case 3. Return error and prepare channel for restart.
+	 */
+	hw_curr_desc = new_frame;	
+	return(missed error);
+}	

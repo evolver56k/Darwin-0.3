@@ -1,0 +1,58 @@
+Ethernet questions
+
+1) current driver - how is enprobe() called? It's in bus_driver endriver, but
+   I don't see where it's referred to...
+   > in ioconf.c - endriver inferred (during config) from en0 in MASTER.next?
+   
+2) netif stuff: In Unix server? In kernel? In separate task containing all of
+   the network drivers and protocols etc.?
+   
+   In Unix server:
+     -- easy to implement "Network Object" which provides methods analogous 
+        to init_func, input_func, etc. (args to if_attach()). 
+	
+     -- very dirty to implement all of the functions in netif (e.g.,
+        if_oerrors(), if_oerrors_set(), etc.). Need objc interface to
+	all of these (in Unix server, accessible from network driver tasks)?
+	Or RPCs to Unix server? Who would do all of this?
+	
+	-- a lot of these (like if_oerrors(), if_oerrors_set()) are pretty
+	   dumb and shouldn't require RPCs. Just maintain this stuff
+	   locally; these functions could be provided by NetworkDevice
+	   superclass.
+	   
+	-- Necessary netif functions (called by driver, in netif.c):
+	
+		if_attach
+		if_down
+		if_handle_input (rld'd into driver task)?
+
+     -- rld things like venip_input (the if_input function, in
+        net/if_venip.c) into Enet task? What happens to the current 
+	ifnet.if_input?
+	
+     -- What about ifnet.if_getbuf()? Seems way too expensive to do an RPC
+        every time you do need to get an output buffer (one RPC to get
+	the buffer, one to send to the driver). Also, mbuf chains ain't
+	gonna work across RPCs. Need to unroll mbuf chains to get one
+	continguous piece of vm to send to driver task...
+
+     -- besides, this doesn't really seem right...IP is not Unix!
+     
+     -- How are we going to provide 3rd party network protocol support? 
+        Rld into Unix server? Huh-uh. 
+	
+   In kernel: 
+     -- could implement the netif functions needed by driver task as
+        traps...seems kind of kludgy.
+     
+   One big "network" task, rld'd into at run time for 3rd party or optional
+   protocols:
+      -- rld inherently evil?
+      -- use existing netif, or redo it in ObjC?
+     
+   Separate task for each driver and protocol:
+      -- seems cleanest from one point of view (no rld, one module can't 
+         crash another)
+      -- Redo entire netif in ObjC? What's the interface to the rest of the 
+         world (i.e., Unix and the kernel)? IODevice? NetworkDevice?

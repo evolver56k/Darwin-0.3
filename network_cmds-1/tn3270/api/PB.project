@@ -1,0 +1,24 @@
+{
+    FILESTABLE = {
+        C_FILES = (
+            api_bsd.c, 
+            api_exch.c, 
+            apilib.c, 
+            asc_ebc.c, 
+            astosc.c, 
+            dctype.c, 
+            disp_asc.c, 
+            ebc_disp.c
+        ); 
+        H_FILES = (api_exch.h, apilib.h, asc_ebc.h, astosc.h, dctype.h, disp_asc.h, ebc_disp.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble, PB.project); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = api; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

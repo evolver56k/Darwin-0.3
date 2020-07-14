@@ -1,0 +1,17 @@
+/Makefile.am/1.1.1.1/Fri Apr 23 01:21:13 1999//Tntp-1
+/Makefile.in/1.1.1.2/Fri Apr 23 01:24:08 1999//Tntp-1
+/README/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/ansi2knr.1/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/ansi2knr.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/byteorder.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/hist.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/jitter.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/kern.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/longsize.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/ntptime.c/1.1.1.1/Fri Apr 23 01:21:14 1999//Tntp-1
+/precision.c/1.1.1.1/Fri Apr 23 01:21:15 1999//Tntp-1
+/sht.c/1.1.1.1/Fri Apr 23 01:21:15 1999//Tntp-1
+/testrs6000.c/1.1.1.1/Fri Apr 23 01:21:15 1999//Tntp-1
+/tickadj.c/1.1.1.2/Fri Apr 23 01:24:09 1999//Tntp-1
+/timetrim.c/1.1.1.1/Fri Apr 23 01:21:15 1999//Tntp-1
+D

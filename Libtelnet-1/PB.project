@@ -1,0 +1,55 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        HEADERSEARCH = (); 
+        H_FILES = (
+            "auth-proto.h", 
+            auth.h, 
+            "enc-proto.h", 
+            encrypt.h, 
+            "key-proto.h", 
+            "misc-proto.h", 
+            misc.h
+        ); 
+        LIBRARYSEARCH = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (
+            auth.c, 
+            encrypt.c, 
+            enc_des.c, 
+            genget.c, 
+            getent.c, 
+            kerberos.c, 
+            kerberos5.c, 
+            krb4encpwd.c, 
+            misc.c, 
+            read_password.c, 
+            rsaencpwd.c, 
+            spx.c
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_COMPILEROPTIONS = ""; 
+    PDO_UNIX_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = telnet; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/gnumake; 
+    WINDOWS_COMPILEROPTIONS = ""; 
+    WINDOWS_INSTALLDIR = /usr/local/lib; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

@@ -1,0 +1,83 @@
+descriptorList_t	*head, *tail;	// software's list of descriptors
+
+/*
+ * Returns CHAN_RUNNING/ CHAN_NOT_RUNNING.  CHAN_NOT_RUNNING implies that
+ * a 'load descriptor' operation is required to start the channel.
+ */
+emptyIndication_t enqueueDescriptors(descriptorList_t *descFrame)
+{
+	if (channel's DNLE == 0) {
+		/*
+		 * hw out of descriptors, channel MUST be stopped.
+		 * Set-up hardware to start with this descriptor if
+		 * current list is empty, else enqueue on end of 
+		 * (non-running) list. 
+		 */
+		if (tail == NULL)
+			head = descFrame;
+		else
+			tail->next = descFrame;
+		tail = tailOf(descFrame);
+		hw_current_desc = descFrame;
+		hw_count = -1;
+		return CHAN_NOT_RUNNING;
+	} else {
+		/*
+		 * Channel has descriptors to process.
+		 * It may, or may not be currently running.
+		 *
+		 * First, just do what's necessary to enqueue descriptors
+		 * in memory.
+		 *
+		 * Software queue CAN'T be empty....
+		 */
+		tail->next = descFrame;
+		tail = tailOf(descFrame);
+		
+		/*
+		 * Now, need to check to see if the memory enqueue "made it".
+		 *
+		 * The first test is to check the hw_next_desc.
+		 *
+		 * If the channel is running and hw_next_desc is non-null,
+		 * then the update must have been in time (channel is running
+		 * with more descriptors ready).
+		 *
+		 * Of course, if the channel is not running, there's no race
+		 * (we wouldn't be here...??)
+		 */
+		if (hw_next_desc != NULL)
+			return CHAN_RUNNING;
+		/*
+		 * At this point, the channel MUST have been running since
+		 * the last time this routine was called because that's the 
+		 * only way that hw_next_desc can become null.
+		 *
+		 * Race to update hw_next_desc before the transfer engine
+		 * needs to advance.
+		 */
+		hw_next_desc = descFrame;
+		
+		/*
+		 * Have to do an implementation-dependent test for desc list
+		 * not empty - updates to TE registers are atomic, but the
+		 * update of the channel status register is not. Current
+		 * desc_list_not_empty() test is to read channel's DNLE bit
+		 * 'n' times here; any read of 0 is a failure (i.e., it's 
+		 * empty).
+		 */
+		if (desc_list_not_empty() == 1)
+			return CHAN_RUNNING;
+			
+		/*
+		 * Lost the race.  The channel MUST be stopped.
+		 *
+		 * Set-up the channel so that a driver ENABLE will restart
+		 * it with descFrame.
+		 */
+		hw_current_desc = descFrame;
+		hw_count = -1;
+		return CHAN_NOT_RUNNING;
+	}
+}
+

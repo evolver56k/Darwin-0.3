@@ -1,0 +1,6 @@
+Package: diskdev-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 65.0
+Description: Disk device commands
+Build-Depends: build-base, driverkit, drveide-hdrs, libinfo-hdrs

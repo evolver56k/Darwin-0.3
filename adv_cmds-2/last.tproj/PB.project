@@ -1,0 +1,20 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        CLASSES = (); 
+        C_FILES = (); 
+        H_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (last.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, last.1); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = last; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+}

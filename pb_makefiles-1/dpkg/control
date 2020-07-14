@@ -1,0 +1,6 @@
+Package: pb-makefiles
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 89.5.1
+Description: ProjectBuilder makefiles
+Build-Depends: build-base

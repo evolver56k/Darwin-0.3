@@ -1,0 +1,6 @@
+Package: cctools
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 295
+Description: Compiler tools
+Build-Depends: build-base, adv-cmds, libstreams-hdrs, libc, libm

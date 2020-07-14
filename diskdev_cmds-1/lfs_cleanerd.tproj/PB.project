@@ -1,0 +1,23 @@
+{
+    COMPILEROPTIONS = "-DDIAGNOSTIC"; 
+    FILESTABLE = {
+	C_FILES = (); 
+	H_FILES = (clean.h); 
+	M_FILES = (); 
+	OTHER_LIBS = (); 
+	OTHER_LINKED = (cleanerd.c, lfs_cksum.c, library.c, misc.c, print.c); 
+	OTHER_SOURCES = (
+	    Makefile.preamble, 
+	    Makefile, 
+	    Makefile.postamble, 
+	    lfs_cleanerd.8, 
+	    DERIVED_FILES
+	); 
+	SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = lfs_cleanerd; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.0; 
+}

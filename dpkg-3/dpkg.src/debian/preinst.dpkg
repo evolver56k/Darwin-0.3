@@ -1,0 +1,12 @@
+#! /bin/sh -
+set -e
+
+if [ "$1" != "upgrade" ]; then
+  exit 0;
+fi
+
+if dpkg --compare-versions "$2" "<<" "1.4.0.8"; then
+  echo "This version of dpkg may only be used to upgrade from versions 1.4.0.8 and later."
+fi
+
+exit 0

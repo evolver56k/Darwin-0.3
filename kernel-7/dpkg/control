@@ -1,0 +1,6 @@
+Package: kernel
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 154.5.1
+Description: Mach+BSD kernel
+Build-Depends: build-base, architecture, driverkit, drvpexpert, kernel-hdrs, libstreams-hdrs, machkit, objc, adv-cmds

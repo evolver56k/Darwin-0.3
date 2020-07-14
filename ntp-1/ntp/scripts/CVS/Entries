@@ -1,0 +1,27 @@
+/Guess.sh/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/README/1.1.1.2/Fri Apr 23 01:24:01 1999//Tntp-1
+/calc_tickadj/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/fixautomakedepsmagic/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/hpadjtime.sh/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/makeconfig.sh/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/mklinks/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/mkver.bat/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/mkversion/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/ntp-groper/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/ntp-restart/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/ntpver/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/plot_summary.pl/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/postinstall/1.1.1.1/Fri Apr 23 01:21:05 1999//Tntp-1
+/preinstall/1.1.1.1/Fri Apr 23 01:21:06 1999//Tntp-1
+/preremove/1.1.1.1/Fri Apr 23 01:21:06 1999//Tntp-1
+/prototype/1.1.1.1/Fri Apr 23 01:21:06 1999//Tntp-1
+/stats.ulrich.patches/1.1.1.1/Fri Apr 23 01:24:02 1999//Tntp-1
+/summary.pl/1.1.1.1/Fri Apr 23 01:21:06 1999//Tntp-1
+/ulrich/1.1.1.1/Fri Apr 23 01:21:06 1999//Tntp-1
+/xntp/1.1.1.1/Fri Apr 23 01:21:06 1999//Tntp-1
+D/monitoring////
+D/rc1////
+D/rc2////
+D/stats////
+D/support////
+D/wininstall////

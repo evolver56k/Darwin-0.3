@@ -1,0 +1,9 @@
+\ Prefix for the Rhapsody Secondary Bootstrap Loader (this line must start with "\ ")
+
+hex
+<size-goes-here> value prefixSize
+load-base prefixSize + value entryPoint
+entryPoint to %srr0
+8000 alloc-mem 7F00 + to %r1
+.registers
+

@@ -1,0 +1,37 @@
+{
+    FILESTABLE = {
+        CLASSES = (); 
+        C_FILES = (); 
+        H_FILES = (pathnames.h, res.h); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (commands.l, debug.c, getinfo.c, list.c, main.c, send.c, skip.c, subr.c); 
+        OTHER_SOURCES = (Makefile.dist, Makefile.preamble, nslookup.help, Makefile.postamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = "/$(USER)/BUILD"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-DRISCOS_BSD # Workaround for missing yyrestart"; 
+    NEXTSTEP_INSTALLDIR = /usr/sbin; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PDO_UNIX_COMPILEROPTIONS = "-DRISCOS_BSD # Workaround for missing yyrestart"; 
+    PDO_UNIX_INSTALLDIR = /usr/sbin; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = nslookup; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/make; 
+    WINDOWS_COMPILEROPTIONS = "-DRISCOS_BSD # Workaround for missing yyrestart"; 
+    WINDOWS_INSTALLDIR = /usr/sbin; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_LINKEROPTIONS = ""; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

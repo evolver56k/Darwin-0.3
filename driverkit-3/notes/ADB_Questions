@@ -1,0 +1,19 @@
+			ADB questions
+			
+* Where's the definition of "how many bytes per register" and "what does
+  the data in register n mean"?
+  
+  -- device-specific...AdbDriver will fetch all of 'em.
+  
+* On a "Talk register 3" when two devices currently have the same address, why
+  will only one device detect a collision? What if device A returns 0x01 and
+  device B returns 0x02? They'll both see a collision (0x03 will be on the 
+  bus...).
+  
+  -- loser jumps off bus on first bad bit! It works.
+  
+* How to handle bus reset - AdbKeyboard and AdbMouse objects should free
+  themselves? How to re-probe??
+  
+* Keyboard mapping...inside AdbKeyboard?
+  

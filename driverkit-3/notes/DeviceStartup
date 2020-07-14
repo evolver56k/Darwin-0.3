@@ -1,0 +1,31 @@
+device driver startup - single dev_type device
+
+	get all dev_ports assigned to us via bootstrap_info() 
+		and bootstrap_look_up();
+	thisUnit = 0;
+	for each dev_port {
+		dev_type = dev_port_to_type();
+		if dev_type bad
+			dev_port_destroy();
+		else { 
+			[thisDevice probe:dev_port 
+				type:dev_type 
+				unit:thisUnit++];
+		}
+	}
+	
+SCSI device
+	get all dev_ports assigned to us via bootstrap_info() 
+		and bootstrap_look_up();
+	thisUnit = 0;
+	for each dev_port {
+		dev_type = dev_port_to_type();
+		if dev_type bad
+			dev_port_destroy();
+		else {
+			[thisDevice probe:dev_port 
+				type:dev_type 
+				unit:thisUnit++];
+			[SCSIDisk probe:SCSIControllerId];
+		}
+	}

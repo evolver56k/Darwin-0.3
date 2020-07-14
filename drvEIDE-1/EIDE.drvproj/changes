@@ -1,0 +1,73 @@
+		EIDE revision history
+
+changes from drvEIDE-9 to drvEIDE-10:
+
+-- Added DriverInfo file to project.
+-- Modified Makefile.postamble with Dieter's common.postamble file. 
+-- Added Help File key into .table personalities.
+-- Changed help file name from EIDE_3_32_HelpFile.rtfd to the more generic
+   EIDE_HelpFile.rtfd.
+-- Changed name of method -controllerPrersent to -controllerPresent
+-- Added explanations for Host IORDY and Multiple Sectors buttons into
+   help file.
+-- Added code to print out more ATAPI drive info. in AtapiCntCmds.m file
+-- Added new personality, DualEide, to handle the case when a customer
+   wants to install NEXTSTEP or OPENSTEP from the ATAPI CD-ROM on the
+   EIDE secondary controller.
+-- Added a new Plug and Play personality.
+
+changes from drvEIDE-10 to drvEIDE-11:
+
+-- Added code to handle Dual EIDE case for 3.3.
+ 
+changes from drvEIDE-11 to drvEIDE-12:
+
+-- Removed extra help file and .dir... file.
+
+changes from drvEIDE-12 to drvEIDE-13.1:
+
+-- Forked for version 3.3 to add correct version #s.
+
+
+changes from drvEIDE-16 to drvEIDE-16.1
+
+-- New style overrides (Auto/ATA/ATAPI/None) and matching inspector.
+   3.3 version (v3.36)
+   4.X version (v4.02)
+
+changes from drvEIDE-16.1 to
+  Titan    : drvEIDE-26
+  4.0 & 3.3: drvEIDE-16.2
+
+
+	-- PIIX IDE controller bus master support.
+	-- Changes to ATAPI/SCSI mode sense/select conversion.
+	-- Changes to ATAPI support to be more compliant with spec.
+	-- Fixed bug with IDE command retry loop.
+	-- New overrides and inspectors.
+	-- Removed Host IORDY button, and added Bus Master button.
+	-- Misc changes.
+
+	3.3 version (v3.37)
+	4.X version (v4.03)
+	5.0 version (v5.01)
+
+changes from drvEIDE-28 to
+  Atlas    : drvEIDE-29
+  
+	-- Corsair and RZ1000 support removed.
+	-- Fixed a bug in the SCSI<->ATAPI mode sense/select conversion.
+	-- Use SCSI timeouts for ATAPI.
+	-- The above two changes allowed ATAPI Zip drives to work.
+	-- Added support for UDMA/33.
+	-- Added support for ATAPI DMA.
+	
+	5.0 version (v5.02)
+
+changes from drvEIDE-31 to
+  Atlas    : drvEIDE-32
+  
+  	-- Changed MAX_BLOCKS_PER_XFER to 256.
+	-- Removed 8GB limit for IDE devices.
+
+	5.0 version (v5.03)

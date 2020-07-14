@@ -1,0 +1,40 @@
+Received: from snow-white.ee.udel.edu by whimsy.udel.edu id aa22801;
+          11 Mar 97 20:23 GMT
+Received: by carbon.chem.nyu.edu (SMI-8.6/1.20)
+	id PAA29481; Tue, 11 Mar 1997 15:19:08 -0500
+Date: Tue, 11 Mar 1997 15:19:08 -0500
+Message-Id: <199703112019.PAA29481@carbon.chem.nyu.edu>
+From: "Edward J. Huff" <huffe@carbon.chem.nyu.edu>
+To: Mills@huey.udel.edu
+CC: Mills@huey.udel.edu, stenn@whimsy.udel.edu, Mills@huey.udel.edu, 
+    Don.Lewis@tsc.tdk.com, WhiskerP@logica.com
+In-reply-to: <9703111439.aa06819@huey.udel.edu> (Mills@huey.udel.edu)
+Subject: Re: Adding volatile to variables shared with signal handlers
+
+>Thanks for the alert. I suspect we have not heard the last of this
+>issue.
+
+I said "volatile required for variabled modified by signal handler."
+Actually, it is possible to construct a case where volatile would be
+required to force the compiler to actually store the values specified
+into the static variables in the mainline routine so that the signal
+handler will read the correct value.  So I suppose strictly speaking
+the variables which are read by the signal handler should also be
+marked volatile. 
+ 
+activefds        INPUT ONLY
+maxactivefd      INPUT ONLY
+refio            INPUT ONLY
+ninterfaces      INPUT ONLY
+debug            INPUT ONLY
+
+Actually, the book says "You specify volatile qualified types for
+objects accessed or altered by signal handlers, by concurrently
+executing programs, or by special hardware (such as memory-mapped
+I/O control register)."
+
+Also "A volatile qualified type indicates that agencies unknown to the
+translator can access or alter the value stored in the object.  The
+translator can assume that it has complete control of all objects that
+do not have volatile qualified types."
+

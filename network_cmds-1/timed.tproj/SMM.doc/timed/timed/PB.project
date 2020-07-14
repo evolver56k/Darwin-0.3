@@ -1,0 +1,11 @@
+FILESTABLE = {
+    OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, date, loop, spell.ok, time, timed.ms, unused);
+};
+LOCALIZABLE_FILES = {
+};
+LANGUAGE = English;
+PROJECTVERSION = 1.1;
+PROJECTTYPE = Tool;
+PROJECTNAME = timed;
+GENERATEMAIN = YES;
+DOCICONFILES = ();

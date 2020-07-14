@@ -1,0 +1,14 @@
+/README/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/dbgRpcLib.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/ptrace.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/regPacket.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/vxTypes.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/vxWorks.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/wait.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/xdr_ld.c/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/xdr_ld.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/xdr_ptrace.c/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/xdr_ptrace.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/xdr_rdb.c/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+/xdr_rdb.h/1.1.1.1/Wed Aug  4 22:27:36 1999//Tgdb-1
+D

@@ -1,0 +1,28 @@
+{
+    FILESTABLE = {
+        CLASSES = (
+            IODevice.m, 
+            IODeviceDescription.m, 
+            IODirectDevice.m, 
+            IODisk.m, 
+            IODiskPartition.m, 
+            IOLogicalDisk.m, 
+            volCheck.m
+        ); 
+        H_FILES = (atob.h, label_subr.h, volCheckPrivate.h, volDriver.h); 
+        OTHER_SOURCES = (Makefile); 
+        SUBPROJECTS = (Kernel, User, i386, eisa, pci, pcmcia); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = libDriver; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,83 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        HEADERSEARCH = (); 
+        H_FILES = (curses.h, pathnames.h); 
+        LIBRARYSEARCH = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (
+            addbytes.c, 
+            addch.c, 
+            addnstr.c, 
+            box.c, 
+            clear.c, 
+            clrtobot.c, 
+            clrtoeol.c, 
+            cr_put.c, 
+            ctrace.c, 
+            curses.c, 
+            cur_hash.c, 
+            delch.c, 
+            deleteln.c, 
+            delwin.c, 
+            erase.c, 
+            fullname.c, 
+            getch.c, 
+            getstr.c, 
+            idlok.c, 
+            id_subwins.c, 
+            initscr.c, 
+            insch.c, 
+            insertln.c, 
+            longname.c, 
+            move.c, 
+            mvwin.c, 
+            newwin.c, 
+            overlay.c, 
+            overwrite.c, 
+            printw.c, 
+            putchar.c, 
+            refresh.c, 
+            scanw.c, 
+            scroll.c, 
+            setterm.c, 
+            standout.c, 
+            termcap.c, 
+            tgoto.c, 
+            toucholap.c, 
+            touchwin.c, 
+            tputs.c, 
+            tscroll.c, 
+            tstp.c, 
+            tty.c, 
+            unctrl.c
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (curses.h); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/project"; 
+    NEXTSTEP_BUILDDIR = ""; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = ""; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    NEXTSTEP_LINKEROPTIONS = ""; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_COMPILEROPTIONS = ""; 
+    PDO_UNIX_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = curses; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/gnumake; 
+    WINDOWS_COMPILEROPTIONS = ""; 
+    WINDOWS_INSTALLDIR = /usr/local/lib; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

@@ -1,0 +1,4 @@
+#
+#	/etc/swaptab
+#
+/private/var/vm/swapfile	lowat=16777216	# 16 Meg low water mark

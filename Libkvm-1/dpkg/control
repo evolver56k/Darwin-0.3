@@ -1,0 +1,6 @@
+Package: libkvm
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 9.1
+Description: Kernel virtual memory library
+Build-Depends: build-base

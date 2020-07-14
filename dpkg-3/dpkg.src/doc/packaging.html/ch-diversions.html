@@ -1,0 +1,61 @@
+<html><head>
+<title>Debian packaging manual - Diversions - overriding a package's version of a file</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 11<br>
+Diversions - overriding a package's version of a file
+</h1>
+
+It is possible to have <kbd>dpkg</kbd> not overwrite a file when it
+reinstalls the package it belongs to, and to have it put the file from
+the package somewhere else instead.<P>
+
+This can be used locally to override a package's version of a file, or
+by one package to override another's version (or provide a wrapper for
+it).<P>
+
+Before deciding to use a diversion, read <A href="ch-alternatives.html">Alternative versions of an interface -
+<kbd>update-alternatives</kbd>, chapter 10</A> to
+see if you really want a diversion rather than several alternative
+versions of a program.<P>
+
+There is a diversion list, which is read by <kbd>dpkg</kbd>, and updated
+by a special program <kbd>dpkg-divert</kbd>.  Please see <code>dpkg-divert(8)</code> for full details of its operation.<P>
+
+When a package wishes to divert a file from another, it should call
+<kbd>dpkg-divert</kbd> in its preinst to add the diversion and rename the
+existing file.  For example, supposing that a <kbd>smailwrapper</kbd>
+package wishes to install a wrapper around <code>/usr/sbin/smail</code>:
+<pre>if [ install = &quot;$1&quot; ]; then
+    dpkg-divert --package smailwrapper --add --rename \
+		--divert /usr/sbin/smail.real /usr/sbin/smail
+fi</pre>
+Testing <code>$1</code> is necessary so that the script doesn't try to add the
+diversion again when <kbd>smailwrapper</kbd> is upgraded.  The
+<code>--package smailwrapper</code> ensures that <kbd>smailwrapper</kbd>'s copy of
+<code>/usr/sbin/smail</code> can bypass the diversion and get installed as
+the true version.<P>
+
+The postrm has to do the reverse:
+<pre>if [ remove = &quot;$1&quot; ]; then
+    dpkg-divert --package smailwrapper --remove --rename \
+                --divert /usr/sbin/smail.real /usr/sbin/smail
+fi</pre><P>
+
+Do not attempt to divert a file which is vitally important for the
+system's operation - when using <kbd>dpkg-divert</kbd> there is a time,
+after it has been diverted but before <kbd>dpkg</kbd> has installed the
+new version, when the file does not exist.
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-sharedlibs.html">next</A>; <A href="ch-alternatives.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

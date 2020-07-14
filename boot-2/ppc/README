@@ -1,0 +1,32 @@
+Rhapsody Secondary Loader
+21 November 1997
+
+Requires the latest compiler update from Sam Figueroa to properly support inline
+functions.
+
+SecondaryLoader/SecondaryLoader
+- Based on Eryk Vershen's latest Secondary Loader (vers3r:/home/eryk/NeXTBoot)
+- Ported from MkLinux to Rhapsody PPC
+
+bin/macho-to-xcoff-eng
+- Based on Peter Bradstreet's macho-to-xcoff (~evershen/NeXTBoot/machoToXCOFF)
+- Fixed: optional header fields were not updated
+- Fixed: section file offsets were incorrect (off by 120 bytes)
+- Added: third argument for entry point (instead of decoding the UNIX thread segment
+  for the srr0 register).
+
+bin/macho-to-xcoff
+- Bourne shell script with same arguments as the original macho-to-xcoff executable
+- Uses 'nm' to get the entry point
+- Calls macho-to-xcoff-eng
+
+bin/mkdirs
+- Bourne shell script
+- Replaces /usr/bin/X11/mkdirhier for MkLinux and /bin/mkdirs for OpenStep
+
+bin/decode_xcoff
+- Based on ~evershen/NeXTBoot/machoToXCOFF
+- Dumps xcoff header
+
+bin/decode_macho
+- Dumps mach-o sections and data (maybe too much data)

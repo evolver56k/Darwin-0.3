@@ -1,0 +1,89 @@
+SOURCE = crypt.c \
+	datagram.c \
+	dispatcher.c \
+	ipc.c \
+	ipc_block.c \
+	ipc_exception.c \
+	ipc_msg.c \
+	ipc_rpc.c \
+	ipc_swap.c \
+	km_procs.c \
+	km_server.c \
+	km_utils.c \
+	lock_queue.c \
+	ls_rec.c \
+	mem.c \
+#	multperm.c \
+	netipc.c \
+	netname.c \
+	netname_server.c \
+	network.c \
+	nm_enable.c \
+	nm_extra.c \
+	nm_init.c \
+	nmserver.c \
+	nn_handler.c \
+	nn_procs.c \
+	pc_handler.c \
+	pc_startup.c \
+	po_message.c \
+	po_notify.c \
+	po_utils.c \
+	portcheck.c \
+	portops.c \
+	portrec.c \
+	portsearch.c \
+	ps_auth.c \
+	rwlock.c \
+	sbuf.c \
+	srr.c \
+	srr_handler.c \
+	srr_utils.c \
+	tcp.c \
+	timer.c \
+	transport.c \
+	uid.c
+
+#
+# Overridden by rc
+#
+OBJROOT = .
+SYMROOT = .
+DSTROOT = /NeXT
+
+
+#
+# Compile options
+#
+CFLAGS = -I. -g
+
+#
+# Generated build variables
+#
+OBJDIR = $(OBJROOT)/objects
+SYMDIR = $(SYMROOT)
+DSTDIR = $(DSTROOT)/NextLibrary/System
+VPATH = $(OBJDIR):$(SYMDIR)
+
+.c.o: ; $(CC) -c $(CFLAGS) -o $(OBJDIR)/$*.o $<
+
+
+build: $(OBJDIR) $(SYMDIR) $(SYMDIR)/nmserver.exe
+
+$(SYMDIR)/nmserver.exe: $(OBJDIR) $(SYMDIR) $(SOURCE:.c=.o)
+	$(CC) $(CFLAGS) -o $(SYMDIR)/nmserver.exe $(SOURCE:.c=.o)
+
+$(OBJDIR) $(SYMDIR) $(DSTDIR) $(SRCROOT):
+	mkdirs $@
+
+clean:
+	rm -rf $(OBJDIR) $(SYMDIR)/nmserver.exe
+
+installhdrs:
+
+install: build $(DSTDIR)
+	cp $(SYMDIR)/nmserver.exe $(DSTDIR)
+
+installsrc: $(SRCROOT)
+	tar cf - . | (cd $(SRCROOT); tar xf -; make clean)
+

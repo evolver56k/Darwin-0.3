@@ -1,0 +1,7 @@
+include $(CoreOSMakefiles)/ProjectBuilder/Makefile.Postamble.Common
+
+IMPLICIT_SOURCE_FILES += mk
+
+after_install::
+	$(INSTALL_DIRECTORY) $(DSTROOT)$(SHAREDIR)/mk
+	$(INSTALL_FILE) -c mk/*.mk mk/bsd.README $(DSTROOT)$(SHAREDIR)/mk

@@ -1,0 +1,33 @@
+#!/bin/sh
+# fixdisk.sh
+# Installs the minisystem onto the given hard disk, if possible
+# Usage: fixdisk <device>
+# Example: fixdisk sd0a
+
+FSCK=/usr/etc/fsck
+MOUNT=/usr/etc/mount
+TAR=/usr/bin/gnutar
+DITTO=/System/Installation/CDIS/ditto
+BOM=/System/Library/CoreServices/BaseSystem.bom
+MOUNTPOINT=/private/tmp/mnta
+REBOOT=/usr/etc/reboot
+MV=/bin/mv
+
+disk=/dev/${1}
+rdisk=/dev/r${1}
+
+if ${FSCK} -p $rdisk && ${MOUNT} -n $disk ${MOUNTPOINT} ; then
+    echo Copying system to ${1}
+    ${DITTO} -arch `/usr/bin/arch` -lang English -bom ${BOM} -outBom ${MOUNTPOINT}/BaseSystem.bom / ${MOUNTPOINT}
+    ${MV} ${MOUNTPOINT}/BaseSystem.bom 
+${MOUNTPOINT}/System/Library/CoreServices/BaseSystem.bom
+    echo
+else
+    echo
+    echo Could not mount hard disk.  This utility cannot be used to repair your disk.
+    echo
+fi
+echo Press Return to restart the computer.
+read foo
+echo Restarting computer.  Please wait...
+${REBOOT}

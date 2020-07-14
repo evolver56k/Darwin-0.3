@@ -1,0 +1,28 @@
+Resent: Fri, 12 Dec 1997 22:27:33 -0500
+Resent: "mills@udel.edu "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa19224;
+          12 Dec 1997 03:51 EST
+Received: from ngate.ngate.uni-regensburg.de (ngate.rz.uni-regensburg.de [132.199.3.13])
+	by rrzs2.rz.uni-regensburg.de (8.8.5/8.8.5) with SMTP id JAA25852
+	for <stenn@whimsy.udel.edu>; Fri, 12 Dec 1997 09:51:36 +0100 (MET)
+Received: from rkdvmks1.ngate.uni-regensburg.de by ngate.ngate.uni-regensburg.de; Fri, 12 Dec 97 09:52 MET
+Received: from rkdvmks1.ngate.uni-regensburg.de by kgate.ngate.uni-regensburg.de; Fri, 12 Dec 97 08:51 GMT
+Received: from RKDVMKS1/SpoolDir by rkdvmks1.ngate.uni-regensburg.de (Mercury 1.32);
+    12 Dec 97 09:51:21 +0100
+Received: from SpoolDir by RKDVMKS1 (Mercury 1.32); 12 Dec 97 09:50:51 +0100
+From: Ulrich Windl <ulrich.windl@rz.uni-regensburg.de>
+Organization: Universitaet Regensburg, Klinikum
+To: stenn@whimsy.udel.edu
+Date: Fri, 12 Dec 1997 09:50:42 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-transfer-encoding: 7BIT
+Subject: ntp4.0.70a: ntp_timer.c:343
+Priority: normal
+X-mailer: Pegasus Mail for Windows (v2.53/R1)
+Message-ID: <1063F1743288@rkdvmks1.ngate.uni-regensburg.de>
+
+ntp_time.c:243 references refclock_transmit which is not present for 
+--disable-all-clocks.
+
+Ulrich

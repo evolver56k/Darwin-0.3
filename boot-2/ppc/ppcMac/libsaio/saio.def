@@ -1,0 +1,196 @@
+//
+// Definition of exported functions
+//
+// Format of this file:
+//
+// Lines beginning with '#' are passed through
+// Lines beginning with '//' are ignored
+// Functions are declared as C prototypes, except that the arguments
+// are listed again before the semicolon.
+//
+// Examples:
+// int takes_one_argument(int a) a ;
+// void takes_no_arguments(void) ;
+
+#import "saio_types.h"
+
+// asm functions
+
+// Switch from real to protected mode
+void real_to_prot(void) ;
+
+// Switch from protected to real mode
+void prot_to_real(void) ;
+
+// Halt the CPU
+void halt(void) ;
+
+//
+// BIOS functions
+//
+
+// Perform any BIOS function
+void bios(biosBuf_t *bb) bb;
+
+// Get a character from the keyboard
+int bgetc(void) ;
+
+// Read from disk through the BIOS
+int biosread(int dev, int cyl, int head, int sec, int num)
+  dev, cyl, head, sec, num;
+
+// Put a character to the screen
+void putc(int ch) ch;
+
+// Get a character (with processing)
+int getc(void) ;
+
+// Read the keyboard status
+int readKeyboardStatus(void) ;
+
+// Get the current system time (expressed in 1/18 second units)
+unsigned int time18(void) ;
+
+//
+unsigned int get_diskinfo(int dev) dev;
+
+//
+int memsize(int i) i;
+
+// Set the BIOS video mode
+void video_mode(int mode) mode;
+
+// Set the cursor position (80x24)
+void setCursorPosition(int x, int y) x,y;
+
+//
+// libc-style functions
+//
+int open(char *str, int how) str, how;
+int close(int fdesc) fdesc;
+int file_size(int fdesc) fdesc;
+int read(int fdesc, char *buf, int count) fdesc, buf, count;
+int lseek(int fdesc, off_t addr, int ptr) fdesc, addr, ptr;
+int tell(int fdesc) fdesc;
+void flushdev(void) ;
+struct dirstuff *opendir(char *path) path;
+int closedir(struct dirstuff *dirp) dirp;
+struct direct *readdir(struct dirstuff *dirp) dirp;
+void putchar(int ch) ch;
+int getchar(void) ;
+int gets(char *buf) buf;
+
+//
+// string table functions
+//
+char *newStringFromList(char **list, int *size) list, size;
+int stringLength(char *table, int compress) table, compress;
+BOOL getValueForStringTableKey(char *table, char *key, char **val, int *size)
+  table, key, val, size;
+char *newStringForStringTableKey(char *table, char *key) table, key;
+BOOL getValueForBootKey(char *line, char *match, char **matchval, int *len)
+  line, match, matchval, len;
+BOOL getValueForKey(char *key, char **val, int *size) key, val, size;
+char *loadLocalizableStrings(char *name) name;
+char *bundleLongName(char *bundleName) bundleName;
+int loadConfigFile( char *configFile, char **table, int allocTable)
+  configFile, table, allocTable;
+int loadConfigDir(
+	char *bundleName,
+	int useDefault,
+	char **table,
+	int allocTable
+) bundleName, useDefault, table, allocTable;
+int loadSystemConfig(char *which, int size) which, size;
+int loadOtherConfigs(int useDefault) useDefault;
+
+//
+// File loading functions
+//
+int loadmacho(
+	struct mach_header *head,
+	int dev,
+	int io,
+	entry_t *entry,
+	char **addr,
+	int *size,
+	int file_offset
+) head, dev, io, entry, addr, size, file_offset;
+int loadprog(
+	int dev,
+	int fd,
+	struct mach_header *headOut,
+	entry_t *entry,
+	char **addr,
+	int *size
+) dev, fd, headOut, entry, addr, size;
+void removeLinkEditSegment(struct mach_header *mhp) mhp;
+
+//
+// Driver loading functions
+//
+void driverIsMissing(char *name) name;
+int driversAreMissing(void) ;
+int openDriverReloc(char *name) name;
+int loadDriver(char *name, int fd) name, fd;
+void pickDrivers(
+	char **driver_names,
+	char **bundle_names,
+	int ndrivers,
+	int autoLoad
+) driver_names, bundle_names, ndrivers, autoLoad;
+int loadBootDrivers(void) ;
+int isInteresting(char *name, char *configTable) name, configTable;
+void driverWasLoaded(char *name, char *configTable) name, configTable;
+void printMissingDrivers(void) ;
+
+//
+// Localization functions
+//
+int localVPrintf(const char *format, va_list ap) format, ap;
+int loadLanguageFiles(void) ;
+char *getLanguage(void) ;
+char *setLanguage(char *new) new;
+int errorV(const char *format, va_list ap) format, ap;
+int getErrors(void) ;
+int setErrors(int new) new;
+
+//
+// Miscellaneous functions
+//
+void sleep(int n) n;
+void setA20(void) ;
+void turnOffFloppy(void) ;
+
+//
+// Shared malloc --
+// These malloc functions use the malloc pool shared by all modules
+// (instead of a pool private to the module).
+//
+void *sh_malloc(size_t size);
+void sh_free(void *start);
+void *sh_realloc(void *ptr, size_t size);
+
+//
+// choose UI
+//
+int chooseSimple( char **strings, int nstrings, int min, int max )
+strings, nstrings, min, max;
+int chooseFromList(
+	char *title,
+	char *message,
+	char **strings,
+	int nstrings,
+	char *footMessage,
+	char *moreMessage,
+	char *quitMessage
+) title, message, strings, nstrings, footMessage, moreMessage, quitMessage;
+void clearScreen(void) ;
+
+//
+// Console functions
+//
+void copyImage(const struct bitmap *bitmap, int x, int y) bitmap, x, y;
+void clearRect(int x, int y, int w, int h, int c) x,y,w,h,c;
+struct bitmap *loadBitmap(char *filename) filename;
+

@@ -1,0 +1,58 @@
+Replied: Mon, 16 Feb 1998 12:38:05 -0500
+Replied: "Kenneth Jaldehag <kenneth.jaldehag@sp.se> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa00262;
+          16 Feb 1998 03:29 EST
+Received: by SPANNEN with Internet Mail Service (5.0.1457.3)
+	id <1ZTQSM3F>; Mon, 16 Feb 1998 09:29:11 +0100
+Message-ID: <4E98A9686499D011BC9900805FA638784968DF@SPANNEN>
+From: Kenneth Jaldehag <kenneth.jaldehag@sp.se>
+To: "'stenn@whimsy.udel.edu'" <stenn@whimsy.udel.edu>
+Subject: SV: SV: compilation problems? 
+Date: Mon, 16 Feb 1998 09:29:09 +0100
+X-Priority: 3
+MIME-Version: 1.0
+X-Mailer: Internet Mail Service (5.0.1457.3)
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+I'm not using GNU make.
+
+I'm running make from the same directory as configure is located.
+For instance, to be clear, unpacking xntp3-5.92.tar (using tar xvf)
+creates a=20
+directory xntp3-5.92 in which configure is directly located. In this
+directory
+I do the command ./configure
+
+I guess it doesn't matter where the directory xntp3-5.92 is located?
+
+The TIOCMBS is defined in sys/ioctl.h, that is in=20
+/usr/sys/include/sys/ioctl.h
+
+termios.h is located in the same directory.
+
+The operating system is Digital Unix v4.0B
+
+Regards,
+Kenneth Jaldehag
+
+
+> ----------
+> Fr=E5n: 	stenn@whimsy.udel.edu[SMTP:stenn@whimsy.udel.edu]
+> Skickat: 	 den 14 februari 1998 04:48
+> Till: 	Kenneth Jaldehag
+> Ang=E5ende: 	Re: SV: compilation problems?=20
+>=20
+> Kenneth,
+>=20
+> On what system was TIOCMBS defined in ioctl.h instead of in =
+termios.h?
+> I'd prefer to update the code to Do The Right Thing.
+>=20
+> Was the TIOCMBS in ioctl.h or sys/ioctl.h?
+>=20
+> Harlan
+>=20

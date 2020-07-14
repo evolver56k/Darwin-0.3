@@ -1,0 +1,84 @@
+Replied: Fri, 27 Mar 1998 01:29:51 -0500
+Replied: "jonathan@DSG.Stanford.EDU "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa02952;
+          26 Mar 1998 20:18 EST
+Received: (from jonathan@localhost) by Kowhai.Stanford.EDU (8.7.4/8.6.9) id RAA10458; Thu, 26 Mar 1998 17:18:09 -0800 (PST)
+Date: Thu, 26 Mar 1998 17:18:09 -0800 (PST)
+Message-Id: <199803270118.RAA10458@Kowhai.Stanford.EDU>
+X-newsreader: xrn 9.00
+From: Jonathan Stone <jonathan@DSG.Stanford.EDU>
+Reply-To: jonathan@DSG.Stanford.EDU
+Path: Kowhai.Stanford.EDU!jonathan
+Newsgroups: comp.protocols.time.ntp
+To: "David L. Mills" <mills@udel.edu>
+Cc: stenn@whimsy.udel.edu
+Subject: Portability paranoia patches for adding TIOCDCDTIMESTAMP
+Distribution: 
+Followup-To: 
+Organization: Stanford Distributed Systems Grop
+Keywords: 
+
+[posted to comp.protocols.time.ntp, for inspection, and emailed]
+
+I've implemented TIOCDCDTIMESTAMP in NetBSD, with the same semantics
+and name as FreeBSD.  Looking at the 3-5.92 code, if the system
+headers define TIOCDDCDTIMESTAMP, xntpd/ntp_refclock.c assumes the
+ioctl() will always succeed.  The older, pre-DIOCDCDTIMESTAMP code is
+#ifdef'ed out
+
+The following patch changes the test for TIOCDDCDTIMESTAMP usage from
+compile-time to run-time. This is a small piece of paranoia, to make
+xntpd work even if the source has TIOCDDCDTIMESTAMP, but the kernel
+doesn't. It also increases backward portabiility.
+
+I'd like to put these changes into the NetBSD-distributed version of
+xntp, for ease of binary distributions. It'd be nice, but not
+necessary, if they got pulled into the canonical source.
+
+I havent actually tried this on a refclock yet, eihter with or without
+TIOCDCDTIMESTAMP, but it seems utterly straightforward to fall back
+from the inkernel timestamp to the old method, if and only if the
+kernel pukes on the TIOCDCDTIMESTAMP ioctl().  
+
+I'd be grateful for any advice to the contrary.
+
+
+
+
+Index: xntpd/ntp_refclock.c
+===================================================================
+RCS file: /cvsroot/src/usr.sbin/xntp/xntpd/ntp_refclock.c,v
+retrieving revision 1.3
+diff -c -r1.3 ntp_refclock.c
+*** ntp_refclock.c	1998/03/06 18:17:22	1.3
+--- ntp_refclock.c	1998/03/27 01:10:05
+***************
+*** 722,729 ****
+  		} else
+  			trtmp = rbufp->recv_time;
+  	}
+! 
+! #else /* TIOCDCDTIMESTAMP */
+  	if (dpend >= dpt + 8) {
+  		if (buftvtots(dpend - 8, &tstmp)) {
+  			L_SUB(&trtmp, &tstmp);
+--- 722,730 ----
+  		} else
+  			trtmp = rbufp->recv_time;
+  	}
+! 	else
+! 	/* XXX fallback to old method if kernel refuses TIOCDCDTIMESTAMP */
+! #endif  /* TIOCDCDTIMESTAMP */
+  	if (dpend >= dpt + 8) {
+  		if (buftvtots(dpend - 8, &tstmp)) {
+  			L_SUB(&trtmp, &tstmp);
+***************
+*** 746,752 ****
+  				trtmp = rbufp->recv_time;
+  		}
+  	}
+- #endif /* TIOCDCDTIMESTAMP */
+  
+  	/*
+  	 * Edit timecode to remove control chars. Don't monkey with the
+--- 747,752 ----

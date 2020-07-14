@@ -1,0 +1,23 @@
+Source: dpkg-scriptlib
+Section: devel
+Priority: extra
+Maintainer: Klee Dienes <klee@debian.org>
+Standards-Version: 2.4.1.0
+
+Package: dpkg-perl
+Architecture: all
+Depends: perl-base, dpkg (>= 1.4.0.8)
+Description: Perl interface modules for dpkg
+ Contains Perl 5 modules for dpkg, the Debian package management
+ system.  These are currently skeletal, but should eventually provide
+ access to all low-level dpkg functions from within perl, as well as a
+ number of higher-level routines.
+
+Package: dpkg-python
+Architecture: all
+Depends: python-base (>= 1.5-1), dpkg (>= 1.4.0.8)
+Description: Python interface modules for dpkg
+ Contains Python modules for dpkg, the Debian package management
+ system.  These are currently skeletal, but should eventually provide
+ access to all low-level dpkg functions from within python, as well as
+ a number of higher-level routines.

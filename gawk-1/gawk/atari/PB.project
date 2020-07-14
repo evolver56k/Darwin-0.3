@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        Documentation = (ChangeLog); 
+        Headers = (redirect.h, config.h); 
+        Resources = (); 
+        SUBPROJECTS = (); 
+        Sources = (tmpnam.c, system.c, stack.c); 
+    }; 
+    NEXTSTEP_BUILDTOOL = /bin/make; 
+    PDO_UNIX_BUILDTOOL = /bin/make; 
+    PROJECTNAME = atari; 
+    PROJECTTYPE = "GNU Source"; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = "${NEXT_ROOT}/NextDeveloper/Executables/make"; 
+}

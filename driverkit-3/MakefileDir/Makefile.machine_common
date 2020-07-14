@@ -1,0 +1,33 @@
+#
+# Common machine-dependent Makefile fragment for DEVICES project.
+#
+ifneq "" "$(wildcard /bin/mkdirs)"
+  MKDIRS = /bin/mkdirs
+else
+  MKDIRS = /bin/mkdir -p
+endif
+
+SOURCEFILES=	$(PUBLIC_HFILES) $(PRIVATE_HFILES)
+
+INSTFLAGS=-c -m 444
+
+#
+# Note project-specific machine-dependent Makefile must define MACHINE_DIR.
+# CAREFUL: this install is only for header files; binaries should use
+# their own Makefile.
+#
+install installhdrs install_only:	$(DSTDIR)/$(MACHINE_DIR)
+	if [ -n "${PUBLIC_HFILES}" ]; \
+	then  \
+		install ${INSTFLAGS} $(PUBLIC_HFILES) \
+			$(DSTDIR)/$(MACHINE_DIR); \
+	fi
+	
+installsrc:	$(SRCROOT)
+	gnutar cf - $(SOURCEFILES) *.m *.c *.h Makefile | (cd $(SRCROOT); gnutar xpf -)
+
+clean:
+	-rm -rf *.d Makedep *~
+
+$(DSTDIR) $(SRCROOT) $(DSTDIR)/$(MACHINE_DIR):
+	$(MKDIRS) $@

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+##
+# Mount local filesystems (according to /etc/fstab).
+##
+
+. /etc/rc.common
+
+ConsoleMessage "Mounting local filesystems"
+
+mount -vat ufs
+mount -t fdesc -o union stdin /dev
+
+##
+# update flushes the cached blocks from the filesystem using
+# the sync system call every 30 seconds.  This ensures the
+# disk is reasonably up-to-date in the event of a system crash.
+##
+update

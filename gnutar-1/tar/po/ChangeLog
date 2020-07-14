@@ -1,0 +1,119 @@
+1997-04-25  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Release 1.12.
+
+1997-04-18  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Prerelease 1.11p.
+
+	* fr.po: Updated file.
+
+1997-04-11  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Prerelease 1.11o.
+
+1997-03-26  François Pinard  <pinard@iro.umontreal.ca>
+
+	* it.po: New file.
+
+1997-02-14  François Pinard  <pinard@iro.umontreal.ca>
+
+	* pl.po: Updated file.
+
+1996-11-22  François Pinard  <pinard@iro.umontreal.ca>
+
+	* POTFILES.in: Add src/common.h.
+	Reported by Christian Kirsch.
+
+1996-11-18  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Prerelease 1.11.14.
+
+	* POTFILES.in: Adjust for changes in src/.
+
+1996-09-05  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Prerelease 1.11.12.
+
+	* pl.po: New file.
+
+1995-06-17  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Release 1.11.8.
+
+	* Makefile.in (.po.gmo): Force moving the created .gmo file to
+	$(srcdir), in case it was not already found and replaced there.
+	(install-data): Find files in $(srcdir) if not in current dir,
+	because .gmo files are taken there, right out the distribution.
+	* intl/Makefile.in (DISTFILES): Ensure an all ready stamp-cat-id
+	and cat-id-tbl.c into the distribution.
+	(stamp-cat-id): Rewrite rule so it replaces files in $(srcdir),
+	remove a useless rm and cat.
+
+	* intl/cat-compat.c, int/gettext.h, intl/po-to-tbl.sed,
+	Makefile.in: Last minutes additions, and glimpses to the future
+	gettext 0.6.1.
+	Reported by Ulrich Drepper.
+
+	* Makefile.in (install-data, uninstall): Avoid using basename.
+
+1995-06-15  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Makefile.in (dist): Comment out tupdate action for now, it
+	needs more tweeking before being distributed active.
+
+	* intl/Makefile.in (dist), Makefile.in (dist): Correct
+	missing reference to $(srcdir) on cp call, also avoid outputting
+	clutter while doing the work.
+
+	* intl/Makefile.in: Use top_srcdir for referring to $(PACKAGE).pot.
+
+	* Makefile.in (.po.gmo): Get around what seems to be an msgfmt
+	bug, which adds .mo even to FILE in `-o FILE'.
+
+	* intl/Makefile.in, Makefile.in: Adjustments to NLS, so .sed
+	scripts may now all reside in intl/.
+
+1995-06-07  François Pinard  <pinard@iro.umontreal.ca>
+
+	* POTFILES: New file.
+	* Makefile.in: Use POTFILES instead of TRANSCSRCS, also use
+	top_srcdir.
+
+	* intl/linux-msg.sed, intl/po-to-tbl.sed, intl/xopen-msg.sed: New
+	files, all taken from gettext 0.6.
+
+1995-06-05  François Pinard  <pinard@iro.umontreal.ca>
+
+	* intl/*:  New from GNU gettext 0.6, replacing the previous
+	version of this directory.  This change should solve many problems.
+
+	Reported by Bruno Haible, Christopher Vickery, Jan Carlson,
+	Jean-Philippe Martin-Flatin, John David Anglin, Joseph E.
+	Sacco, Kaveh R. Ghazi, Kurt Jaeger, Mark W. Eichin, Marty
+	Leisner, Minh Tran-Le, Stephen Saroff, Thomas Koenig, Thomas
+	Krebs and William Bader.
+
+1995-05-16  François Pinard  <pinard@iro.umontreal.ca>
+
+	* intl/Makefile.in, Makefile.in: Many adjustments for GNU gettext.
+
+1995-05-09  François Pinard  <pinard@iro.umontreal.ca>
+
+	* Makefile.in: New file.
+	* de.po, fr.po, pt.po, sv.po: New files, adapted from
+	the corresponding .tt files in src/.
+
+1995-05-08  François Pinard  <pinard@iro.umontreal.ca>
+
+	* intl/*: New, from nlsutils.
+
+1995-01-09  François Pinard  <pinard@iro.umontreal.ca>
+
+	* src/de.tt: New file, for Swedish.
+	Reported by Jan Djarv.
+
+1994-12-10  François Pinard  <pinard@iro.umontreal.ca>
+
+	* de.tt: New file, for German.
+	Reported by Ulrich Drepper.

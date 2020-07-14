@@ -1,0 +1,10 @@
+/ffs_alloc.c/1.1.1.2/Thu Jul 22 22:57:24 1999/-kb/Tkernel-7
+/ffs_balloc.c/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/ffs_extern.h/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/ffs_inode.c/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/ffs_subr.c/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/ffs_tables.c/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/ffs_vfsops.c/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/ffs_vnops.c/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+/fs.h/1.1.1.2/Thu Jul 22 22:57:25 1999/-kb/Tkernel-7
+D

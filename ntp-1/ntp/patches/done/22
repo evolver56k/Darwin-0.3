@@ -1,0 +1,40 @@
+Replied: Thu, 12 Mar 1998 20:23:43 -0500
+Replied: "Sven Dietrich <Sven_Dietrich@Trimble.COM> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa23598;
+          12 Mar 1998 15:07 EST
+Received: from Trimble.COM by mothra.Trimble.COM (SMI-8.6/SMI-SVR4)
+	id MAA29993; Thu, 12 Mar 1998 12:09:00 -0800
+Received: from us01xch01.trimble.com by Trimble.COM (SMI-8.6/SMI-SVR4)
+	id MAA26420; Thu, 12 Mar 1998 12:07:42 -0800
+Received: by US01XCH01.Trimble.COM with Internet Mail Service (5.0.1458.49)
+	id <GWX4LS18>; Thu, 12 Mar 1998 12:05:56 -0800
+Message-ID: <69A62D0B25F3D0118A3800A0C9661F23C1B98F@US01XCH02.Trimble.COM>
+From: Sven Dietrich <Sven_Dietrich@Trimble.COM>
+To: stenn@whimsy.udel.edu
+Subject: No diffs, but...
+Date: Thu, 12 Mar 1998 12:04:58 -0800
+X-Priority: 3
+X-Mailer: Internet Mail Service (5.0.1458.49)
+
+
+Stumbled across this one:
+
+In libntp/statestr.c
+
+Line 5
+#include <config.h>
+
+should probably be
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+S.
+/*
+ * Sven-Thorsten Dietrich
+ * Software Component & Timing Solutions 
+ * 
+ * (408) 481-7289 (Voice)                  
+ * (408) 481-2011 (Fax)
+ */
+

@@ -1,0 +1,21 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        CLASSES = (); 
+        C_FILES = (); 
+        H_FILES = (pathnames.h); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (sccs.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, sccs.1); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = sccs; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+}

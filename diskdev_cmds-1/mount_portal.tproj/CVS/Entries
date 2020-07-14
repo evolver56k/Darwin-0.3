@@ -1,0 +1,16 @@
+/Makefile/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/Makefile.dist/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/Makefile.preamble/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/PB.project/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/activate.c/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/conf.c/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/mount_portal.8/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/mount_portal.c/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/pathnames.h/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/portal.conf/1.1.1.1/Sun May  2 01:42:34 1999//Tdiskdev_cmds-1
+/portald.h/1.1.1.1/Sun May  2 01:42:35 1999//Tdiskdev_cmds-1
+/pt_conf.c/1.1.1.1/Sun May  2 01:42:35 1999//Tdiskdev_cmds-1
+/pt_exec.c/1.1.1.1/Sun May  2 01:42:35 1999//Tdiskdev_cmds-1
+/pt_file.c/1.1.1.1/Sun May  2 01:42:35 1999//Tdiskdev_cmds-1
+/pt_tcp.c/1.1.1.1/Sun May  2 01:42:35 1999//Tdiskdev_cmds-1
+D

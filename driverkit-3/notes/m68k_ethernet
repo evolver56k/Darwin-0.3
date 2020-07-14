@@ -1,0 +1,360 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Ohlfs;\f1\fmodern Courier;}
+\paperw13040
+\paperh10200
+\margl120
+\margr120
+{\colortbl\red0\green0\blue0;}
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\f0\b0\i0\ul0\fs24 		current m68k Etehernet driver notes\
+		\
+
+\f1\b\fs28 Globals
+\f0\b0\fs24 \
+		\
+struct en_softc en_softc[] - one per interface.\
+\
+
+\f1\b\fs28 Functions
+\f0\b0\fs24 \
+\
+int enprobe(caddr_t reg, int ctrl) \
+// 
+\f1\b\fs28 called from
+\f0\b0\fs24 : \
+//	via autoconf, in endriver\
+\{\
+	return "real" address 
+\fc0 (w/slot_id_map offset) 
+of en registers;\
+\}\
+\
+int enattach(
+struct bus_device *bd
+) \
+
+// 
+\f1\b\fs28 called from
+\f0\b0\fs24 : via autoconf, in endriver\
+
+\{\
+	get enet address saved by ROM in global etheraddr, save it in \
+		en_softc and write to hardware;\
+	if_attach(
+eninit, NULL, enoutput, engetbuf, encontrol,
+ a slew of args);\
+\}\
+\
+int eninit(netif_t netif)\
+// 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	en_setaddr\
+/	enattach\
+/	encontrol\
+\{\
+	get *en_softc from netif;\
+	basic "get s/w and h/w state to known condition" stuff;\
+	set new phys address if spec'd in en_softc.is_flags;\
+	queue up 
+NTXBUFS
+ DMA buffers ib en_softc.
+is_tx_free
+;\
+	queue up 
+NRXBUFS
+ DMA buffers in hardware queue;\
+\}\
+\
+int 
+en_rx_grabbufs(struct en_softc *is)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+/	timeout() callout from in 
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 en_rx_dmaintr
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 ()
+\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	get memory via if_busalloc for all DMA headers in is_rx_free,\
+		enqueue result in hardware queue;\
+\}\
+\
+void en_rx_dmaintr(int unit)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+/	DMA interrupt handler\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	if any DMA errors\
+		log to console (but keep going...!);\
+	get length of packet from DMA engine;\
+	if invalid length \{\
+		log error;\
+		if_errors_set();\
+		re-enqueue this header and buffer on h/w;\
+	\}\
+	nb = if_rbusget(dma buffer, HDR_SIZE + length);\
+	if_handle_input(en_softc->is_if, nb, NULL);\
+	if_busalloc() a new DMA buffer;\
+	if none available\
+		put this header on is_rx_free\
+	else\
+		enqueue this header and buffer on h/w;\
+	record is_last_rx timestamp;\
+\}\
+\
+int enoutput(netif_t netif,\
+	 netbuf_t nb,\
+	 void *dst)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	higher layer protocol - registered in if_attach() in enattach().\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	/*\
+	 * Crufty crap:\
+	 * \
+	 *   struct ifnet *ifp = (struct ifnet *)netif; \
+	 *   struct mbuf *m = (struct mbuf *)nb; \
+	 *\
+	 * Find out from Brad or jks why the "XXX" one these lines and what \
+	 * we hope to do about this kind of thing in the future...\
+	 */\
+	 \
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 	get *en_softc from netif;\
+	if not running or net down \{\
+		nb_free(nb);\
+		return ENETDOWN;\
+	\}\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 	copy dest addr from dst to mtod(m, struct ether_header *);\
+	copy source addr from en_softc to mtod(m, struct ether_header *);\
+	if (IF_QFULL(&ifp->if_snd)) \{\
+		handle queue full error;\
+		return ENOBUFS;\
+	\}\
+	IF_ENQUEUE(&ifp->if_snd, m);\
+	if not active\
+		enstart();\
+	return 0;\
+\}\
+\
+int enstart(dev_t dev)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+/	
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 en_tx_dmaintr
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 (),
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0  enoutput
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 ()
+\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	dequeue an mbuf from our netif;\
+	get a free DMA header from is_tx_free;\
+	if none \{\
+		log error;\
+		nb_free(nb);\
+		return;\
+	\}\
+	if_busalloc(free hdr, netbuf);\
+	calculate DMA start/end registers kludges;\
+	splimp();\
+	start en_jam timeout timer;\
+	dma_enqueue() the header (in h/w if necessary);\
+	set output_active flag;\
+	splx();\
+\}\
+\
+int en_down(int unit)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	boot (to take net down)\
+//	en_jam(), on "I give up, it's broken"\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	if_down();\
+\}\
+\
+int en_antijam(struct en_softc *is)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	en_jam, timeout() callout after "I give up"\
+//	untimeout()'d in encontrol(
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 IFCONTROL_SETFLAGS
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 );\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	clear jammed flag;\
+	huh???\
+\}\
+\
+int en_jam(struct en_softc *is)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	timeout() callout from enstart();\
+
+\fc0 //	tx_intr, on "no heartbeat detect"
+\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	if thin wire mode \{\
+		if heartbeat on TPE \{\
+			select TPE;\
+			return OK;\
+		\}\
+	\}\
+	else \{\
+		if heartbeat\
+			return OK (Huh???)\
+	\}\
+	log error message;\
+	en_down();\
+	enable en_antijam() timeout;\
+	return error;\
+\}	\
+\
+void en_tx_dmaintr(int unit)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	DMA interrupt handler\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	disable en_jam timeout;\
+	while(dhp = dma_dequeue()) \{\
+		if any DMA channel errors \{\
+			dma_enqueue() this dhp;\
+			return;\
+		\}\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0 		if > 16 collision error \{\
+			if_oerrors_set();\
+			if jam_count exceeded and not currently jammed \{\
+				if(en_jam())\
+					goto out;\
+			\}\
+			dma_enqueue this dhp as a retry;\
+			return;\
+		\}\
+		if TPE \{\
+			if en_rx timeout exceeded \{\
+				/* huh??? this is tx... */\
+				if(en_jam()) \{\
+					dma_enqueue this hdr;\
+					return;\
+				\}\
+			\}\
+		\}\
+out:\
+		if_busfree(dhp);\
+		enqueue this dhp on is_tx_free;\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 	\}\
+	\
+	return;\
+\}\
+\
+int encontrol(netif_t netif,\
+	  const char *command,\
+	  void *data)\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520 // 
+\f1\b\fs28 called from
+\f0\b0\fs24 :\
+//	higher level protocol, registered in if_attaach()\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0 \{\
+	misc crufty stuff;\
+\}\
+\
+\
+
+\f1\b\fs28 Notes
+\f0\b0\fs24 \
+\
+1. We should probably NOT use ifnet, ONLY netif_t. Get ptr to local \
+   data (or an id) from the "void *if_private(netif_t netif)" \
+   function in netif.\
+\
+2. headers, buffers, and stuff\
+\
+   struct mbuf \{\
+   	struct	mbuf *m_next;		/* next buffer in chain */\
+	u_long	m_off;			/* offset of data */\
+	short	m_len;			/* amount of data in this mbuf */\
+	short	m_type;			/* mbuf type (0 == free) */\
+	union \{\
+		u_char	mun_dat[MLEN];	/* data storage */\
+		struct \{\
+			short	mun_cltype;	/* "cluster" type */\
+			int	(*mun_clfun)();\
+			int	mun_clarg;\
+			int	(*mun_clswp)();\
+		\} mun_cl;\
+	\} m_un;\
+	struct	mbuf *m_act;		/* link in higher-level mbuf list */\
+   \};\
+\
+   struct dma_hdr \{\
+	struct dma_hdr *volatile dh_link;/* pts to next dma_hdr in chain */\
+	char *dh_start;			/* pts to start of buffer for dma */\
+	char *dh_stop;			/* pts to end of buffer + 1 for dma */\
+	volatile int dh_flags;		/* see below */\
+	volatile int dh_state;		/* csr at time of dma interrupt */\
+	char *volatile dh_next;		/* next at time of dma interrupt */\
+	int dh_drvarg;			/* for use by driver */\
+   \};\
+   \
+   struct ether_header \{\
+	u_char	 ether_dhost[6];\
+	u_char	 ether_shost[6];\
+	u_short ether_type;\
+   \};\
+\
+   actual ethernet packet \{\
+   	/* \
+	 * physically contiguous memory.\
+	 * On TX, \
+	 */\
+   	struct ether_header hdr;\
+	some data;\
+   \}\
+   \
+   struct enbuf \{\
+	union  \{\
+		struct enbuf 	*Uenb_next;\
+		char 		Uenb_data[BUF_SIZE];\
+	\} Uenbuf;\
+   \};\
+   \
+   enoutput():\
+   \
+   	Currently, it's actually passed an mbuf, although this is declared\
+   	as a netbuf_t (opaque).\
+   \
+   	&ether_header = mbuf->m_off.\
+	\
+   enstart():\
+   	This is a total hack. We get an mbuf via IF_DEQUEUE, which should\
+	not be visible to us. Then we cast the mbuf to a netbuf_t. We get\
+	the size of the mbuf via nb_size() (which is legal). Then we cast\
+	a DMA header (which we get from is_tx_free) to a en_dma_buf_t and\
+	pass it to if_busalloc().\
+
+}

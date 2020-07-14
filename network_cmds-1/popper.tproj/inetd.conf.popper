@@ -1,0 +1,2 @@
+pop	stream	tcp	nowait	root	/usr/etc/popper popper
+lennart	stream	tcp	nowait	root	/usr/etc/popper popper -h sun.com -h localhost lennart juliez

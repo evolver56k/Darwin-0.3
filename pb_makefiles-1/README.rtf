@@ -1,0 +1,288 @@
+{\rtf0\ansi{\fonttbl\f0\fswiss Helvetica;\f1\fmodern Courier;}
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\f0\fs24 \cf0 The makefiles used by ProjectBuilder may be divided into three groups, which will be discussed below.\
+\
+
+\b\fs28 Project-Type Makefiles
+\b0 \
+
+\fs24 \
+The project-type makefiles contain rules and variables specific to building a particular project type.\
+\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 Imported Variables
+\b0 \
+\
+Project-type makefiles assume that the following variables will be provided by 
+\b common.make
+\b0 :\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\li360\fi-180\ql\qnatural
+
+\f1 \cf0 PRODUCT_DIR
+\f0 :  An absolute path to the directory where the product should be located.\
+
+\f1 DEPENDENCIES
+\f0 :  A list of all .o files, definition files, and other files required by the product.\
+
+\f1 LOADABLES
+\f0 :  A list of all .o files, definition files, and other files required by the product, correctly formatted for 
+\b ld
+\b0  (for example, if 
+\f1 DEPENDENCIES
+\f0  contains "
+\f1 foo.ofileList
+\f0 " then 
+\f1 LOADABLES
+\f0  will contain "
+\f1 -filelist foo.ofileList
+\f0 ").\
+
+\f1 ALL_LDFLAGS
+\f0 :  A list of flags to pass to 
+\b ld
+\b0 .\
+
+\f1 ALL_LIBTOOLFLAGS
+\f0 : A list of flags to pass to 
+\b libtool
+\b0 .\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+\cf0 \
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 Exported Variables
+\b0 \
+\
+Project-type makefiles define the following variables for use by 
+\b common.make
+\b0 :\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\li360\fi-180\ql\qnatural
+
+\f1 \cf0 PROJTYPE:
+\f0   The type of project (
+\f1 BUNDLE
+\f0 , 
+\f1 LIBRARY
+\f0 , etc.).
+\f1 \
+PRODUCTS
+\f0 :  A list of products to be built by the project. All existing project types only define one product, prefixed by 
+\f1 PRODUCT_ROOT
+\f0 .\
+
+\f1 STRIPPED_PRODUCTS
+\f0 :  A list of products to be stripped during installation.  The paths in this variable should match the paths in 
+\f1 PRODUCTS
+\f0 .\
+
+\f1 PROJTYPE_*FLAGS
+\f0 :  A list of flags to be passed to various tools.  For example, 
+\b app.make
+\b0  defines 
+\f1 PROJTYPE_LDFLAGS
+\f0  to 
+\f1 -win
+\f0  on Windows.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+\cf0 \
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 Exported Targets
+\b0 \
+\
+Project-type makefiles must define the rules for building their products.  These rules are invoked from 
+\b common.make
+\b0 .  A sample rule (assuming that 
+\f1 PRODUCTS = $(PRODUCT)
+\f0 )may look like this:\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\li360\fi-180\ql\qnatural
+
+\f1 \cf0 $(PRODUCT):  $(DEPENDENCIES)\
+	$(LD) -o $@ $(ALL_LDFLAGS) $(LOADABLES)\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\f0\b \cf0 \
+aggregate.make
+\b0 \
+Aggregate projects contain other projects.  None of the standard make targets have any particular meaning in aggregates -- the target is simply applied to all of the subprojects.\
+
+\b \
+app.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 Applications are wrapped projects which contain a launchable executable and a number of resources.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+bundle.make
+\b0 \
+Bundles are wrapped projects which contain a loadable executable and a number of resources.\
+
+\b \
+framework.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 Frameworks are wrapped projects which contain a shared library, header files, and a number of resources.  Framework projects may be versioned, whereby a given framework contains numerous historical releases of the library and applications load the version that they were linked against.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+library.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 Library projects create either static or shared libraries.  Unlike most project types, libraries have more than one destination when they are installed (the library itself, the public header files, and the private header files)\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+palette.make
+\b0 \
+Palettes are a special type of bundle used by InterfaceBuilder.\
+
+\b \
+subproj.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 Subprojects are a way of organizing your code during development, but have no effect on the final product (i.e., a resource of a subproject will appear in the same location as a resource of the main project).\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+tool.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 Tools are standalone executables with no resources.  Tools are almost always command-line programs.\
+\
+\
+
+\b\fs28 Target Makefiles\
+
+\b0\fs24 \
+The target makefiles contain the rules and variables specific to the top-level rules that will be invoked on the project.  These rules recurse through the various subprojects, and also invoke earlier top-level rules.  The "most final" target is 
+\b install
+\b0 , which results in the following sequence of events:\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 prebuild
+\b0  is invoked on the current project and on every subproject it contains.\
+
+\b build
+\b0  is invoked on the current project and on every subproject it contains\
+
+\b install
+\b0  is invoked on the current project only\
+
+\b postinstall
+\b0  (found in install.make) is invoked on the current project and on every subproject it contains.  Postinstall processing also invokes a nonrecursive 
+\b installhdrs
+\b0  on each project as it processes it.\
+
+\b \
+prebuild.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The prebuild target is generally invoked implicitly by the build target, but it may be invoked directly as well.  The prebuild target creates the resource directories, header file directories, and copies all public/project/private header files into their correct locations.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+build.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The build target is the target which is most commonly used, and is fired by the shorthand "all" target.  The build target creates a version of the product in the $(SYMROOT) directory.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+installhdrs.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The installhdrs target is generally invoked as part of the install target, but may be invoked directly.  The installhdrs target copies the public and private header files to their appropriate locations in $(DSTROOT).\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+install.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The install target is used to install the finished product in $(DSTROOT).  The install target implicitly invokes the prebuild, build, and installhdrs targets.\
+\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 other targets
+\b0 \
+Two additional targets (sv and clean) are sufficiently simple that they appear in 
+\b common.make
+\b0  rather than having their own files.  The clean target deletes temporary files created during the build, and the sv target shows the contents of the variable whose name is in the variable V (i.e. 
+\f1 make sv V=ALL_CFLAGS
+\f0  will list the compile flags).\
+\
+\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b\fs32 \cf0 Functionality Makefiles
+\b0 \
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\fs24 \cf0 The remaining makefiles are used to provide functionality that is needed by all builds.  The following files are functionality makefiles:\
+\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 flags.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The flags makefile contains definitions for the flags used to compile and link source files.  Clients may add flags via the OTHER and LOCAL variables.  For example, OTHER_CFLAGS=-DDEBUG will add -DDEBUG to the compile flags of the current project and all its subprojects.  LOCAL_LDFLAGS=-lm will add -lm to the link flags of the current project only.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+implicitrules.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 This makefile contains implicit rules for generating object files from C, Objective-C, Objective-C++, and Assembly source files.  It also contains implicit rules for generating intermediate source files from a number of specification files (lex, yacc, pswraps, etc.).\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+tools-NEXTSTEP.make\
+tools-WINDOWS.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The tools makefiles contain paths to the various build tools (cc, ld, mv, etc.) on the various architectures.\
+ 
+\b \
+common.make\
+
+\b0 The common makefile is the heart of the project makefiles.  It includes the target and other functionality rules, and defines most of the internal variables used by the makefiles.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+compatibility.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The compatibility makefile contains variable definitions to provide backward-compatibility with project_makefiles projects.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+platform.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The platform makefile contains a single variable definition which lets the makfiles know what platform they are being used on.\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+recursion.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The recursion makefile contains the rules required to build targets in subprojects.  The pattern target@directory will change to 
+\b directory
+\b0  and invoke make with 
+\b target
+\b0 .  If you want to go deeper, you can reverse-stack the directories (i.e., target@subdirectory@directory).  Recursion is only explicitly supported for a small number of targets, but the R variable allows you to recurse on arbitrary rules (i.e., "make countlines@parser.subproj@interpreter.tproj R=countlines").\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b \cf0 \
+version.make
+\b0 \
+The version makefile is used to determine the current project version.\
+
+\b \
+wrapped-common.make\
+\pard\tx532\tx1065\tx1601\tx2135\tx2667\tx3202\tx3736\tx4270\tx4802\tx5337\ql\qnatural
+
+\b0 \cf0 The wrapped-common makefile contains rules common to all projects with wrapped-style products (applications, bundles, palettes, and frameworks).\
+}

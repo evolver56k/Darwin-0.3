@@ -1,0 +1,6 @@
+Package: libcat
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 27.1
+Description: AppleTalk library
+Build-Depends: build-base

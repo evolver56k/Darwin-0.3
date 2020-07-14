@@ -1,0 +1,141 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989,1988,1987 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ * HISTORY
+ * $Log: exc.defs,v $
+ * Revision 1.3  1999/07/22 20:03:59  wsanchez
+ * Update APSL
+ *
+ * Revision 1.2  1999/03/25 09:19:40  wsanchez
+ * Merge kernel-copyrights.
+ * Undelete drvAdaptecU2SCSI.
+ *
+ * Revision 1.1.1.1.666.4  1999/03/16 17:05:37  wsanchez
+ * Substitute License
+ *
+ * Revision 1.1.1.1.666.3  1999/03/16 15:28:01  wsanchez
+ * Substitute copyright
+ *
+ * Revision 1.1.1.1.666.2  1999/03/16 10:37:37  umeshv
+ * Fixed errors in previous commit.
+ *
+ * Revision 1.1.1.1.666.1  1999/03/11 09:52:48  umeshv
+ * Added copyrights.
+ *
+ * Revision 1.1.1.1  1997/09/30 02:44:49  wsanchez
+ * Import of kernel from umeshv/kernel
+ *
+ * Revision 2.4  91/05/14  16:51:31  mrt
+ * 	Correcting copyright
+ * 
+ * Revision 2.3  91/02/05  17:31:52  mrt
+ * 	Changed to new Mach copyright
+ * 	[91/02/01  17:16:59  mrt]
+ * 
+ * Revision 2.2  90/06/02  14:57:52  rpd
+ * 	Converted to new IPC.
+ * 	[90/03/26  22:29:13  rpd]
+ * 
+ * Revision 2.1  89/08/03  17:16:47  rwd
+ * Created.
+ * 
+ * Revision 2.3  89/02/25  18:13:23  gm0w
+ * 	Changes for cleanup.
+ * 
+ * Revision 2.2  89/01/15  16:29:49  rpd
+ * 	Moved from kern/ to mach/.
+ * 	[89/01/15  14:38:37  rpd]
+ * 
+ * Revision 2.3  89/01/12  07:53:10  rpd
+ * 	Fixed includes.
+ * 
+ * 29-Jun-88  Michael Young (mwyoung) at Carnegie-Mellon University
+ *	Moved data type declarations to "mach_types.defs".
+ *
+ * 30-Nov-87  David Black (dlb) at Carnegie-Mellon University
+ *	Rewrote interface to use messages for synchronization.
+ *
+ *  9-Oct-87  David Black (dlb) at Carnegie-Mellon University
+ *	Translation won't work for this interface; all combinations of 
+ *	user/kernel to user/kernel are possible.  Removed translation.
+ *
+ * 29-Sep-87  David Black (dlb) at Carnegie-Mellon University
+ *	Created.
+ *
+ */
+/*
+ * Abstract:
+ *	MiG definitions file for Mach exception interface.
+ */
+
+subsystem
+#if	KERNEL_USER && defined(MACH_IPC_FLAVOR)
+	  KernelUser
+#endif	KERNEL_USER
+		     exc 2400;
+
+#include <mach/std_types.defs>
+
+ServerPrefix catch_;
+
+routine		exception_raise(
+#ifdef	MACH_IPC_FLAVOR
+			exception_port	: mach_port_t;
+			thread		: mach_port_t;
+			task		: mach_port_t;
+#else	/* MACH_IPC_FLAVOR */
+	requestport	exception_port	: port_t;
+	replyport	clear_port	: port_t;
+			thread		: port_t;
+			task		: port_t;
+#endif	/* MACH_IPC_FLAVOR */
+			exception	: int;
+			code		: int;
+			subcode		: int);

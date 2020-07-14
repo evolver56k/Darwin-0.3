@@ -1,0 +1,39 @@
+Replied: Wed, 06 Nov 1996 19:25:05 -0500
+Replied: "Jeffrey C Honig <jch@BSDI.COM> Dave Mills <mills@udel.edu>"
+Received: from snow-white.ee.udel.edu by whimsy.udel.edu id aa03421;
+          7 Nov 96 0:14 GMT
+Received: from kismet.bsdi.com (root@kismet.BSDI.COM [207.16.111.10]) by external.BSDI.COM (8.8.2/8.8.2) with ESMTP id RAA28328; Wed, 6 Nov 1996 17:14:21 -0700 (MST)
+Received: from kismet.bsdi.com (jch@localhost.bsdi.com [127.0.0.1]) by kismet.bsdi.com (8.7.6/8.7.3) with ESMTP id TAA10572; Wed, 6 Nov 1996 19:14:20 -0500 (EST)
+Message-Id: <199611070014.TAA10572@kismet.bsdi.com>
+To: Harlan Stenn <stenn@whimsy.udel.edu>
+cc: Dave Mills <mills@udel.edu>
+Subject: Re: BSD/OS 3.0 
+In-reply-to: Message from Harlan Stenn <stenn@whimsy.udel.edu> on
+             Wed, 06 Nov 1996 17:48:44 -0500.<9611062248.aa03339@whimsy.udel.edu> 
+References: <9611062248.aa03339@whimsy.udel.edu>
+Organization: Berkeley Software Design, Inc.; Ithaca, NY  USA
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <10544.847325643.1@kismet.bsdi.com>
+Date: Wed, 06 Nov 1996 19:14:04 -0500
+From: Jeffrey C Honig <jch@BSDI.COM>
+
+> Just a stupid question before I go ahead and see what I can do...
+> 
+> If BSDI-3.x doesn't let the time go backwards if the security
+> level is greater than zero, then would it be better to try, notice a
+> failure, and then slew the time with adjtime?  (I hope I said that right
+> - I still get confused by "step" and "slew"; Dave, can you set me
+> straight on these terms?)
+
+Yes, that would work.  It would allow xntpd() to step the clock
+forward quickly.  I suspect that operation would be much more common
+than having to set the time back a significant amount.  Especially
+since we try to run ntpdate at boot time to get the clock.
+
+It would also be good not to log syslog messages on an EPERM error
+message from settimeofday(), as I suspect this could happen often.
+
+Thanks.
+
+Jeff

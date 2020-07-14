@@ -1,0 +1,6 @@
+astosc.o: astosc.out
+astosc.out: ../ctlr/hostctlr.h ../ctlr/function.h
+astosc.out: ../ctlr/${KBD}
+	$(SYMROOT)/../tools/mkastosc/mkastosc \
+	    ../ctlr/hostctlr.h ../ctlr/function.h \
+	    < ../ctlr/${KBD} > $(SYMROOT)/$@

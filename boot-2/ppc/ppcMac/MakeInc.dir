@@ -1,0 +1,44 @@
+# -*-mode:Fundamental; tab-width: 4 -*-
+# Common makefile targets.
+#
+# Define these variables (if desired) in directory makefiles:
+#		DIRS_NEEDED
+#		INSTALLDIR
+#		SRCROOT
+#
+
+installsrc:: $(SRCROOT)
+		cp $(ALLSRC) $(SRCROOT)
+		cd $(SRCROOT); chmod a-w $(ALLSRC)
+
+install:: installhdrs
+		@if [ -z "$(RC_ARCHS)" -o -n "$(RC_ppc)" ]; then		\
+				$(MAKE) install_ppc OBJROOT=${OBJROOT} 		\
+						SYMROOT=${SYMROOT} DSTROOT=${DSTROOT}	\
+						SRCROOT=${SRCROOT}; 					\
+		else													\
+				echo ppc not selected - null build.;			\
+		fi
+
+install_ppc:: all
+
+installhdrs::
+
+clean::
+		/bin/rm -rf $(OBJROOT) *~
+
+.SUFFIXES: .s .i .c .o
+
+$(OBJROOT)/%.o : %.c
+		DEPENDENCIES_OUTPUT="$(OBJROOT)/.dependencies $@"; \
+		$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+#.s.o:
+#		cc $(INC) -E $< > $(OBJROOT)/$*.o2
+#		$(AS) -o $(OBJROOT)/$@ $(OBJROOT)/$*.o2
+
+.s.o:
+		cc -c $(INC) -o $(OBJROOT)/$@ $<
+		
+$(DIRS_NEEDED) $(INSTALLDIR) $(SRCROOT):
+		$(MKDIRS) $@

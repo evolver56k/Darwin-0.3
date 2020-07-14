@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (system.c, termout.c); 
+        H_FILES = (telextrn.h, terminal.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = sys_curses; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

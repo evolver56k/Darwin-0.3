@@ -1,0 +1,74 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = (
+            LogFunctions.m, 
+            NXData.m, 
+            NXInvalidationNotifier.m, 
+            NXLock.m, 
+            NXNetNameServer.m, 
+            NXPort.m, 
+            NXPortPortal.m, 
+            NXProtocolChecker.m, 
+            NXProxy.m
+        ); 
+        H_FILES = (
+            exceptions.h, 
+            LogFunctions.h, 
+            NXConnection.h, 
+            NXData.h, 
+            NXInvalidationNotifier.h, 
+            NXLock.h, 
+            NXMethodSignature.h, 
+            NXNetNameServer.h, 
+            NXPort.h, 
+            NXPortPortal.h, 
+            NXProtocolChecker.h, 
+            NXProxy.h, 
+            private.h, 
+            reference.h, 
+            senderIsInvalid.h, 
+            transport.h, 
+            db.h, 
+            defaults.h, 
+            defaultsCompat.h, 
+            internal.h
+        ); 
+        OTHER_LINKED = (
+            db.c, 
+            dbCat.c, 
+            dbData.c, 
+            dbError.c, 
+            dbExists.c, 
+            dbGlobals.c, 
+            dbInit.c, 
+            dbLock.c, 
+            dbPrint.c, 
+            dbUnlink.c, 
+            defaults.c
+        ); 
+        OTHER_RESOURCES = (); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        SUBPROJECTS = (); 
+        WEBSERVER_RESOURCES = (); 
+        WOAPP_RESOURCES = (); 
+        WO_COMPONENTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/objects/$(USER)/$(NAME)"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = "$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks"; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = machkit; 
+    PROJECTTYPE = Component; 
+    PROJECTVERSION = 2.7; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

@@ -1,0 +1,6 @@
+dnl /Network/Servers/seaport/projects/lono/kdienes/darwin/../../wsanchez/Projects/Darwin/3.Committed/gm4-1/m4/checks/../doc/m4.texinfo:2924: Origin of test
+define(`vice', `esyscmd(grep Vice ../COPYING)')
+dnl @result{}
+vice
+dnl @result{}  Ty Coon, President of Vice
+dnl @result{}

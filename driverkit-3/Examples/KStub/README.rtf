@@ -1,0 +1,56 @@
+{\rtf0\ansi{\fonttbl\f0\fmodern Courier;\f1\fmodern Ohlfs;}
+\paperw13040
+\paperh9540
+\margl120
+\margr120
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\f0\b0\i0\ulnone\fs24\fc0\cf0 This directory contains a simple pseudo device driver, called IOStub, with the following characteristics:\
+
+\pard\tx1152\tx2304\tx3456\tx4608\tx5760\tx6912\tx8064\tx9216\tx10368\tx11520\fc0\cf0 \
+
+\fi-440\li1160 ·	The IOStub driver is loaded into a running kernel using the kern_loader.\
+\
+·	IOStub is a subclass of the standard driverkit disk object, 
+\b IODiskDevice
+\b0 . The Objectice C interface to the IOStub device is defined by the 
+\b DiskDeviceRw
+\b0  protocol.\
+\
+·	The interface to the driver from User space is just like a disk driver's interface; i.e., via read()s and writes()s on a node in /dev/. \
+\
+·	The driver does not do any actual I/O; instead, it maintains a region of kernel memory. Writes to the device merely write to this region of memory; reads from the device return portions of this memory. \
+\
+·	This driver also provides an example of an implementation of an 
+\b I/O thread
+\b0 ; exported methods pass along I/O requests to the I/O thread. All I/O is single threaded via this mechanism. \
+\
+\
+
+\pard\tx1140\tx2300\tx3440\tx4600\tx5760\tx6900\tx8060\tx9200\tx10360\tx11520\fc0\cf0 The driver is comprised of the following files:\
+\
+
+\b\fi-440\li1160 IOStubKernLoad.m
+\b0  \
+\
+	This file contains functions which are invoked by the kern_loader at load and unload time. The only significant operations performed here are loading the driver's cdevsw and bdevsw structs into the system's cdevsw and bdevsw array, and calling the IOStub's stubProbe method. \
+	\
+
+\b IOStubUnix.m
+\b0  \
+\
+	This file basically maps Unix-style devsw and bdevsw callouts into Objective C method calls which are sent to the IOStub device. \
+	\
+
+\b IOStub.m\
+
+\b0 \
+	Implementation of exported methods. The methods which perform actual I/O (readAt:length:buffer:pending:, etc.) merely create I/O requests in the form of an IOBuf and pass them to the I/O thread via the enqueueIoBuf: method. Asynchronous requests (which all requests from the IOStubUnix module currently are) result in I/O complete via the kernel's diskIoComplete:status:bytesXfr: method, which is called by the I/O thread.\
+	\
+
+\b IOStubThread.m
+\b0 \
+\
+	The I/O thread (
+\b IOStub_thread()
+\b0 ) and its associated methods.\
+	
+}

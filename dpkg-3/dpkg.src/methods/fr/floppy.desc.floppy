@@ -1,0 +1,9 @@
+Installation à partir d'un tas de disquettes dont l'une au moins
+(habituellement la première) contient un fichier 'Packages', les autres
+contenant les fichiers *.deb.
+
+Si vous installez des paquets des distributions 'contrib' ou 'non-free' en
+plus de ceux de la distribution Debian principale ('main'), vous devez avoir
+tous ces fichers 'Packages' sur des disquettes séparées.  La manière
+habituelle de le faire est de placer chaque fichier 'Packages' sur la
+première des disquettes contenant les paquets de la distribution concernée.

@@ -1,0 +1,7 @@
+Package: developer-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: NetBSD Foundation
+Version: 1998.10.05
+URL: http://www.netbsd.org/
+Description: Developer commands
+Build-Depends: build-base, libinfo-hdrs

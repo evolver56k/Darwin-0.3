@@ -1,0 +1,45 @@
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa12408;
+          5 Jan 1998 17:54 EST
+Received: from copland.udel.edu by huey.udel.edu id aa18514;
+          5 Jan 1998 17:54 EST
+Received: from nautique.epm.ornl.gov (nautique.epm.ornl.gov [134.167.13.16]) by copland.udel.edu (8.8.5/8.7.3) with SMTP id RAA27019 for <mills@udel.edu>; Mon, 5 Jan 1998 17:54:24 -0500 (EST)
+Received: (qmail 7236 invoked from network); 5 Jan 1998 22:54:19 -0000
+Received: from localhost (HELO nautique.epm.ornl.gov) (127.0.0.1)
+  by localhost with SMTP; 5 Jan 1998 22:54:19 -0000
+Sender: lpz@udel.edu
+Message-ID: <34B16498.41C6@nautique.epm.ornl.gov>
+Date: Mon, 05 Jan 1998 17:54:16 -0500
+From: Lawrence MacIntyre <lpz@nautique.epm.ornl.gov>
+Organization: Oak Ridge National Laboratory
+X-Mailer: Mozilla 3.0 (X11; I; OSF1 V4.0 alpha)
+MIME-Version: 1.0
+To: mills@udel.edu
+Subject: bugfixes for ntp-4.0.70a
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Dave:
+
+There was a compile error in refclock_palisade.c.  While I was at it I
+fixed the warning about unsigned char != char as well.  Here's the diff:
+
+# diff refclock_palisade.c refclock_palisade.c.orig
+153c153
+<       unsigned char   rpt_buf[LENCODE+1]; /* assembly buffer */
+---
+>       char            rpt_buf[LENCODE+1]; /* assembly buffer */
+363c363,364
+<                   printf("palisade_receive: unit %d: invalid packet
+id:%2x%2x\n", 
+---
+>                   printf("palisade_receive: unit %d: invalid packet
+> id:%2x%2x\n", 
+
+
+-- 
+
+                                 Lawrence
+                                    ~
+------------------------------------------------------------------------
+Lawrence MacIntyre       Oak Ridge National Laboratory      423.574.8696 
+lpz@ornl.gov   http://www.epm.ornl.gov/~lpz    lpz@nautique.epm.ornl.gov

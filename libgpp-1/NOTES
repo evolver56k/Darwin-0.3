@@ -1,0 +1,270 @@
+
+This is the NOTES file for Apple's libg++ project.
+
+Created 10/13/1997, Doug Landauer
+
+    Overview of the libraries that "go with" gcc
+
+       The first three libraries (libg++, libstdc++, and librx) are
+       intended to be shipped & installed, to be usable by anyone
+       writing C++ programs:
+
+       libg++     is the overview name of this whole package of
+	 several libraries, as well as the specific name of the
+	 initial library of reusable C++ components that predated
+	 the C++ standards committee's definitions of any standard
+	 C++ library classes and routines.  The specific libg++
+	 library is gradually being obsoleted in favor of the more
+	 standard libstdc++.  No NeXT or Apple project currently
+	 depends on libg++, and no new dependencies should be
+	 created.
+
+       libstdc++  is the part of this project which implements a
+	 subset of the ISO/ANSI C++ Committee's standard C++ library.
+	 This is the most important library in the entire package,
+	 and will increase in importance.
+
+       librx      is a regular expression library.
+
+       libiberty  is a mimimal C-library subset
+       libio      is a portable I/O library
+         These two libraries are used during a GCC bootstrap to a
+	 new platform; they provide a relatively minimal and portable
+	 subset of a standard C library, and a minimal input/output
+	 support library.
+
+       libgcc2
+         This is the low-level language support library that is
+	 tightly integrated with the compiler itself.  (Its sources
+	 are in the gcc project, not in the libg++ project.)  This
+	 library supplies things like 64-bit division routines, certain
+	 floating point operations, miscellaneous support for stuff
+	 like varargs, profiling, "on_exit"/"atexit", and a little bit
+	 of C++ support.
+
+    History
+	 The initial libg++ library was written by Doug Lea, at SUNY
+	 Oswego, starting around 1989?.  It was the first credible library
+	 of C++ routines & classes, and is only now becoming less relevant
+	 due to the near-completion of the ISO/ANSI C++ Committee's work.
+
+	 NeXT offered libg++ for some time, but when OpenStep 4.2 was
+	 in development (~1995-'96), NeXT did not have sufficient
+	 resources to support it or to port it to the several platforms
+	 that 4.2 lived on, so libg++ was dropped from that release.
+	 (Since NeXT's developer base was more focused on Objective-C
+	 than C++, the demand for libg++ wasn't that great anyway.)
+
+	 After NeXT and Apple merged, and OpenStep started being
+	 transformed into Rhapsody, it was clear that Apple's more
+	 C++-oriented developer base would reinstate the demand for
+	 a reasonable minimum of C++ library support, so this project
+	 was reincarnated (and ported to Windows-NT) in the summer
+	 and fall of 1997.
+
+libgpp-110.1 (submitted to Hera1M, 1/21/98)
+ This version contains a fix for Radar bug 2292298:
+ (libio/gen-params,libg++/src/bitprims.h) Replace references to the NeXT macro
+  with __APPLE__.
+ (libstdc++/std/cassert.h) Revert back to FSF's version of this file, since our
+  system's assert.h now comes from the compiler, rather than BSD sources; this
+  has the side effect of removing the reference to the NeXT macro.
+
+libgpp-110 (submitted to Atlas, 4/28/98)
+ (Makefile) Make this project pay attention to RC_CFLAGS.
+
+libgpp-109.2 (submitted to Pluto, 3/17/98)
+ (Makefile) Fix a Windows-NT-only typo that was causing headers
+  to go into $NEXT_ROOT/Developer/Headers/Headers/g++.
+
+libgpp-109.1 (submitted to Titan and Pluto, 3/16/98)
+ (Identical to -109; the build machine crashed in the middle
+   of the submit/build.)
+
+libgpp-109 (submitted to Titan and Pluto, 3/16/98)
+ (Makefile) Remove libc.h (because we have a better one in the
+  system framework, and this one hid some things that some of
+  our C++ projects (WrapIt, devkit, PBDevKit) needed.  Also,
+  add "Headers" to the $(gxx_include_parent) variable.
+ (RENAMEs) libg++/src/String.h     -> libg++/src/lg_String.h
+  and      libstdc++/std/string.h  -> libstdc++/std/lgs_string.h
+ (libg++/src/String.cc)  #include the renamed <lg_String.h>
+ (listdc++/std/cstring.h) Make it clear in a comment that this
+  header file wants the system's C <string.h>, not the one that
+  was (before I renamed it) in libstdc++/std/string.h.
+
+libgpp-108 (submitted to Pluto, 3/6/98)
+ (Makefile) Change strip commands from "-SX" to "-S" on Kevin E.'s
+  recommendation.  Several more changes, to make it work correctly
+  on Windows-NT, and to clean up the look of the final "cp" commands
+  that install the header files into DSTROOT.
+ (Makefile)
+ (Makefile.in) Removed some unused-by-Apple FSF-compatible flexibility
+  about which compiler to use, in order to work around a "make" or
+  shell bug on NT.
+ (configure) Changes in some of the more verbose debugging printouts.
+ (librx/Makefile.in) Pathname change (NextDeveloper -> Developer).
+ (libio/gen-params) Path to the "dumpbin" program changed.
+ (libio/ioprims.c) Added #define's to translate "read", "write", etc.,
+  to "_read", "_write", etc... for Windows-NT.
+
+libgpp-107.1 (submitted to Titan, 1/18/98):
+ Failed verification -- add strip commands to strip the libraries.
+
+libgpp-107 (submitted to Titan, 1/17/98):
+
+ This is the first version that can actually compile native on
+ Titan (Rhapsody Premier), where many of the system filename paths
+ were changed.  Other tweaks due to different declarations of
+ some system data structures that should be hidden (i.e., that this
+ library has no business knowing about).
+
+ (Makefile) Add -DLOSING_SYS_SIGLIST because the library wrongly
+  thinks it knows how to declare a siglist array.  Fix references
+  to "mkdirs" so they'll work on NT.  Parameterize the references
+  to "make".  Install _G_config.h.
+
+ (libiberty/strerror.c) Fixes for bad sys_errlist declarations.
+
+ (libiberty/strsignal.c) Make the message parameter const.
+
+ (libiberty/vsprintf.c) Do nothing -- this shouldn't use such
+  intimate knowledge of one implementation of printf.
+
+ (librx/Makefile.in) Fixes for mkdirs -> $(MKDIRS).
+
+libgpp-106 (submitted to Titan, 12/3/97):
+
+ Teeny changes in the top level Makefile.  Main real change is that
+ now, there is a Titan (1E4) that can actually build libg++, both
+ native and cross (ppc->intel), without the kernel hanging.
+
+libgpp-105 (should be submitted to YellowWin32 around 10/14/97):
+
+ Many changes to get it to build in the RC (Apple/NeXT Rhapsody
+ Release Control) environment, native as well as cross-building,
+ on OpenStep 4.2, on Rhapsody Developer, on Rhapsody Premier, and
+ on two Windows-NT OSE/PDO environments (4.2-based, and Rhapsody-
+ based).  The biggest changes were in the top-level Makefile (just
+ about completely rewritten) and the top-level configure script.
+
+ (config.guess, configure, configure.in, librx/configure, librx/configure.in)
+  Parameterized all "/dev/null" references (to "$null") -- this change is
+  listed as ``/dev/null'' in the rest of this doc file.).  Parameterized
+  "/tmp" references (to "$TMPDIR").  Changed the patterns by which it
+  recognizes absolute pathnames.  Changed the sed "s/x/y/" delimiters
+  from ':' to ';'.  Added a variable ("$exeext") for the executable-file
+  filename extension.
+
+ (install.sh) Don't attempt to mkdir a DOS-style device name.
+
+ (move-if-change) Conditionalize a "/dev/null" reference.
+
+ (Makefile) Change destination macros (HDR_REL_DEST, LIB_DIR, LOCAL_BIN_DIR)
+  for win-NT; define EXEEXT and pass it to sub-makes; set CXX, CONFIG_SHELL,
+  NEEDED_LIST; add the imacros flag to force #inclusion of winnt-pdo;
+  define configure's --host and --target arguments as i386-nextstep when
+  appropriate; parameterize a lot of the install commands; and add a
+  workaround to redefine _G_VTABLE_LABEL_PREFIX on i386.
+
+ (Makefile.in) Set SHELL based on whether /bin/sh exists (This change is
+  listed as ``/bin/sh vs sh'' in the rest of this doc file.); fixed the
+  references to /dev/null and the tests for absolute path; export EXEEXT,
+  CONFIG_H and NEEDED_LIST and pass them to sub-makes.
+
+ (etc/Makefile.in) /bin/sh vs sh.
+
+ (libg++/configure.in) "/dev/null" changes, and #include <io.h>
+  instead of <unistd.h> if on Win-NT.
+
+ (libg++/etc/ADT-examples/genPatkey.cc, libg++/src/Makefile.in,
+  libg++/src/std.h, libg++/tests/tFile.cc, libio/dbz.c, libio/dbzmain.c 
+  libio/iopopen.c, libio/tests/tFile.cc
+  )
+  #include <io.h> instead of <unistd.h> if on Win-NT.
+
+ (libg++/Makefile.in, libg++/etc/graph/Makefile.in, libg++/src/Makefile.in,
+  libg++/tests/Makefile.sh, libio/Makefile.in, libstdc++/Makefile.in
+  )
+  On Win-NT, use "lib /out:" instead of "ar".
+
+ (libg++/genclass/genclass.sh) "/dev/null" changes.
+
+ (libg++/gperf/src/configure.in) "$(EXEEXT)" changes.
+
+ (libg++/gperf/src/Makefile.in) Changes for .exe extension; also,
+  remove "-lm" since libm is in the System Framework on Rhapsody.
+
+ (libg++/src/Makefile.in) Changes for .exe extension; also,
+
+ (libg++/tests/test_h.cc) Add #ifdefs around header-file #include's
+  for files that just don't exist on Win-NT.  And use <io.h> on Win-NT,
+  instead of <unistd.h>.
+
+ (libiberty/Makefile.in) /bin/sh vs sh; /dev/null; define CONFIG_H and
+  NEEDED_LIST, to prevent it from trying to run "nm".
+
+ (libiberty/bzero.c) When on PDO on Windows-NT, we auto-include the
+  winnt-pdo.h header file.  But it helpfully #defines bzero as memset
+  with a zero middle argument, for "portability".  Since we're actually
+  trying to define bzero itself, here, we disable that macro.
+
+ (libio/config.shared) /bin/sh vs sh; pathname pattern.
+
+ (libio/Makefile.in, librx/Makefile.in) /bin/sh vs sh; /bin/ar vs "lib /out".
+
+ (libio/filebuf.cc) #define sys_open, to get around bad #define of
+  open as _open, from winnt-pdo.h.
+
+ (libio/filedoalloc.c, libio/fileops.c) Add S_ISCHR & S_ISREG, missing
+  from io.h.
+
+ (libio/gen-params) Lots of /dev/null changes; nm vs "dumpbin /symbols";
+  and <io.h> vs <unistd.h>.
+
+ (libio/ioprims.c) Change order of libioP.h include.
+
+ (libstdc++/std/stddef.h) Resolve weird redefinition problem with
+  wchar_t.
+
+libgpp-104 (submitted to Grail, 9/23/97):
+ (Makefile) At the end of the build, RC merges the library versions for
+  the PPC & intel architectures.  This was broken, but I forget how.
+
+libgpp-103 (submitted to Grail, 9/23/97):
+ (Makefile) More changes to reconcile the FSF vs RC views of the world.
+
+libgpp-102.5 (submitted to Grail, 9/22/97):
+ (Makefile) Changed the way header files get installed, so that it won't
+  wipe out the symbolic link (Headers -> Versions/B/Headers).
+
+libgpp-102.4 (submitted to Grail, 9/22/97):
+ <<< PLACEHOLDER >>>
+
+libgpp-102.3 (submitted to Grail, 9/19/97):
+ Added cc1plus (cc-ppc-on-i386 only) *binary* to the project, and a -B
+ flag to CXXFLAGS, so that the intel -> ppc cross-compiler will use
+ this fixed one, for C++ only.  To workaround a compiler bug.
+
+libgpp-102.2 (submitted to Grail, 9/19/97):
+ <<< PLACEHOLDER >>>
+
+libgpp-102.1 (submitted to Grail, 9/18/97):
+ <<< PLACEHOLDER >>> (?) Moved a comment.
+
+libg++-102
+ <<< PLACEHOLDER >>>
+
+libg++-101 (Never? submitted):
+ <<< PLACEHOLDER >>>
+
+libg++-100 (Never submitted):
+ Vanilla libg++-2.7.2.1, for reference.
+
+libg++-39:
+ This project was the latest version of NeXT's libg++ project that I was
+ able to find.  It was apparently based on version 2.5.3 of libg++, and
+ was in or was supposed to be in NextStep 3.3.  In order to make it build
+ within RC (Release Control) and in an OpenStep 4.2 environment, I took
+ the top-level Makefile from libg++-39, and then replaced *everything*
+ else with the more up-to-date libg++-2.7.2.1 from FSF.

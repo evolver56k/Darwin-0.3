@@ -1,0 +1,6 @@
+Package: drivertools
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 24
+Description: Driverkit developer tools
+Build-Depends: build-base

@@ -1,0 +1,55 @@
+NeXTLIBS = ../sym/ppc
+
+DEFINES = -DGENERATINGPOWERPC -DDEBUG \
+			-D__ARCHITECTURE__=\"ppc\" -D_NEXT_SOURCE \
+			-D__BIG_ENDIAN__ -D__LITTLE_ENDIAN__=0 -DNeXT
+INCLUDES = -I../include/mac -I. -I../ppcMac/libsaio -I../ppcMac/libsa -I../ppcMac/util \
+			-I../include/ansi -I../include/bsd -I../include
+DEBUG = -O -g
+CFLAGS = $(DEFINES) $(INCLUDES) $(DEBUG) -x objective-c -Wno-import -static
+
+GENERATED_CFILES = Debugger.c Control2.c
+CFILES = SecondaryInC.c HFSSupport.c Display.c DeviceTree.c \
+		printf.c icon.c $(GENERATED_CFILES)
+SFILES = setjmp.s
+OFILES = $(CFILES:.c=.o) $(SFILES:.s=.o)
+
+LIBS = $(NeXTLIBS)/libsaio.a $(NeXTLIBS)/libsa.a $(NeXTLIBS)/librcz.a
+
+.SUFFIXES: .c .o .s
+
+%.o :	%.c
+	export DEPENDENCIES_OUTPUT=./.dependencies; \
+	$(CC) -c "-DBUILD_DATETIME=\"`date "+%T %y%m%d"`\"" $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+%.c :	%.of ConvertOF.awk
+	awk --assign VAR=$(basename $(notdir $<)) --file ConvertOF.awk $< > $@
+
+all:	SecondaryLoader
+
+clean:
+	rm -rf $(OFILES) $(GENERATED_CFILES) \
+		SecondaryLoader SecondaryLoader.elf SecondaryLoader.map
+
+TAGS:
+	etags $(CFILES) $(SFILES)
+
+SecondaryLoader:	SecondaryLoader.elf
+	elf-to-xcoff $^ $@
+
+x.elf:	$(OFILES) $(LIBS) SecondaryLoader.ld.abs-elf.dbg
+	$(CC) -o $@ $(OFILES) $(LIBS) \
+			-nostdlib -static -lgcc \
+			-Wl,--script=SecondaryLoader.ld.abs-elf.dbg,-e,SecondaryLoaderMainTVector
+
+SecondaryLoader.elf:	$(OFILES) $(LIBS) SecondaryLoader.ld.abs-elf
+	$(CC) -o $@ $(OFILES) $(LIBS) \
+			-Wl,-Map,SecondaryLoader.map \
+			-nostdlib -static -lgcc \
+			-Wl,--script=SecondaryLoader.ld.abs-elf,-e,SecondaryLoaderMainTVector -s
+#			-Wl,-Ttext,0x700000,-Tdata,0x710000,-e,SecondaryLoaderMainTVector -s
+#			-Wl,-e,SecondaryLoaderMain,--script=SecondaryLoader.ld
+#			-Wl,-e,SecondaryLoaderMain,-oformat,aixcoff-rs6000
+
+# dependencies
+-include ./.dependencies

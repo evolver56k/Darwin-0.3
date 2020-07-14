@@ -1,0 +1,6 @@
+Package: driverkit
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 139.1
+Description: Driver Kit
+Build-Depends: build-base, machkit-hdrs, adv-cmds, libstreams-hdrs, driverkit-hdrs

@@ -1,0 +1,20 @@
+{
+    APPCLASS = NSApplication; 
+    COMPILEROPTIONS = "-DMACH_USER_API"; 
+    FILESTABLE = {
+	FRAMEWORKS = (); 
+	HEADERSEARCH = ("${MOUNT}"); 
+	H_FILES = (pathnames.h); 
+	M_FILES = (); 
+	OTHER_LIBS = (); 
+	OTHER_LINKED = (mount_lfs.c); 
+	OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.dist, mount_lfs.8); 
+    }; 
+    INSTALLDIR = /sbin; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAINNIB = mount_lfs; 
+    PROJECTNAME = mount_lfs; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.0; 
+}

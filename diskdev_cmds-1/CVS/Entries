@@ -1,0 +1,53 @@
+/.index.store/1.1.1.1/Sun May  2 01:42:09 1999//Tdiskdev_cmds-1
+/APPLE_LICENSE/1.1.1.1/Sun May  2 01:42:10 1999//Tdiskdev_cmds-1
+/Makefile/1.1.1.1/Sun May  2 01:42:10 1999//Tdiskdev_cmds-1
+/Makefile.include/1.1.1.1/Sun May  2 01:42:10 1999//Tdiskdev_cmds-1
+/PB.project/1.1.1.1/Sun May  2 01:42:10 1999//Tdiskdev_cmds-1
+D/autodiskmount.tproj////
+D/bad144.tproj////
+D/badsect.tproj////
+D/clri.tproj////
+D/dev_mkdb.tproj////
+D/disk.tproj////
+D/disklabel.tproj////
+D/disklib////
+D/diskpart.tproj////
+D/dpkg////
+D/dump.tproj////
+D/dumpfs.tproj////
+D/dumplfs.tproj////
+D/edquota.tproj////
+D/fdform.tproj////
+D/fdisk.tproj////
+D/fsck.tproj////
+D/fsck_hfs.tproj////
+D/fstat.tproj////
+D/lfs_cleanerd.tproj////
+D/mount.tproj////
+D/mount_cd9660.tproj////
+D/mount_fdesc.tproj////
+D/mount_kernfs.tproj////
+D/mount_lfs.tproj////
+D/mount_nfs.tproj////
+D/mount_null.tproj////
+D/mount_portal.tproj////
+D/mount_procfs.tproj////
+D/mount_swapfs.tproj////
+D/mount_umap.tproj////
+D/mount_union.tproj////
+D/mountd.tproj////
+D/mt.tproj////
+D/newfs.tproj////
+D/newlfs.tproj////
+D/pdisk.tproj////
+D/quot.tproj////
+D/quota.tproj////
+D/quotacheck.tproj////
+D/quotaon.tproj////
+D/repquota.tproj////
+D/restore.tproj////
+D/scsiformat.tproj////
+D/sdform.tproj////
+D/showmount.tproj////
+D/tunefs.tproj////
+D/umount.tproj////

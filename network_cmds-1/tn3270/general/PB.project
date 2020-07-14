@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (genbsubs.c, globals.c); 
+        H_FILES = (general.h, globals.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.preamble, vaxbsubs.s); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = general; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

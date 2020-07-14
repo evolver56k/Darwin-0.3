@@ -1,0 +1,36 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        HEADERSEARCH = (..); 
+        H_FILES = (cthreads.h, cthread_internals.h); 
+        OTHER_LINKED = (
+            cprocs.c, 
+            cthreads.c, 
+            cthreads_sync.c, 
+            mig_support.c, 
+            sched.c, 
+            stack.c, 
+            threads_data.c
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        PUBLIC_HEADERS = (cthreads.h); 
+        SUBPROJECTS = (i386.subproj, ppc.subproj); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_INSTALLDIR = /lib; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = threads; 
+    PROJECTTYPE = Subproject; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_INSTALLDIR = /lib; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

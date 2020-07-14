@@ -1,0 +1,24 @@
+/ACKNOWLEDGEMENTS/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/Makefile/1.1.1.2/Fri Apr 23 02:51:22 1999//Tyacc-1
+/Makefile.postamble/1.1.1.1/Fri Apr 23 02:51:22 1999//Tyacc-1
+/Makefile.preamble/1.1.1.1/Fri Apr 23 02:51:22 1999//Tyacc-1
+/NEW_FEATURES/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/NOTES/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/PB.project/1.1.1.1/Fri Apr 23 02:51:22 1999//Tyacc-1
+/README/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/closure.c/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/defs.h/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/error.c/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/lalr.c/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/lr0.c/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/main.c/1.1.1.1/Fri Apr 23 02:51:15 1999//Tyacc-1
+/mkpar.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/output.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/reader.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/skeleton.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/symtab.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/verbose.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/warshall.c/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+/yacc.1/1.1.1.1/Fri Apr 23 02:51:16 1999//Tyacc-1
+D/dpkg////
+D/test////

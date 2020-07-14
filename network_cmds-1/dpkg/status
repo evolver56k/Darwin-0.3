@@ -1,0 +1,5 @@
+<p>This project is being phased out over time as we pull additional command sets from current BSD sources. The upstream source of these commands isn't well defined, and they may be out-of-date.</p>
+
+<p><code>network_cmds</code> will be replaced with two projects: a new <code>network_cmds</code> and <code>inet_cmds</code>. Progress on this is waiting on updating the System framework libraries with newer BSD code.</p>
+
+<p>See <a href="http://www.publicsource.apple.com/projects/darwin/strategy/bsd.html">BSD Software Strategy</a> for more information.</p>

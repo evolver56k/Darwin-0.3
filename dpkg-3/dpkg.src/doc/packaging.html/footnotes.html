@@ -1,0 +1,97 @@
+<html><head>
+<title>Debian packaging manual - footnotes</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>Debian packaging manual - footnotes</h1>
+<h2><A href="ch-scope.html#fr1" name="1">1</A></h2>
+<P>
+<kbd>dpkg</kbd>
+is targetted primarily at Debian GNU/Linux, but may work on or be
+ported to other systems.<h2><A href="ch-binarypkg.html#fr2" name="2">2</A></h2>
+<P>
+That
+means that if it runs successfully or fails and then you call it again
+it doesn't bomb out, but just ensures that everything is the way it
+ought to be.<h2><A href="ch-binarypkg.html#fr3" name="3">3</A></h2>
+<P>
+This field should appear in all packages, though
+<kbd>dpkg</kbd> doesn't require it yet so that old packages can still be
+installed.<h2><A href="ch-sourcepkg.html#fr4" name="4">4</A></h2>
+<P>
+This is so that the control file which is
+produced has the right permissions<h2><A href="ch-sourcepkg.html#fr5" name="5">5</A></h2>
+<P>
+They may be specified either
+in the locations in the source tree where they are created or in the
+locations in the temporary build tree where they are installed prior
+to binary package creation.<h2><A href="ch-sourcepkg.html#fr6" name="6">6</A></h2>
+<P>
+Though there is nothing stopping an author who is
+also the Debian maintainer from using it for all their changes, it
+will have to be renamed if the Debian and upstream maintainers become
+different people.<h2><A href="ch-sourcepkg.html#fr7" name="7">7</A></h2>
+<P>
+This is generated
+by the <kbd>822-date</kbd> program.<h2><A href="ch-sourcepkg.html#fr8" name="8">8</A></h2>
+<P>
+<code>files.new</code> is used as a temporary file by
+<kbd>dpkg-gencontrol</kbd> and <kbd>dpkg-distaddfile</kbd> - they write a new
+version of <code>files</code> here before renaming it, to avoid leaving a
+corrupted copy if an error occurs<h2><A href="ch-sourcepkg.html#fr9" name="9">9</A></h2>
+<P>
+This is not
+currently detected when building source packages, but only when
+extracting them.<h2><A href="ch-sourcepkg.html#fr10" name="10">10</A></h2>
+<P>
+Hard links may be permitted at
+some point in the future, but would require a fair amount of
+work.<h2><A href="ch-sourcepkg.html#fr11" name="11">11</A></h2>
+<P>
+Setgid directories are allowed.<h2><A href="ch-sourcepkg.html#fr12" name="12">12</A></h2>
+<P>
+Renaming a
+file is not treated specially - it is seen as the removal of the old
+file (which generates a warning, but is otherwise ignored), and the
+creation of the new one.<h2><A href="ch-controlfields.html#fr13" name="13">13</A></h2>
+<P>
+The characters <code>@</code> <code>:</code> <code>=</code> <code>%</code> <code>_</code> (at,
+colon, equals, percent and underscore) used to be legal and are still
+accepted when found in a package file, but may not be used in new
+packages<h2><A href="ch-controlfields.html#fr14" name="14">14</A></h2>
+<P>
+This is a bug.<h2><A href="ch-controlfields.html#fr15" name="15">15</A></h2>
+<P>
+This actually invokes
+<pre>gcc --print-libgcc-file-name</pre>
+and parses and decomposes the output and looks the CPU type from the
+GCC configuration in a table in <kbd>dpkg</kbd>.  This is so that it will
+work if you're cross-compiling.<h2><A href="ch-controlfields.html#fr16" name="16">16</A></h2>
+<P>
+It is
+usual to leave a space after the package name if a version number is
+specified.<h2><A href="ch-controlfields.html#fr17" name="17">17</A></h2>
+<P>
+A space after each comma is conventional.<h2><A href="ch-controlfields.html#fr18" name="18">18</A></h2>
+<P>
+That is, the parts which are not the
+<code>.dsc</code>.<h2><A href="ch-maintainerscripts.html#fr19" name="19">19</A></h2>
+<P>
+Part of the problem is due to what
+is arguably a bug in <kbd>dpkg</kbd>.<h2><A href="ch-descriptions.html#fr20" name="20">20</A></h2>
+<P>
+Version 0.93.23 or
+later.<h2><A href="ch-relationships.html#fr21" name="21">21</A></h2>
+<P>
+Current versions
+(1.2.4) of <kbd>dpkg</kbd> have a bug in this area which will cause some of
+these problems to be ignored.<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

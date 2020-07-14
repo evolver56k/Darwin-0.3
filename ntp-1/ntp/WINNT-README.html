@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Draft//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>----------------------------------------------------------------------------
+</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+
+<BODY>
+
+<P>
+<CENTER><FONT SIZE=2>----------------------------------------------------------------------------</FONT></CENTER>
+<P>
+<CENTER><B><FONT SIZE=5>XNTP Release for Windows NT</FONT></B></CENTER>
+<P>
+<CENTER><FONT SIZE=2>----------------------------------------------------------------------------
+<BR>
+</FONT></CENTER>
+<P>
+<FONT SIZE=2>This is an unsupported release, for assistance from
+other users, post to the UseNet newsgroup: <I>comp.protocols.time.ntp</I></FONT>
+<P>
+<FONT SIZE=2>There will eventually be documentation with this
+release, in the file NTPOG.WRI. It is Windows Write format. <BR>
+</FONT>
+<P>
+<FONT SIZE=2>To update to a newer version, run the setup program
+again.<BR>
+<BR>
+</FONT>
+<P>
+<U><FONT SIZE=5>Building XNTP for Windows NT<BR>
+</FONT></U>
+<P>
+<FONT SIZE=2>Requirements:</FONT>
+<UL>
+<LI><FONT SIZE=2>Latest InstallShield SDK for Windows NT 4.0 support</FONT>
+<LI><FONT SIZE=2>Perl5 for Win32 from http://www.perl.hip.com
+or your favorite place</FONT> <BR>
+
+</UL>
+
+<P>
+
+<P>
+<FONT SIZE=2>First off there are two options for installing. </FONT>
+<UL>
+<LI><FONT SIZE=2>Graphical <B>InstallShield SDK</B> based installation
+process (needs to be updated to reflect the new directory structure)</FONT>
+<LI><B><FONT SIZE=2>Batch file</FONT></B><FONT SIZE=2> for installing
+the executables (always works)</FONT> <BR>
+
+</UL>
+
+<P>
+
+<P>
+<FONT SIZE=2>The software is known to work on Windows NT 3.5,
+3.51, and 4.0. However, the latest version of the InstallShield
+SDK must be installed in order to support a graphical install
+on Windows NT 4.0. <BR>
+</FONT>
+<P>
+<CENTER><FONT SIZE=5>Windows 95 is not supported.<BR>
+</FONT></CENTER>
+<P>
+<FONT SIZE=2>To compile the sofware you have two options</FONT>
+<OL>
+<LI><FONT SIZE=2>Debugging version</FONT> 
+</OL>
+
+<P>
+<FONT SIZE=2>Run <B>blddbg.bat<BR>
+</B></FONT>
+<OL>
+<LI><FONT SIZE=2>Nondebugging version</FONT> 
+</OL>
+
+<P>
+<FONT SIZE=2>Run <B>bldrel.bat<BR>
+</B></FONT>
+<P>
+<FONT SIZE=2>Either of these will compile the entire package,
+placing the executables into the <I>scripts\wininstall\distrib</I>
+directory. After which the graphical installer will be built.
+<BR>
+<BR>
+</FONT>
+<P>
+<U><FONT SIZE=5>Batch Install<BR>
+</FONT></U>
+<P>
+<I><FONT SIZE=2>scripts\wininstall\distrib\install.bat<BR>
+</FONT></I>
+<P>
+<FONT SIZE=2>NOTE: You will now have to modify the configuration
+files installed by the install.bat program and also the ntp.conf
+file (config file) installed in the WinNT home directory. <BR>
+</FONT>
+<P>
+<FONT SIZE=2>****YOU MUST ****** modify the directory line in
+the ntp.conf or ntp.ini</FONT>
+<P>
+<FONT SIZE=2>(it will accept either name)... and change the single
+slash to double slashes</FONT>
+<P>
+<FONT SIZE=2>ie. <B>c:\winnt\ntp.conf</B> becomes <B>c:\\winnt\\ntp.conf
+<BR>
+<BR>
+<BR>
+</B></FONT>
+<P>
+<U><FONT SIZE=5>Graphical Install<BR>
+<BR>
+</FONT></U>
+<P>
+<FONT SIZE=2>If you currently have XNTP on this machine (any older
+version that was NOT installed using this GUI) you must STOP NOW,
+and REMOVE IT from your system before running this install program.
+There is no way to easily do this automatically.<BR>
+</FONT>
+<P>
+<I><FONT SIZE=2>scripts\wininstall\intel\disk1\setup.exe<BR>
+<BR>
+</FONT></I>
+<P>
+<FONT SIZE=2>This installation program will create what it thinks
+are sensible defaults for the configuration files for XNTP. If
+you have a tricky setup, let it finish, then go back and stop
+the service (try the control panel applet) and edit the configuration
+files. The files will all be in the Windows System directory (default
+is %windir%\) and will be named as follows:</FONT>
+<P>
+<FONT SIZE=2>ntp.conf - the NTP configuration file.</FONT>
+<P>
+<FONT SIZE=2>ntp.drift - the NTP drift file<BR>
+<BR>
+</FONT>
+<P>
+<U><FONT SIZE=5>Other Batch Files</FONT></U>
+<UL>
+<LI><FONT SIZE=2>mkdist.bat - To package binaries for in a ZIP
+archive.</FONT>
+<LI><FONT SIZE=2>mksrc.bat - To package source, excluding files
+specified in the &quot;excludes&quot; file.</FONT>
+<LI><FONT SIZE=2>scripts/wininstall/build.bat - Creates GUI installer,
+must be modified to reflect InstallShield source directory.</FONT>
+<BR>
+
+</UL>
+
+<P>
+
+<P>
+<FONT SIZE=2>There are some important notes concerning the InstallShield
+SDK You must modify the build.bat file to change the InstallShield
+source directory, and you must modify the <I>setup.lst</I> to
+reflect the full pathnames based on where you are building the
+software.<BR>
+<BR>
+<BR>
+</FONT>
+<H2>ANNOUNCE: Enhancements to the Windows NT port of XNTP <BR>
+</H2>
+
+<P>
+<FONT SIZE=2>This set of changes fixes all known bugs, and it
+includes several major enhancements.</FONT>
+<P>
+<FONT SIZE=2>Many changes have been made both to the build environment
+as well as the code. There is no longer an ntp.mak file, instead
+there are two batch files bldrel.bat and blddbg.bat file that
+will build the entire source.</FONT>
+<P>
+<FONT SIZE=2>Perl5 for Win32 is required, but is easily available
+from the NT Resource Kit or from the Internet at <I>http://www.perl.hip.com</I>.</FONT>
+<P>
+<FONT SIZE=2>The multiple interface support was adapted from Larry
+Kahn's work on the BIND NT port. I have not been able to test
+it adequately as I only have NT servers with one network interfaces
+on which to test.</FONT>
+<P>
+<FONT SIZE=2>Enhancements:</FONT>
+<UL>
+<LI><FONT SIZE=2>Event Logging now works correctly.</FONT>
+<LI><FONT SIZE=2>Version numbers now work (requires Perl during
+build)</FONT>
+<LI><FONT SIZE=2>Support for multiple network interface cards
+(untested)</FONT>
+<LI><FONT SIZE=2>NTP.CONF now default, but supports ntp.ini if
+not found</FONT>
+<LI><FONT SIZE=2>Installation procedure automated.</FONT>
+<LI><FONT SIZE=2>All paths now allow environment variables such
+as %windir%</FONT> 
+</UL>
+
+<P>
+<FONT SIZE=2>Bug fixes:</FONT>
+<UL>
+<LI><FONT SIZE=2>INSTSRV replaced, works correctly</FONT>
+<LI><FONT SIZE=2>Cleaned up many warnings</FONT>
+<LI><FONT SIZE=2>Corrected use of an uninitialized variable in
+XNTPD</FONT>
+<LI><FONT SIZE=2>Fixed ntpdate -b option</FONT>
+<LI><FONT SIZE=2>Fixed ntpdate to accept names as well as IP addresses</FONT>
+<LI><FONT SIZE=2>Fixed problem with &quot;longjmp&quot; in xntpdc/ntpdc.c
+that</FONT> 
+</UL>
+
+<MENU>
+<LI><FONT SIZE=2>caused a software exception on doing a Control-C
+in xntpdc.</FONT>
+<LI><FONT SIZE=2>A Cntrl-C now terminates the program.</FONT>
+
+</MENU>
+
+<P>
+<FONT SIZE=2>See below for more detail:</FONT>
+<P>
+<FONT SIZE=2>Note: SIGINT is not supported for any Win32 application
+including Windows NT and Windows 95. When a CTRL+C interrupt occurs,
+Win32 operating systems generate a new thread to specifically
+handle that interrupt. This can cause a single-thread application
+such as UNIX, to become multithreaded, resulting in unexpected
+behavior.<BR>
+</FONT>
+<P>
+<FONT SIZE=2>Possible enhancements and things left to do:</FONT>
+<UL>
+<LI><FONT SIZE=2>Reference clock drivers for NT (at least Local
+Clock support)</FONT>
+<LI><FONT SIZE=2>Control Panel Applet</FONT>
+<LI><FONT SIZE=2>InstallShield based installation, like NT BIND
+has</FONT>
+<LI><FONT SIZE=2>Integration with NT Performance Monitor</FONT>
+<LI><FONT SIZE=2>SNMP integration</FONT>
+<LI><FONT SIZE=2>Fully test multiple interface support</FONT>
+<BR>
+
+</UL>
+
+<P>
+
+<P>
+<FONT SIZE=2>Known problems:</FONT>
+<UL>
+<LI><FONT SIZE=2>bug in ntptrace - if no Stratum 1 servers are
+available,</FONT> 
+</UL>
+
+<MENU>
+<LI><FONT SIZE=2>such as on an IntraNet, the application crashes.</FONT>
+
+</MENU>
+
+<P>
+<FONT SIZE=2></FONT>
+<P>
+<FONT SIZE=2>Greg Schueman - schueman@acm.org<BR>
+<BR>
+</FONT>
+<P>
+<TT>------------------------------------------------------------------------</TT>
+<P>
+<TT>Disclaimer of Warranties. THE SOFTWARE AND ASSOCIATED DOCUMENTATION
+ARE PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY OF ANY KIND, EITHER
+EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY
+OF MERCHANTABILITY, FITNESS FOR ANY PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE
+AND DOCUMENTATION IS WITH YOU. NO ONE WARRANTS THAT THE SOFTWARE
+WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE
+WILL BE UNINTERRUPTED OR ERROR FREE, OR THAT DEFECTS IN THE SOFTWARE
+WILL BE CORRECTED.<BR>
+</TT>
+<P>
+<TT>PRODUCTION, OR DISTRIBUTION OF THE SOFTWARE BE LIABLE TO YOU
+ON ACCOUNT OF ANY CLAIM FOR ANY SPECIAL EXEMPLARY OR PUNITIVE
+DAMAGES, INCLUDING ANY LOST PROFITS, LOST SAVINGS, BUSINESS INTERRUPTION,
+LOSS OF BUSINESS OR PERSONAL INFORMATION OR ANY OTHER INCIDENTAL
+OR  CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE, THE INABILITY
+TO USE, QUALITY, OR PERFORMANCE OF THE SOFTWARE AND DOCUMENTATION,
+EVEN IF SAID AUTHORS, HAVE BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.</TT>
+<P>
+<TT>------------------------------------------------------------------------
+<BR>
+</TT>
+</BODY>
+
+</HTML>

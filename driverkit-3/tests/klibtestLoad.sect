@@ -1,0 +1,21 @@
+# Initialization
+
+CALL		locktest_announce		0
+
+# Associate ports with proc/arg
+
+SMAP		NXLockTest	locktest_server	0
+ADVERTISE	NXLockTest
+
+# Set proc to be called when a port dies
+
+PORT_DEATH	locktest_port_gone
+
+# This driver must be wired down.
+
+WIRE
+
+
+
+
+

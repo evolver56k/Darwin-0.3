@@ -1,0 +1,164 @@
+/*
+ * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * Portions Copyright (c) 1999 Apple Computer, Inc.  All Rights
+ * Reserved.  This file contains Original Code and/or Modifications of
+ * Original Code as defined in and that are subject to the Apple Public
+ * Source License Version 1.1 (the "License").  You may not use this file
+ * except in compliance with the License.  Please obtain a copy of the
+ * License at http://www.apple.com/publicsource and read it before using
+ * this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON- INFRINGEMENT.  Please see the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
+
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ * HISTORY
+ * $Log: notify.defs,v $
+ * Revision 1.3  1999/07/22 20:04:03  wsanchez
+ * Update APSL
+ *
+ * Revision 1.2  1999/03/25 09:19:42  wsanchez
+ * Merge kernel-copyrights.
+ * Undelete drvAdaptecU2SCSI.
+ *
+ * Revision 1.1.1.1.666.4  1999/03/16 17:05:42  wsanchez
+ * Substitute License
+ *
+ * Revision 1.1.1.1.666.3  1999/03/16 15:28:05  wsanchez
+ * Substitute copyright
+ *
+ * Revision 1.1.1.1.666.2  1999/03/16 10:37:40  umeshv
+ * Fixed errors in previous commit.
+ *
+ * Revision 1.1.1.1.666.1  1999/03/11 09:52:51  umeshv
+ * Added copyrights.
+ *
+ * Revision 1.1.1.1  1997/09/30 02:44:52  wsanchez
+ * Import of kernel from umeshv/kernel
+ *
+ * Revision 2.6  91/08/28  11:15:33  jsb
+ * 	Added conditionalized sequence number support.
+ * 	[91/08/13            rpd]
+ * 
+ * Revision 2.5  91/05/14  16:58:11  mrt
+ * 	Correcting copyright
+ * 
+ * Revision 2.4  91/02/05  17:35:14  mrt
+ * 	Changed to new Mach copyright
+ * 	[91/02/01  17:19:54  mrt]
+ * 
+ * Revision 2.3  90/08/27  22:04:34  dbg
+ * 	Fixed the notification ports, to make them send-once rights.
+ * 	[90/08/13            rpd]
+ * 
+ * Revision 2.2  90/06/02  14:59:28  rpd
+ * 	Created for new IPC.
+ * 	[90/03/26  23:45:48  rpd]
+ * 
+ */
+
+subsystem notify 64;
+
+#include <mach/std_types.defs>
+
+#if	SEQNOS
+serverprefix do_seqnos_;
+serverdemux seqnos_notify_server;
+#else	SEQNOS
+serverprefix do_;
+serverdemux notify_server;
+#endif	SEQNOS
+
+type notify_port_t = MACH_MSG_TYPE_MOVE_SEND_ONCE
+	ctype: mach_port_t;
+
+/* MACH_NOTIFY_FIRST: 0100 */
+skip;
+
+/* MACH_NOTIFY_PORT_DELETED: 0101 */
+simpleroutine mach_notify_port_deleted(
+		notify	: notify_port_t;
+#if	SEQNOS
+	msgseqno seqno	: mach_port_seqno_t;
+#endif	SEQNOS
+		name	: mach_port_name_t);
+
+/* MACH_NOTIFY_MSG_ACCEPTED: 0102 */
+simpleroutine mach_notify_msg_accepted(
+		notify	: notify_port_t;
+#if	SEQNOS
+	msgseqno seqno	: mach_port_seqno_t;
+#endif	SEQNOS
+		name	: mach_port_name_t);
+
+skip;	/* was NOTIFY_OWNERSHIP_RIGHTS: 0103 */
+
+skip;	/* was NOTIFY_RECEIVE_RIGHTS: 0104 */
+
+/* MACH_NOTIFY_PORT_DESTROYED: 0105 */
+simpleroutine mach_notify_port_destroyed(
+		notify	: notify_port_t;
+#if	SEQNOS
+	msgseqno seqno	: mach_port_seqno_t;
+#endif	SEQNOS
+		rights	: mach_port_receive_t);
+
+/* MACH_NOTIFY_NO_SENDERS: 0106 */
+simpleroutine mach_notify_no_senders(
+		notify	: notify_port_t;
+#if	SEQNOS
+	msgseqno seqno	: mach_port_seqno_t;
+#endif	SEQNOS
+		mscount	: mach_port_mscount_t);
+
+/* MACH_NOTIFY_SEND_ONCE: 0107 */
+simpleroutine mach_notify_send_once(
+		notify	: notify_port_t
+#if	SEQNOS
+;	msgseqno seqno	: mach_port_seqno_t
+#endif	SEQNOS
+		);
+
+/* MACH_NOTIFY_DEAD_NAME: 0110 */
+simpleroutine mach_notify_dead_name(
+		notify	: notify_port_t;
+#if	SEQNOS
+	msgseqno seqno	: mach_port_seqno_t;
+#endif	SEQNOS
+		name	: mach_port_name_t);

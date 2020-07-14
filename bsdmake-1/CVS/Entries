@@ -1,0 +1,38 @@
+/Makefile/1.1.1.2/Fri Apr 23 02:26:46 1999//Tbsdmake-1
+/Makefile.boot/1.1.1.1/Fri Apr 23 02:26:39 1999//Tbsdmake-1
+/Makefile.postamble/1.1.1.1/Fri Apr 23 02:26:46 1999//Tbsdmake-1
+/Makefile.preamble/1.1.1.1/Fri Apr 23 02:26:46 1999//Tbsdmake-1
+/PB.project/1.1.1.1/Fri Apr 23 02:26:46 1999//Tbsdmake-1
+/arch.c/1.1.1.2/Fri Apr 23 02:26:46 1999//Tbsdmake-1
+/bit.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/buf.c/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/buf.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/compat.c/1.1.1.2/Fri Apr 23 02:26:47 1999//Tbsdmake-1
+/cond.c/1.1.1.2/Fri Apr 23 02:26:47 1999//Tbsdmake-1
+/config.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/dir.c/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/dir.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/for.c/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/hash.c/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/hash.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/job.c/1.1.1.2/Fri Apr 23 02:26:48 1999//Tbsdmake-1
+/job.h/1.1.1.2/Fri Apr 23 02:26:49 1999//Tbsdmake-1
+/list.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/lst.h/1.1.1.1/Fri Apr 23 02:26:40 1999//Tbsdmake-1
+/main.c/1.1.1.2/Fri Apr 23 02:26:51 1999//Tbsdmake-1
+/make.1/1.1.1.2/Fri Apr 23 02:26:52 1999//Tbsdmake-1
+/make.c/1.1.1.2/Fri Apr 23 02:26:52 1999//Tbsdmake-1
+/make.h/1.1.1.2/Fri Apr 23 02:26:52 1999//Tbsdmake-1
+/nonints.h/1.1.1.2/Fri Apr 23 02:26:52 1999//Tbsdmake-1
+/parse.c/1.1.1.2/Fri Apr 23 02:26:53 1999//Tbsdmake-1
+/pathnames.h/1.1.1.1/Fri Apr 23 02:26:41 1999//Tbsdmake-1
+/sprite.h/1.1.1.1/Fri Apr 23 02:26:41 1999//Tbsdmake-1
+/str.c/1.1.1.2/Fri Apr 23 02:26:52 1999//Tbsdmake-1
+/suff.c/1.1.1.2/Fri Apr 23 02:26:53 1999//Tbsdmake-1
+/targ.c/1.1.1.2/Fri Apr 23 02:26:54 1999//Tbsdmake-1
+/util.c/1.1.1.2/Fri Apr 23 02:26:54 1999//Tbsdmake-1
+/var.c/1.1.1.2/Fri Apr 23 02:26:54 1999//Tbsdmake-1
+D/PSD.doc////
+D/dpkg////
+D/lst.lib////
+D/mk////

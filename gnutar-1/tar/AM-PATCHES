@@ -1,0 +1,289 @@
+--- automake-1.1n-ref/automake.in	Thu Apr  3 21:09:32 1997
++++ automake-1.1n/automake.in	Wed Apr 23 07:17:43 1997
+@@ -51,6 +51,7 @@
+ $AM_PACKAGE_VERSION_PATTERN = "^\\s*\\[?([^]\\s]+)\\]?\\s*\$";
+ # Note that there is no AC_PATH_TOOL.  But we don't really care.
+ $AC_CHECK_PATTERN = "AC_(CHECK|PATH)_(PROG|PROGS|TOOL)\\(\\[?(\\w+)";
++$AM_MISSING_PATTERN = "AM_MISSING_PROG\\(\\[?(\\w+)";
+ # Just check for alphanumeric in AC_SUBST.  If you do AC_SUBST(5),
+ # then too bad.
+ $AC_SUBST_PATTERN = "AC_SUBST\\(\\[?(\\w+)";
+@@ -885,12 +886,15 @@
+     #
+     # Handle some ansi2knr cleanup.
+     #
+-    if (defined $options{'ansi2knr'} && keys %de_ansi_objects)
++    if (defined $options{'ansi2knr'} && keys %de_ansi_bases)
+     {
+-	# Make all ._o files depend on ansi2knr.  Use a sneaky little
+-	# hack to make it print nicely.
+-	&pretty_print_rule ('', '', (sort keys %de_ansi_objects,
+-				     ':', '$(ANSI2KNR)'));
++	$output_rules .= "\n";
++	foreach $base (sort keys %de_ansi_bases)
++	{
++	    $output_rules .= $base . '._c: ' . $base . '.c $(ANSI2KNR)'
++		. "\n\t" . '$(ANSI2KNR) $(srcdir)/' . $base . '.c > '
++		    . $base . '.tmp && mv ' . $base . '.tmp $@' . "\n";
++	}
+     }
+ 
+     #
+@@ -930,7 +934,7 @@
+     if ($use_interlock)
+     {
+ 	$output_rules .= '$(SHELL) $(INTERLOCK) =yacclockdir $(YLWRAP)'
+-	    . ' "$(YACC)" y.tab.c $*' . $c_suffix 
++	    . ' "$(YACC)" y.tab.c $*' . $c_suffix
+ 	    . ' y.tab.h $*.h -- $(YFLAGS) $<';
+     }
+     else
+@@ -953,9 +957,9 @@
+     &define_configure_variable ('LEX_OUTPUT_ROOT');
+     &define_configure_variable ('LEXLIB');
+     $output_rules .= "$lex_suffix$c_suffix:\n\t";
+-    
++
+     if ($use_interlock)
+-    { 
++    {
+         # is the $@ correct here?  If so, why not use it in the
+         # interlock build rule for yacc above?
+ 	$output_rules .= '$(SHELL) $(INTERLOCK) =lexlockdir $(YLWRAP)'
+@@ -1038,7 +1042,7 @@
+ 	    # distribution.  If the extension is the regular '.y' or
+ 	    # '.l', we assume C compilation, and the generated file
+ 	    # has exension .c.  Otherwise, we compile with C++, and
+-	    # make the following association: (yy -> cc, y++ -> c++, 
++	    # make the following association: (yy -> cc, y++ -> c++,
+ 	    # yxx -> cxx), similarly for .ll, etc.
+ 	    if (/^(.*)\.(y|yy|y\+\+|yxx)$/)
+ 	    {
+@@ -1080,17 +1084,16 @@
+ 	    {
+ 		# .s is assembly.  Just rewrite it.  FIXME: not finished.
+ 	    }
+-	    elsif (s/\.[cly]$/._o/)
++	    elsif (s/\.[cly]$//)
+ 	    {
+ 		# .c is C.  .l is lex.  .y is yacc.
+ 
+-		# Note: first we rewrite (eg) foo.c to foo._o and push
+-		# the file onto the list of objects that require
+-		# ansi2knr.  Then we rewrite ._o to $obj; $obj can be
+-		# simply `.o' if deansification is not really
+-		# required.
+-		$de_ansi_objects{$_} = 1;
+-		s/\._o$/$obj/;
++		# Note: first we rewrite (eg) foo.c to foo and push the file
++		# onto the list of source bases that require ansi2knr.  Then
++		# we suffix $obj; $obj can be simply `.o' if deansification
++		# is not really required.
++		$de_ansi_bases{$_} = 1;
++		s/$/$obj/;
+ 		$seen_c_source = -1 unless $seen_c_source;
+ 	    }
+ 	    else
+@@ -1906,7 +1909,7 @@
+     # Find these programs wherever they may lie.  Yes, this has
+     # intimate knowledge of the structure of the texinfo distribution.
+     &define_program_variable ('MAKEINFO', 'build', 'texinfo/makeinfo',
+-			      '@MAKEINFO@');
++			      'makeinfo', '@MAKEINFO@');
+     &define_program_variable ('TEXI2DVI', 'src', 'texinfo/util',
+ 			      'texi2dvi');
+ 
+@@ -2330,7 +2333,7 @@
+ # tarfile.
+ distcheck: dist
+ 	rm -rf $(distdir)
+-	GZIP=$(GZIP) $(TAR) zxf $(distdir).tar.gz
++	GZIP=$(GZIP) $(TAR) zxf $(distdir).tar.gz --mode=a+r
+ 	mkdir $(distdir)/=build
+ 	mkdir $(distdir)/=inst
+ 	dc_install_base=`cd $(distdir)/=inst && pwd`; \\'
+@@ -3792,6 +3795,10 @@
+ 	{
+ 	    $configure_vars{$3} = 1;
+ 	}
++	if (/$AM_MISSING_PATTERN/o)
++	{
++	    $configure_vars{$1} = 1;
++	}
+ 
+ 	# Explicitly avoid ANSI2KNR -- we AC_SUBST that in protos.m4,
+ 	# but later define it elsewhere.  This is pretty hacky.  We
+@@ -4154,9 +4161,16 @@
+ #            be found.  (runtest is in srcdir!)
+ # * SUBDIR   Subdir of top-level dir
+ # * PROGRAM  Name of program
++# * OVERRIDE If specified, the name of the program to use when not in
++#            Cygnus mode.  Defaults to PROGRAM.
+ sub define_program_variable
+ {
+-    local ($var, $whatdir, $subdir, $program) = @_;
++    local ($var, $whatdir, $subdir, $program, $override) = @_;
++
++    if (! $override)
++    {
++	$override = $program;
++    }
+ 
+     if ($cygnus_mode)
+     {
+@@ -4168,7 +4182,7 @@
+     }
+     else
+     {
+-	&define_variable ($var, $program);
++	&define_variable ($var, $override);
+     }
+ }
+ 
+@@ -4469,14 +4483,13 @@
+     # Ignore return result from chmod, because it might give an error
+     # if we chmod a symlink.
+     $dist_header = "\t" . '-chmod -R a+r $(distdir)' . "\n";
+-    $dist{'tarZ'} = ("\t"
+-		     . '$(TAR) chf - $(distdir) | compress -c > $(distdir).tar.Z'
+-		     . "\n");
+-    $dist{'shar'} = ("\t"
+-		     . 'shar $(distdir) | gzip > $(distdir).shar.gz'
+-		     . "\n");
++    $dist{'tarZ'} = "\t" . '$(TAR) chf - $(distdir) --mode=a+r'
++	. ' | compress -c > $(distdir).tar.Z' . "\n";
++    $dist{'shar'} = "\t" . 'shar $(distdir) | gzip > $(distdir).shar.gz' . "\n";
+     $dist{'zip'} = "\t" . 'zip -rq $(distdir).zip $(distdir)' . "\n";
+-    $dist{'dist'} = "\t" .  'GZIP=$(GZIP) $(TAR) chozf $(distdir).tar.gz $(distdir)' . "\n";
++    $dist{'dist'} = "\t"
++	.  'GZIP=$(GZIP) $(TAR) chozf $(distdir).tar.gz --mode=a+r $(distdir)'
++	    . "\n";
+     $dist_trailer = "\t" . 'rm -rf $(distdir)' . "\n";
+ }
+ 
+@@ -4592,9 +4605,9 @@
+     # This is a list of all targets to run during "make dist".
+     @dist_targets = ();
+ 
+-    # Keys in this hash are the names of ._o files which must depend
++    # Keys in this hash are the base names of ._c files which must depend
+     # on ansi2knr.  Ugh.
+-    %de_ansi_objects = ();
++    %de_ansi_bases = ();
+ }
+ 
+ 
+--- automake-1.1n-ref/compile-kr.am	Tue Dec  3 20:54:39 1996
++++ automake-1.1n/compile-kr.am	Tue Apr 22 13:55:21 1997
+@@ -15,8 +15,6 @@
+ ## along with this program; if not, write to the Free Software
+ ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ ## 02111-1307, USA.
+-.c._c:
+-	$(ANSI2KNR) $< > $*.tmp && mv $*.tmp $@
+ 
+ ._c._o:
+ 	@echo "$(COMPILE) -c $<"
+@@ -27,15 +25,3 @@
+ 	@echo "$(LIBTOOL) --mode=compile $(COMPILE) -c $<"
+ 	@rm -f _$*.c
+ 	@ln $< _$*.c && $(LIBTOOL) --mode=compile $(COMPILE) -c _$*.c && mv _$*.lo $@ && rm _$*.c
+-
+-.c._o:
+-	$(ANSI2KNR) $< > $*.tmp && mv $*.tmp $*._c
+-	@echo "$(COMPILE) -c $*._c"
+-	@rm -f _$*.c
+-	@ln $*._c _$*.c && $(COMPILE) -c _$*.c && mv _$*.o $@ && rm _$*.c
+-
+-.c.l_o:
+-	$(ANSI2KNR) $< > $*.tmp && mv $*.tmp $*._c
+-	@echo "$(LIBTOOL) --mode=compile $(COMPILE) -c $*._c"
+-	@rm -f _$*.c
+-	@ln $*._c _$*.c && $(LIBTOOL) --mode=compile $(COMPILE) -c _$*.c && mv _$*.lo $@ && rm _$*.c
+--- automake-1.1n-ref/mdate-sh	Wed Apr  2 02:22:28 1997
++++ automake-1.1n/mdate-sh	Sat Apr 12 18:35:23 1997
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+-# mdate-sh - get modification time of a file and pretty-print it
+-# Copyright (C) 1995 Free Software Foundation, Inc.
+-# Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, June 1995
++# Get modification time of a file or directory and pretty-print it.
++# Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
++# written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, June 1995
+ #
+ # This program is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+@@ -14,8 +14,8 @@
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++# along with this program; if not, write to the Free Software Foundation,
++# Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+ # Prevent date giving response in another language.
+ LANG=C
+@@ -26,13 +26,14 @@
+ export LC_TIME
+ 
+ # Get the extended ls output of the file or directory.
++# On HPUX /bin/sh, "set" interprets "-rw-r--r--" as options, so the "x" below.
+ if ls -L /dev/null 1>/dev/null 2>&1; then
+-  set - `ls -L -l -d $1`
++  set - x`ls -L -l -d $1`
+ else
+-  set - `ls -l -d $1`
++  set - x`ls -l -d $1`
+ fi
+-# The month is at least the fourth argument.
+-# (3 shifts here, the next inside the loop)
++# The month is at least the fourth argument
++# (3 shifts here, the next inside the loop).
+ shift
+ shift
+ shift
+diff -ur automake-1.1n-ref/mkinstalldirs automake-1.1n/mkinstalldirs
+--- automake-1.1n-ref/mkinstalldirs	Fri Apr  5 02:26:24 1996
++++ automake-1.1n/mkinstalldirs	Tue May  7 13:16:48 1996
+@@ -2,17 +2,20 @@
+ # mkinstalldirs --- make directory hierarchy
+ # Author: Noah Friedman <friedman@prep.ai.mit.edu>
+ # Created: 1993-05-16
+-# Last modified: 1994-03-25
+ # Public domain
+ 
++# $Id: AM-PATCHES,v 1.1.1.1 1999/04/23 00:34:47 wsanchez Exp $
++
+ errstatus=0
+ 
+-for file in ${1+"$@"} ; do 
++for file
++do
+    set fnord `echo ":$file" | sed -ne 's/^:\//#/;s/^://;s/\// /g;s/^#/\//;p'`
+    shift
+ 
+    pathcomp=
+-   for d in ${1+"$@"} ; do
++   for d
++   do
+      pathcomp="$pathcomp$d"
+      case "$pathcomp" in
+        -* ) pathcomp=./$pathcomp ;;
+@@ -20,11 +23,12 @@
+ 
+      if test ! -d "$pathcomp"; then
+         echo "mkdir $pathcomp" 1>&2
+-        mkdir "$pathcomp" > /dev/null 2>&1 || lasterr=$?
+-     fi
+ 
+-     if test ! -d "$pathcomp"; then
+-	errstatus=$lasterr
++        mkdir "$pathcomp" || lasterr=$?
++
++        if test ! -d "$pathcomp"; then
++  	  errstatus=$lasterr
++        fi
+      fi
+ 
+      pathcomp="$pathcomp/"

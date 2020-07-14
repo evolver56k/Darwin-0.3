@@ -1,0 +1,15 @@
+{
+    FILESTABLE = {
+        C_FILES = (prt3270.c); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (mkmake.y); 
+        OTHER_SOURCES = (Makefile.dist, Makefile.preamble, Makefile, Makefile.postamble); 
+        SUBPROJECTS = (mkastods, mkastosc, mkdctype, mkdstoas, mkhits); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = tools; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

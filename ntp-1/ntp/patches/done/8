@@ -1,0 +1,71 @@
+Received: from huey2.ee.udel.edu by mail.eecis.udel.edu id aa04512;
+          25 Dec 1997 06:40 EST
+Received: from copland.udel.edu by huey.udel.edu id aa29418;
+          25 Dec 1997 06:40 EST
+Received: from sonyinet.sony.co.jp (sonyinet.Sony.CO.JP [202.238.80.17]) by copland.udel.edu (8.8.5/8.7.3) with ESMTP id GAA24365 for <mills@udel.edu>; Thu, 25 Dec 1997 06:40:16 -0500 (EST)
+Received: by sonyinet.sony.co.jp (3.6Wbeta5-97080114) with SMTP id UAA02370
+	for <mills@udel.edu>; Thu, 25 Dec 1997 20:40:14 +0900 (JST)
+Received: from sceigw.scei.sony.co.jp (sceigw [43.27.73.1]) by sonygw.sony.co.jp (8.6.12+2.4W/3.4W-97110610) with ESMTP id UAA02913 for <mills@udel.edu>; Thu, 25 Dec 1997 20:39:58 +0900
+Received: from munchen.ddd.scei.sony.co.jp by sceigw.scei.sony.co.jp (8.6.12+2.5W/3.5Wbeta-9610301414) with ESMTP
+	id UAA18061; Thu, 25 Dec 1997 20:40:11 +0900
+Received: from citroen.ddd.scei.sony.co.jp (citroen.ddd.scei.sony.co.jp [43.27.85.177]) by munchen.ddd.scei.sony.co.jp (SMI-8.6/3.5Wpl597041611) with SMTP id UAA15708 for <mills@udel.edu>; Thu, 25 Dec 1997 20:40:09 +0900
+Received: (qmail 27007 invoked from network); 25 Dec 1997 20:40:07 +0900
+Received: from localhost.ddd.scei.sony.co.jp (HELO localhost) (objectx@127.0.0.1)
+  by localhost.ddd.scei.sony.co.jp with SMTP; 25 Dec 1997 20:40:07 +0900
+To: mills@udel.edu
+Subject: Compilation error in ntp-4.0.70a.
+X-Mailer: Mew version 1.93b7 on Emacs 20.2 / Mule 3.0 (MOMIJINOGA)
+Mime-Version: 1.0
+Content-Type: Multipart/Mixed;
+	boundary="--Next_Part(Thu_Dec_25_20:39:43_1997_595)--"
+Content-Transfer-Encoding: 7bit
+Message-Id: <19971225204004W.objectx@ddd.scei.sony.co.jp>
+Date: Thu, 25 Dec 1997 20:40:04 +0900 (JST)
+From: Masashi Fujita <objectx@ddd.scei.sony.co.jp>
+X-Dispatcher: imput version 971215
+Lines: 44
+
+----Next_Part(Thu_Dec_25_20:39:43_1997_595)--
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+
+Dear Devid.
+
+I've got ntp-4.0.70a, and try to build it on IRIX 5.3.  But cc issues
+error while compling `ntpd/refclock_palisade.c' caused by bad line folding.
+
+I'll attach the patch to fix it.
+-----
+Output of `sh config.guess' is
+
+	mips-sgi-irix5.3
+
+					Sincerely.
+
+------------------------------------------------------------------------
+					   Masashi Fujita.
+				   E-mail: objectx@ddd.scei.sony.co.jp
+                                        or objectx@bandit.co.jp
+
+
+----Next_Part(Thu_Dec_25_20:39:43_1997_595)--
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Content-Description: refclock_palisade.patch
+
+diff -r -u ../orig/ntp-4.0.70a/ntpd/refclock_palisade.c ./ntpd/refclock_palisade.c
+--- ../orig/ntp-4.0.70a/ntpd/refclock_palisade.c	Thu Nov 27 08:58:30 1997
++++ ./ntpd/refclock_palisade.c	Thu Dec 25 20:24:19 1997
+@@ -360,8 +360,7 @@
+ 		refclock_report(peer, CEVNT_BADREPLY);
+ #ifdef DEBUG
+ 		if (debug)
+-		    printf("palisade_receive: unit %d: invalid packet
+-id:%2x%2x\n", 
++		    printf("palisade_receive: unit %d: invalid packet id:%2x%2x\n", 
+ 			   up->unit, up->rpt_code, mb(0));
+ #endif
+ 		return;
+
+----Next_Part(Thu_Dec_25_20:39:43_1997_595)----

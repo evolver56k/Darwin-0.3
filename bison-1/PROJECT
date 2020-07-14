@@ -1,0 +1,9 @@
+Project		: bison
+Description	: Bison Parser Generator
+Distribution	: 1.25
+Source		: Free Software Foundation
+Location	: ftp://prep.ai.mit.edu/pub/gnu/bison-1.25.tar.gz
+Owner		: wsanchez
+Releases	: 
+Dependancies	: 
+

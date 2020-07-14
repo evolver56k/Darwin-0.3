@@ -1,0 +1,463 @@
+# rc.cdrom.PPC
+#
+# Copyright (C) 1998-1999 by Apple Computer, Inc.  All rights reserved.
+#
+# This script is invoked automatically when booted from a CD-ROM.
+# Trying to run it directly will probably not do what you expect.
+#
+# pmb 1998
+
+use strict;
+package main;
+
+###########################################################################
+# ScanPartitionMap_PPC()
+#
+sub ScanPartitionMap_PPC {
+
+	my $disk = shift or die 'ScanPartitionMap_PPC() needs a disk to scan!';
+
+	my ($isPartitioned, $pdisk_exit, $pdisk_prtn, $max_partn_num);
+	my ($pct, $prtn_type);
+	my ($hfs_partns, $ufs_partns, $free_partns, $scnd_partns);
+	my ($inst_partns, $hdrvr_partns, $boot_partns);
+
+	system($tool{'fbshow'}, '-B', '-E');
+	system($tool{'fbshow'}, '-B', '-I', "Scanning disk: $disk", '-z', '0');
+	system($tool{'pdisk'}, $disk, '-isDiskPartitioned' );
+	$isPartitioned = $?;
+	if ($isPartitioned == 0) {
+		$isPartitioned = 'true';
+	} else {
+		$isPartitioned = 0;
+	}
+	
+	if ($isPartitioned) {
+		print 'Please wait';
+		
+	    $pdisk_exit = 0;
+	    $pdisk_prtn = 1;
+	    $hfs_partns = '';
+	    $ufs_partns = '';
+	    $free_partns = '';
+	    $scnd_partns = '';
+	    $inst_partns = '';
+	    $hdrvr_partns = '';
+	    $boot_partns = '';
+	    
+	    while ($pdisk_exit == 0) {
+	    	$pct = $pdisk_prtn * 5;
+			system($tool{'fbshow'}, '-B', '-I', "Scanning disk: $disk", '-z', $pct);
+			print '.';
+			$prtn_type = `$tool{'pdisk'} $disk -partitionType $pdisk_prtn 2>> /dev/null`;
+			$pdisk_exit = $?;
+			chomp($prtn_type);
+			SWITCH: {
+				if ($prtn_type =~ /^Apple_HFS/)				{ $hfs_partns .= "$pdisk_prtn "; last SWITCH; }
+				if ($prtn_type =~ /^Apple_Rhapsody_UFS/)	{ $ufs_partns .= "$pdisk_prtn "; last SWITCH; }
+				if ($prtn_type =~ /^Apple_Free/)			{ $free_partns .= "$pdisk_prtn "; last SWITCH; }
+				if ($prtn_type =~ /^Apple_Rhapsody_Loader/)	{ $scnd_partns .= "$pdisk_prtn "; last SWITCH; }
+				if ($prtn_type =~ /^Apple_Rhapsody_Inst/)	{ $inst_partns .= "$pdisk_prtn "; last SWITCH; }
+				if ($prtn_type =~ /^Apple_Driver43/)		{ $hdrvr_partns .= "$pdisk_prtn "; last SWITCH; }
+				if ($prtn_type =~ /^Apple_Boot/)			{ $boot_partns .= "$pdisk_prtn "; last SWITCH; }
+			}
+			$pdisk_prtn++;
+	    }
+	    $max_partn_num = $pdisk_prtn - 2;
+		print "\n";
+
+	    
+	    $target{'hfs_partns'} = $hfs_partns;
+	    $target{'ufs_partns'} = $ufs_partns;
+	    $target{'free_partns'} = $free_partns;
+	    $target{'scnd_partns'} = $scnd_partns;
+	    $target{'inst_partns'} = $inst_partns;
+	    $target{'hdrvr_partns'} = $hdrvr_partns;
+	    $target{'boot_partns'} = $boot_partns;	    
+	}
+	system($tool{'fbshow'}, '-B', '-I', "Scanning disk: $disk", '-z', '100');
+	
+}
+
+###########################################################################
+# FindInstallTarget_PPC()
+#
+sub FindInstallTarget_PPC {
+	my (@disks, $disk, $found);
+
+	system("$tool{'sgmove'} sg0 sc0 2>> /dev/null");
+	system("$tool{'sgmove'} sg1 sc1 2>> /dev/null");
+	system("$tool{'sgmove'} sg2 sc2 2>> /dev/null");
+	system("$tool{'sgmove'} sg3 sc3 2>> /dev/null");
+
+	print "Please wait.\n";
+	@disks = `$tool{'pickdisk'} -mach2id /dev 2>> /dev/null`;
+	AbortInstall('NO_DISKS') if ($disks[0] =~ /cannot/);
+	
+	undef($target{'valid'});
+	SCAN: foreach $disk (@disks) {
+		chomp $disk;
+		$disk =~ s/(\w+)a:.*/$1h/;
+		ScanPartitionMap_PPC($disk);
+		
+		if ($target{'inst_partns'}) {
+			$info{'interactive'} = 0;
+			$target{'valid'} = 'true';
+			$found = $disk;
+			last SCAN;
+		}
+	}
+
+	return unless ($target{'valid'});
+
+	$target{'livedisk'}	= $found;
+	$found =~ s|/dev/r(.*)h$|$1|;
+	$target{'diskie'}	= "${found}a";
+	$target{'rawdisk'}	= "/dev/r${found}a";
+	undef($target{'disknum'});
+	
+	$target{'LooksLike sd0a'}		= $target{'diskie'};
+	$target{'LooksLike /dev/rsd0a'}	= $target{'rawdisk'};
+	$target{'LooksLike /dev/rsd0h'}	= $target{'livedisk'};
+	$target{'valid'}				= 'true';
+
+	$target{'partition_name'} = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionName $target{'inst_partns'} 2>> /dev/null`;
+	chomp($target{'partition_name'});
+}
+
+###########################################################################
+# AskUserForInstallTarget_PPC()
+#
+sub AskUserForInstallTarget_PPC {
+
+	my $reply = '';
+	my $numdisks = 255;
+
+	$reply = '';
+	while (!$reply) {
+		ClearScreen();
+		ConsoleMessage('AVAILABLE_DISKS');
+		BlankLine();
+		system( "$tool{'pickdisk'} 2>> /dev/null" );
+		$numdisks = $?;
+		AbortInstall('INSTALLFAILED') if ($numdisks == 255);
+		
+		BlankLine();
+		ConsoleMessage('ALL_DISKS_PPC');
+		BlankLine();
+		$reply = Ask('--> ');
+		$reply =~ s/[^0-9]//g;
+		$reply = '' unless ($reply >= 1 && $reply <= $numdisks);
+	}
+
+	$target{'disknum'}	= $reply;
+	chomp($target{'diskie'}	= `$tool{'pickdisk'} $reply`);
+	$target{'rawdisk'}	= "/dev/r$target{'diskie'}";
+	$target{'livedisk'}	= "/dev/r$target{'diskie'}";
+	$target{'livedisk'} =~ s/a$/h/;
+	
+	$target{'LooksLike sd0a'}		= $target{'diskie'};
+	$target{'LooksLike /dev/rsd0a'}	= $target{'rawdisk'};
+	$target{'LooksLike /dev/rsd0h'}	= $target{'livedisk'};
+	$target{'valid'}				= 'true';
+}
+
+
+
+###########################################################################
+# Partition_PPC()
+#
+sub Partition_PPC {
+	my $partn;
+	my ($partn_base, $partn_size, $size, $x);
+
+	$partn = $target{'inst_partns'};
+
+	if ($debug) {
+		print "\$target{'disknum'}              = $target{'disknum'}\n";
+		print "\$target{'LooksLike sd0a'}       = $target{'LooksLike sd0a'}\n";
+		print "\$target{'LooksLike /dev/rsd0a'} = $target{'LooksLike /dev/rsd0a'}\n";
+		print "\$target{'LooksLike /dev/rsd0h'} = $target{'LooksLike /dev/rsd0h'}\n";
+		print "\$target{'hfs_partns'}           = $target{'hfs_partns'}\n";
+		print "\$target{'ufs_partns'}           = $target{'ufs_partns'}\n";
+		print "\$target{'free_partns'}          = $target{'free_partns'}\n";
+		print "\$target{'scnd_partns'}          = $target{'scnd_partns'}\n";
+		print "\$target{'inst_partns'}          = $target{'inst_partns'}\n";
+		print "\$target{'hdrvr_partns'}         = $target{'hdrvr_partns'}\n";
+		print "\$target{'boot_partns'}          = $target{'boot_partns'}\n";	    
+	}
+
+	if (!$partn) { die 'A partition must be specified!'; }
+	
+	print "Installing to pre-chosen disk and partition.\n";
+
+	
+	$partn_size = 0;
+	
+	ConsoleMessage('Preparing Partitions', 20);
+	# delete 2ndary loader partitions, fold in size.
+	do {
+		chomp($partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -getPartitionOfType Apple_Rhapsody_Loader 0 2>> /dev/null`);
+		if (!$?) {
+			chomp($size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`);
+			$partn_size += $size;
+			system($tool{'pdisk'}, $target{'LooksLike /dev/rsd0h'}, '-deletePartition', $partn);
+		}
+	} while (!$?);
+
+	ConsoleMessage('Preparing Partitions', 20);
+	# delete other 2ndary loader partitions, fold in size.
+#	do {
+#		chomp($partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -getPartitionOfType Apple_MOSX_Loader 0 2>> /dev/null`);
+#		if (!$?) {
+#			chomp($size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`);
+#			$partn_size += $size;
+#			system($tool{'pdisk'}, $target{'LooksLike /dev/rsd0h'}, '-deletePartition', $partn);
+#		}
+#	} while (!$?);
+
+
+	ConsoleMessage('Preparing Partitions', 22);
+	# delete Install Target partitions, fold in size.
+	do {
+		chomp($partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -getPartitionOfType Apple_Rhapsody_Inst 0 2>> /dev/null`);
+		if (!$?) {
+			chomp($size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`);
+			$partn_size += $size;
+			system($tool{'pdisk'}, $target{'LooksLike /dev/rsd0h'}, '-deletePartition', $partn);
+		}
+	} while (!$?);
+
+	ConsoleMessage('Preparing Partitions', 24);
+	# delete HFS booter partitions, fold in size.
+	do {
+		chomp($partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -getPartitionWithName MOSX_OF3_Booter 0 2>> /dev/null`);
+		if (!$?) {
+			chomp($size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`);
+			$partn_size += $size;
+			system($tool{'pdisk'}, $target{'LooksLike /dev/rsd0h'}, '-deletePartition', $partn);
+		}
+	} while (!$?);
+
+	ConsoleMessage('Preparing Partitions', 26);
+	# find big enough free space
+	$x = 0;
+	do {
+		$partn_base = 0;
+		chomp($partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -getPartitionOfType Apple_Free $x 2>> /dev/null`);
+		$x++;
+		if (!$?) {
+			chomp($size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`);
+			if ($size >= $partn_size) {
+				chomp($partn_base = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionBase $partn`);
+			}
+		}
+	} while (!$? && !$partn_base);
+
+	AbortInstall('TOO_SMALL') unless $partn_base;
+
+	ConsoleMessage('Preparing Partitions', 28);
+	chomp($partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -getPartitionOfType Apple_Free 0`);
+	AbortInstall('PDISK_FIND_FREE_ERR') if ($?);
+	chomp($partn_base = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionBase $partn`);
+
+	ConsoleMessage('Preparing Partitions', 30);
+	# Create one big partition as the booter
+	$partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -createPartition MOSX_OF3_Booter Apple_HFS $partn_base $partn_size`;
+	AbortInstall('PDISK_CREATE_ERR') if ($?);
+	chomp($partn);
+	$target{'boot_partns'} = $partn;
+
+	ConsoleMessage('Preparing Partitions', 32);
+	# shrink it to 8MB, change rest to Apple_Rhapsody_Loader
+	$partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -splitPartition $partn $info{'HFS_Booter_Size'} SecondaryLoader Apple_Rhapsody_Loader`;
+	AbortInstall('PDISK_SPLIT_4LDR_ERR') if ($?);
+	chomp($partn);
+	$target{'scnd_partns'} = $partn;
+
+	ConsoleMessage('Preparing Partitions', 34);
+	# shrink Apple_Rhapsody_Loader to 512k, change rest to UFS
+	$partn = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -splitPartition $partn 1024 \"$info{'releasename'}\" Apple_Rhapsody_UFS`;
+	AbortInstall('PDISK_SPLIT_4UFS_ERR') if ($?);
+	chomp($partn);	
+	$target{'ufs_partns'} = $partn;
+	
+	WriteSecondaryLoader($target{'scnd_partns'});
+	WriteHFSBooter($target{'boot_partns'});
+}
+
+
+###########################################################################
+# WriteSecondaryLoader() 
+sub WriteSecondaryLoader {
+	my $partn = shift || die 'WriteSecondaryLoader() needs a partition number!';
+	my ($sl_partn_base, $sl_partn_size, $sl_block_size);
+
+	ConsoleMessage('Finding Secondary Loader', 40);
+	$sl_partn_base = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionBase $partn`;
+	$sl_partn_size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`;
+	$sl_block_size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -blockSize`;
+	$sl_partn_size = $sl_partn_size * $sl_block_size;
+
+	ConsoleMessage('Clearing Secondary Loader', 44);
+	open DD, "|$tool{'dd'} of=$target{'LooksLike /dev/rsd0h'} seek=$sl_partn_base";
+	print DD "\0" x $sl_partn_size; 
+	close DD;
+
+	ConsoleMessage('Copying Secondary Loader', 48);
+	system("$tool{'slambits'} $target{'LooksLike /dev/rsd0h'} -p $partn -f $file{'secondary_loader'} | $tool{'dd'} of=$target{'LooksLike /dev/rsd0h'} seek=$sl_partn_base");
+
+}
+
+###########################################################################
+# WriteHFSBooter() 
+sub WriteHFSBooter {
+	my $partn = shift || die 'WriteHFSBooter() needs a partition number!';
+	my ($partn_base, $partn_size, $block_size, $alt_MDB);
+
+	ConsoleMessage('Finding HFS Booter', 52);
+	$partn_base = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionBase $partn`;
+	$partn_size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -partitionSize $partn`;
+	$block_size = `$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -blockSize`;
+	$partn_size = $partn_size * $block_size;
+	$alt_MDB = $partn_size - 1024;
+	$alt_MDB = $alt_MDB / 512;
+	$alt_MDB += $partn_base * $block_size / 512;
+
+#	ConsoleMessage('Clearing HFS Booter', 56);
+#	open DD, "|$tool{'dd'} of=$target{'LooksLike /dev/rsd0h'} seek=$partn_base";
+#	print DD "\0" x $partn_size; 
+#	close DD;
+
+	ConsoleMessage('Copying HFS Booter', 60);
+	system("$tool{'dd'} if=$file{'HFS_Booter'} of=$target{'LooksLike /dev/rsd0h'} seek=$partn_base");
+
+	# copy 512b MDB from block 2 to block N-1
+	system("$tool{'dd'} if=$file{'HFS_Booter'} skip=2 of=$target{'LooksLike /dev/rsd0h'} seek=$alt_MDB count=1");
+
+	system("$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -setAutoMount $partn 0");
+	system("$tool{'pdisk'} $target{'LooksLike /dev/rsd0h'} -setWritable $partn 0");
+}
+
+
+###########################################################################
+# WarnUser_PPC() is run when a install target could not be found
+#
+sub WarnUser_PPC {
+	my $reply = '';
+	
+	ConsoleMessage('WARN_PPC_MSG');
+	$reply = Ask('--> ');
+	if ($reply !~ /textmode/) {
+		system($tool{'reboot'});
+		exit 1;
+	}
+
+	if ($reply =~ /debug/) {
+		$debug = 'true';
+	}
+
+	ClearScreen();
+}
+
+
+
+###########################################################################
+# WriteOpenFirmware()
+#
+sub WriteOpenFirmware() {
+	my ($of_bootdev, $of_bootfile);
+	my ($of_bootargs);
+	my ($of_bootcmd, $of_nvram_script, $boot_partn);
+
+	system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '0');
+
+
+	print "CPU Model is: $info{'cpu'}\n" if ($debug);
+
+	# use Simon's ioctl to get the OF path to the device,
+	# and trim the partition off it for the boot-device path
+
+	chomp($of_bootdev = `$tool{'getpath'} $target{'LooksLike /dev/rsd0a'}`);
+	$of_bootfile = $of_bootdev;
+
+	$of_nvram_script="$dir{'nvram'}/$info{'cpu'}";
+	if ( -r $of_nvram_script) {
+		print "Setting OpenFirmware nvramrc      to: ${of_nvram_script}";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '20');
+		system($tool{'nvram'}, '-f', "$of_nvram_script");
+	}
+
+	if ($info{'NewWorld'}) {
+	
+		# remove partn from OF's boot path, convert to dec, and SUBTRACT 2.
+	
+		$of_bootdev =~ s/(.*:)(.*)/$1/;
+		$boot_partn = "0x$2";
+		$boot_partn = oct($boot_partn);  # oct() converts from hex->dec if string starts w/ 0x
+		$boot_partn -= 2;
+		
+		$of_bootdev .= "$boot_partn,\\\\:tbxi";
+		$of_bootcmd = 'mac-boot';
+		$of_bootfile = '';
+		$of_bootargs = '';
+
+		print "Setting OpenFirmware boot-device  to: ${of_bootdev}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '30');
+		system($tool{'nvram'}, "boot-device=$of_bootdev");
+
+		print "Setting OpenFirmware boot-file    to: ${of_bootfile}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '40');
+		system($tool{'nvram'}, "boot-file=$of_bootfile");
+
+		print "Setting OpenFirmware boot-command to: ${of_bootcmd}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '60');
+		system($tool{'nvram'}, "boot-command=$of_bootcmd");
+
+		print "Setting OpenFirmware boot-args    to: ${of_bootargs}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '80');
+		system($tool{'nvram'}, "boot-args=$of_bootargs");
+	} else {
+		$of_bootdev =~ /(.*):.*/;
+		$of_bootdev = $1 . ':0';
+		$of_bootfile .= ',mach_kernel';
+		$of_bootcmd = '0 bootr';
+
+		print "Setting OpenFirmware boot-device  to: ${of_bootdev}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '40');
+		system($tool{'nvram'}, "boot-device=$of_bootdev");
+
+		print "Setting OpenFirmware boot-file    to: ${of_bootfile}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '60');
+		system($tool{'nvram'}, "boot-file=$of_bootfile");
+
+		print "Setting OpenFirmware boot-command to: ${of_bootcmd}\n";
+		system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '80');
+		system($tool{'nvram'}, "boot-command=$of_bootcmd");
+	}
+
+	system($tool{'fbshow'}, '-B', '-I', 'Writing OpenFirmware Info', '-z', '100');
+}
+
+###########################################################################
+# WriteOpenFirmwareMacOS()
+#
+sub WriteOpenFirmwareMacOS() {
+
+	if ($info{'NewWorld'}) {
+		# this doesn't promise that we'll get MacOS at boot, but it's an attempt
+		system($tool{'nvram'}, 'boot-device=');
+		system($tool{'nvram'}, 'boot-args=');
+		system($tool{'nvram'}, 'auto-boot?=true');
+	} else {
+		system($tool{'nvram'}, 'boot-device=/AAPL,ROM');
+		system($tool{'nvram'}, 'auto-boot?=true');
+	}
+}
+
+
+
+1; #return true to indicate ok load
+
+__END__
+

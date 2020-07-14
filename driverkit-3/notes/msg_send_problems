@@ -1,0 +1,33 @@
+			driverkit msg_send notes
+			
+thread.ipc_kernel TRUE ==> "body of message is in kernel pmap" (avoids copyin
+	and copyout)
+task.kernel_ipc_space TRUE ==> ports are kernel objects, i.e., they are 
+	ptrs to struct kern_port_t instread of ints.
+	
+difference between msg_send() and msg_send_from_kernel():
+	-- msg_send() does copyin() of entire msg body (instead of bcopy())
+	-- msg_send_from_kernel() forces both ipc_kernel and kernel_ipc_space
+ 	   TRUE
+	   
+Must do msg_send_from_kernel() if it's possible that current_task() is a user task. For example, the exported methods in SCSIController call enqueueCmd, which will do a msg_send to cmdPort. No good - the msg_send() will do a copyin() to get a local copy of the message body; the copyin() willget garbage from the user task. Thus SCSIController has to keep a kern_port_t version of cmdPort; enqueueCmd will do a msg_send_from_kernel to that.
+
+Other msg_send()s in kernel drivers which need to be msg_send_from_kernel:
+
+    adbDriver:
+	threadOpCommon in adbDriver.m - same fix (cmdPort)
+	fake_hw_intr_msg() in adbArch.m - same fix (interruptPort)
+    SCSIController:
+	enqueueCmd in SCSIControllerPrivate (cmdPort)
+	FAKE_HARDWARE version of enableInterrupt in SCSIDevice.m 
+		(interruptPort) <<<probably can skip....>>
+    Ethernet:
+    	enetNotifyThread in Ethernet.m (IOPort)
+	enetSyncCmd in Ethernet.m (IOPort)
+	
+msg_send()s which are OK as is:
+    SCSIController:
+    	SCSITimerFcn (timerPort) - called via IOTimeout
+    libIO:
+    	iotaskTest() - this is an IOTask thread.
+	

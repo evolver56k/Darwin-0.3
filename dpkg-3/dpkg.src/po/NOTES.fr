@@ -1,0 +1,73 @@
+# Notes de traduction
+#
+#   'guillemets simples' autour des noms de fonctions C ou de fichiers, sauf
+# s'ils sont déjà entre parenthèses.
+#   "guillemets doubles" autour des anglicismes (en plus, ça les rends
+# facile à retrouver)
+#   «guillemets angulaires» pour "citations homogènes" (références à d'autres
+# options dans la description d'une option, etc.), commandes shell, noms de
+# sous-processus. Un problème : les fonctions du type "waitsubproc", qui
+# peuvent prendre en argument soit une commande, soit une description de
+# commande.
+#
+# Pour les chaînes trop longues après traduction, insérer des '\n' pour
+# garder autant que possible l'affichage sur 80 colonnes. Ne pas insérer de
+# '\n' après un '%s' dans une chaîne, il y aurait un risque de dépassement des
+# 80 chars (sauf si c'est évident qu'il n'y en aura pas...).
+#
+# maintainer: responsable
+# package: paquet
+# to divert: détourner
+#
+# to set: suivant le cas (initialiser, modifier, paramétrer, etc.)
+# status: état
+# update status: nouvel état
+# unable: impossible
+# failure: echec
+# warning: erreur non critique (si pas plus de renseignements sur sa nature);
+#	avertissement (si explication)
+#	Attention (si seul suivi d'un message)
+# to scan: parcourir (suivant contexte)
+# padding: remplissage
+# to fill with padding: compléter par remplissage
+# to rewind: rembobiner le fichier
+# to fsync: "fsync-hroniser"
+# handler: gestionnaire
+# epoch: époque
+# device (file): fichier spécial
+# to consider: envisager
+# to remove: supprimer (un package ou un fichier)
+# package archive file: fichier de paquet
+# file mode: droits d'accès au fichier
+# prompt: invite
+#
+# status database: BD d'état ?
+# status area: = status database ? (ie. inconsistance des messages EN ?)
+#
+# downgrading ?
+# to override (a problem) = négliger ? ignorer ?
+# cleanup entry ? (cf. lib/ehandler.c)
+# force: forçage
+# pattern: motif ?
+# to overwrite: remplacer? écraser
+# to stat: obtenir le statut ?
+# incorporated: incorporé ?
+# unable seek: déplacement impossible ?
+# out of memory: manque de mémoire ?
+# file details field: champ détail de fichier ?
+# matching: correspondance ?
+# version string: spécification de version ?
+# output ?
+#
+# value of field ?
+# garbage, junk? [même trad° pour les 2, ça simplifiera]
+# checksums?
+# depot?
+# has trailing garbage?
+# resolves to degenerate filename?
+# readlink?
+# mess?
+# timestamps?
+# to seek?
+# buffering?
+# abréviation postint...

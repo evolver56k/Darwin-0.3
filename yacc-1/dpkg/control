@@ -1,0 +1,7 @@
+Package: yacc
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: NetBSD Foundation
+Version: 1998.10.12
+URL: http://www.netbsd.org/
+Description: Yet Another Compiler Compiler
+Build-Depends: build-base

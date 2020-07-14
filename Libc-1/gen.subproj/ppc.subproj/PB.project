@@ -1,0 +1,43 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (fp.h, genassym.h); 
+        OTHER_LINKED = (
+            bcmp.c, 
+            bzero.s, 
+            ffs.s, 
+            abs.s, 
+            bcopy.c, 
+            insque.c, 
+            isinf.c, 
+            setjmperr.c, 
+            strncmp.c, 
+            strcat.c, 
+            strcpy.c, 
+            strncpy.c, 
+            strncat.c, 
+            remque.c, 
+            strlen.s, 
+            memcpy.c, 
+            memmove.c, 
+            ecvt.c, 
+            mcount.s
+        ); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, assymdefs.c, genassym.c); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(NEXTDEV_BIN)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = ppc; 
+    PROJECTTYPE = Component; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}

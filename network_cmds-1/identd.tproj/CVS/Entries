@@ -1,0 +1,17 @@
+/CREDITS/1.1.1.1/Sun May  2 03:57:40 1999//Tnetwork_cmds-1
+/Makefile/1.1.1.1/Sun May  2 03:57:40 1999//Tnetwork_cmds-1
+/Makefile.dist/1.1.1.1/Sun May  2 03:57:40 1999//Tnetwork_cmds-1
+/Makefile.preamble/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/PB.project/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/README/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/config.c/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/error.h/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/identd.8/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/identd.c/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/identd.h/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/netbsd.c/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/parse.c/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/proxy.c/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/version.c/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+/xpaths.h/1.1.1.1/Sun May  2 03:57:41 1999//Tnetwork_cmds-1
+D

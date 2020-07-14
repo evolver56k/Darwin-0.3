@@ -1,0 +1,117 @@
+<html><head>
+<title>Debian packaging manual</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>Debian packaging manual</h1>
+
+<h2><A name="abstract">
+0.1 Abstract
+</A></h2>
+
+This manual describes the technical aspects of creating Debian binary
+and source packages.  It also documents the interface between
+<kbd>dselect</kbd> and its access method scripts.  It does not deal with
+the Debian Project policy requirements, and it assumes familiarity
+with <kbd>dpkg</kbd>'s functions from the system administrator's
+perspective.
+
+<hr>
+<h2><A name="toc">
+0.2 Table of contents
+</A></h2>
+<ul>
+<li><A href="ch-scope.html">1 Introduction and scope of this manual</A>
+<li><A href="ch-binarypkg.html">2 Binary packages</A>
+<ul>
+<li><A href="ch-binarypkg.html#s-bincreating">2.1</A> Creating package files - <kbd>dpkg-deb</kbd>
+<li><A href="ch-binarypkg.html#s-controlarea">2.2</A> Package control information files
+<li><A href="ch-binarypkg.html#s-controlfile">2.3</A> The main control information file: <code>control</code>
+</ul>
+<li><A href="ch-sourcepkg.html">3 Source packages</A>
+<ul>
+<li><A href="ch-sourcepkg.html#s-sourcetools">3.1</A> Tools for processing source packages
+<li><A href="ch-sourcepkg.html#s-sourcetree">3.2</A> The Debianised source tree
+<li><A href="ch-sourcepkg.html#s-sourcearchives">3.3</A> Source packages as archives
+<li><A href="ch-sourcepkg.html#s3.4">3.4</A> Unpacking a Debian source package without <kbd>dpkg-source</kbd>
+</ul>
+<li><A href="ch-controlfields.html">4 Control files and their fields</A>
+<ul>
+<li><A href="ch-controlfields.html#s4.1">4.1</A> Syntax of control files
+<li><A href="ch-controlfields.html#s4.2">4.2</A> List of fields
+
+</ul>
+<li><A href="ch-versions.html">5 Version numbering</A>
+<li><A href="ch-maintainerscripts.html">6 Package maintainer scripts
+and installation procedure</A>
+<ul>
+<li><A href="ch-maintainerscripts.html#s6.1">6.1</A> Introduction to package maintainer scripts
+<li><A href="ch-maintainerscripts.html#s-mscriptsinstact">6.2</A> Summary of ways maintainer scripts are called
+<li><A href="ch-maintainerscripts.html#s-unpackphase">6.3</A> Details of unpack phase of installation or upgrade
+<li><A href="ch-maintainerscripts.html#s6.4">6.4</A> Details of configuration
+<li><A href="ch-maintainerscripts.html#s6.5">6.5</A> Details of removal and/or configuration purging
+</ul>
+<li><A href="ch-descriptions.html">7 Descriptions of packages - the
+<code>Description</code> field</A>
+<ul>
+<li><A href="ch-descriptions.html#s7.1">7.1</A> Types of formatting line in the extended description
+<li><A href="ch-descriptions.html#s7.2">7.2</A> Notes about writing descriptions
+<li><A href="ch-descriptions.html#s7.3">7.3</A> Example description in control file for Smail
+</ul>
+<li><A href="ch-relationships.html">8 Declaring relationships between packages</A>
+<ul>
+<li><A href="ch-relationships.html#s-depsyntax">8.1</A> Syntax of relationship fields
+<li><A href="ch-relationships.html#s8.2">8.2</A> Dependencies - <code>Depends</code>, <code>Recommends</code>, <code>Suggests</code>, <code>Pre-Depends</code>
+<li><A href="ch-relationships.html#s-conflicts">8.3</A> Alternative packages - <code>Conflicts</code> and <code>Replaces</code>
+<li><A href="ch-relationships.html#s-virtual">8.4</A> Virtual packages - <code>Provides</code>
+<li><A href="ch-relationships.html#s-replaces">8.5</A> <code>Replaces</code> - overwriting files and replacing packages
+<li><A href="ch-relationships.html#s8.6">8.6</A> Defaults for satisfying dependencies - ordering
+</ul>
+<li><A href="ch-conffiles.html">9 Configuration file handling</A>
+<ul>
+<li><A href="ch-conffiles.html#s9.1">9.1</A> Automatic handling of configuration files by <kbd>dpkg</kbd>
+<li><A href="ch-conffiles.html#s9.2">9.2</A> Fully-featured maintainer script configuration handling
+</ul>
+<li><A href="ch-alternatives.html">10 Alternative versions of an interface -
+<kbd>update-alternatives</kbd></A>
+<li><A href="ch-diversions.html">11 Diversions - overriding a package's version of a file</A>
+<li><A href="ch-sharedlibs.html">12 Shared libraries</A>
+<ul>
+<li><A href="ch-sharedlibs.html#s-shlibs">12.1</A> The <code>shlibs</code> File Format
+<li><A href="ch-sharedlibs.html#s12.2">12.2</A> Further Technical information on <code>shlibs</code>
+</ul>
+<li><A href="ch-methif.html">13 <kbd>dselect</kbd>'s interface to its installation methods</A>
+<ul>
+<li><A href="ch-methif.html#s13.1">13.1</A> Functions of the method scripts
+<li><A href="ch-methif.html#s13.2">13.2</A> Location and arguments of the method scripts
+</ul>
+<li><A href="ch-conversion.html">14 Conversion procedure from old source packages</A>
+</ul>
+<hr><h2><A name="copyright">0.3 Copyright</A></h2>
+Copyright ©1996 Ian Jackson.<P>
+
+This manual is free software; you may redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or (at your option) any
+later version.<P>
+
+This is distributed in the hope that it will be useful, but
+<em>without any warranty</em>; without even the implied warranty of
+merchantability or fitness for a particular purpose.  See the GNU
+General Public License for more details.<P>
+
+You should have received a copy of the GNU General Public License with
+your Debian GNU/Linux system, in <code>/usr/doc/copyright/GPL</code>, or
+with the <kbd>dpkg</kbd> source package as the file <code>COPYING</code>.  If
+not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+Cambridge, MA 02139, USA.
+<hr>
+Debian packaging manual
+- <A href="#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="#toc">Contents</A>; <A href="#abstract">abstract</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

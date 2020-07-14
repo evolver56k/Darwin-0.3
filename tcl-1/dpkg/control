@@ -1,0 +1,7 @@
+Package: tcl
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Scriptics
+Version: 8.0.4
+URL: http://www.scriptics.com/software/install.html
+Description: Tool Command Language
+Build-Depends: build-base

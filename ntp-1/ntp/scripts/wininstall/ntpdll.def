@@ -1,0 +1,14 @@
+; mydll.def : Declares the module parameters for the DLL.
+
+LIBRARY      NTPDLL
+DESCRIPTION  'NTPDLL Windows Dynamic Link Library'
+
+EXPORTS
+EXPORTS
+             CreateNTPService @3
+             RemoveNTPService @4
+             StartNTPService @5
+             StopNTPService @6
+             addKeysToRegistry @7
+             LaunchApp @8
+

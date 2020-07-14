@@ -1,0 +1,19 @@
+cmdPort - enabled whenever we're quiescent, disabled whenever we're waiting for a specific interrupt.
+	enabled:
+		- top of I/O Thread
+		- end of interruptHandler
+		- end of ioOpHandler
+	disabled:
+		-- before handling AIO_RESET, AIO_SEND_COMMAND in I/O thread
+		- top of interrupt handler
+		
+	
+autopoll - enabled when quiescent, disabled when we're doing anything else with the hardware.
+	disabled:
+		- doUserCommand
+		- by hardware on almost any interrupt
+	enabled:
+		- end of interruptHandler
+		- end of ioOpHandler
+		- top of I/O thread
+		

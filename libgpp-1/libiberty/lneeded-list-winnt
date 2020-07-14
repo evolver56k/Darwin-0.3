@@ -1,0 +1,1 @@
+bcmp.o bcopy.o bzero.o getopt.o getcwd.o index.o insque.o random.o rindex.o strncasecmp.o strdup.o vfork.o sigsetmask.o waitpid.o

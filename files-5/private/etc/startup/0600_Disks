@@ -1,0 +1,21 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+##
+# Mount any remaining filesystems
+##
+if [ "${AUTODISKMOUNT:=-YES-}" != "-NO-" ]; then
+    ConsoleMessage "Mounting media"
+
+    case ${AUTODISKMOUNT} in
+      -EJECT-)
+	autodiskmountflags="-e" ;; # Eject removeable media
+      -REMOVABLE-)
+	autodiskmountflags="-a" ;; # Mount removeable media
+      *)
+        autodiskmountflags="" ;;
+    esac
+
+    autodiskmount -v ${autodiskmountflags}
+fi

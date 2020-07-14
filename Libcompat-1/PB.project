@@ -1,0 +1,36 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        HEADERSEARCH = (
+            "$(NEXT_ROOT)$(PUBLIC_HEADER_DIR)", 
+            "$(NEXT_ROOT)$(PUBLIC_HEADER_DIR)/bsd", 
+            "$(NEXT_ROOT)$(PUBLIC_HEADER_DIR)/bsd/sys", 
+            "$(NEXT_ROOT)$(PUBLIC_HEADER_DIR)/bsd/sys/machine", 
+            "$(NEXT_ROOT)$(PUBLIC_HEADER_DIR)/mach"
+        ); 
+        LIBRARYSEARCH = (); 
+        OTHER_LIBS = (); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble); 
+        SUBPROJECTS = (4.3.subproj, 4.4.subproj, regexp.subproj); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-fno-builtin -nostdinc -nostdlib -DMACH_USER_API"; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
+    NEXTSTEP_INSTALLDIR = /usr/local/lib; 
+    NEXTSTEP_MAINNIB = compat; 
+    PDO_UNIX_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_COMPILEROPTIONS = "-fno-builtin -nostdinc -nostdlib -DMACH_USER_API"; 
+    PDO_UNIX_INSTALLDIR = /usr/local/lib; 
+    PDO_UNIX_MAINNIB = compat; 
+    PROJECTNAME = compat; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDTOOL = /bin/gnumake; 
+    WINDOWS_COMPILEROPTIONS = "-fno-builtin -nostdinc -nostdlib -DMACH_USER_API"; 
+    WINDOWS_INSTALLDIR = /usr/local/lib; 
+    WINDOWS_MAINNIB = compat; 
+}

@@ -1,0 +1,117 @@
+<html><head>
+<title>Debian packaging manual - dselect's interface to its installation methods</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 13<br>
+dselect's interface to its installation methods
+</h1>
+
+<kbd>dselect</kbd> calls scripts from its installation methods when it
+needs to actually access data from the distribution.  The core program
+<kbd>dselect</kbd> itself just calls these scripts and provides the
+package and access method selection interfaces.  The installation
+methods are responsible for invoking <kbd>dpkg</kbd> as appropriate.<P>
+
+Each installation method has three scripts:
+<ul compact>
+<li>Setup installation parameters.<li>Update list of available packages.<li>Install.</ul>
+<P>
+
+<kbd>dselect</kbd> searches for methods in <code>/usr/lib/dpkg/methods</code>
+and <code>/usr/local/lib/dpkg/methods</code>.
+<hr>
+<h2><A name="s13.1">
+13.1 Functions of the method scripts
+</A></h2>
+
+The setup script is run just after the user has chosen an installation
+method.  It should prompt the user for parameters like the site to
+NFS-mount or FTP from, the directory to use, or the directory or
+filesystem where the <code>.deb</code> files can be found, or the tape or
+floppy device to install from.  It should store the responses under
+<code>/var/lib/dpkg/methods</code> - see below.  If no available
+packages list is available it should perhaps offer to scan the
+available packages.<P>
+
+The update script should obtain a list of available packages if
+possible, and run <code>dpkg --update-avail</code>, <code>dpkg --merge-avail</code>
+and/or <code>dpkg --forget-old-unavail</code> to load it into <kbd>dpkg</kbd> and
+<kbd>dselect</kbd>'s database of available packages.  If no packages list
+was available and the user was offered and accepted the option of
+scanning the actual files available this scan should be done here,
+using <code>dpkg --record-avail</code>.<P>
+
+The install script should feed all the available <code>.deb</code> files to
+<code>dpkg --iGOEB</code> (this is equivalent to <code>dpkg --install
+--refuse-downgrade --selected-only --skip-same-version
+--auto-deconfigure</code>).  The <code>-R</code> (<code>--recursive</code>) option for
+traversing subdirectories may also be useful here).<P>
+
+If any of these scripts needs to display a message for the user, it
+should wait for the user to hit `return' before exiting so that
+dselect doesn't immediately rewrite the screen.<P>
+
+If a method script succeeds (returns a zero exit status)
+<kbd>dselect</kbd> will return immediately to the main menu, with the
+`next' option highlighted ready for the user to select it.  If it
+fails <kbd>dselect</kbd> will display a message and wait for the user to
+hit return.
+<hr>
+<h2><A name="s13.2">
+13.2 Location and arguments of the method scripts
+</A></h2>
+
+A set of scripts (henceforth known as a group) may provide several
+methods on the `main menu' with different behaviour.  For example,
+there might be a generic get-packages-by-FTP group which might provide
+methods in the main menu for installation directly from one of the
+Debian mirror sites as well as for installation from a user-specified
+site.<P>
+
+Each group of methods implemented by the same set of scripts should
+have a subdirectory <code>/usr/lib/dpkg/methods/</code><var>group</var><code></code> or
+<code>/usr/local/lib/dpkg/methods/</code><var>group</var><code></code>, containing:
+<dl compact>
+<dt><code>names</code><dd>a list of user-visible methods provided by these scripts.<dt><code>setup</code><dt><code>update</code><dt><code>install</code><dd>executable programs, the scripts themselves.<dt><code>desc.</code><var>option</var><code></code><dd>description file.</dl>
+<P>
+
+<code>names</code> will be formatted as a list of lines, each containing:
+<pre><var>sequence</var> <var>method</var> <var>summary</var></pre><P>
+
+<var>sequence</var> is a two-digit number that will be used much like
+<code>rc.d</code> prefixes to control the order in the main menu.  If in doubt
+use 50.<P>
+
+<var>method</var> is a name which is displayed by <kbd>dselect</kbd> as the
+name of the method, and which will be passed to <code>setup</code>,
+<code>update</code> and <code>unpack</code> as their first argument.<P>
+
+<var>summary</var> is the brief description string for <kbd>dselect</kbd>'s menu.<P>
+
+Each of the three scripts gets the same three arguments: <var>vardir</var>,
+<var>group</var> and <var>method</var>.  <var>vardir</var> is the base directory for
+storing <kbd>dpkg</kbd> and <kbd>dselect</kbd>'s state, usually
+<code>/var/lib/dpkg</code>; this is passed in so that the <code>--admindir</code>
+option to <kbd>dselect</kbd> is honoured).<P>
+
+Each option may have an extended description in
+<code>desc.</code><var>option</var><code></code>.  This should be formatted like the extended
+description part of a <code>Description</code> field entry <em>shifted one
+character to the left</em>.<P>
+
+<code></code><var>vardir</var><code>/methods</code> will exist, and a method group may use a
+<code></code><var>vardir</var><code>/methods/</code><var>group</var><code></code> directory to store its state.<P>
+
+The group name and method name must follow the rules for C identifiers.
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-conversion.html">next</A>; <A href="ch-sharedlibs.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

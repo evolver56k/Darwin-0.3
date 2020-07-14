@@ -1,0 +1,83 @@
+		logical disks and insertion detection
+		
+* no multi-volume support. One unit per physical drive. Disallow eject 
+  while volume is open, just like disallow umount while root vnode is
+  referenced. (Poll OS group to find what they think of this...)
+  
+* definition : unit = physical drive.
+
+* each physDevice always has a rawDevice (its first logicalDisk).
+  label is valid.
+
+* a physDevice has blockDevices if a label is valid and the label has
+  valid partitions (one blockDev per partition).
+  
+* Probe time: 
+  for each unit {
+  	live partition is DiskObject subclass;
+	LD +probe {
+		if label present {
+  			create a raw disk Logical Unit;
+			create a Block Device LD for each partition;
+		}
+	}
+	if removable {
+		start a vol_check thread;
+	}
+  }
+  
+  actions on physDevice
+    
+    boot
+    	set one-time only params in subclass-private init
+	set phys params in getPhysParams
+	UnixDisk +probe (create live device, raw/block if necessary)
+		
+    setFormatted:flag
+    	 if any logicalDevices open
+	 	reject;
+         self labelValid, formatted = 0
+	 delete raw devices and blockDevices
+
+    setLabelValid:1
+    	set labelValid
+	UnixDisk +probe
+
+    setLabelValid:0
+    	 if any logicalDevices open
+	 	reject;
+         self labelValid = 0
+	 delete raw devices and blockDevices
+	
+    eject
+    	if any logicalDisks open
+		reject;
+	labelValid, formatted = 0
+	delete raw devices and blockDevices
+	
+    insert detection
+	set phys params in getPhysParams
+	UnixDisk +probe (create live device, raw/block if necessary)
+
+DiskObject/subclass
+	created:
+		subclass's probe:
+	one-time only init:
+		subclass-private init
+	physical parameter init (dev_size, block_size)
+		subclass getPhysParams (mandatory for all subclasses)
+		
+UnixDisk probe:physDevice
+	read label;
+	if bad
+		return;
+	create rawDevice per label info;
+	registerUnixDisk:rawDevice type:DISK_TYPE_RAW
+	create blockDevice for each valid partition;
+	
+todo on thursd:
+	old unixdisk class
+		rename
+		add devEjectDisk, getPhysParams
+		make it work wirth new DiskObject, UnixDisk.
+	write a disk insertion detection thread (somewhere....)

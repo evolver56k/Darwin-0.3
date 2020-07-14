@@ -1,0 +1,5 @@
+# Note: Includes source from the telnet project high above us
+
+VPATH_PREAMBLE = ../../telnet:
+
+-include ../../Makefile.include

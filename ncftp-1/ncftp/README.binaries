@@ -1,0 +1,28 @@
+(This file only applies to the binary distribution;  if this is the source
+distribution read the README instead.)
+
+The package may come with one or two executables.  If there are two, one
+is a statically-linked program, and the other is linked using shared
+libraries.  See if you can run the shared program first.  If that works,
+use it because you'll save diskspace and memory by using the shared libraries.
+
+If there is only one executable, it is a statically-linked program.
+
+If you can't get the executables to run properly, you'll have to compile
+the sources yourself.  You can get the sources from
+	ftp://ftp.probe.net/pub/ncftp/
+
+To install the program, you just need to copy the executable you want
+to /usr/local/bin/ncftp.  The man page can also be installed, typically
+in /usr/local/man/man1.
+
+Here is the list of platforms that I include both shared and static:
+
+Linux 2.0:
+	You need ncurses 1.9.9e, libc 5.3.12, and readline 2.0.
+	If you do 'ldd ncftp' you get:
+		libreadline.so.2 => /usr/lib/libreadline.so.2.0
+		libncurses.so.3.0 => /usr/lib/libncurses.so.3.0
+		libc.so.5 => /lib/libc.so.5.3.12
+
+--Mike Gleason

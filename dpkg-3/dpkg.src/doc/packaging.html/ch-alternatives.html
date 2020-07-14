@@ -1,0 +1,46 @@
+<html><head>
+<title>Debian packaging manual - Alternative versions of an interface -
+update-alternatives</title>
+<link rev=made href="mailto:ijackson@gnu.ai.mit.edu">
+</head><body>
+<h1>
+Debian packaging manual - chapter 10<br>
+Alternative versions of an interface -
+update-alternatives
+</h1>
+
+When several packages all provide different versions of the same
+program or file it is useful to have the system select a default, but
+to allow the system administrator to change it and have their
+decisions respected.<P>
+
+For example, there are several versions of the <kbd>vi</kbd> editor, and
+there is no reason to prevent all of them from being installed at
+once, each under their own name (<kbd>nvi</kbd>, <kbd>vim</kbd> or whatever).
+Nevertheless it is desirable to have the name <code>vi</code> refer to
+something, at least by default.<P>
+
+If all the packages involved cooperate, this can be done with
+<kbd>update-alternatives</kbd>.<P>
+
+Each package provides its own version under its own name, and calls
+<kbd>update-alternatives</kbd> in its postinst to register its version
+(and again in its prerm to deregister it).<P>
+
+See the manpage <code>update-alternatives(8)</code> for
+details.<P>
+
+If <kbd>update-alternatives</kbd> does not seem appropriate you may wish
+to consider using diversions instead.
+
+<hr>
+Debian packaging manual
+- <A href="index.html#copyright">Copyright ©1996 Ian Jackson.</A>
+<br>
+<A href="index.html#toc">Contents</A>; <A href="index.html#abstract">abstract</A>; <A href="ch-diversions.html">next</A>; <A href="ch-conffiles.html">back</A>.
+<br>
+<address>version 1.4.1.4 (dpkg 1.4.1.4), 24 April 1998
+<br>
+Ian Jackson <A href="mailto:ijackson@gnu.ai.mit.edu">ijackson@gnu.ai.mit.edu</A><br>
+Revised: David A. Morris <A href="mailto:bweaver@debian.org">bweaver@debian.org</A></address>
+</body></html>

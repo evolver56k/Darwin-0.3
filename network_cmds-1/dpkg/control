@@ -1,0 +1,6 @@
+Package: network-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer
+Version: 57
+Description: Network commands
+Build-Depends: build-base, yacc, flex, libcat, librpcsvc-hdrs, libinfo, libcurses-hdrs, libtelnet

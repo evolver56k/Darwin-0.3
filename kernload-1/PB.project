@@ -1,0 +1,13 @@
+{
+    FILESTABLE = {
+        OTHER_SOURCES = (Makefile, CROSS_ENV); 
+        SUBPROJECTS = (cmds, include, kern_loader, libkernload, loaded_server); 
+    }; 
+    GENERATEMAIN = YES; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    PROJECTNAME = kernload; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.6; 
+}

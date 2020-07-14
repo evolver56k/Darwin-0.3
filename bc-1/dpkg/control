@@ -1,0 +1,7 @@
+Package: bc
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 1.05
+URL: ftp://prep.ai.mit.edu/pub/gnu/bc-1.05.tar.gz
+Description: bc numeric processing language.
+Build-Depends: build-base, flex, perl

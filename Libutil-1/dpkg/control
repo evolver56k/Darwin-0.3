@@ -1,0 +1,6 @@
+Package: libutil
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 12
+Description: Utility library
+Build-Depends: build-base

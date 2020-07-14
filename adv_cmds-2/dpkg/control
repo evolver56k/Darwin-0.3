@@ -1,0 +1,6 @@
+Package: adv-cmds
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 24.1
+Description: Advanced user commands
+Build-Depends: build-base, yacc, flex, libcurses-hdrs

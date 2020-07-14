@@ -1,0 +1,7 @@
+Package: gnutar
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: GNU Project
+Version: 1.12
+URL: ftp://prep.ai.mit.edu/pub/gnu/tar-1.12.tar.gz
+Description: GNU tape archive utility
+Build-Depends: build-base, network-cmds, perl

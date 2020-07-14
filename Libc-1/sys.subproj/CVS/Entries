@@ -1,0 +1,14 @@
+/CLIB-LIST/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/MISSING-MANPAGE/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/MISSING_SYSCALLS/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/Makefile/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/Makefile.postamble/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/Makefile.preamble/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/PB.project/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/REQUIRED-MACROS/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/SYSCALL-LIST/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/errno.c/1.1.1.1/Wed Apr 14 23:19:27 1999//TLibc-1
+/gettimeofday.c/1.1.1.1/Wed Apr 14 23:19:28 1999//TLibc-1
+/sigprocmask.c/1.1.1.1/Wed Apr 14 23:19:28 1999//TLibc-1
+D/i386.subproj////
+D/ppc.subproj////

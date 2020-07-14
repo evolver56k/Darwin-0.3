@@ -1,0 +1,67 @@
+##
+##  README.NeXT -- 950207
+##
+
+Lennart Lovstrand <lennart@NeXT.COM> added these additional features to popper:
+
+pop_dropcopy.c
+
+* Made popper read the name of the spool file from the user's defaults (Mail
+  SpoolDir).  This is for people who pick up their mail from somewhere else
+  than /usr/spool/mail (eg. /Net/tinman/mail at NeXT).
+
+* Added an extra lock file when accessing the user's spool file.  This is to
+  allow for reasonable locking across NFS.
+
+* Changed it so that popper switches over to the controlling user's uid sooner
+  rather than later.  This is to avoid creating files as root over NFS, which
+  usually will be mapped to user "nobody" (and cause all sorts of havoc).
+
+pop_get_subcommand.c
+
+* Added support for two additional extended commands:
+  HEAD -- To list the headers of the selected message(s).
+  HSET -- To limit which headers the HEAD command is supposed to return.
+
+pop_head.c -- New file
+
+* Implementation of the HEAD and HSET extended commands.  The two arguments
+  for the HEAD command are starting message number and (optionally) ending
+  message number.  The argument for the HSET command is a list of space
+  separated header keys (without colons).
+
+pop_init.c
+
+* Support for restricting connections to a preset list of hosts and/or user
+  names.  The "-h" option can be used to list hosts from which connections
+  only will be accepted.  Likewise, if a list of user names is specified on
+  the command line after any options, only these users will be allowed to
+  connect.
+
+pop_log.c
+
+* Moved va_end(ap) to the end of pop_log() to avoid HPPA crasher.
+
+pop_msg.c
+
+* Moved va_end(ap) to the end of pop_msg() to avoid HPPA crasher.
+
+pop_pass.c
+
+* Implementation of the restricted user feature.
+
+pop_xmit.c
+
+* Allow the terminating "." line to end with a single newline in addition to
+  the normal CRLF pair.  This is for cases when popper is run directly from
+  the command line.
+
+popper.h
+
+* Beefed up the max parameter count to 64.
+
+* Added definitions for lock file, etc.
+
+* Added fields for restricted users, etc.
+
+* Added declarations for new pop_head() and pop_hset() commands.

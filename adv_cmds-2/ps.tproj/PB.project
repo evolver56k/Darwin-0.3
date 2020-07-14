@@ -1,0 +1,27 @@
+{
+    APPCLASS = NSApplication; 
+    FILESTABLE = {
+        FRAMEWORKS = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (ps.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, ps.1); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_BUILDDIR = "/$(USER)/BUILD"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_COMPILEROPTIONS = "-I$("NEXT_ROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/System.framework/PrivateHeaders" -I$(NEXT_ROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/System.framework/PrivateHeaders/bsd -DKERNEL_PRIVATE -DNeXT=1"; 
+    NEXTSTEP_INSTALLDIR = /bin; 
+    NEXTSTEP_MAINNIB = ps; 
+    PDO_UNIX_COMPILEROPTIONS = "-DMACH_USER_API"; 
+    PDO_UNIX_INSTALLDIR = /bin; 
+    PDO_UNIX_MAINNIB = ps; 
+    PROJECTNAME = ps; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_COMPILEROPTIONS = "-DMACH_USER_API"; 
+    WINDOWS_INSTALLDIR = /bin; 
+    WINDOWS_MAINNIB = ps; 
+}

@@ -1,0 +1,14 @@
+{
+    FILESTABLE = {
+	C_FILES = (spintc.c, system.c, termout.c); 
+	H_FILES = (spint.h, video.h); 
+	M_FILES = (); 
+	OTHER_LINKED = (); 
+	OTHER_SOURCES = (Makefile.preamble, makefile, spintasm.asm, support.asm, termout.ext); 
+	SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    PROJECTNAME = sys_dos; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.0; 
+}

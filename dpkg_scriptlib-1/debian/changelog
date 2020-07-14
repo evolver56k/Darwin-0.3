@@ -1,0 +1,29 @@
+dpkg-scriptlib (0.2) unstable; urgency=low (for dpkg-perl)
+
+  * Integrate all non-maintainer changes (thanks Matthias!).
+  * Added python support for new experimental source pacakge format.
+  * Added package parsing support to perl library.
+  
+ -- Klee Dienes <klee@debian.org>  Tue,  6 Jul 1999 12:19:16 -0700
+
+dpkg-scriptlib (0.1-2hamm1) frozen; urgency=high (for dpkg-perl)
+
+  * Non-maintainer upload.
+  * dpkg-perl depends on perl-base, not on perl (Fixes #21773, #22526).
+  * Replace postinst of dpkg-python with prerm and don't depend
+    on installed python executable (Fixes #13004, #20443, #21121).
+
+ -- Matthias Klose <doko@debian.org>  Tue, 26 May 1998 12:18:22 +0200
+
+dpkg-scriptlib (0.1-2) unstable; urgency=low
+
+  * Fix for corrupted upload.
+  * Minor changes to Debian::Package::Package
+
+ -- Klee Dienes <klee@debian.org>  Sun, 25 May 1997 12:10:23 -0400
+
+dpkg-scriptlib (0.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Klee Dienes <klee@debian.org>  Sun, 25 May 1997 11:20:58 -0400

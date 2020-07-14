@@ -1,0 +1,6 @@
+Package: libcompat
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Apple Computer, Inc.
+Version: 12
+Description: BSD compatibility library
+Build-Depends: build-base

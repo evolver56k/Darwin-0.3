@@ -1,0 +1,287 @@
+Replied: Fri, 23 Jan 1998 12:07:50 -0500
+Replied: "Marc Brett <Marc.Brett@waii.com> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa14750;
+          23 Jan 1998 11:03 EST
+Received: by diamond.waii.com id JAA04940; Fri, 23 Jan 1998 09:33:57 -0600 sender Marc.Brett@waii.com for 
+Received: from mail.wg.waii.com(137.144.128.17) user <Marc.Brett@waii.com> by diamond.waii.com via smap (3.2)
+	id xma004784; Fri, 23 Jan 98 09:30:30 -0600
+Received: from merlin.london.waii.com (merlin.london.waii.com [136.250.33.1])
+	by mail1.wg.waii.com (8.8.7/8.8.7) with ESMTP id JAA32274;
+	Fri, 23 Jan 1998 09:30:20 -0600
+Received: from rgs0.london.waii.com (rgs0.london.waii.com [136.250.40.10])
+          by merlin.london.waii.com (8.8.4/8.8.4) with SMTP
+	  id PAA45582; Fri, 23 Jan 1998 15:30:11 GMT
+Received: by rgs0.london.waii.com (940816.SGI.8.6.9/920502.SGI)
+	 id PAA21946; Fri, 23 Jan 1998 15:30:07 GMT
+From: Marc Brett <Marc.Brett@waii.com>
+Message-Id: <9801231530.ZM21944@rgs0.london.waii.com>
+Date: Fri, 23 Jan 1998 15:30:05 +0000
+X-Mailer: Z-Mail (3.2.0 26oct94 MediaMail)
+To: stenn@whimsy.udel.edu
+Subject: Fixes for MX4200 driver
+Cc: mills@udel.edu, frank.vance@merlin.london.waii.com, leres@ee.lbl.gov, 
+    marc.brett@merlin.london.waii.com
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="PART-BOUNDARY=.19801231530.ZM21944.london.waii.com"
+
+--
+--PART-BOUNDARY=.19801231530.ZM21944.london.waii.com
+Content-Type: text/plain; charset=us-ascii
+
+Harlan,
+
+Here are some bug fixes for the Magnavox MX4200 driver.
+
+Note that they incorporate most of the *bug* fixes noted by Craig Leres on
+July 17 1997 (xntp3-5.92-export/patches/inbox/3), and a few additional ones
+(incorrect sentences were being passed to the receiver).
+
+Unfortunately, none of Craig's *portability* patches for FreeBSD are
+in here, not least because I don't have a FreeBSD platform on which to
+test the code.  I tried to get automake and autoconf to behave, but got
+nowhere.  I agree that AC_REPLACE_FUNCS(strerror) is probably the way to
+go, though.
+
+Anyway, here it is, and these changes should be portable to all platforms.
+
+Regards,
+
+Marc
+
+-- 
+Marc Brett  +44 181 560 3160            Western Geophysical
+Marc.Brett@waii.com                     455 London Road, Isleworth
+FAX: +44 181 847 5711                   Middlesex TW7 5AB    UK
+
+--PART-BOUNDARY=.19801231530.ZM21944.london.waii.com
+X-Zm-Content-Name: refclock_mx4200.diffs
+Content-Description: Text
+Content-Type: text/plain ; name="refclock_mx4200.diffs" ; charset=us-ascii
+
+*** refclock_mx4200.c.orig	Sun Aug 17 05:35:27 1997
+--- refclock_mx4200.c	Fri Jan 23 15:21:19 1998
+***************
+*** 76,81 ****
+--- 76,86 ----
+   */
+  
+  /*
++  * Check this every time you edit the code!
++  */
++ #define YEAR_RIGHT_NOW 1998
++ 
++ /*
+   * GPS Definitions
+   */
+  #define	DEVICE		"/dev/gps%d"	/* device name and unit */
+***************
+*** 297,303 ****
+  	struct peer *peer;
+  {
+  	char tr_mode;
+! 	char add_mode;
+  	int i;
+  	register struct mx4200unit *up;
+  	struct refclockproc *pp;
+--- 302,308 ----
+  	struct peer *peer;
+  {
+  	char tr_mode;
+! 	int add_mode;
+  	int i;
+  	register struct mx4200unit *up;
+  	struct refclockproc *pp;
+***************
+*** 424,434 ****
+  	if (up->moving) {
+  		/* dynamic: solve for pos, alt, time, while moving */
+  		tr_mode = 'D';
+- 		add_mode = 0;
+  	} else {
+  		/* static: solve for pos, alt, time, while stationary */
+  		tr_mode = 'S';
+- 		add_mode = 1;
+  	}
+  	mx4200_send(peer, "%s,%03d,%c,%c,%c,%d,%d,%d,", pmvxg,
+  	    PMVXG_S_TRECOVCONF,
+--- 429,437 ----
+***************
+*** 445,451 ****
+  	 * location) only if we are not moving
+  	 */
+  	if (up->moving) {
+! 		add_mode = 0;	/* delete from list */
+  	} else {
+  		add_mode = 1;	/* add to list */
+  	}
+--- 448,454 ----
+  	 * location) only if we are not moving
+  	 */
+  	if (up->moving) {
+! 		add_mode = 2;	/* delete from list */
+  	} else {
+  		add_mode = 1;	/* add to list */
+  	}
+***************
+*** 458,464 ****
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    add_mode,	/* add/delete sentences from list (1=add) */
+  			/* must be null */
+  	    INTERVAL);	/* sentence output rate (sec) */
+  	    		/* precision for position output */
+--- 461,467 ----
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    add_mode,	/* add/delete sentences from list (1=add, 2=del) */
+  			/* must be null */
+  	    INTERVAL);	/* sentence output rate (sec) */
+  	    		/* precision for position output */
+***************
+*** 579,591 ****
+  	 * "007" Control Port Configuration
+  	 * Stop outputting "022" DOPs
+  	 */
+! 	mx4200_send(peer, "%s,%03d,%03d,%d,%d,,,,,", pmvxg,
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    0);		/* add/delete sentences from list (0=delete) */
+  			/* must be null */
+! 	    		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+--- 582,594 ----
+  	 * "007" Control Port Configuration
+  	 * Stop outputting "022" DOPs
+  	 */
+! 	mx4200_send(peer, "%s,%03d,%03d,%d,%d,,%d,,,", pmvxg,
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_DOPS, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    2,		/* add/delete sentences from list (2=delete) */
+  			/* must be null */
+! 	    0);		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+***************
+*** 598,606 ****
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_PHV, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    0);		/* add/delete sentences from list (0=delete) */
+  			/* must be null */
+! 	    		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+--- 601,609 ----
+  	    PMVXG_S_PORTCONF,
+  	    PMVXG_D_PHV, /* control port output block Label */
+  	    0,		/* clear current output control list (0=no) */
+! 	    2,		/* add/delete sentences from list (2=delete) */
+  			/* must be null */
+! 	    0);		/* sentence output rate (sec) */
+  	    		/* precision for position output */
+  			/* nmea version for cga & gll output */
+  			/* pass-through control */
+***************
+*** 700,706 ****
+  	if ((pp->sloppyclockflag & CLK_FLAG2) !=
+  	    (up->sloppyclockflag & CLK_FLAG2)) {
+  		up->sloppyclockflag = pp->sloppyclockflag;
+! 		mx4200_debug(peer, "mx4200_receive: mode switch: reset receiver\n", cp);
+  		mx4200_config(peer);
+  		return;
+  	}
+--- 703,710 ----
+  	if ((pp->sloppyclockflag & CLK_FLAG2) !=
+  	    (up->sloppyclockflag & CLK_FLAG2)) {
+  		up->sloppyclockflag = pp->sloppyclockflag;
+! 		mx4200_debug(peer,
+! 			 "mx4200_receive: mode switch: reset receiver\n");
+  		mx4200_config(peer);
+  		return;
+  	}
+***************
+*** 768,774 ****
+  	 */
+  	sentence_type = 0;
+  	if ((cp = strchr(pp->a_lastcode, ',')) == NULL) {
+! 		mx4200_debug(peer, "mx4200_receive: no sentence\n", cp);
+  		refclock_report(peer, CEVNT_BADREPLY);
+  		return;
+  	}
+--- 772,778 ----
+  	 */
+  	sentence_type = 0;
+  	if ((cp = strchr(pp->a_lastcode, ',')) == NULL) {
+! 		mx4200_debug(peer, "mx4200_receive: no sentence\n");
+  		refclock_report(peer, CEVNT_BADREPLY);
+  		return;
+  	}
+***************
+*** 793,799 ****
+  			mx4200_debug(peer,
+  				"mx4200_receive: status: %s\n", cp);
+  		}
+! 		mx4200_debug(peer, "mx4200_receive: reset receiver\n", cp);
+  		mx4200_config(peer);
+  		return;
+  	}
+--- 797,803 ----
+  			mx4200_debug(peer,
+  				"mx4200_receive: status: %s\n", cp);
+  		}
+! 		mx4200_debug(peer, "mx4200_receive: reset receiver\n");
+  		mx4200_config(peer);
+  		return;
+  	}
+***************
+*** 1283,1292 ****
+  
+  	/*
+  	 * Check for insane date
+! 	 * (Certainly can't be a year before this code was last altered!)
+  	 */
+  	if (monthday > 31 || month > 12 ||
+! 	    monthday <  1 || month <  1 || year < 1997) {
+  		mx4200_debug(peer,
+  			"mx4200_parse_t: bad date (%4d-%02d-%02d)\n",
+  			year, month, monthday);
+--- 1287,1296 ----
+  
+  	/*
+  	 * Check for insane date
+! 	 * (Certainly can't be any year before this code was last altered!)
+  	 */
+  	if (monthday > 31 || month > 12 ||
+! 	    monthday <  1 || month <  1 || year < YEAR_RIGHT_NOW) {
+  		mx4200_debug(peer,
+  			"mx4200_parse_t: bad date (%4d-%02d-%02d)\n",
+  			year, month, monthday);
+***************
+*** 1706,1712 ****
+  
+  
+  	/* Update values */
+! 	if (ndop <= 0.0 || ndop<= 0.0 || vdop <= 0.0)
+  		return ("nonpositive dop");
+  	up->edop = edop;
+  	up->ndop = ndop;
+--- 1710,1716 ----
+  
+  
+  	/* Update values */
+! 	if (edop <= 0.0 || ndop<= 0.0 || vdop <= 0.0)
+  		return ("nonpositive dop");
+  	up->edop = edop;
+  	up->ndop = ndop;
+
+--PART-BOUNDARY=.19801231530.ZM21944.london.waii.com--
+

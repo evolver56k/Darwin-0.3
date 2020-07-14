@@ -1,0 +1,48 @@
+{
+    CURRENTLY_ACTIVE_VERSION = NO; 
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (kvm_private.h); 
+        M_FILES = (); 
+        OTHER_LINKED = (kvm.c, kvm_file.c, kvm_getloadavg.c, kvm_next.c, kvm_proc.c); 
+        OTHER_SOURCES = (
+            Makefile.dist, 
+            Makefile.preamble, 
+            Makefile.postamble, 
+            kvm.3, 
+            kvm_geterr.3, 
+            kvm_getfiles.3, 
+            kvm_getloadavg.3, 
+            kvm_getprocs.3, 
+            kvm_nlist.3, 
+            kvm_open.3, 
+            kvm_read.3, 
+            kvm_hp300.c, 
+            kvm_luna68k.c, 
+            kvm_mips.c, 
+            kvm_sparc.c
+        ); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (); 
+        SUBPROJECTS = (); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "/$(USER)/BUILD/$(NAME)"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_BUILDDIR = ""; 
+    PDO_UNIX_BUILDTOOL = /bin/gnumake; 
+    PDO_UNIX_COMPILEROPTIONS = ""; 
+    PDO_UNIX_INSTALLDIR = ""; 
+    PDO_UNIX_LINKEROPTIONS = ""; 
+    PROJECTNAME = kvm; 
+    PROJECTTYPE = Library; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_BUILDDIR = ""; 
+    WINDOWS_BUILDTOOL = /bin/gnumake; 
+    WINDOWS_COMPILEROPTIONS = ""; 
+    WINDOWS_INSTALLDIR = ""; 
+    WINDOWS_LINKEROPTIONS = ""; 
+}

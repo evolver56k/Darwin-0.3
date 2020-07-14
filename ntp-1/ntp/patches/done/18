@@ -1,0 +1,356 @@
+Replied: Thu, 19 Feb 1998 01:33:07 -0500
+Replied: "Marc Brett <Marc.Brett@waii.com> "
+Received: from mail.eecis.udel.edu by whimsy.udel.edu id aa00540;
+          18 Feb 1998 13:37 EST
+Received: by diamond.waii.com id MAA21788; Wed, 18 Feb 1998 12:37:26 -0600 sender Marc.Brett@waii.com for 
+Received: from mail.wg.waii.com(137.144.128.17) user <Marc.Brett@waii.com> by diamond.waii.com via smap (3.2)
+	id xma021651; Wed, 18 Feb 98 12:33:50 -0600
+Received: from merlin.london.waii.com (merlin.london.waii.com [136.250.33.1])
+	by mail1.wg.waii.com (8.8.7/8.8.7) with ESMTP id MAB31102;
+	Wed, 18 Feb 1998 12:33:49 -0600
+Received: from rgs0.london.waii.com (rgs0.london.waii.com [136.250.40.10])
+          by merlin.london.waii.com (8.8.4/8.8.4) with SMTP
+	  id SAA07198; Wed, 18 Feb 1998 18:33:45 GMT
+Received: by rgs0.london.waii.com (940816.SGI.8.6.9/920502.SGI)
+	 id SAA07972; Wed, 18 Feb 1998 18:33:43 GMT
+From: Marc Brett <Marc.Brett@waii.com>
+Message-Id: <9802181833.ZM7970@rgs0.london.waii.com>
+Date: Wed, 18 Feb 1998 18:33:42 +0000
+X-Mailer: Z-Mail (3.2.0 26oct94 MediaMail)
+To: mills@udel.edu, stenn@whimsy.udel.edu
+Subject: Compiler warnings on ntp-4.72-export (IRIX 6.4)
+Cc: Frank.Vance@waii.com, Marc.Brett@waii.com
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="PART-BOUNDARY=.19802181833.ZM7970.london.waii.com"
+
+--
+--PART-BOUNDARY=.19802181833.ZM7970.london.waii.com
+Content-Type: text/plain; charset=us-ascii
+
+Harlan, Dave,
+
+Here are some patches to fix a number of compiler warnings from an SGI
+OCTANE (mips-sgi-irix6.4) workstation.  One or two of them highlight
+genuinely broken code.  The calls to qsort() also generate warnings,
+but I couldn't figure out a gag for those.
+
+None of these patches depends on any other.  Feel free to adopt any or all
+(or none!) of them.
+
+Regards,
+
+Marc
+
+
+-- 
+Marc Brett  +44 181 560 3160            Western Geophysical
+Marc.Brett@waii.com                     455 London Road, Isleworth
+FAX: +44 181 847 5711                   Middlesex TW7 5AB    UK
+
+--PART-BOUNDARY=.19802181833.ZM7970.london.waii.com
+X-Zm-Content-Name: ntp-4.0.72-export.diffs
+Content-Description: Text
+Content-Type: text/plain ; name="ntp-4.0.72-export.diffs" ; charset=us-ascii
+
+*** include/ntp_refclock.h.orig	Tue Feb 17 01:24:36 1998
+--- include/ntp_refclock.h	Wed Feb 18 17:17:11 1998
+***************
+*** 156,162 ****
+  	u_char	currentstatus;	/* clock status */
+  	u_char	lastevent;	/* last exception event */
+  	u_char	type;		/* clock type */
+! 	const char *clockdesc;	/* clock description */
+  
+  	char	a_lastcode[BMAX]; /* last timecode received */
+  	u_short	lencode;	/* length of last timecode */
+--- 156,162 ----
+  	u_char	currentstatus;	/* clock status */
+  	u_char	lastevent;	/* last exception event */
+  	u_char	type;		/* clock type */
+! 	char	*clockdesc;	/* clock description */
+  
+  	char	a_lastcode[BMAX]; /* last timecode received */
+  	u_short	lencode;	/* length of last timecode */
+*** include/ntpd.h.orig	Mon Feb 16 19:01:56 1998
+--- include/ntpd.h	Wed Feb 18 17:07:06 1998
+***************
+*** 51,57 ****
+  struct ctl_var {
+  	u_short code;
+  	u_short flags;
+!   const char *text;
+  };
+  /*
+   * Flag values
+--- 51,57 ----
+  struct ctl_var {
+  	u_short code;
+  	u_short flags;
+! 	char *text;
+  };
+  /*
+   * Flag values
+*** libntp/a_md5encrypt.c.orig	Tue Feb 17 01:26:52 1998
+--- libntp/a_md5encrypt.c	Wed Feb 18 17:02:00 1998
+***************
+*** 102,108 ****
+  	MD5Final(&ctx);
+  	memcpy(&keyid, ctx.digest, sizeof(u_int32));
+  	if (lifetime != 0) {
+! 		MD5auth_setkey(keyno, ctx.digest, sizeof(ctx.digest));
+  		authtrust(keyno, lifetime);
+  	}
+  #ifdef DEBUG
+--- 102,108 ----
+  	MD5Final(&ctx);
+  	memcpy(&keyid, ctx.digest, sizeof(u_int32));
+  	if (lifetime != 0) {
+! 		MD5auth_setkey(keyno, (const char *)ctx.digest, sizeof(ctx.digest));
+  		authtrust(keyno, lifetime);
+  	}
+  #ifdef DEBUG
+*** ntpd/ntp_control.c.orig	Tue Feb 17 01:43:52 1998
+--- ntpd/ntp_control.c	Wed Feb 18 17:09:49 1998
+***************
+*** 2608,2614 ****
+  {
+  	register struct ctl_var *k;
+  	register char *s;
+! 	register const char *t;
+  
+  	if (!data || !size)
+  	    return;
+--- 2608,2614 ----
+  {
+  	register struct ctl_var *k;
+  	register char *s;
+! 	register char *t;
+  
+  	if (!data || !size)
+  	    return;
+*** ntpd/ntp_refclock.c.orig	Tue Feb 17 02:04:58 1998
+--- ntpd/ntp_refclock.c	Wed Feb 18 17:13:11 1998
+***************
+*** 455,461 ****
+  	 * the timecode.
+  	 */
+  	if (!clocktime(pp->day, pp->hour, pp->minute, pp->second, GMT,
+! 	    pp->lastrec.l_ui, &pp->yearstart, &offset.l_i))
+  		return (0);
+  	if (pp->usec) {
+  		TVUTOTSF(pp->usec, offset.l_uf);
+--- 455,461 ----
+  	 * the timecode.
+  	 */
+  	if (!clocktime(pp->day, pp->hour, pp->minute, pp->second, GMT,
+! 	    pp->lastrec.l_ui, &pp->yearstart, &offset.l_ui))
+  		return (0);
+  	if (pp->usec) {
+  		TVUTOTSF(pp->usec, offset.l_uf);
+*** ntpd/ntp_request.c.orig	Tue Feb 17 03:57:08 1998
+--- ntpd/ntp_request.c	Wed Feb 18 17:22:46 1998
+***************
+*** 1808,1814 ****
+  	register int items;
+  
+  	items = INFO_NITEMS(inpkt->err_nitems);
+! 	kp = (u_int32 *)inpkt->data;
+  	while (items-- > 0) {
+  		authtrust(*kp, trust);
+  		kp++;
+--- 1808,1814 ----
+  	register int items;
+  
+  	items = INFO_NITEMS(inpkt->err_nitems);
+! 	kp = (u_long *)inpkt->data;
+  	while (items-- > 0) {
+  		authtrust(*kp, trust);
+  		kp++;
+*** ntpd/refclock_wwvb.c.orig	Tue Feb 17 03:23:16 1998
+--- ntpd/refclock_wwvb.c	Wed Feb 18 17:25:03 1998
+***************
+*** 244,249 ****
+--- 244,250 ----
+  	struct peer *peer;
+  	l_fp trtmp;
+  	int temp;
++ 	int tz = 0;
+  	char	syncchar;	/* synchronization indicator */
+  	char	qualchar;	/* quality indicator */
+  	char	leapchar;	/* leap indicator */
+***************
+*** 299,305 ****
+  	 * exit.
+  	 */
+  	switch (pp->lencode) {
+- 	        int tz = 0;
+  
+  	    case LENWWVB0:
+  
+--- 300,305 ----
+*** ntpdc/ntpdc.c.orig	Tue Feb 17 03:45:05 1998
+--- ntpdc/ntpdc.c	Wed Feb 18 17:56:09 1998
+***************
+*** 57,63 ****
+  /*
+   * Built in command handler declarations
+   */
+! static	int	openhost	P((char *));
+  static	int	sendpkt		P((char *, int));
+  static	void	growpktdata	P((void));
+  static	int	getresponse	P((int, int, int *, int *, char **));
+--- 57,63 ----
+  /*
+   * Built in command handler declarations
+   */
+! static	int	openhost	P((const char *));
+  static	int	sendpkt		P((char *, int));
+  static	void	growpktdata	P((void));
+  static	int	getresponse	P((int, int, int *, int *, char **));
+***************
+*** 65,71 ****
+  static	void	getcmds		P((void));
+  static	RETSIGTYPE abortcmd	P((int));
+  static	void	docmd		P((const char *));
+! static	void	tokenize	P((char *, char **, int *));
+  static	int	findcmd		P((char *, struct xcmd *, struct xcmd *, struct xcmd **));
+  static	int	getarg		P((char *, int, arg_v *));
+  static	int	getnetnum	P((const char *, u_int32 *, char *));
+--- 65,71 ----
+  static	void	getcmds		P((void));
+  static	RETSIGTYPE abortcmd	P((int));
+  static	void	docmd		P((const char *));
+! static	void	tokenize	P((const char *, char **, int *));
+  static	int	findcmd		P((char *, struct xcmd *, struct xcmd *, struct xcmd **));
+  static	int	getarg		P((char *, int, arg_v *));
+  static	int	getnetnum	P((const char *, u_int32 *, char *));
+***************
+*** 376,384 ****
+  #ifdef SYS_WINNT
+  	WSACleanup();
+  #endif
+! #ifndef SYS_VXWORKS
+! 	exit(0);
+! #endif
+  } /* main end */
+  
+  
+--- 376,382 ----
+  #ifdef SYS_WINNT
+  	WSACleanup();
+  #endif
+! 	return(0);
+  } /* main end */
+  
+  
+***************
+*** 387,393 ****
+   */
+  static int
+  openhost(
+! 	char *hname
+  	)
+  {
+  	u_int32 netnum;
+--- 385,391 ----
+   */
+  static int
+  openhost(
+! 	const char *hname
+  	)
+  {
+  	u_int32 netnum;
+***************
+*** 1050,1056 ****
+   */
+  static void
+  tokenize(
+! 	char *line,
+  	char **tokens,
+  	int *ntok
+  	)
+--- 1048,1054 ----
+   */
+  static void
+  tokenize(
+! 	const char *line,
+  	char **tokens,
+  	int *ntok
+  	)
+***************
+*** 1060,1066 ****
+  	static char tspace[MAXLINE];
+  
+  	sp = tspace;
+! 	cp = line;
+  	for (*ntok = 0; *ntok < MAXTOKENS; (*ntok)++) {
+  		tokens[*ntok] = sp;
+  		while (ISSPACE(*cp))
+--- 1058,1064 ----
+  	static char tspace[MAXLINE];
+  
+  	sp = tspace;
+! 	cp = (char *)line;
+  	for (*ntok = 0; *ntok < MAXTOKENS; (*ntok)++) {
+  		tokens[*ntok] = sp;
+  		while (ISSPACE(*cp))
+*** ntpdc/ntpdc_ops.c.orig	Tue Feb 17 03:45:01 1998
+--- ntpdc/ntpdc_ops.c	Wed Feb 18 17:57:25 1998
+***************
+*** 2186,2191 ****
+--- 2186,2192 ----
+  	l_fp ts;
+  	int res;
+  	long val;
++ 	u_long u_val;
+  	int err;
+  
+  
+***************
+*** 2219,2228 ****
+  		    fudgedata.fudgeval_flags = htonl((u_int32)val);
+  	} else if (STREQ(pcmd->argval[1].string, "flags")) {
+  		fudgedata.which = htonl(FUDGE_FLAGS);
+! 		if (!hextoint(pcmd->argval[2].string, &val))
+  		    err = 1;
+  		else
+! 		    fudgedata.fudgeval_flags = htonl((u_int32)(val & 0xf));
+  	} else {
+  		(void) fprintf(stderr, "What fudge is %s?\n",
+  			       pcmd->argval[1].string);
+--- 2220,2229 ----
+  		    fudgedata.fudgeval_flags = htonl((u_int32)val);
+  	} else if (STREQ(pcmd->argval[1].string, "flags")) {
+  		fudgedata.which = htonl(FUDGE_FLAGS);
+! 		if (!hextoint(pcmd->argval[2].string, &u_val))
+  		    err = 1;
+  		else
+! 		    fudgedata.fudgeval_flags = htonl((u_int32)(u_val & 0xf));
+  	} else {
+  		(void) fprintf(stderr, "What fudge is %s?\n",
+  			       pcmd->argval[1].string);
+*** ntpq/ntpq_ops.c.orig	Tue Feb 17 03:44:56 1998
+--- ntpq/ntpq_ops.c	Wed Feb 18 17:51:26 1998
+***************
+*** 180,187 ****
+  char flash3[] = " x.-+#*o";	/* flash decode for peer status version 3 */
+  
+  struct varlist {
+!   const char *name;
+!   const char *value;
+  } varlist[MAXLIST] = { { 0, 0 } };
+  
+  /*
+--- 180,187 ----
+  char flash3[] = " x.-+#*o";	/* flash decode for peer status version 3 */
+  
+  struct varlist {
+! 	char *name;
+! 	char *value;
+  } varlist[MAXLIST] = { { 0, 0 } };
+  
+  /*
+
+--PART-BOUNDARY=.19802181833.ZM7970.london.waii.com--
+

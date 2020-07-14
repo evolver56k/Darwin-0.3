@@ -1,0 +1,793 @@
+/*---------------------------------------------------------------------------*\
+ *  File Name:  SETUP.RUL
+ *
+ *  Description:  XNTP - NT Install, 
+ *                Reworked by Greg Schueman for XNTP.
+ *
+ *   BIND version by Larry Kahn... using ideas from Paul Wren's (PIW) version.  
+ *
+\* ----------------------------------------------------------------------------*/
+
+// Next 4 lines defined by mksetup.bat script	
+// declare
+//	#define APP_NAME2               "XNTPPACKAGE XNTPVERSION Freeware"
+//	#define PRODUCT_VERSION         "XNTPVERSIONRel"
+//	#define DEINSTALL_KEY           "NTPXNTPVERSION"
+
+	// Constant declarations.
+	#define SPACE_REQUIRED          1300000          // Disk space in bytes.
+	#define APP_NAME                "NetworkTimeProtocol"
+	#define APPBASE_PATH            "\\var\\ntp\\"
+	#define UNINSTALL_NAME          "NTP"
+	#define PRODUCT_KEY             "xntpd.exe"
+	#define NTP_PORT                123
+	#define ONETIMESOURCE           1
+	#define TWOTIMESOURCES          2
+	#define NOTIMEYET               3
+	
+	// Global variable declarations
+	STRING  svDir, szMsg, szFileSet,szTitle,  szMessage, svUninstLogFile;
+	STRING  szProgram, szParam, szTemp, szTemp2, szAppPath;
+	STRING  svFileName;
+	STRING  svTempStr;
+	STRING  svModuleDir;
+	STRING  svAnswer;
+	STRING  dummy;
+	
+	BOOL    bRemoveNTP, bUpdateModules;
+	
+
+	STRING  svNTPAddress;                   // the IP address of "1st" time source
+	STRING  svNTPAddress2;                  // the IP address of "2nd" time source
+	STRING  szDllNTPInst;
+	NUMBER  nReturnValue;
+    INT     nReturnValue2;
+    INT     nValue;
+	
+	//--------Custom Dialog in Ishield-------------------------
+	BOOL bDone;
+	LIST lNames, lAddrs;
+
+	//------- NTPInst.DLL defines------------------------
+	#define k_PrivilegeErr                  1
+	#define k_CreateKeyErr                  2
+	#define k_RestoreKeyErr                 3
+	#define k_ErrUnableToOpenWriteOwner     4
+	#define k_ErrUnableToSetOwner           5
+	#define k_ErrUnableToOpenDAC            6
+	#define k_ErrUnableToWriteDACL          7
+	#define k_OpenKeyError                  8
+	#define k_ModifySetAccountFail          10
+	#define k_SCMErr                        11
+	#define k_SCMpoErr                      12
+	#define k_DeleteServiceFail             13
+	#define k_DeleteKeyFail                 14
+	#define k_DeleteValueFail               15
+	#define k_DirSecurityErr                16
+	#define k_DirSetDACLErr                 17
+	#define k_DirSetSecurityErr             18
+	#define k_SCMpoStopErr                  19
+	#define k_SaveKeyErr                    20
+	#define k_ServiceUnknownErr             50
+	#define k_ServiceDependency             51
+	#define k_ServiceDependencyFail         52
+	#define k_ServiceLogonFail              53
+
+	#define k_BadPath                       101
+	#define k_AccessDenied                  102
+	#define k_ServiceExists                 103
+	#define k_createservicefailed           104
+	#define k_removeservicefailed           105
+	#define k_ServicenoExists               106
+	
+	//--------Function declarations----------------------------
+	prototype SetupScreen                   ();
+	prototype CheckRequirements             ();
+	prototype RemoveNTP                     ();
+	prototype UpdateModules                 ();
+	
+	prototype ReportError                   (INT, BYREF STRING);
+	prototype DoConfigType                  ();
+	prototype CreateConfigFiles             (INT);
+	prototype InstallNTPFiles               (STRING, INT);
+	prototype RegisterEventlogMessages	    (STRING);
+	prototype CheckForService               ();
+	prototype GetImagePath                  (BYREF STRING);
+	prototype LaunchAppAndWait              (STRING,STRING, INT);
+	prototype ReverseOctet                  (BYREF STRING, STRING);
+	prototype FixDirectory                  (BYREF STRING, STRING);
+       
+
+//--------------------------------------------------------------------------
+program
+
+StartHere:
+    Disable( BACKGROUND );
+
+    dummy = "   ";
+    // Set default registry tree
+    RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+
+    // Set up the installation screen.
+    SetupScreen();
+    Enable( DIALOGCACHE );
+
+	TARGETDIR = SUPPORTDIR;
+	szDllNTPInst = SUPPORTDIR ^ "NTPDLL.DLL";  // NTP-specific helper library
+
+    svDir = WINSYSDISK + "\\";
+    
+    // Module locations, XNTP - NT location
+	svModuleDir = WINDISK^"\\win32app\\ntp";
+
+
+OfferReadmeFile:
+
+if (AskYesNo("Would you like to see the readme file before proceeding? \n",NO ) = YES) then
+	LaunchAppAndWait("NOTEPAD",SUPPORTDIR ^ "README.NT",1);
+endif;
+	
+CheckForService1:
+    // Look for service
+    if (CheckForService() != 0) then                    // Not clean install
+	Disable(BACKBUTTON);
+		bUpdateModules = TRUE;
+	szMessage = "Setup has determined that the NTP - NT service is\n" +
+		    "already present.  Do you want to:\n";
+	AskOptions(EXCLUSIVE, szMessage,
+                
+		   "&Remove NTP service", bRemoveNTP,
+		   "&Update NTP to this version", bUpdateModules);
+				   
+	Enable(BACKBUTTON);
+	if (bRemoveNTP) then
+		if (AskYesNo("Are you certain you wish to remove the NTP service\n" +
+				 "and registry entries? \n",NO ) = YES) then
+		   RemoveNTP();
+		endif;
+	endif;
+	if (bUpdateModules) then
+			UpdateModules();
+	endif;
+	exit;
+    endif;           
+// install drops through
+
+DoCleanInstall:
+
+    // Defaults
+
+    // Create a Welcome dialog.
+WelcomeDlg:
+    Disable( BACKBUTTON );
+    Welcome( "", 0 );
+    Enable( BACKBUTTON );
+ 
+    // Test target system for proper configuration.
+    CheckRequirements();
+
+ModuleDir:  
+    if (AskDestPath("Network Time Protocol Server program file location",
+		    "Choose the directory for storage of the NTP support files",
+		    svModuleDir,0) = BACK) then
+       goto WelcomeDlg;
+    endif;
+	
+ThatsItDoIt:    
+    
+	InstallNTPFiles(svModuleDir,0);  // uncompress & place files in directories
+	
+GetConfigurationType:
+    Disable(BACKBUTTON);
+	TARGETDIR = svModuleDir;                // point back to ntp directory
+
+	SetStatusWindow( 85, "Creating Configuration Files..." );
+	DoConfigType();                         // do the configuration for user-spec'd type
+    Enable(BACKBUTTON);
+
+RegistryInit:
+
+	SetStatusWindow( 90, "Creating NTP Service..." );
+    
+CreateService:
+        // was svModuleDir^"\\xntpd.exe"
+        nReturnValue2 = CallDLLFx(szDllNTPInst,"CreateNTPService",nValue,WINSYSDIR^"\\xntpd.exe");
+	if (nReturnValue2 != 0) then
+		ReportError(nReturnValue2,szMessage);
+		szMessage = "Unable to install NTP - NT Service entry in Service Control Manager.\n" + szMessage;
+		MessageBox(szMessage,SEVERE);
+		exit;
+	endif;
+
+
+	SetStatusWindow( 95, "Adding Additional Registry Keys..." );
+
+        nReturnValue2 = CallDLLFx(szDllNTPInst,"addKeysToRegistry",nValue,dummy);
+	if (nReturnValue2 != 0) then
+		szMessage = "Unable to add the Depend on service key in the NT registry\n";
+		MessageBox(szMessage,SEVERE);
+		exit;
+	endif;
+
+
+	SetStatusWindow( 98, "Starting the Service..." );
+
+StartService:
+    nReturnValue2 = CallDLLFx(szDllNTPInst,"StartNTPService",nValue,dummy);
+    if (nReturnValue2 != 0) then
+		ReportError(nReturnValue2,szMessage);
+		szMessage = "Unable to start the NTP - NT Service.\n" + szMessage;
+		MessageBox(szMessage,SEVERE);
+		exit;
+    endif;
+
+   	// Announce setup complete and offer to read README file.e
+   	FinalInstallProcess:
+   	SetStatusWindow( 100, "Installation complete." );
+   	Delay( 2 );
+
+   	if (AskYesNo("Setup is complete.  The NTP service is running.\n"+
+				"Do you want to look at the documentation for NTP?\n",
+				 YES) = YES) then
+	    LaunchAppAndWait("WRITE.EXE",TARGETDIR ^ "ntpog.wri",1);
+   	endif;
+exit;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  InstallNTPFiles()
+ *
+ *  Purpose:  Uncompress the IShield package, and put files in the directory
+ *            passed as an argument.
+ *
+ *              This function used both for new installations, and for the 
+ *              "update modules" function.
+ *
+\*---------------------------------------------------------------------------*/
+function InstallNTPFiles(svInstDir,updateonly)
+	NUMBER  nResult;
+	STRING szBitmapPath;
+begin
+	// szBitmapPath = SUPPORTDIR^"ishield.bmp";
+	// PlaceBitmap(szBitmapPath,1,10,10,UPPER_RIGHT);
+
+	// Insure that directories have sufficient permissions
+	//	ReleaseModuleDirSecurity(svInstDir);
+    
+	szFileSet = "NetworkTimeProtocolServer";
+	FileSetBeginDefine(szFileSet);
+
+	TARGETDIR = WINSYSDIR;
+	SetStatusWindow( -1, "Copying modules..." );
+    //	MessageBox("decompressing data.z: sourcedir = " + SRCDIR + " target dir = " +
+    //                  TARGETDIR,INFORMATION);
+    //  change this to comp update date eventually
+
+    if (updateonly != 0)  // update case
+    then
+	  // uncomment if adding a Control Panel Applet to package
+ 	  //nResult = CompressGet("data.z","*.cpl",COMP_UPDATE_DATE);
+      //if (nResult < 0) then
+      //   NumToStr( szTemp, nResult );
+	  //   MessageBox("File Decompression1 failed! ecode = " + szTemp, SEVERE);
+	  //   exit;
+	  // endif;
+
+ 	  nResult = CompressGet("data.z","*.exe",COMP_UPDATE_DATE);
+      if (nResult < 0) then
+         NumToStr( szTemp, nResult );
+		 MessageBox("File Decompression2 failed! ecode = " + szTemp, SEVERE);
+		 exit;
+	  endif;
+
+    else // not update install all
+ 	  nResult = CompressGet("data.z","*.exe",COMP_UPDATE_DATE);
+      if (nResult < 0) then
+         NumToStr( szTemp, nResult );
+		 MessageBox("File Decompression2 failed! ecode = " + szTemp, SEVERE);
+		 exit;
+	  endif;
+
+	  TARGETDIR = svInstDir;  // set destination directory
+
+ 	  nResult = CompressGet("data.z","readme.nt",COMP_UPDATE_DATE);
+      if (nResult < 0) then
+         NumToStr( szTemp, nResult );
+		 MessageBox("File Decompression3 failed! ecode = " + szTemp, SEVERE);
+		 exit;
+      endif;
+
+ 	  nResult = CompressGet("data.z","ntpog.wri",COMP_UPDATE_DATE);
+      if (nResult < 0) then
+         NumToStr( szTemp, nResult );
+		 MessageBox("File Decompression4 failed! ecode = " + szTemp, SEVERE);
+		 exit;
+      endif;
+
+    endif; // Decompress File end
+
+	FileSetEndDefine(szFileSet);
+	
+    // Set up progress indicator and information gauge.
+    Disable( DIALOGCACHE );
+    Enable( STATUSDLG );
+
+    StatusUpdate( ON, 80 );
+
+    // Perform the file set.
+    SetStatusWindow( 0, "Copying program files..." );
+    nResult = FileSetPerformEz( szFileSet, 0 );
+
+    switch (nResult)
+	    case FS_DONE:      // Successful completion.
+	    case FS_CREATEDIR: // Create directory error.
+		MessageBox( "Unable to create a directory under " + TARGETDIR + "."+
+			"Please check write access to this directory.", SEVERE );
+		exit;
+	default:               // Group all other errors under default label.
+		NumToStr( szTemp, nResult );
+		MessageBox( "General file transfer error."+
+			"Please check your target location and try again."+
+			"\n\n Error Number:"+ szTemp +
+			"\n Related File: "+ ERRORFILENAME,SEVERE);
+		exit;
+    endswitch;
+	
+	RegisterEventlogMessages(svInstDir);	// put EventLog reg entries in
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  RegisterEventlogMessages
+ *
+ *  Purpose:  Put an entry under the Eventlog registry information, so that
+ *            it understands where to find messages that come from NTP.
+ *
+ *  History:  PIW	Created		12/14/95
+ *
+\*---------------------------------------------------------------------------*/
+#define	EVENTLOG_ENTRY "\\SYSTEM\\CurrentControlSet\\Services\\Eventlog\\Application\\NTP"
+#define	SERVICE_ENTRY  "\\SYSTEM\\CurrentControlSet\\Services\\NetworkTimeProtocol"
+
+function RegisterEventlogMessages(svTemp)
+	NUMBER nvSize;
+begin
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	RegDBSetKeyValueEx(EVENTLOG_ENTRY,"EventMessageFile",
+				REGDB_STRING,svTemp^"xntpd.exe",nvSize);
+	RegDBSetKeyValueEx(EVENTLOG_ENTRY,"TypeSupported",REGDB_NUMBER,"7",nvSize);
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  DoConfigType
+ *
+ *  Purpose:  Find out what type of installation the user is planning,
+ *            and then create and/or show the configuration files to them.
+ *
+\*---------------------------------------------------------------------------*/
+function DoConfigType()
+	BOOL bSingleSourceNTP,bSecondarySourceNTP, bNoSourceNTP;
+begin
+	bSingleSourceNTP = FALSE;
+	bSecondarySourceNTP = TRUE;
+	bNoSourceNTP = FALSE;
+    szMessage = "For creation of configuration files, please select the setup\n" +
+		"you want for NTP.  Do you want to set up a:\n";
+    AskOptions(EXCLUSIVE, szMessage,
+	       "&Single Time Source", bSingleSourceNTP,
+	       "&Two Time Sources", bSecondarySourceNTP,
+		   "&Specify No Time Sources", bNoSourceNTP);
+			   
+    Enable(BACKBUTTON);
+    if (bSingleSourceNTP) then
+	    szMessage = "Please enter the IP address of the Time Source.\n";
+	    AskText(szMessage, svNTPAddress, svNTPAddress);
+		CreateConfigFiles(ONETIMESOURCE);   // create ntp.conf
+    endif;
+	
+    if (bSecondarySourceNTP) then
+	    szMessage = "Please enter the IP address of the First Time Source from\n" +
+		    "which you will RECEIVE synchronization\n";
+	    AskText(szMessage, svNTPAddress, svNTPAddress);
+		szMessage = "Please enter the IP address of the Second Time Source from\n" +
+			"which you will RECEIVE synchronization\n";
+		AskText(szMessage, svNTPAddress2, svNTPAddress2);
+		CreateConfigFiles(TWOTIMESOURCES);   // create ntp.conf
+    endif;
+	
+	if (bNoSourceNTP) then
+		CreateConfigFiles(NOTIMEYET);   // create ntp.conf and ntp.drift
+	endif;          
+	
+    if (AskYesNo("Do you want to see the NTP configuration file which has\n" + 
+		     "been created for this host?\n", YES) = YES) then
+		// Let them see/edit the files, if they want to:
+		LaunchAppAndWait("NOTEPAD.EXE", WINDIR ^ "ntp.conf",1);
+	endif;
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  CreateConfigFiles
+ *
+ *  Purpose:  Now that we know the domain name, host name, and IP Address,
+ *            create the configuration files for this NTP to be of type 
+ *            specified by parameter:
+ *                                  ONETIMESOURCE
+ *                                  TWOTIMESOURCES
+ *                                  NOTIMEYET
+ *                        
+ *
+ *    Need to have filled in:  
+ *                              svNTPAddress
+ *                              svNTPAddress2
+ *
+\*---------------------------------------------------------------------------*/
+function CreateConfigFiles(nType)
+	NUMBER nvFileHandle;
+	STRING svInAddrArpa;
+        STRING saveddir;
+        STRING svIP;
+begin
+
+    CreateFile(nvFileHandle,WINDIR,"ntp.conf");
+    WriteLine(nvFileHandle,"#");
+    WriteLine(nvFileHandle,"#    File:       ntp.conf");
+    WriteLine(nvFileHandle,"#    Purpose:    give the NTP Service its startup parameters and");
+    WriteLine(nvFileHandle,"#                list of startup files.");
+    WriteLine(nvFileHandle,"# ");
+    WriteLine(nvFileHandle,"# ");
+
+	WriteLine(nvFileHandle,"#");
+	WriteLine(nvFileHandle,"# Miscellaneous stuff");
+	WriteLine(nvFileHandle,"#");
+	WriteLine(nvFileHandle,"driftfile %windir%\\ntp.drift        # path for drift file");
+	WriteLine(nvFileHandle,"# statsdir c:\\var\\ntp\\stats\\     # directory for statistics files");
+	WriteLine(nvFileHandle,"# filegen peerstats file peerstats type day enable");
+	WriteLine(nvFileHandle,"# filegen loopstats file loopstats type day enable");
+	WriteLine(nvFileHandle,"# filegen clockstats file clockstats type day enable");
+
+	if (nType != NOTIMEYET) then 
+	    WriteLine(nvFileHandle,"#    Need to set up time sources...");
+	    WriteLine(nvFileHandle,"#    server ip-address");
+        WriteLine(nvFileHandle,"# ");
+	    WriteLine(nvFileHandle,"# ");
+	endif;  
+	
+	
+	if (nType = TWOTIMESOURCES) then 
+		WriteLine(nvFileHandle,"# ");
+		WriteLine(nvFileHandle,"server " + svNTPAddress);
+	    WriteLine(nvFileHandle,"server " + svNTPAddress2);
+        WriteLine(nvFileHandle,"# ");
+  	    WriteLine(nvFileHandle,"# ");
+	endif;
+
+	if (nType = ONETIMESOURCE) then
+		WriteLine(nvFileHandle," ");
+		WriteLine(nvFileHandle,"server " + svNTPAddress);
+        WriteLine(nvFileHandle," ");
+  	    WriteLine(nvFileHandle," ");
+	endif;
+    
+    CloseFile(nvFileHandle);
+	
+	CreateFile(nvFileHandle,WINDIR,"ntp.drift");
+    WriteLine(nvFileHandle,"0 0");
+	CloseFile(nvFileHandle);
+
+end;    
+
+	
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  SetupScreen
+ *
+ *  Purpose:  This function will set up the screen look.  This includes
+ *            colors, fonts, text to be displayed, etc.
+ *
+\*---------------------------------------------------------------------------*/
+function SetupScreen()
+	INT nDx, nDy;
+begin
+	Enable( DEFWINDOWMODE );
+    Enable( INDVFILESTATUS );
+
+	//----------------------------------------------------------
+	//      If you want to downsize the Blue-fade background:
+	//
+	//      GetExtents(nDx,nDy);
+	//
+	//      
+	//      PlaceWindow(BACKGROUND,nDx/2,0,UPPER_LEFT);
+	//      SizeWindow(BACKGROUND,nDx/2,nDy/2);
+	//
+	//  However will also have to move all the dialogs/bitmaps
+	//  around to make this work correctly...
+	//----------------------------------------------------------
+	
+    SetTitle( APP_NAME2 + " Setup", 24, WHITE );
+
+	//    SetColor( BACKGROUND, BK_BLUE ); // Dark blue.
+	//    SetColor( STATUSBAR, BLUE );     // Bright blue.
+    SetTitle( "Setup", 0, BACKGROUNDCAPTION ); // Caption bar text.
+
+    Enable( BACKGROUND );
+    Delay( 1 );
+
+	// Show the bitmap.
+	// PlaceBitmap( SUPPORTDIR ^ "NTPNT.BMP",1,10,10,UPPER_RIGHT);
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ * Function:  CheckRequirements
+ *  Purpose:  This function will make sure we are on NT, not Win95.
+\*---------------------------------------------------------------------------*/
+function CheckRequirements()
+	number nvVersion;
+	STRING szResult, svVersion;
+begin
+    // Determine the target system's operating system.
+    GetSystemInfo( OS, nvVersion, svVersion );
+    if (nvVersion = IS_WINDOWSNT) then
+
+	    MessageBox("This product can only run on Windows NT", SEVERE);
+		exit;
+    endif;
+end;
+
+//+---------------------------------------------------------------------------
+//  Member:             ReportError()
+//----------------------------------------------------------------------------
+function ReportError(n_Err, sz_Message)
+
+begin
+  switch(n_Err)
+	case k_PrivilegeErr:              sz_Message = "Privilege Error";
+	case k_CreateKeyErr:              sz_Message = "Create Key Failed";
+	case k_RestoreKeyErr:             sz_Message = "Restore Default Key Failed";
+	case k_ErrUnableToOpenWriteOwner: sz_Message = "Unable to Open and Write Owner Information";
+	case k_ErrUnableToSetOwner:       sz_Message = "Unable to Set Owner Information";
+	case k_ErrUnableToOpenDAC:        sz_Message = "Unable to Open Access Control List";
+	case k_ErrUnableToWriteDACL:      sz_Message = "Unable to Write Access Control List";
+	case k_OpenKeyError:              sz_Message = "Unable to Open Registry Key Entry";
+	case k_ModifySetAccountFail:      sz_Message = "Unable to Setup Account Parameters";
+	case k_SCMErr:                    sz_Message = "Unable to Open Service Control Manager Database";
+	case k_SCMpoErr:                  sz_Message = "Unable to Open NTP - NT service entries in the Service Control Manager";
+	case k_DeleteServiceFail:         sz_Message = "Unable to delete NTP - NT service";
+	case k_DeleteKeyFail:             sz_Message = "Unable to delete registry key information";
+	case k_DeleteValueFail:           sz_Message = "Unable to delete registry value information";
+	case k_DirSecurityErr:            sz_Message = "Unable to retreive Security information on directory";
+	case k_DirSetDACLErr:             sz_Message = "Unable to add security information on directory";
+	case k_DirSetSecurityErr:         sz_Message = "Unable to set directory security information";
+	case k_SCMpoStopErr:              sz_Message = "Unable to stop the NTP - NT service";
+	case k_SaveKeyErr:                sz_Message = "Unable to save registry key.";
+	case k_ServiceUnknownErr:         sz_Message = "The service control manager could not start the NTP - NT service - please check the event log";
+	case k_ServiceDependency:         sz_Message = "The NTP - NT service depends on several other services which are not installed.";
+	case k_ServiceDependencyFail:     sz_Message = "The NTP - NT service depends on other services which failed to start.";
+	case k_ServiceLogonFail:          sz_Message = "The service manager was unable to login the NTP - NT service - Please check the password and logon as service privilege";
+    case k_BadPath:                   sz_Message = "Bad Path Specified."; 
+	case k_AccessDenied:              sz_Message = "Access Denied.";
+	case k_ServiceExists:             sz_Message = "NTP - NT service already exists so cannot be re-installed";
+    case k_createservicefailed:       sz_Message = "Creation of the NTP - NT service failed.";
+    case k_removeservicefailed:       sz_Message = "Unable to remove the NTP - NT service.";
+	case k_ServicenoExists:           sz_Message = "NTP - NT service is not installed so cannot be removed.";
+	default:                          sz_Message = "Unknown Error";
+  endswitch;
+end;
+
+//+---------------------------------------------------------------------------
+//
+//  Member:             RemoveNTP()
+//
+//  Synopsis:   Remove the NTP service entry and registry entries
+//
+//----------------------------------------------------------------------------
+function RemoveNTP()
+	NUMBER n_Result;
+begin
+	
+    dummy = APP_NAME;
+    SetStatusWindow( 0, "Stopping and removing NTP service..." );
+	// Remove the NTP service entry & Registry but first stop the service
+ 
+    nReturnValue2 = CallDLLFx(szDllNTPInst,"StopNTPService",nValue,dummy);
+
+	if (nReturnValue2 != 0) then
+		ReportError(nReturnValue2,szMessage);
+		NumToStr( szTemp, nReturnValue2 );
+		szMessage = "Unable to Stop the NTP - NT Service. \n" + szTemp + "\nAre you sure it is installed?\n" + szMessage;
+		MessageBox(szMessage,SEVERE);
+		exit;
+	endif;
+   	Delay( 3 ); // delay for xntpd.exe file to free up so delete works
+
+
+  	// have to get the currently install directory from the dll by pulling it off of the imagepath param
+    //if (GetImagePath(svModuleDir) != 0) then
+	//    szMessage = "Unable to retrieve the path to Remove NTP Files \n" + svModuleDir + 
+    //                    "\nAre you sure it is installed?\n";
+	//    MessageBox(szMessage,SEVERE);
+	//    exit;
+	//endif;
+
+	n_Result = CallDLLFx(szDllNTPInst,"RemoveNTPService",nValue,dummy);
+
+	if (n_Result != 0) then            
+		MessageBox("Unable to remove NTP - NT service from the registry.",SEVERE);
+                exit;
+	else
+	    if (AskYesNo("Service Removed\n Do you want to delete all the NTP Executables and config files also?\n",
+				 NO) = YES) then
+
+			TARGETDIR = WINSYSDIR;                  // pick off the files we put in the 
+			DeleteFile("ntpdate.exe");
+			DeleteFile("ntpq.exe");
+			DeleteFile("ntptrace.exe");
+			DeleteFile("xntpdc.exe");
+			DeleteFile("xntpd.exe");
+			DeleteFile("instsrv.exe");
+
+			TARGETDIR = svModuleDir;
+			DeleteFile("ntpog.wri");
+			DeleteFile("readme.nt");
+			DeleteDir(svModuleDir, ONLYDIR);
+									
+
+            TARGETDIR = WINDIR;
+            DeleteFile("ntp.conf");
+            DeleteFile("ntp.drift");
+
+			MessageBox("NTP - NT service and registry entries are removed.\n" +
+					   "All Executable/Config files have been deleted.",INFORMATION);
+		else
+			MessageBox("NTP - NT service and registry entries are removed.\n" +
+					   "All Executable/Config files are retained.",INFORMATION);
+		endif;  
+	endif;
+end;
+
+ 
+//+---------------------------------------------------------------------------
+//
+//  Member:             UpdateModules()
+//
+//----------------------------------------------------------------------------
+function UpdateModules()
+	STRING szFileSet;
+	STRING szMessage;
+	NUMBER nvSize, nvType;
+begin
+    SetStatusWindow( 0, "Updating NTP installation..." );
+
+        nReturnValue2 = CallDLLFx(szDllNTPInst,"StopNTPService",nValue,dummy);
+
+	if (nReturnValue2 != 0) then
+		ReportError(nReturnValue2,szMessage);
+		NumToStr( szTemp, nReturnValue2 );
+		szMessage = "Unable to Stop the NTP - NT Service. \n" + szTemp + "\nAre you sure it is running?\n" + szMessage;
+		MessageBox(szMessage,SEVERE);
+		exit;
+	endif;
+   	Delay( 3 ); // delay for xntpd.exe file to free up so copy works
+
+	// have to get the currently install directory from the dll by pulling it off of the imagepath param
+    if (GetImagePath(svModuleDir) != 0) then
+		szMessage = "Unable to retrieve the path to Update NTP Files \n" + svModuleDir + 
+                  "\nAre you sure it is installed?\n";
+		MessageBox(szMessage,SEVERE);
+		exit;
+	endif;
+
+	InstallNTPFiles(svModuleDir,1);
+	
+    nReturnValue2 = CallDLLFx(szDllNTPInst,"StartNTPService",nValue,dummy);
+
+    if (nReturnValue2 != 0) then
+		ReportError(nReturnValue2,szMessage);
+		szMessage = "Unable to start the NTP - NT Service.\n" + szMessage;
+		MessageBox(szMessage,SEVERE);
+		exit;
+    endif;
+
+	SetStatusWindow( 100, "Update completed." );
+	Delay( 2 );
+   
+	MessageBox("Your Network Time Protocol Server modules have been updated and\n" +
+			   "the service restarted.  You should check the event log\n" +
+			   "to make sure everything came back up properly.",INFORMATION);
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  GetImagePAth
+ *
+ * Purpose:  Get the given value, under the given key, from the registry.
+ *   l. kahn
+\*---------------------------------------------------------------------------*/
+function GetImagePath(svValue)
+	NUMBER nvSize;
+	NUMBER nvType;
+begin
+
+        RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+        if (RegDBGetKeyValueEx(SERVICE_ENTRY,
+              "ImagePath",nvType,svValue,nvSize) < 0) then
+		return -1;
+	endif;
+			
+	StrSub(svValue,svValue,0,nvSize - 10);                       // trim to REAL length   
+        return 0;
+end;
+
+function CheckForService()
+        STRING temp;
+	NUMBER nvSize;
+	NUMBER nvType;
+begin
+
+
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+        if (RegDBGetKeyValueEx(SERVICE_ENTRY,
+			"ImagePath",nvType,temp,nvSize) < 0) then
+		return 0;
+	endif;
+ return -1;
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  LaunchAppAndWait
+ *
+ *  Purpose:  replace predefined function in more expensive InstallShield 
+ *            with C function.
+ *	l. kahn
+\*---------------------------------------------------------------------------*/
+function LaunchAppAndWait(svApp, svData, waitval)
+  STRING tstring;
+begin
+        nValue = waitval;
+        tstring = svApp+" "+svData;
+        nReturnValue2 = CallDLLFx(szDllNTPInst,"LaunchApp",nValue,tstring);
+        return 0;
+end;
+
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Function:  FixDirectory
+ *
+ *  Purpose:  put the double slashes in the directory
+ *  l. kahn
+\*---------------------------------------------------------------------------*/
+function FixDirectory(svOut,svIn)
+
+INT len;
+INT ctr;
+NUMBER letter;
+INT i;
+
+begin
+ len = StrLength(svIn) - 1;
+ ctr = 0;
+
+ for i = 0 to len
+    GetByte(letter,svIn,i);
+    if (letter = 92)
+      then
+       SetByte(svOut,ctr,letter);
+       ctr = ctr + 1;
+    endif;
+
+    SetByte(svOut,ctr,letter);
+    ctr = ctr + 1;
+ endfor;
+end;

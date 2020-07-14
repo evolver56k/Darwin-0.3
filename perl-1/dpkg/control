@@ -1,0 +1,7 @@
+Package: perl
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: Perl
+Version: 5.004_04
+URL: http://www.perl.com/
+Description: Practical Extraction and Reporting Language
+Build-Depends: build-base

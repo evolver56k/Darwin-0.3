@@ -1,0 +1,66 @@
+# Host: IA86 running Mac OS X
+
+TERMCAP =
+
+SER_HARDWIRE = ser-unix.o ser-tcp.o
+
+XM_FILE = xm-i386-next.h
+
+XDEPFILES = \
+	nextstep-nat-pb.o \
+	nextstep-nat-display.o \
+	DebuggerController.o \
+	DisplaySetup.o \
+	GuiGdbManager.o \
+	DisplayHooks.o \
+	GdbManager.o \
+	ViewGdbManager.o
+
+NEXT_FILES = \
+        nextstep-nat-watchpoint.o \
+        nextstep-nat-dyld.o \
+        nextstep-nat-dyld-path.o \
+        nextstep-nat-dyld-info.o \
+        nextstep-nat-dyld-process.o \
+        nextstep-nat-dyld-section.o \
+        nextstep-nat-dyld-io.o \
+        nextstep-nat-inferior.o \
+        nextstep-nat-inferior-stubs.o \
+        nextstep-nat-inferior-util.o \
+        nextstep-nat-inferior-debug.o \
+        nextstep-nat-sigthread.o \
+        nextstep-nat-mutils.o \
+        nextstep-nat-threads.o \
+        nextstep-nat-info.o \
+        nextstep-xdep.o \
+        embedded-symbol.o
+
+IA86_FILES = i386-next-nat-exec.o 
+
+MACOSX_FILES = macosx-nat.o excServer.o excUser.o
+
+NAT_FILE = nm-i386-next.h
+
+NATDEPFILES = \
+	fork-child.o \
+	inftarg.o \
+	$(IA86_FILES) \
+	$(NEXT_FILES) \
+	$(MACOSX_FILES)
+
+XM_CLIBS = -framework Foundation
+
+MH_CFLAGS = \
+	-DNS_TARGET_MAJOR=5 \
+	-I$(srcdir)/../gdb-next \
+	-I$(srcdir)/../gdb-next/display-support
+
+ifneq ("$(USE_PTHREADS)", "")
+MH_CFLAGS += -DUSE_PTHREADS=1
+endif
+
+excServer.c excUser.c: macosx.defs
+	$(NEXT_ROOT)/usr/bin/mig $<
+
+clean::
+	rm -f excServer.c excUser.c exc.h

@@ -1,0 +1,18 @@
+{
+    DOCICONFILES = (); 
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (defs.h, pathnames.h); 
+        OTHER_LIBS = (); 
+        OTHER_LINKED = (gram.y, docmd.c, expand.c, lookup.c, main.c, server.c); 
+        OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble, rdist.1, cron.entry); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    NEXTSTEP_INSTALLDIR = /usr/bin; 
+    PDO_UNIX_INSTALLDIR = /usr/bin; 
+    PROJECTNAME = rdist; 
+    PROJECTTYPE = Tool; 
+    PROJECTVERSION = 2.6; 
+    WINDOWS_INSTALLDIR = /usr/bin; 
+}

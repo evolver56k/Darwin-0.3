@@ -1,0 +1,73 @@
+{\rtf0\ansi{\fonttbl\f0\fnil TradeGothic;\f1\fmodern Ohlfs;}
+\paperw13040
+\paperh9540
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx6820\f0\b0\i0\ulnone\fs28\fc0\cf0 \
+
+\ul "Stakes In the Ground"\
+
+\ulnone \
+· No cross- or fat-building on or to NT/Win95 in the forseeable future.\
+
+\fi-220\li220 · We are not attempting to do multi-OS wrappers (i.e. apps, frameworks, bundles that are sharable acoss the net between OpenStep running on different OS's) in the near future,\
+
+\fi0\li0 · App, framework, and bundle wrappers will exist and be semantically similar.  Exceptions:\
+
+\fi-500\li500    - bundles and libraries/frameworks will be the same on NT (unlike NEXTSTEP) in that the entire DLL is one module, not a collection of replaceable modules (like a NEXTSTEP archive or dylib)\
+   - NT/Win95 users will need to navigate inside a .app wrapper and double-click on the actual executable to launch an app.\
+
+\fi-240\li240 · RC_ARCHS, RC_CFLAGS, and TARGET_ARCH will continue to specify machine architectures.  Differences in project builds based on the target OS will be predicated on RC_OS.\
+
+\fi0\li0 · PB projects currently depend upon PDO's "makefile.platform" on all non-NEXTSTEP OS's.\
+
+\fi-320\li320 · Major incompatible versioning of framework and libraries will be disabled on NT, but will continue to work with NEXTSTEP.  For example, more than a single Foundation dylib can exist in Foundation.framework on a NEXTSTEP system (allowing older applications to still run), but an NT system can have only one Foundation DLL in Foundation.framework.\
+
+\fi-420\li420 · When building on NT, errors and warnings will be reported in header files that are "deployed" as part of the build (e.g. the Foundation public headers) and then used in project compilations.  Due to symlink magic, this is not the case when building on NEXTSTEP.\
+
+\fi0\li0 · No precompiled headers on NT for the foreseeable future on NT.\
+· No mig or Speaker/Listener support on NT.\
+
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx6820\fc0\cf0 · Until Foundation is extended to cover some additional OSIL areas, there be two copies of BuildServer - one in PB and one in PDO's nextutils project.  Toby may need to extend Foundation's NSTask before the the two source versions can start to converge.\
+
+\pard\tx680\tx1360\tx2040\tx2720\tx3400\tx4080\tx4780\tx5460\tx6140\tx6820\fc0\cf0 \
+
+\ul\fc1\cf1 Issues\
+
+\ulnone\fc0\cf0 \
+· The DLL Export/Import Issue - In order to keep from having to maintain NT-specific macro hacks in all our public headers and also generate DLL-specific .defs files, a lower-impact #pragma solution has been settled upon as a better alternative.  This has yet to be proven as a workable solution.  (Gordie)\
+· Important Missing Tools:\
+   LIBTOOL = /bin/libtool   (Mike G.)\
+   STRIP  = /bin/strip (Paul)\
+   PSWRAP = /usr/bin/pswrap (Garrick)\
+   CHOWN  = /etc/chown (Paul)\
+· Less important missing tools:\
+    AWK    = /bin/awk\
+    LEX = /usr/bin/lex\
+    YACC = /usr/bin/yacc\
+    DBC    = /NextDeveloper/Apps/DBModeler.app/dbcompiler\
+    COMPRESSHELP = /usr/bin/compresshelp\
+· How can we use the DLL search path to implement "standard" NEXTSTEP framework and library searching? (Mike M.)\
+· Will tools move between usr/local/bin and NextDeveloper/bin?  Does the distinction of support-level between these two locations put our "unified project build mechanism" at risk?\
+· Right now, we have no way of reliably building on an 8.3 (FATS) file system (Paul)\
+\
+
+\ul\fc1\cf1 Makefile To-Do\
+\
+
+\ulnone\fi-420\li420\fc0\cf0 · use of hard-links to handle fat vs. thin builds must be nix'ed (Mike)\
+
+\fi0\li0 · port of fastcp, changes, ofileListTool, and mergeInfo (Mike)\
+\
+
+\ul\fc1\cf1 ProjectBuilder To-Do\
+\
+
+\ulnone\fc0\cf0 · Make changes in how BuildServer is invoked and used (Mike, but Toby has diffs...)\
+· Some mapping mechanism needs to be put in place to transform directories when using remote machines.  For example, "/Net/seaport/projects/DevLibs" might be "e:" on a specific NT system.  User preferences may need to be added.\
+· The $(INSTALLDIR) on projects may need to vary based on the deployment OS.  We haven't thought much about this. (Mike)\
+· It might be nice to disable fat and cross building on NT in a reasonable way in the UI. (Mike)\
+\
+
+}

@@ -1,0 +1,19 @@
+/Makefile/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/Makefile.postamble/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/Makefile.preamble/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/PB.project/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/aliasdb.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/ether_addr.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/fstab.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/getgrent.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/getproto.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/getprotoent.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/getprotoname.c/1.1.1.1/Tue Apr 13 23:15:31 1999//TLibinfo-1
+/getpwent.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+/getservbyname.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+/getservbyport.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+/getservent.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+/herror.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+/initgroups.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+/printerdb.c/1.1.1.1/Tue Apr 13 23:15:32 1999//TLibinfo-1
+D

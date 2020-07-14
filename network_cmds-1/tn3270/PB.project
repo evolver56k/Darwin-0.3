@@ -1,0 +1,26 @@
+{
+    FILESTABLE = {
+        C_FILES = (); 
+        H_FILES = (); 
+        M_FILES = (); 
+        OTHER_LINKED = (); 
+        OTHER_SOURCES = (Makefile.dist, Makefile.inc, Makefile.preamble); 
+        SUBPROJECTS = (
+            api, 
+            ascii, 
+            ctlr, 
+            distribution, 
+            general, 
+            sys_curses, 
+            telnet, 
+            tools, 
+            mset, 
+            tn3270
+        ); 
+    }; 
+    LANGUAGE = English; 
+    LOCALIZABLE_FILES = {}; 
+    PROJECTNAME = tn3270; 
+    PROJECTTYPE = Aggregate; 
+    PROJECTVERSION = 2.6; 
+}

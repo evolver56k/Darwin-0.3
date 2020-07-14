@@ -1,0 +1,11 @@
+Source: darwin-buildtools
+Section: devel
+Priority: extra
+Maintainer: Klee Dienes <kdienes@apple.com>
+Standards-Version: 2.4.1.0
+
+Package: darwin-buildtools
+Architecture: all
+Depends:
+Description: XXX
+ XXX.

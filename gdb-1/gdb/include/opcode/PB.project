@@ -1,0 +1,48 @@
+{
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        H_FILES = (
+            a29k.h, 
+            alpha.h, 
+            arc.h, 
+            arm.h, 
+            cgen.h, 
+            convex.h, 
+            d10v.h, 
+            h8300.h, 
+            hppa.h, 
+            i386.h, 
+            i860.h, 
+            i960.h, 
+            m68k.h, 
+            m88k.h, 
+            mips.h, 
+            mn10200.h, 
+            mn10300.h, 
+            np1.h, 
+            ns32k.h, 
+            pn.h, 
+            ppc.h, 
+            pyr.h, 
+            sparc.h, 
+            tahoe.h, 
+            tic30.h, 
+            v850.h, 
+            vax.h
+        ); 
+        OTHER_SOURCES = (ChangeLog); 
+    }; 
+    LANGUAGE = English; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = opcode; 
+    PROJECTTYPE = Legacy; 
+    PROJECTVERSION = 2.8; 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}
