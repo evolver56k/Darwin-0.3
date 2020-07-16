@@ -57,8 +57,6 @@
 #import <driverkit/driverTypesPrivate.h>
 #import <driverkit/autoconfCommon.h>
 #import <driverkit/i386/EISAKernBus.h>
-#import <driverkit/i386/PCMCIA.h>
-#import <driverkit/i386/PCMCIAKernBus.h>
 #import <driverkit/i386/PCIKernBus.h>
 
 #import <machdep/i386/kernBootStruct.h>

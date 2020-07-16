@@ -71,7 +71,7 @@ static int bootGraphicsMode = NO;
 static short prettyShutdown = 0;
 
 // Title strings for the various windows
-const char *mach_title = "Darwin Operating System"; // Used by km.m also
+const char *mach_title = "Rhapsody Operating System"; // Used by km.m also
 static const char *alert_title  = "Alert";
 
 
@@ -198,7 +198,7 @@ initialize_screen(void * args)
 		if( fbMode == SCM_TEXT)
 		    kmdumplog();
 		else {
-                    kmDrawString( newConsole, "Starting Darwin OS");
+                    kmDrawString( newConsole, "Starting Rhapsody");
                     [self animationCtl: KM_ANIM_RESUME];
 		}
 	    }

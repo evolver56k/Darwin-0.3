@@ -49,7 +49,7 @@ d=`expr "$d" : '.*/\([^/]*/[^/]*/[^/]*\)$'`
   /bin/echo "char version_variant[]  = \"${variant}\";" ;
   /bin/echo "char version[] = \"Kernel Release ${v}:\\n${t}; $w\\nCopyright (c) 1988-1995,1997-1999 Apple Computer, Inc. All Rights Reserved.\\n\\n\";" ;
   /bin/echo "char osrelease[] = \"${major}.${minor}\";" ;
-  /bin/echo "char ostype[] = \"Darwin\";" ;
+  /bin/echo "char ostype[] = \"Rhapsody\";" ;
 ) > vers.c
 if [ -s vers.suffix -o ! -f vers.suffix ]; then
     rm -f vers.suffix

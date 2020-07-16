@@ -43,7 +43,7 @@ SYMDIR=$(SYMROOT)/syms
 #
 # Directories containing 'mode-dependent' source.
 #
-SOURCE_DIRS= User Kernel ppc i386 eisa pci pcmcia
+SOURCE_DIRS= User Kernel ppc i386 eisa pci
 
 AR= ar
 LD= ld
@@ -52,7 +52,7 @@ MIG= /usr/bin/mig
 
 MACHINE=i386
 MACHINE_LIST=ppc i386
-BUS_LIST=eisa pci pcmcia
+BUS_LIST=eisa pci
 
 ARFLAGS= rucv
 ARCHFULL_RC_CFLAGS = $(foreach X, $(RC_ARCHS),$(addprefix -arch , $(X)))
@@ -130,8 +130,7 @@ eisa_BUS_CFILES=
 pci_BUS_MFILES=		IOPCIDirectDevice.m IOPCIDeviceDescription.m
 pci_BUS_CFILES=
 
-pcmcia_BUS_MFILES=	IOPCMCIADirectDevice.m IOPCMCIADeviceDescription.m \
-			IOPCMCIATuple.m
+pcmcia_BUS_MFILES=
 pcmcia_BUS_CFILES=
 
 
@@ -273,7 +272,7 @@ USER_MD_OFILES= 	$(COMMON_OFILES) \
 # Enumerate mode directories for each target. These get added to VPATH.
 #
 USER_DIRS=		User
-KERNEL_DIRS=		Kernel:eisa:pci:pcmcia
+KERNEL_DIRS=		Kernel:eisa:pci
 
 #
 # Recursive rules to invoke various target builds.

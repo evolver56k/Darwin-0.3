@@ -63,6 +63,8 @@ typedef struct {
     unsigned int	gs;
 } i386_thread_state_t;
 
+#define i386_THREAD_STATE	-1
+
 #define i386_THREAD_STATE_COUNT		\
     ( sizeof (i386_thread_state_t) / sizeof (int) )
 
@@ -119,3 +121,10 @@ typedef struct {
 
 #define i386_THREAD_CTHREADSTATE_COUNT	\
     ( sizeof (i386_thread_cthreadstate_t) / sizeof (int) )
+
+/*
+ * Machine-independent way for servers and Mach's exception mechanism to
+ * choose the most efficient state flavor for exception RPC's:
+ */
+#define MACHINE_THREAD_STATE            i386_THREAD_STATE
+#define MACHINE_THREAD_STATE_COUNT      i386_THREAD_STATE_COUNT
