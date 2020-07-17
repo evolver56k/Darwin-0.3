@@ -4,4 +4,4 @@ Vendor: Zsh Development Group
 Version: 3.1.5
 URL: http://www.zsh.org/pub/zsh-3.1.5.tar.gz
 Description: Z-Shell
-Build-Depends: build-base, autoconf, gnudiff, gm4, perl
+Build-Depends: build-base, autoconf, gnudiff, gm4, perl, bash

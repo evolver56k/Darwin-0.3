@@ -25,7 +25,7 @@
 #
 
 # fundamentals
-SHELL = /bin/sh
+SHELL = /bin/bash
 @SET_MAKE@
 
 # source/build directories
