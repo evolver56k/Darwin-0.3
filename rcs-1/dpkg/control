@@ -4,4 +4,4 @@ Vendor: GNU Project
 Version: 5.7
 URL: ftp://prep.ai.mit.edu/pub/gnu/rcs-5.7.tar.gz
 Description: Revision Control System
-Build-Depends: build-base
+Build-Depends: build-base, bash

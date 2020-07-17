@@ -97,7 +97,7 @@ SENDMAIL = @SENDMAIL@
 
 
 # Avoid brain damage in some versions of 'make'.
-SHELL = /bin/sh
+SHELL = /bin/bash
 
 PROGRAMS = ci$x co$x ident$x merge$x \
 	rcs$x rcsclean$x rcsdiff$x rcsmerge$x rlog$x
