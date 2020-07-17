@@ -84,3 +84,7 @@ CFM_FILES =
 CFM_CFLAGS =
 CFM_LIBS =
 endif
+
+ifneq ("$(USE_PTHREADS)", "")
+MH_CFLAGS += -DUSE_PTHREADS=1
+endif

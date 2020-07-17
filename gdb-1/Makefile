@@ -18,6 +18,9 @@ INSTALL=$(SRCROOT)/gdb/install-sh
 
 CANONICAL_ARCHS := $(foreach arch,$(RC_ARCHS),$(foreach os,$(RC_OS),$(foreach release,$(RC_RELEASE),$(os):$(arch):$(release))))
 
+CANONICAL_ARCHS := $(subst teflon:ppc:Rhapsody,powerpc-apple-rhapsody,$(CANONICAL_ARCHS))
+CANONICAL_ARCHS := $(subst teflon:i386:Rhapsody,i386-apple-rhapsody,$(CANONICAL_ARCHS))
+
 CANONICAL_ARCHS := $(subst teflon:ppc:Darwin,powerpc-apple-rhapsody,$(CANONICAL_ARCHS))
 CANONICAL_ARCHS := $(subst teflon:i386:Darwin,i386-apple-rhapsody,$(CANONICAL_ARCHS))
 CANONICAL_ARCHS := $(subst teflon:ppc:Hera,powerpc-apple-rhapsody,$(CANONICAL_ARCHS))
@@ -139,7 +142,7 @@ CONFIGURE_OPTIONS= \
 MAKE_OPTIONS= \
 	WITH_CFM= \
 	WITH_FOUNDATION= \
-	USE_PTHREADS=1
+	USE_PTHREADS=
 
 EFLAGS = CFLAGS='$(CFLAGS)' CC='$(CC)' CC_FOR_BUILD='$(CC_FOR_BUILD)' NEXT_ROOT='$(NEXT_ROOT)' $(MAKE_OPTIONS)
 MFLAGS = $(EFLAGS)
@@ -468,6 +471,8 @@ ifeq "$(CANONICAL_ARCHS)" "powerpc-apple-macos10"
 else
 ifeq "$(CANONICAL_ARCHS)" "i386-apple-rhapsody powerpc-apple-rhapsody"
 else
+ifeq "$(CANONICAL_ARCHS)" "powerpc-apple-rhapsody i386-apple-rhapsody"
+else
 ifeq "$(CANONICAL_ARCHS)" "i386-apple-macos10 powerpc-apple-macos10"
 else
 ifeq "$(CANONICAL_ARCHS)" "hppa1.1-nextpdo-hpux10.20"
@@ -478,6 +483,7 @@ ifeq "$(CANONICAL_ARCHS)" "sparc-nextpdo-solaris2"
 else
 	echo "Unknown architecture string: \"$(CANONICAL_ARCHS)\""
 	exit 1
+endif
 endif
 endif
 endif
