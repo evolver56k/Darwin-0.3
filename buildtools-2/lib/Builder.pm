@@ -60,7 +60,7 @@ my $baseflags =
  'DSTROOT' => undef,
  'SUBLIBROOTS' => undef,
  'RC_JASPER' => 'YES',
- 'RC_ARCHS' => 'ppc',
+ 'RC_ARCHS' => 'i386 ppc',
  'RC_CFLAGS' => '',
  'RC_hppa' => '',
  'RC_i386' => '',
@@ -71,7 +71,7 @@ my $baseflags =
  'JAPANESE' => '',
  'RC_OS' => 'teflon',
  'CURRENT_PROJECT_VERSION' => '1',
- 'RC_RELEASE' => 'Darwin',
+ 'RC_RELEASE' => 'Rhapsody',
  'NEXT_ROOT' => '',
  'GnuNoInstallSource' => 'YES',
  'Install_Source' => ''
@@ -121,17 +121,10 @@ sub buildflags
     $flags->{'DSTROOT'} = $params->{'DSTROOT'};
   }
 
-  if ($target eq 'installhdrs') {
     $flags->{'RC_CFLAGS'} = '-arch i386 -arch ppc ' . &liststring (@cflags);
     $flags->{'RC_ARCHS'} = 'i386 ppc';
     $flags->{'RC_i386'} = 'YES';  
     $flags->{'RC_ppc'} = 'YES';
-  } else {
-    $flags->{'RC_CFLAGS'} = '-arch ppc ' . &liststring (@cflags);
-    $flags->{'RC_ARCHS'} = 'ppc';
-    $flags->{'RC_i386'} = '';
-    $flags->{'RC_ppc'} = 'YES';
-  }
 
   return $flags;
 }
@@ -191,7 +184,7 @@ sub getparams ()
   if (defined ($ENV{'BUILDIT_DIR'} && $ENV{'BUILDIT_DIR'})) {
     $buildroot = $ENV{'BUILDIT_DIR'};
   }
- 
+
   $params->{'BUILDROOT'} = "$buildroot/$projectname.roots/$projectname.root";
   if (defined ($ENV{'BUILDROOT'} && $ENV{'BUILDROOT'})) {
     $params->{'BUILDROOT'} = $ENV{'BUILDROOT'};
@@ -292,7 +285,7 @@ sub makecontrol
   
   $package->{'package'} = $pname;
   $package->{'version'} = "0";
-  $package->{'architecture'} = 'powerpc-apple-darwin';
+  $package->{'architecture'} = 'universal-apple-rhapsody';
   $package->{'source'} = $package->{'package'};
   $package->{'description'} = "No description available.";
   $package->{'maintainer'} = "Anonymous <darwin-development\@public.lists.apple.com>";
@@ -335,7 +328,7 @@ sub readcontrol
       $package->{'maintainer'} = "Anonymous <darwin-development\@public.lists.apple.com>";
   }
   
-  $package->{'architecture'} = 'powerpc-apple-darwin';
+  $package->{'architecture'} = 'universal-apple-rhapsody';
   $package->{'source'} = $package->{'package'};
   
   return $package;
@@ -852,7 +845,7 @@ sub build ()
   if (($target eq 'all') || ($target eq 'headers')) {
     
     my @installhdrscommand = &buildcmd ($package, $params, $bparams, 'installhdrs');
-    print 'UNAME_SYSNAME=Rhapsody PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin';
+    print 'UNAME_SYSNAME=Rhapsody PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin ';
     &printcmd (@installhdrscommand);
     $ENV{'UNAME_SYSNAME'} = 'Rhapsody';
     $ENV{'PATH'} = '/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin';
@@ -864,7 +857,7 @@ sub build ()
   if (($target eq 'all') || ($target eq 'binary')) {
     
     my @installcommand = &buildcmd ($package, $params, $bparams, 'install');
-    print 'UNAME_SYSNAME=Rhapsody /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin';
+    print 'UNAME_SYSNAME=Rhapsody /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin ';
     &printcmd (@installcommand);
     $ENV{'UNAME_SYSNAME'} = 'Rhapsody';
     $ENV{'PATH'} = '/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin';
