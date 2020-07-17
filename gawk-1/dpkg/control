@@ -4,5 +4,4 @@ Vendor: GNU Project
 Version: 3.0.3
 URL: ftp://prep.ai.mit.edu/pub/gnu/gawk-3.0.3.tar.gz
 Description: No description available.
-Build-Depends: awk, grep, csu, cc, objcunique, files, libsystem, cctools, gnumake, bash, file-cmds, coreosmakefiles, shell-cmds, basic-cmds, text-cmds, architecture, ansi
 Build-Depends: build-base
