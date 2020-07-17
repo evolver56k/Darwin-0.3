@@ -4,4 +4,4 @@ Vendor: GNU Project
 Version: 2.7
 URL: ftp://prep.ai.mit.edu/pub/gnu/diffutils-2.7.tar.gz
 Description: Diff utilities
-Build-Depends: build-base, gnudiff, perl
+Build-Depends: build-base, perl
