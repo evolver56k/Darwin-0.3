@@ -160,7 +160,7 @@ int dpkg_find_gnu_target_architecture (char *dst, size_t n)
 
   /* for the moment, we support only native compilation on Rhapsody */
   if (strcmp (uts.sysname, "Rhapsody") == 0) {
-    return snprintf (dst, n, "%s", "powerpc-apple-rhapsody");
+    return snprintf (dst, n, "%s-%s", uts.machine, "apple-rhapsody");
   } else if (strcmp (uts.sysname, "Darwin") == 0) {
     return snprintf (dst, n, "%s", "powerpc-apple-darwin");
   }

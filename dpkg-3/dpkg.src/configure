@@ -5189,7 +5189,10 @@ fi
 
 case "$target_os" in
  rhapsody*)
-  POSIXDEFS=""
+  #POSIXDEFS=""
+  # this fixes a weird bug where some .o files aren't built with the RC_CFLAGS set for universal builds.
+  # I couldn't really find a better place to inject it, so here it be.
+  POSIXDEFS="$RC_CFLAGS"
   ;;
  *)
   POSIXDEFS="-D_POSIX_SOURCE -D_GNU_SOURCE"
