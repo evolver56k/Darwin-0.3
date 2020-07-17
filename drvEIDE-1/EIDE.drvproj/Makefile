@@ -13,16 +13,16 @@ PROJECTVERSION = 2.6
 PROJECT_TYPE = Driver
 LANGUAGE = English
 
-LOCAL_RESOURCES = EIDEInspector.nib DriverHelp Dual_EIDE.strings\
+LOCAL_RESOURCES = DriverHelp Dual_EIDE.strings\
                   Localizable.strings\
                   PnP_EIDE.strings EIDE_PIIX.strings
 
 GLOBAL_RESOURCES = Default.table Dual_EIDE.table\
                    PnP_EIDE.table EIDE_PIIX.table
 
-CLASSES = EIDEInspector.m
+CLASSES =
 
-HFILES = EIDEInspector.h localization.h
+HFILES = localization.h
 
 TOOLS = EIDE.lksproj PostLoad.tproj
 
@@ -39,7 +39,7 @@ BUNDLE_EXTENSION = config
 
 
 FRAMEWORK_PATHS = -F$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks
-FRAMEWORKS = -framework appkit
+FRAMEWORKS =
 
 
 include $(MAKEFILEDIR)/platform.make
