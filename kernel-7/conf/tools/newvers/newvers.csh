@@ -1,4 +1,5 @@
 #!/bin/sh -
+set -x
 
 ##
 # Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
@@ -42,12 +43,12 @@ if [ -z "$d" -o -z "$h" -o -z "$t" ]; then
     exit 1
 fi
 CONFIG=`expr "$d" : '.*/\([^/]*\)$'`
-d=`expr "$d" : '.*/\([^/]*/[^/]*/[^/]*\)$'`
+d=`expr "$d" : '.*/\([^/]*/[^/]*\)$'`
 (
   /bin/echo "int  version_major      = ${major};" ;
   /bin/echo "int  version_minor      = ${minor};" ;
   /bin/echo "char version_variant[]  = \"${variant}\";" ;
-  /bin/echo "char version[] = \"Kernel Release ${v}:\\n${t}; $w\\nCopyright (c) 1988-1995,1997-1999 Apple Computer, Inc. All Rights Reserved.\\n\\n\";" ;
+  /bin/echo "char version[] = \"Kernel Release ${v}:\\n${t}; $w($h):$d\\nCopyright (c) 1988-1995,1997-1999 Apple Computer, Inc. All Rights Reserved.\\n\\n\";" ;
   /bin/echo "char osrelease[] = \"${major}.${minor}\";" ;
   /bin/echo "char ostype[] = \"Rhapsody\";" ;
 ) > vers.c
