@@ -1,0 +1,13 @@
+DOCICONFILES = ();
+FILESTABLE = {
+    OTHER_SOURCES = (Makefile, Makefile.preamble, Makefile.postamble, Makefile.driver_preamble, Load_Commands.sect, VMXNet.ddm);
+    H_FILES = (compat.h, net.h, net_dist.h, net_sg.h, vmnet_def.h, VMXNet.h, VMXNet_ddm.h, vmxnet2_def.h, vmxnetInt.h, vmxnet_def.h, vm_basic_types.h, vm_device_version.h, vm_version.h);
+    CLASSES = (VMXNet.m);
+};
+LOCALIZABLE_FILES = {
+};
+PROJECTVERSION = 1.1;
+PROJECTTYPE = Tool;
+PROJECTNAME = VMXNet_reloc;
+GENERATEMAIN = YES;
+LANGUAGE = English;

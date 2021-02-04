@@ -1,0 +1,12 @@
+"Title" = "VMXNet";
+"Family" = "Network";
+"Location" = "";
+"Instance" = "0";
+"Version" = "1.5";
+"Driver Name" = "VMXNet";
+"Server Name" = "VMXNet";
+"Auto Detect IDs" = "0x072015ad 0x20001022";
+"Bus Type" = "PCI";
+"Share IRQ Levels" = "NO";
+"Share IRQs" = "NO";
+"Driver Version" = "PROGRAM:VMXNet PROJECT:VMXNet DEVELOPER:root BUILT:NO DATE SET (-B used)";

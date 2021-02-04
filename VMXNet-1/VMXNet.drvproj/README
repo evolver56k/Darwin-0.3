@@ -1,0 +1,29 @@
+README
+------
+
+This is a driver for the vmx network hardware provided by VMware. I wrote it 
+to get network working with VMware after version 5.0. 
+
+The code is based on the sources for the linux drivers provided by vmware which  can be found in the ISO-image of the tools cd shipped with every VMware product and are included in the package vmxnet-only.tar.gz.
+
+As I never planned to submit this driver anywhere or to make it public documentation of the source code is rather sparse.
+
+Jens Heise
+
+
+INSTALLATION
+------------
+Simple install it using Configure.app. Currently only one network interface 
+at once is supported.
+
+
+LEGAL
+-----
+As the original driver is not published under GNU license you 
+have to accept and follow the licenses presented there. 
+
+
+The NeXT-/OpenStep port is free software; you can redistribute 
+it and/or modify it under the terms of the GNU General Public 
+License as published by the Free Software Foundation; either 
+version 2 of the License, or (at your option) any later version.

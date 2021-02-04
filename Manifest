@@ -95,5 +95,5 @@ dir     wget-1                all
 dir     yacc-1                all
 dir     zlib-1                all
 dir     zsh-1                 all
-
-
+dir     VMXNet-1              all
+dir     NE2k-1                all

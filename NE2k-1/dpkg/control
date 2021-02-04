@@ -1,0 +1,6 @@
+Package: ne2k
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: https://github.com/segabor/NE2K
+Version: 0.91b
+Description: NE2k device driver
+Build-Depends: build-base, drivertools, driverkit, kernload

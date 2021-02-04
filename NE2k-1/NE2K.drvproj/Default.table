@@ -1,0 +1,14 @@
+"Family" = "Network";
+"Location" = "";
+"Bus Type" = "PCI";
+"Auto Detect IDs" = "0x802910ec 0x09401050 0x140111f6 0x30008e2e 0x50004a14 0x11060926";
+"Instance" = "0";
+"Driver Name" = "NE2K";
+"DMA Channels" = "";
+"Memory Maps" = "";
+"I/O Ports" = "";
+"Share IRQ Levels" = "YES";
+"Class Names" = "NE2K";
+"Server Name" = "NE2K";
+"Version" = "0.91b";
+"Driver Version" = "NE2K 0.91 beta";

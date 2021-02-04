@@ -1,0 +1,13 @@
+#
+#  DDMViewer data file for VMWare Network driver. 
+#
+Index : 2 : "VMWare Network"
+
+0x0001 : "Exported Methods"
+0x0002 : "I/O thread"
+0x0004 : "Initialization"
+0x0008 : "Interrupt"
+0x0010 : "Chip Level"
+0x0020 : "Error"
+0x0040 : "DMA lists"
+

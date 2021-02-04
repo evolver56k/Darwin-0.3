@@ -1,0 +1,6 @@
+Package: vmxnet
+Maintainer: Darwin Developers <darwin-development@public.lists.apple.com>
+Vendor: VMware, Inc.
+Version: 1.5
+Description: VMXNet device driver
+Build-Depends: build-base, drivertools, driverkit, kernload

@@ -1,0 +1,6 @@
+#
+# used by geninfo: DRIVER_NAME is the names which appears on the
+# installer window
+#
+DRIVER_NAME="NE2K"
+DEFAULT_DRIVER_VERSION="0.91b";

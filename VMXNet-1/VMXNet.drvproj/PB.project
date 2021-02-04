@@ -1,0 +1,25 @@
+INSTALLDIR = "";
+COMPILEROPTIONS = "";
+GENERATEMAIN = YES;
+DOCICONFILES = ();
+FILESTABLE = {
+    CLASSES = ();
+    OTHER_RESOURCES = (Default.table);
+    BUNDLES = ();
+    OTHER_SOURCES = (Makefile, Makefile.preamble, Makefile.postamble, Makefile.private);
+    INTERFACES = ();
+    H_FILES = ();
+    STRINGS_FILES = (Localizable.strings);
+    SUBPROJECTS = ();
+    TOOLS = (VMXNet_reloc.tproj);
+};
+BUNDLE_EXTENSION = config;
+LINKEROPTIONS = "";
+DOCEXTENSIONS = ();
+PROJECTTYPE = Bundle;
+PROJECTVERSION = 1.1;
+LOCALIZABLE_FILES = {
+    Localizable.strings;
+};
+PROJECTNAME = VMXNet;
+LANGUAGE = English;
