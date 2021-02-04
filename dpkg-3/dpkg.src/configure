@@ -5194,6 +5194,9 @@ case "$target_os" in
   # I couldn't really find a better place to inject it, so here it be.
   POSIXDEFS="$RC_CFLAGS"
   ;;
+ darwin*)
+  POSIXDEFS="$RC_CFLAGS"
+  ;;
  *)
   POSIXDEFS="-D_POSIX_SOURCE -D_GNU_SOURCE"
   ;;
